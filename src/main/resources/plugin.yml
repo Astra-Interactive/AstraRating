@@ -1,0 +1,26 @@
+main: com.astrainteractive.astrarating.AstraRating
+prefix: '${name}'
+description: '${description}'
+name: '${name}'
+version: '${version}'
+authors: [ MakeevRoman ]
+author: MakeevRoman
+website: AstraInteractive.ru
+api-version: 1.18
+softdepend: [ ]
+depend: [ ]
+loadbefore: [ ]
+commands:
+  aratingreload:
+    description: Reload plugin
+    permission: astra_template.reload
+    permission-message: You do not have permission!
+    usage: /<command>
+  arreload:
+    description: Reload plugin
+    permission: astra_template.reload
+    permission-message: You do not have permission!
+    usage: /<command>
+  arating:
+    description: Astra rating commands
+    usage: /<command>
