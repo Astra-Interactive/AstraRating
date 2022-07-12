@@ -60,15 +60,16 @@ class RatingsGUI(override val playerMenuUtility: AstraPlayerMenuUtility) : Pagin
 
     override fun handleMenu(e: InventoryClickEvent) {
         super.handleMenu(e)
-        if (e.slot == backButtonIndex)
-            inventory.close()
-        else if (e.slot == sortButtonIndex) {
-            viewModel.onSortClicked()
-            setMenuItems()
-        } else AsyncHelper.launch {
-            val item = viewModel.userRatings.value[maxItemsPerPage * page + e.slot]
-            println("Clicked ${item}")
-            PlayerRatingsGUI(Bukkit.getOfflinePlayer(item.userCreatedReport.minecraftName), playerMenuUtility).open()
+        when (e.slot) {
+            backButtonIndex -> inventory.close()
+            sortButtonIndex -> {
+                viewModel.onSortClicked()
+                setMenuItems()
+            }
+            else -> AsyncHelper.launch {
+                val item = viewModel.userRatings.value[maxItemsPerPage * page + e.slot]
+                PlayerRatingsGUI(Bukkit.getOfflinePlayer(item.reportedPlayer.minecraftName), playerMenuUtility).open()
+            }
         }
     }
 
@@ -104,9 +105,9 @@ class RatingsGUI(override val playerMenuUtility: AstraPlayerMenuUtility) : Pagin
             if (index >= list.size)
                 continue
             val userAndRating = list[index]
-            val item = RatingsGUIViewModel.getHead(userAndRating.userCreatedReport.minecraftName).apply {
+            val item = RatingsGUIViewModel.getHead(userAndRating.reportedPlayer.minecraftName).apply {
                 editMeta {
-                    it.setDisplayName(userAndRating.userCreatedReport.minecraftName)
+                    it.setDisplayName(userAndRating.reportedPlayer.minecraftName)
                     it.lore = listOf(
                         "${Translation.rating}: ${userAndRating.rating.rating}"
                     )

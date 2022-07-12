@@ -9,9 +9,9 @@ import java.sql.ResultSet
 
 data class User(
     val id: Long = NON_EXISTS_KEY,
-    val minecraftUUID: String,
-    val minecraftName: String,
-    val discordID: String,
+    val minecraftUUID: String="",
+    val minecraftName: String="",
+    val discordID: String="",
     val lastUpdated: Long = System.currentTimeMillis()
 ) {
     constructor(player: OfflinePlayer) : this(NON_EXISTS_KEY, player.uniqueId.toString(), player.name ?: "null", "")

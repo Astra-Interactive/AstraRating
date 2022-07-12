@@ -65,7 +65,7 @@ class RatingsGUIViewModel {
         AsyncHelper.launch {
             _userRatings.value = DatabaseApi.fetchUsersTotalRating() ?: emptyList()
             _userRatings.value.forEach {
-                rememberSkin(it.reportedPlayer?.name)
+                rememberSkin(it.reportedPlayer?.minecraftName)
                 rememberSkin(it.userCreatedReport.minecraftName)
             }
         }

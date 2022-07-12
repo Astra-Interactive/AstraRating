@@ -50,7 +50,7 @@ class PlayerRatingsGUIViewModel(val player: OfflinePlayer) {
         AsyncHelper.launch {
             _userRatings.value = DatabaseApi.fetchUserRatings(player) ?: emptyList()
             _userRatings.value.forEach {
-                RatingsGUIViewModel.rememberSkin(it.reportedPlayer?.name)
+                RatingsGUIViewModel.rememberSkin(it.reportedPlayer?.minecraftName)
                 RatingsGUIViewModel.rememberSkin(it.userCreatedReport.minecraftName)
             }
         }

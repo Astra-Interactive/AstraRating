@@ -7,6 +7,7 @@ import com.astrainteractive.astrarating.sqldatabase.SQLDatabase
 import com.astrainteractive.astrarating.sqldatabase.entities.User
 import com.astrainteractive.astrarating.sqldatabase.entities.UserAndRating
 import com.astrainteractive.astrarating.sqldatabase.entities.UserRating
+import com.astrainteractive.astrarating.utils.uuid
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import java.sql.Connection
@@ -60,14 +61,25 @@ object DatabaseApi {
         val query =
             "SELECT * FROM ${UserRating.TABLE} A JOIN ${User.TABLE} B on A.${UserRating.userCreatedReport.name}=B.${User.id.name} WHERE A.${UserRating.reportedUser.name}=(SELECT ${User.id.name} FROM ${User.TABLE} WHERE ${User.minecraftName.name}=${player.name?.sqlString} LIMIT 1)"
         val rs = SQLDatabase.connection?.createStatement()?.executeQuery(query)
-        return rs?.mapNotNull { UserAndRating.fromResultSet(it, player) }
+        val reportedUser = SQLDatabase.selectEntryByID(User.TABLE, User.minecraftUUID.name, player.uuid.sqlString) {
+            User.fromResultSet(it)
+        } ?: return null
+        return rs?.mapNotNull {
+            val userCreatedReport = User.fromResultSet(it) ?: return@mapNotNull null
+            val rating = UserRating.fromResultSet(it) ?: return@mapNotNull null
+            UserAndRating(reportedUser, userCreatedReport, rating)
+        }
     }
 
     suspend fun fetchUsersTotalRating(): List<UserAndRating>? {
         val query =
             "SELECT SUM(A.${UserRating.rating.name}) ${UserRating.rating.name},* FROM ${UserRating.TABLE} A JOIN ${User.TABLE} B on A.${UserRating.reportedUser.name}=B.${User.id.name} GROUP BY ${User.minecraftName.name}"
         val rs = SQLDatabase.connection?.createStatement()?.executeQuery(query)
-        return rs?.mapNotNull { UserAndRating.fromResultSet(it) }
+        return rs?.mapNotNull {
+            val reportedUser = User.fromResultSet(it) ?: return@mapNotNull null
+            val rating = UserRating.fromResultSet(it) ?: return@mapNotNull null
+            UserAndRating(reportedUser, User(), rating)
+        }
     }
 
     suspend fun countPlayerTotalDayRated(player: Player): Int? = catching() {
