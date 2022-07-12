@@ -57,7 +57,7 @@ fun RatingCommandController.addRating(
         ratingCreator.sendMessage(Translation.onlyPlayerCommand)
         return
     }
-    if (ratedPlayer == null || ratedPlayer.firstPlayed==0L) {
+    if (ratedPlayer == null || ratedPlayer.firstPlayed == 0L) {
         ratingCreator.sendMessage(Translation.playerNotExists)
         return
     }
@@ -65,6 +65,7 @@ fun RatingCommandController.addRating(
         ratingCreator.sendMessage(Translation.cantRateSelf)
         return
     }
+    println("Time since first played: ${(System.currentTimeMillis() - ratingCreator.firstPlayed) / 1000}")
     if (System.currentTimeMillis() - ratingCreator.firstPlayed < Config.minTimeOnServer) {
         ratingCreator.sendMessage(Translation.notEnoughOnServer)
         return
@@ -78,9 +79,10 @@ fun RatingCommandController.addRating(
             return@launch
         }
         val discordTime = discordMember?.let {
-            System.currentTimeMillis() - it.timeJoined.toInstant().toEpochMilli() > Config.minTimeOnDiscord
+            System.currentTimeMillis() - it.timeJoined.toInstant().toEpochMilli() < Config.minTimeOnDiscord
         } ?: !Config.needDiscordLinked
-        if (!discordTime) {
+
+        if (discordTime) {
             ratingCreator.sendMessage(Translation.notEnoughOnDiscord)
             return@launch
         }
@@ -89,7 +91,8 @@ fun RatingCommandController.addRating(
         val votedOnPlayer = DatabaseApi.countPlayerOnPlayerDayRated(ratingCreator, ratedPlayer) ?: 0
 
         val maxVotesPerDay = AstraPermission.MaxRatePerDay.permissionSize(ratingCreator) ?: Config.maxRatingPerDay
-        val maxVotePerPlayer = AstraPermission.SinglePlayerPerDay.permissionSize(ratingCreator) ?: Config.maxRatingPerPlayer
+        val maxVotePerPlayer =
+            AstraPermission.SinglePlayerPerDay.permissionSize(ratingCreator) ?: Config.maxRatingPerPlayer
 
         if (todayVoted > maxVotesPerDay) {
             ratingCreator.sendMessage(Translation.alreadyMaxDayVotes)
