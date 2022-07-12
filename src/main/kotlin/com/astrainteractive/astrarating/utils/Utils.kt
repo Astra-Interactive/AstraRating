@@ -13,6 +13,7 @@ import java.io.InputStreamReader
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.max
 import kotlin.random.Random
 
 inline fun <reified T : kotlin.Enum<T>> T.addIndex(offset: Int): T {
@@ -73,6 +74,12 @@ fun <T, K> setDeclaredField(clazz: Class<T>, instance: Any, name: String, value:
         isAccessible = false
     }
 
+}
+fun subListFromString(text:String, threshold:Int): List<String> {
+    return if (Config.cutWords) text.chunked(threshold)
+    else text.split(" ").chunked(max(1,(text.length)/threshold)).map {
+        it.joinToString(" ")
+    }
 }
 
 object TimeUtility {

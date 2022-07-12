@@ -111,7 +111,10 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, override val playerMen
                 editMeta {
                     it.setDisplayName(Translation.playerNameColor + userAndRating.userCreatedReport.minecraftName)
                     it.lore = mutableListOf<String>().apply {
-                        add("${Translation.message}: $color${userAndRating.rating.message}")
+                        subListFromString("${Translation.message} $color${userAndRating.rating.message}",Config.trimMessageAfter).forEachIndexed { index, it ->
+                            add("$color$it")
+                        }
+
                         if (Config.gui.showFirstConnection)
                             add("${Translation.firstConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.firstPlayed)}")
                         if (Config.gui.showLastConnection)

@@ -83,6 +83,6 @@ class PluginTranslation {
     val sortRating: String = getHEXString("menu.sort.rating_sort") ?: "#1B76CAСортировка".HEX()
     val sort: String = getHEXString("menu.sort.sort") ?: "#1B76CAСортировка".HEX()
     val rating: String = getHEXString("menu.sort") ?: "#1B76CAРейтинг".HEX()
-    val message: String = getHEXString("menu.message") ?: "#1B76CAСообщение".HEX()
+    val message: String = getHEXString("menu.message") ?: "#1B76CAСообщение:".HEX()
 
 }

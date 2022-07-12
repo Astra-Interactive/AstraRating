@@ -14,6 +14,14 @@ minTimeOnServer: 3600000
 # In milliseconds
 # ex: 1 hours = 1h*60m*60s*1000ms = 3600000
 minTimeOnDiscord: 3600000
+# As it says
+minMessageLength: 5
+# As it says
+maxMessageLength: 30
+# If message length equals 30 and trimMessageAfter=15 then message will be separated into two rows
+trimMessageAfter: 15
+# If set false then trim will not cut words
+cutWords: false
 gui:
   showFirstConnection: true
   showLastConnection: true

@@ -100,7 +100,7 @@ fun RatingCommandController.addRating(
             return@launch
         }
         val message = args.toList().subList(2, args.size).joinToString(" ")
-        if (message.length<5 || message.length>30) {
+        if (message.length< Config.minMessageLength || message.length> Config.maxMessageLength) {
             ratingCreator.sendMessage(Translation.wrongMessageLen)
             return@launch
         }

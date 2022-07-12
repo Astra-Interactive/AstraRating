@@ -25,6 +25,10 @@ data class EmpireConfig(
     val minTimeOnServer: Long = 0,
     // Minimum time on discord required to let rating on players
     val minTimeOnDiscord: Long = 0,
+    val minMessageLength:Int = 5,
+    val maxMessageLength:Int = 30,
+    val trimMessageAfter:Int = 10,
+    val cutWords:Boolean = false,
     val gui: Gui = Gui()
 ) {
     data class Gui(
