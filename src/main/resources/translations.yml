@@ -1,21 +1,46 @@
 database:
-  success: #18dbd1Успешно подключено к базе данных
-  fail: #db2c18Нет подключения к базе данных
+  success: '#1B76CAУспешно подключено к базе данных'
+  fail: '#ca271bНет подключения к базе данных'
+  error: '#ca271bПроизошла ошибка в базе данных'
 general:
-  prefix: #18dbd1[EmpireItems]
-  reload: #dbbb18Перезагрузка плагина
-  reload_complete: #42f596Перезагрузка успешно завершена
-  no_permission: #db2c18У вас нет прав!
+  prefix: '#1B76CA[EmpireItems]'
+  wrong_usage: '#1B76CAНеверное использование команды'
+  reload: '#1B76CAПерезагрузка плагина'
+  reload_complete: '#1B76CAПерезагрузка успешно завершена'
+  no_permission: '#ca271bУ вас нет прав!'
+  only_player_command: '#ca271bКоманда доступна только игрокам!'
+  player_not_exists: '#ca271bТакого игрока нет!'
+  cant_rate_self: '#ca271bВы не можете поставить рейтинг самому себe!'
+  liked_user: '#1B76CAВы повысили рейтинг игрока %player%'
+  disliked_user: '#ca271bВы понизили рейтинг игрока %player%'
+  max_day_voted: '#ca271bВы уже проголосовали максимальное количество раз за день'
+  max_player_voted: '#ca271bСегодня вы выдали максимальное возможное количество голосов
+    этому игроку'
+  click_to_delete_report: '#ca271bНажмите ЛКМ чтобы удалить'
+  not_enough_on_server: '#ca271bВы недостаточно долго были на сервере'
+  not_enough_on_discord: '#ca271bВы недостаточно долго были на дискорд-сервере'
+  need_discord_link: '#ca271bВы должны привязать дискорд /discord link'
+  player_name_color: '#DDB92B'
+  positive_color: '#1B76CA'
+  negative_color: '#ca271b'
+  first_connection: '#1B76CAВпервые зашёл:'
+  last_connection: '#1B76CAБыл в сети:'
 menu:
-  first_page: #dbbb18Вы на первой странице
-  last_page: #dbbb18Вы на последней странице
-  prev_page: #18dbd1Пред. страницы
-  next_page: #18dbd1След. страница
-  back: #18dbd1Назад
-  close: #18dbd1Закрыть
-
-custom:
-  block_placed: #18dbd1Блок поставлен!
-  no_player_name: #db2c18Вы не ввели имя игрока!
-  damage_hint: "<amount>"
-  damaged: #db2c18Вас продамажил игрок %player%!
+  ratings_title: '#1B76CAРейтинг'
+  player_rating_title: '#1B76CAРейтинг игрока %player%'
+  prev_page: '#1B76CAПред. страницы'
+  next_page: '#1B76CAСлед. страница'
+  back: '#1B76CAНазад'
+  close: '#1B76CAЗакрыть'
+  sort:
+    PLAYER_ASC: '#1B76CAИгрок по возрастанию'
+    PLAYER_DESC: '#1B76CAИгрок по убыванию'
+    DATE_DESC: '#1B76CAЗДата по убыванию'
+    DATE_ASC: '#1B76CAДата по возрастанию'
+    RATING_DESC: '#1B76CAСначала положительные'
+    RATING_ASC: '#1B76CAСначала отрицательные'
+    ASC: '#1B76CAПо возрастанию'
+    DESC: '#1B76CAПо убыванию'
+    rating_sort: '#1B76CAСортировка'
+    sort: '#1B76CAСортировка'
+  message: '#1B76CAСообщение:'
