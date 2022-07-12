@@ -30,7 +30,7 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, override val playerMen
     override val nextButtonIndex: Int = 53
     override val prevButtonIndex: Int = 45
 
-    override var menuName: String = Translation.menuTitle
+    override var menuName: String = Translation.playerRatingTitle.replace("%player%",selectedPlayer.name?:"")
     override val menuSize: AstraMenuSize = AstraMenuSize.XL
     override val backPageButton: ItemStack = ItemStack(Material.PAPER).apply {
         editMeta {
@@ -108,12 +108,13 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, override val playerMen
             if (index >= list.size)
                 continue
             val userAndRating = list[index]
+            val color = if (userAndRating.rating.rating>0) Translation.positiveColor else Translation.negativeColor
             val item = RatingsGUIViewModel.getHead(userAndRating.userCreatedReport.minecraftName).apply {
                 editMeta {
-                    it.setDisplayName(userAndRating.userCreatedReport.minecraftName)
+                    it.setDisplayName(Translation.playerNameColor + userAndRating.userCreatedReport.minecraftName)
                     it.lore = mutableListOf(
-                        "${Translation.rating}: ${userAndRating.rating.rating}",
-                        "${Translation.message}: ${userAndRating.rating.message}",
+//                        "${Translation.rating}: $color${userAndRating.rating.rating}",
+                        "${Translation.message}: $color${userAndRating.rating.message}",
                     ).apply {
                         if (AstraPermission.DeleteReport.hasPermission(playerMenuUtility.player))
                             add(Translation.clickToDeleteReport)

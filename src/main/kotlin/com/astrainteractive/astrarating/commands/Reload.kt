@@ -16,12 +16,7 @@ import com.astrainteractive.astrarating.utils.Translation
  * Here you should also check for permission
  */
 fun CommandManager.reload() = AstraDSLCommand.command("aratingreload") {
-    this.noPermission(AstraPermission.Reload.value) {
-        sender.sendMessage(Translation.noPermission)
-    } ?: return@command
-    sender.sendMessage(Translation.reload)
-    AstraRating.instance.reloadPlugin()
-    sender.sendMessage(Translation.reloadComplete)
+    CommandManager.reload(this.sender)
 }
 
 

@@ -8,9 +8,7 @@ import com.astrainteractive.astrarating.api.DatabaseApi
 import com.astrainteractive.astrarating.api.use_cases.InsertUserUseCase
 import com.astrainteractive.astrarating.gui.ratings.RatingsGUI
 import com.astrainteractive.astrarating.sqldatabase.entities.UserRating
-import com.astrainteractive.astrarating.utils.AstraPermission
-import com.astrainteractive.astrarating.utils.Config
-import com.astrainteractive.astrarating.utils.Translation
+import com.astrainteractive.astrarating.utils.*
 import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
@@ -29,9 +27,10 @@ fun CommandManager.ratingCommand() = AstraLibs.registerCommand("arating") { send
         return@registerCommand
     }
     when (argument) {
-        "like" -> RatingCommandController.like(sender, args)
-        "dislike" -> RatingCommandController.dislike(sender, args)
+        "like" -> RatingCommandController.addRating(sender, args, 1)
+        "dislike" -> RatingCommandController.addRating(sender, args, -1)
         "rating" -> RatingCommandController.rating(sender, args)
+        "reload" -> CommandManager.reload(sender)
     }
 }
 
@@ -43,75 +42,80 @@ data class LikeDislikeHolder(
     val sender: CommandSender,
 )
 
-fun likeOrDislike(
-    sender: CommandSender,
+fun RatingCommandController.addRating(
+    ratingCreator: CommandSender,
     args: Array<out String>,
-    callback: suspend (holder: LikeDislikeHolder, playerCreatedID: Long, playerReportedID: Long) -> Unit
+    rating: Int,
 ) {
 
-    if (!AstraPermission.Vote.hasPermission(sender)) {
-        sender.sendMessage(Translation.noPermission)
+    if (!AstraPermission.Vote.hasPermission(ratingCreator)) {
+        ratingCreator.sendMessage(Translation.noPermission)
         return
     }
-    val player = args.getOrNull(1)?.let { Bukkit.getOfflinePlayer(it) }
-    if (sender !is Player) {
-        sender.sendMessage(Translation.onlyPlayerCommand)
+    val ratedPlayer = args.getOrNull(1)?.let { Bukkit.getOfflinePlayer(it) }
+    if (ratingCreator !is Player) {
+        ratingCreator.sendMessage(Translation.onlyPlayerCommand)
         return
     }
-    if (player == null) {
-        sender.sendMessage(Translation.playerNotExists)
+    if (ratedPlayer == null || ratedPlayer.firstPlayed==0L) {
+        ratingCreator.sendMessage(Translation.playerNotExists)
         return
     }
-    if (player == sender) {
-        sender.sendMessage(Translation.cantRateSelf)
+    if (ratedPlayer == ratingCreator) {
+        ratingCreator.sendMessage(Translation.cantRateSelf)
+        return
+    }
+    if (System.currentTimeMillis() - ratingCreator.firstPlayed < Config.minTimeOnServer) {
+        ratingCreator.sendMessage(Translation.notEnoughOnServer)
         return
     }
     val message = args.toList().subList(2, args.size).joinToString(" ")
 
     AsyncHelper.launch {
-        val todayVoted = DatabaseApi.countPlayerTotalDayRated(sender as Player) ?: 0
-        val votedOnPlayer = DatabaseApi.countPlayerOnPlayerDayRated(sender, player) ?: 0
+        val discordMember = getLinkedDiscordID(ratingCreator)?.let { getDiscordMember(it) }
+        if (Config.needDiscordLinked && discordMember == null) {
+            ratingCreator.sendMessage(Translation.needDiscordLinked)
+            return@launch
+        }
+        val discordTime = discordMember?.let {
+            System.currentTimeMillis() - it.timeJoined.toInstant().toEpochMilli() > Config.minTimeOnDiscord
+        } ?: !Config.needDiscordLinked
+        if (!discordTime) {
+            ratingCreator.sendMessage(Translation.notEnoughOnDiscord)
+            return@launch
+        }
 
-        val maxVotesPerDay = AstraPermission.MaxRatePerDay.permissionSize(sender) ?: Config.maxRatingPerDay
-        val maxVotePerPlayer = AstraPermission.SinglePlayerPerDay.permissionSize(sender) ?: Config.maxRatingPerPlayer
+        val todayVoted = DatabaseApi.countPlayerTotalDayRated(ratingCreator as Player) ?: 0
+        val votedOnPlayer = DatabaseApi.countPlayerOnPlayerDayRated(ratingCreator, ratedPlayer) ?: 0
+
+        val maxVotesPerDay = AstraPermission.MaxRatePerDay.permissionSize(ratingCreator) ?: Config.maxRatingPerDay
+        val maxVotePerPlayer = AstraPermission.SinglePlayerPerDay.permissionSize(ratingCreator) ?: Config.maxRatingPerPlayer
 
         if (todayVoted > maxVotesPerDay) {
-            sender.sendMessage(Translation.alreadyMaxDayVotes)
+            ratingCreator.sendMessage(Translation.alreadyMaxDayVotes)
             return@launch
         }
         if (votedOnPlayer > maxVotePerPlayer) {
-            sender.sendMessage(Translation.alreadyMaxPlayerVotes)
+            ratingCreator.sendMessage(Translation.alreadyMaxPlayerVotes)
             return@launch
         }
         if (!IntRange(5, 30).contains(message.length)) {
-            sender.sendMessage(Translation.wrongMessageLen)
+            ratingCreator.sendMessage(Translation.wrongMessageLen)
             return@launch
         }
-        val holder = LikeDislikeHolder(player, message, sender)
-        val insertUserUseCase = InsertUserUseCase()
-        val playerCreatedID = insertUserUseCase(holder.sender as OfflinePlayer)
-        val playerReportedID = insertUserUseCase(holder.player)
+        val playerCreatedID = InsertUserUseCase(ratingCreator)
+        val playerReportedID = InsertUserUseCase(ratedPlayer)
         if (playerCreatedID == null || playerReportedID == null) {
-            sender.sendMessage(Translation.dbError)
+            ratingCreator.sendMessage(Translation.dbError)
             return@launch
         }
-        callback(holder, playerCreatedID, playerReportedID)
-    }
-}
 
-fun RatingCommandController.like(sender: CommandSender, args: Array<out String>) {
-    likeOrDislike(sender, args) { holder, createdID, reportedID ->
-        val ratingEntity = UserRating(-1, createdID, reportedID, 1, holder.message)
+        val ratingEntity = UserRating(-1, playerCreatedID, playerReportedID, rating, message)
         DatabaseApi.insertUserRating(ratingEntity)
-        sender.sendMessage(Translation.likedUser.replace("%player%", args[1]))
-    }
-}
-
-fun RatingCommandController.dislike(sender: CommandSender, args: Array<out String>) {
-    likeOrDislike(sender, args) { holder, createdID, reportedID ->
-        val ratingEntity = UserRating(-1, createdID, reportedID, -1, holder.message)
-        DatabaseApi.insertUserRating(ratingEntity)
-        sender.sendMessage(Translation.dislikedUser.replace("%player%", args[1]))
+        if (rating > 0)
+            ratingCreator.sendMessage(Translation.likedUser.replace("%player%", args[1]))
+        else
+            ratingCreator.sendMessage(Translation.dislikedUser.replace("%player%", args[1]))
     }
 }
 
@@ -119,5 +123,4 @@ fun RatingCommandController.rating(sender: CommandSender, args: Array<out String
     AsyncHelper.launch {
         RatingsGUI(sender as Player).open()
     }
-
 }

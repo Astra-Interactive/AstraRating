@@ -1,7 +1,9 @@
 package com.astrainteractive.astrarating.utils
 
 import com.astrainteractive.astralibs.catching
+import com.astrainteractive.astrarating.AstraRating
 import com.google.gson.JsonParser
+import github.scarsz.discordsrv.util.DiscordUtil
 import org.bukkit.ChatColor
 import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.Inventory
@@ -9,6 +11,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import java.io.InputStreamReader
 import java.net.URL
+import java.util.*
 import kotlin.random.Random
 
 inline fun <reified T : kotlin.Enum<T>> T.addIndex(offset: Int): T {
@@ -44,6 +47,9 @@ val OfflinePlayer.uuid: String
 val randomColor: ChatColor
     get() = ChatColor.values()[Random.nextInt(ChatColor.values().size)]
 
+fun getLinkedDiscordID(player:OfflinePlayer) = AstraRating.discordSRV?.accountLinkManager?.getDiscordId(UUID.fromString(player.uuid))
+suspend fun getDiscordUser(id:String) = DiscordUtil.getUserById(id)
+suspend fun getDiscordMember(id:String) = DiscordUtil.getMemberById(id)
 suspend fun getSkinByName(name: String) = catching {
     val url = URL("https://api.mojang.com/users/profiles/minecraft/$name")
     val reader = InputStreamReader(url.openStream())

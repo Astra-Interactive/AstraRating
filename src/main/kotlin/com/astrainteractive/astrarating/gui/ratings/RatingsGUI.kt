@@ -29,7 +29,7 @@ class RatingsGUI(override val playerMenuUtility: AstraPlayerMenuUtility) : Pagin
     override val nextButtonIndex: Int = 53
     override val prevButtonIndex: Int = 45
 
-    override var menuName: String = Translation.menuTitle
+    override var menuName: String = Translation.ratingsTitle
     override val menuSize: AstraMenuSize = AstraMenuSize.XL
     override val backPageButton: ItemStack = ItemStack(Material.PAPER).apply {
         editMeta {
@@ -105,11 +105,12 @@ class RatingsGUI(override val playerMenuUtility: AstraPlayerMenuUtility) : Pagin
             if (index >= list.size)
                 continue
             val userAndRating = list[index]
+            val color = if (userAndRating.rating.rating>0) Translation.positiveColor else Translation.negativeColor
             val item = RatingsGUIViewModel.getHead(userAndRating.reportedPlayer.minecraftName).apply {
                 editMeta {
-                    it.setDisplayName(userAndRating.reportedPlayer.minecraftName)
+                    it.setDisplayName(Translation.playerNameColor + userAndRating.reportedPlayer.minecraftName)
                     it.lore = listOf(
-                        "${Translation.rating}: ${userAndRating.rating.rating}"
+                        "${Translation.rating}: ${color}${userAndRating.rating.rating}"
                     )
                 }
             }

@@ -32,9 +32,10 @@ object DatabaseApi {
     }
 
 
-    suspend fun insertUserTable(it: User): Int? {
+    suspend fun insertUserTable(it: User): Long? {
         return SQLDatabase.insert(
             User.TABLE,
+            User.id,
             User.minecraftUUID to it.minecraftUUID.sqlString,
             User.minecraftName to it.minecraftName.sqlString,
             User.discordID to it.discordID.sqlString,
@@ -45,6 +46,7 @@ object DatabaseApi {
     suspend fun insertUserRating(it: UserRating) {
         SQLDatabase.insert(
             UserRating.TABLE,
+            UserRating.id,
             UserRating.userCreatedReport to it.userCreatedReport,
             UserRating.reportedUser to it.reportedUser,
             UserRating.rating to it.rating,

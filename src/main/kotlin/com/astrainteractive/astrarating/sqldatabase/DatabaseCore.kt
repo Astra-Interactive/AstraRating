@@ -6,6 +6,7 @@ import com.astrainteractive.astrarating.api.DatabaseApi
 import com.astrainteractive.astrarating.sqldatabase.entities.EntityInfo
 import java.sql.Connection
 import java.sql.ResultSet
+import java.sql.Statement
 
 abstract class DatabaseCore {
     var connection: Connection? = null
@@ -37,11 +38,13 @@ abstract class DatabaseCore {
         return@catching connection?.prepareStatement(query)?.execute()
     }
 
-    suspend fun insert(table: String, vararg entry: Pair<EntityInfo, Any>): Int? = catching(true) {
+    suspend fun insert(table: String, id: EntityInfo, vararg entry: Pair<EntityInfo, Any>): Long? = catching(true) {
         val names = "(" + entry.map { it.first.name }.joinToString(",") + ") "
         val values = "VALUES(" + entry.map { it.second }.joinToString(",") + ");"
         val query = "INSERT INTO $table $names $values"
-        return@catching connection?.prepareStatement(query)?.executeUpdate()
+        val prepared =
+            connection?.prepareStatement(query, Statement.RETURN_GENERATED_KEYS).apply { this?.executeUpdate() }
+        return@catching prepared?.generatedKeys?.getLong(1)
     }
 
     suspend fun <T, K> selectEntryByID(table: String, idName: String, id: K, builder: (ResultSet) -> T?): T? =
@@ -55,6 +58,13 @@ abstract class DatabaseCore {
         val rs = connection?.createStatement()?.executeQuery("SELECT * FROM $table")
         return@catching rs?.mapNotNull { builder(it) }
     }
+
+    suspend fun <T> updateByID(table: String, idName: String, id: T, vararg entry: Pair<EntityInfo, Any>): Boolean? =
+        catching(true) {
+            val entries = entry.map { it.first.name + "=" + it.second }.joinToString(", ")
+            val query = "UPDATE $table SET $entries WHERE $idName=$id"
+            return@catching connection?.prepareStatement(query)?.execute()
+        }
 
     suspend fun <T> deleteEntryByID(table: String, idName: String, id: T): Boolean? = catching(true) {
         val query = "DELETE FROM $table WHERE $idName=$id"

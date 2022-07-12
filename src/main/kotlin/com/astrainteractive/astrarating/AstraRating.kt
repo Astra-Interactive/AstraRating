@@ -4,6 +4,7 @@ import CommandManager
 import com.astrainteractive.astralibs.AstraLibs
 import com.astrainteractive.astralibs.Logger
 import com.astrainteractive.astralibs.ServerVersion
+import com.astrainteractive.astralibs.catching
 import com.astrainteractive.astralibs.events.GlobalEventManager
 import com.astrainteractive.astrarating.events.EventHandler
 import com.astrainteractive.astrarating.sqldatabase.DatabaseCore
@@ -11,7 +12,9 @@ import com.astrainteractive.astrarating.sqldatabase.SQLDatabase
 import com.astrainteractive.astrarating.utils.PluginTranslation
 import com.astrainteractive.astrarating.utils._Files
 import com.astrainteractive.astrarating.utils.EmpireConfig
+import github.scarsz.discordsrv.DiscordSRV
 import kotlinx.coroutines.runBlocking
+import org.bukkit.Bukkit
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -21,10 +24,12 @@ import org.bukkit.plugin.java.JavaPlugin
 class AstraRating : JavaPlugin() {
     companion object {
         lateinit var instance: AstraRating
+        var discordSRV: DiscordSRV? = null
     }
 
     init {
         instance = this
+        discordSRV = catching { Bukkit.getPluginManager().getPlugin("DiscordSRV") as DiscordSRV }
     }
 
     /**

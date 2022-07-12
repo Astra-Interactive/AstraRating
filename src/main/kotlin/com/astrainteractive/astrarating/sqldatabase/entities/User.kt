@@ -3,6 +3,8 @@ package com.astrainteractive.astrarating.sqldatabase.entities
 
 import com.astrainteractive.astralibs.catching
 import com.astrainteractive.astrarating.api.DatabaseApi.NON_EXISTS_KEY
+import com.astrainteractive.astrarating.utils.getDiscordUser
+import kotlinx.coroutines.runBlocking
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import java.sql.ResultSet
@@ -12,10 +14,9 @@ data class User(
     val minecraftUUID: String="",
     val minecraftName: String="",
     val discordID: String="",
-    val lastUpdated: Long = System.currentTimeMillis()
+    val lastUpdated: Long = System.currentTimeMillis(),
 ) {
-    constructor(player: OfflinePlayer) : this(NON_EXISTS_KEY, player.uniqueId.toString(), player.name ?: "null", "")
-    constructor(player: CommandSender) : this(NON_EXISTS_KEY, "CONSOLE", player.name ?: "null", "")
+    constructor(player: OfflinePlayer,discordID:String?) : this(NON_EXISTS_KEY, player.uniqueId.toString(), player.name?:"", discordID?:"")
 
     companion object {
         val TABLE: String
