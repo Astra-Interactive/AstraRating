@@ -63,6 +63,8 @@ class PluginTranslation {
     val playerNameColor:String = getHEXString("general.player_name_color") ?: "#DDB92B".HEX()
     val positiveColor:String = getHEXString("general.positive_color") ?: "#1B76CA".HEX()
     val negativeColor:String = getHEXString("general.negative_color") ?: "#ca271b".HEX()
+    val firstConnection:String = getHEXString("general.first_connection")?:"#1B76CAВпервые зашёл:".HEX()
+    val lastConnection:String = getHEXString("general.last_connection")?:"#1B76CAБыл в сети:".HEX()
     //Menu
     val ratingsTitle: String = getHEXString("menu.ratings_title") ?: "#1B76CAРейтинг".HEX()
     val playerRatingTitle: String = getHEXString("menu.player_rating_title") ?: "#1B76CAРейтинг игрока %player%".HEX()

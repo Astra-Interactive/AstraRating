@@ -9,9 +9,7 @@ import com.astrainteractive.astralibs.menu.AstraPlayerMenuUtility
 import com.astrainteractive.astralibs.menu.PaginatedMenu
 import com.astrainteractive.astrarating.gui.ratings.RatingsGUI
 import com.astrainteractive.astrarating.gui.ratings.RatingsGUIViewModel
-import com.astrainteractive.astrarating.utils.AstraPermission
-import com.astrainteractive.astrarating.utils.Translation
-import com.astrainteractive.astrarating.utils.editMeta
+import com.astrainteractive.astrarating.utils.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.bukkit.Material
@@ -30,25 +28,25 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, override val playerMen
     override val nextButtonIndex: Int = 53
     override val prevButtonIndex: Int = 45
 
-    override var menuName: String = Translation.playerRatingTitle.replace("%player%",selectedPlayer.name?:"")
+    override var menuName: String = Translation.playerRatingTitle.replace("%player%", selectedPlayer.name ?: "")
     override val menuSize: AstraMenuSize = AstraMenuSize.XL
-    override val backPageButton: ItemStack = ItemStack(Material.PAPER).apply {
+    override val backPageButton: ItemStack = Config.gui.buttons.back.toItemStack().apply {
         editMeta {
             it.setDisplayName(Translation.menuBack)
         }
     }
-    override val nextPageButton: ItemStack = ItemStack(Material.PAPER).apply {
+    override val nextPageButton: ItemStack = Config.gui.buttons.next.toItemStack().apply {
         editMeta {
             it.setDisplayName(Translation.menuNextPage)
         }
     }
-    override val prevPageButton: ItemStack = ItemStack(Material.PAPER).apply {
+    override val prevPageButton: ItemStack = Config.gui.buttons.prev.toItemStack().apply {
         editMeta {
             it.setDisplayName(Translation.menuPrevPage)
         }
     }
     private val sortButton: ItemStack
-        get() = ItemStack(Material.SUNFLOWER).apply {
+        get() = Config.gui.buttons.sort.toItemStack().apply {
             editMeta {
                 it.setDisplayName("${Translation.sortRating}: ${viewModel.sort.value.desc}")
             }
@@ -108,15 +106,17 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, override val playerMen
             if (index >= list.size)
                 continue
             val userAndRating = list[index]
-            val color = if (userAndRating.rating.rating>0) Translation.positiveColor else Translation.negativeColor
+            val color = if (userAndRating.rating.rating > 0) Translation.positiveColor else Translation.negativeColor
             val item = RatingsGUIViewModel.getHead(userAndRating.userCreatedReport.minecraftName).apply {
                 editMeta {
                     it.setDisplayName(Translation.playerNameColor + userAndRating.userCreatedReport.minecraftName)
-                    it.lore = mutableListOf(
-//                        "${Translation.rating}: $color${userAndRating.rating.rating}",
-                        "${Translation.message}: $color${userAndRating.rating.message}",
-                    ).apply {
-                        if (AstraPermission.DeleteReport.hasPermission(playerMenuUtility.player))
+                    it.lore = mutableListOf<String>().apply {
+                        add("${Translation.message}: $color${userAndRating.rating.message}")
+                        if (Config.gui.showFirstConnection)
+                            add("${Translation.firstConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.firstPlayed)}")
+                        if (Config.gui.showLastConnection)
+                            add("${Translation.lastConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.lastPlayed)}")
+                        if (AstraPermission.DeleteReport.hasPermission(playerMenuUtility.player) && Config.gui.showDeleteReport)
                             add(Translation.clickToDeleteReport)
                     }
                 }

@@ -8,9 +8,7 @@ import com.astrainteractive.astralibs.menu.AstraMenuSize
 import com.astrainteractive.astralibs.menu.AstraPlayerMenuUtility
 import com.astrainteractive.astralibs.menu.PaginatedMenu
 import com.astrainteractive.astrarating.gui.player_ratings.PlayerRatingsGUI
-import com.astrainteractive.astrarating.utils.Translation
-import com.astrainteractive.astrarating.utils.close
-import com.astrainteractive.astrarating.utils.editMeta
+import com.astrainteractive.astrarating.utils.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
@@ -31,23 +29,23 @@ class RatingsGUI(override val playerMenuUtility: AstraPlayerMenuUtility) : Pagin
 
     override var menuName: String = Translation.ratingsTitle
     override val menuSize: AstraMenuSize = AstraMenuSize.XL
-    override val backPageButton: ItemStack = ItemStack(Material.PAPER).apply {
+    override val backPageButton: ItemStack = Config.gui.buttons.back.toItemStack().apply {
         editMeta {
             it.setDisplayName(Translation.menuClose)
         }
     }
-    override val nextPageButton: ItemStack = ItemStack(Material.PAPER).apply {
+    override val nextPageButton: ItemStack = Config.gui.buttons.next.toItemStack().apply {
         editMeta {
             it.setDisplayName(Translation.menuNextPage)
         }
     }
-    override val prevPageButton: ItemStack = ItemStack(Material.PAPER).apply {
+    override val prevPageButton: ItemStack = Config.gui.buttons.prev.toItemStack().apply {
         editMeta {
             it.setDisplayName(Translation.menuPrevPage)
         }
     }
     private val sortButton: ItemStack
-        get() = ItemStack(Material.SUNFLOWER).apply {
+        get() = Config.gui.buttons.sort.toItemStack().apply {
             editMeta {
                 it.setDisplayName("${Translation.sort}: ${viewModel.sort.value.desc}")
             }
@@ -105,13 +103,17 @@ class RatingsGUI(override val playerMenuUtility: AstraPlayerMenuUtility) : Pagin
             if (index >= list.size)
                 continue
             val userAndRating = list[index]
-            val color = if (userAndRating.rating.rating>0) Translation.positiveColor else Translation.negativeColor
+            val color = if (userAndRating.rating.rating > 0) Translation.positiveColor else Translation.negativeColor
             val item = RatingsGUIViewModel.getHead(userAndRating.reportedPlayer.minecraftName).apply {
                 editMeta {
                     it.setDisplayName(Translation.playerNameColor + userAndRating.reportedPlayer.minecraftName)
-                    it.lore = listOf(
-                        "${Translation.rating}: ${color}${userAndRating.rating.rating}"
-                    )
+                    it.lore = mutableListOf<String>().apply {
+                        if (Config.gui.showFirstConnection)
+                            add("${Translation.firstConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.firstPlayed)}")
+                        if (Config.gui.showLastConnection)
+                            add("${Translation.lastConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.lastPlayed)}")
+                        add("${Translation.rating}: ${color}${userAndRating.rating.rating}")
+                    }
                 }
             }
             inventory.setItem(i, item)

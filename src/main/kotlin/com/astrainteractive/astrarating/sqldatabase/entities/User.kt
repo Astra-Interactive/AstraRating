@@ -5,18 +5,27 @@ import com.astrainteractive.astralibs.catching
 import com.astrainteractive.astrarating.api.DatabaseApi.NON_EXISTS_KEY
 import com.astrainteractive.astrarating.utils.getDiscordUser
 import kotlinx.coroutines.runBlocking
+import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import java.sql.ResultSet
 
 data class User(
     val id: Long = NON_EXISTS_KEY,
-    val minecraftUUID: String="",
-    val minecraftName: String="",
-    val discordID: String="",
+    val minecraftUUID: String = "",
+    val minecraftName: String = "",
+    val discordID: String = "",
     val lastUpdated: Long = System.currentTimeMillis(),
 ) {
-    constructor(player: OfflinePlayer,discordID:String?) : this(NON_EXISTS_KEY, player.uniqueId.toString(), player.name?:"", discordID?:"")
+    val offlinePlayer: OfflinePlayer
+        get() = Bukkit.getOfflinePlayer(minecraftName)
+
+    constructor(player: OfflinePlayer, discordID: String?) : this(
+        NON_EXISTS_KEY,
+        player.uniqueId.toString(),
+        player.name ?: "",
+        discordID ?: ""
+    )
 
     companion object {
         val TABLE: String

@@ -55,11 +55,11 @@ object DatabaseApi {
         )
     }
 
-    suspend fun deleteUserRating(it: UserRating) {
+    suspend fun deleteUserRating(it: UserRating) =
         SQLDatabase.deleteEntryByID(UserRating.TABLE, UserRating.id.name, it.id)
-    }
 
-    suspend fun fetchUserRatings(player: OfflinePlayer): List<UserAndRating>? {
+
+    suspend fun fetchUserRatings(player: OfflinePlayer): List<UserAndRating>? = catching {
         val query =
             "SELECT * FROM ${UserRating.TABLE} A JOIN ${User.TABLE} B on A.${UserRating.userCreatedReport.name}=B.${User.id.name} WHERE A.${UserRating.reportedUser.name}=(SELECT ${User.id.name} FROM ${User.TABLE} WHERE ${User.minecraftName.name}=${player.name?.sqlString} LIMIT 1)"
         val rs = SQLDatabase.connection?.createStatement()?.executeQuery(query)
@@ -73,7 +73,7 @@ object DatabaseApi {
         }
     }
 
-    suspend fun fetchUsersTotalRating(): List<UserAndRating>? {
+    suspend fun fetchUsersTotalRating(): List<UserAndRating>? = catching {
         val query =
             "SELECT SUM(A.${UserRating.rating.name}) ${UserRating.rating.name},* FROM ${UserRating.TABLE} A JOIN ${User.TABLE} B on A.${UserRating.reportedUser.name}=B.${User.id.name} GROUP BY ${User.minecraftName.name}"
         val rs = SQLDatabase.connection?.createStatement()?.executeQuery(query)
@@ -84,14 +84,14 @@ object DatabaseApi {
         }
     }
 
-    suspend fun countPlayerTotalDayRated(player: Player): Int? = catching() {
+    suspend fun countPlayerTotalDayRated(player: Player): Int? = catching {
         val query =
             "SELECT COUNT(*) total FROM ${UserRating.TABLE} WHERE ${UserRating.userCreatedReport.name}=(SELECT ${User.id.name} FROM ${User.TABLE} WHERE ${User.minecraftName.name}=${player.name.sqlString}) AND (${System.currentTimeMillis()} - ${UserRating.time.name} < ${24 * 60 * 60 * 1000})"
         val rs = SQLDatabase.connection?.createStatement()?.executeQuery(query)
         return@catching rs?.getInt("total")
     }
 
-    suspend fun countPlayerOnPlayerDayRated(player: Player, ratedPlayer: OfflinePlayer): Int? = catching() {
+    suspend fun countPlayerOnPlayerDayRated(player: Player, ratedPlayer: OfflinePlayer): Int? = catching {
         val query =
             "SELECT COUNT(*) total FROM ${UserRating.TABLE} " +
                     "WHERE ${UserRating.userCreatedReport.name}=(SELECT ${User.id.name} FROM ${User.TABLE} WHERE ${User.minecraftName.name}=${player.name.sqlString})  " +

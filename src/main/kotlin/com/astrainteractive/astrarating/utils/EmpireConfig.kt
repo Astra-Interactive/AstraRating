@@ -1,6 +1,9 @@
 package com.astrainteractive.astrarating.utils
 
 import com.astrainteractive.astralibs.AstraYamlParser
+import com.astrainteractive.astralibs.Logger
+import org.bukkit.Material
+import org.bukkit.inventory.ItemStack
 
 
 val Config: EmpireConfig
@@ -22,7 +25,34 @@ data class EmpireConfig(
     val minTimeOnServer: Long = 0,
     // Minimum time on discord required to let rating on players
     val minTimeOnDiscord: Long = 0,
+    val gui: Gui = Gui()
 ) {
+    data class Gui(
+        val showFirstConnection: Boolean = true,
+        val showLastConnection: Boolean = true,
+        val showDeleteReport: Boolean = true,
+        val timeFormat: String = "yyyy-MM-dd",
+        val buttons: Buttons = Buttons()
+    ) {
+        data class Buttons(
+            val back: Button = Button(Material.PAPER.name),
+            val prev: Button = Button(Material.PAPER.name),
+            val next: Button = Button(Material.PAPER.name),
+            val sort: Button = Button(Material.SUNFLOWER.name)
+        ) {
+            data class Button(
+                val material: String,
+                val customModelData: Int = 0
+            ) {
+                fun toItemStack() = ItemStack(Material.getMaterial(material.uppercase()) ?: Material.PAPER).apply {
+                    val meta = itemMeta!!
+                    meta.setCustomModelData(customModelData)
+                    itemMeta = meta
+                }
+            }
+        }
+    }
+
     companion object {
         lateinit var instance: EmpireConfig
 
@@ -30,8 +60,12 @@ data class EmpireConfig(
          * If you are lazy - you can use auto parser for your config
          */
         fun create(): EmpireConfig {
-            val config =
-                AstraYamlParser.fileConfigurationToClass<EmpireConfig>(Files.configFile.getConfig())!!
+            val config = try {
+                AstraYamlParser.fileConfigurationToClass<EmpireConfig>(Files.configFile.getConfig()) ?: EmpireConfig()
+            } catch (e: java.lang.Exception) {
+                Logger.error("Could not load config.yml check for errors. Loaded default configs", "Config")
+                EmpireConfig()
+            }
             instance = config
             return config
         }

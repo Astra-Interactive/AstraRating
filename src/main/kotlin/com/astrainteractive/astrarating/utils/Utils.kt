@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import java.io.InputStreamReader
 import java.net.URL
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.random.Random
 
@@ -30,8 +31,8 @@ inline fun <reified T : kotlin.Enum<T>> T.prev(): T {
     return addIndex(-1)
 }
 
-fun ItemStack.editMeta(metaBuilder: (ItemMeta) -> Unit){
-    val meta = itemMeta?:return
+fun ItemStack.editMeta(metaBuilder: (ItemMeta) -> Unit) {
+    val meta = itemMeta ?: return
     metaBuilder(meta)
     this.itemMeta = meta
 }
@@ -47,9 +48,11 @@ val OfflinePlayer.uuid: String
 val randomColor: ChatColor
     get() = ChatColor.values()[Random.nextInt(ChatColor.values().size)]
 
-fun getLinkedDiscordID(player:OfflinePlayer) = AstraRating.discordSRV?.accountLinkManager?.getDiscordId(UUID.fromString(player.uuid))
-suspend fun getDiscordUser(id:String) = DiscordUtil.getUserById(id)
-suspend fun getDiscordMember(id:String) = DiscordUtil.getMemberById(id)
+fun getLinkedDiscordID(player: OfflinePlayer) =
+    AstraRating.discordSRV?.accountLinkManager?.getDiscordId(UUID.fromString(player.uuid))
+
+suspend fun getDiscordUser(id: String) = DiscordUtil.getUserById(id)
+suspend fun getDiscordMember(id: String) = DiscordUtil.getMemberById(id)
 suspend fun getSkinByName(name: String) = catching {
     val url = URL("https://api.mojang.com/users/profiles/minecraft/$name")
     val reader = InputStreamReader(url.openStream())
@@ -62,6 +65,7 @@ suspend fun getSkinByName(name: String) = catching {
     val signature = property.get("signature").asString
     value to signature
 }
+
 fun <T, K> setDeclaredField(clazz: Class<T>, instance: Any, name: String, value: K?) = catching(true) {
     clazz.getDeclaredField(name).run {
         isAccessible = true
@@ -69,4 +73,10 @@ fun <T, K> setDeclaredField(clazz: Class<T>, instance: Any, name: String, value:
         isAccessible = false
     }
 
+}
+
+object TimeUtility {
+    fun formatToString(time: Long, format: String = Config.gui.timeFormat): String? {
+        return SimpleDateFormat(format).format(Date(time))
+    }
 }

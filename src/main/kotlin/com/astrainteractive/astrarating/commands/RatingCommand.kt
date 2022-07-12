@@ -52,11 +52,11 @@ fun RatingCommandController.addRating(
         ratingCreator.sendMessage(Translation.noPermission)
         return
     }
-    val ratedPlayer = args.getOrNull(1)?.let { Bukkit.getOfflinePlayer(it) }
     if (ratingCreator !is Player) {
         ratingCreator.sendMessage(Translation.onlyPlayerCommand)
         return
     }
+    val ratedPlayer = args.getOrNull(1)?.let { Bukkit.getOfflinePlayer(it) }
     if (ratedPlayer == null || ratedPlayer.firstPlayed == 0L) {
         ratingCreator.sendMessage(Translation.playerNotExists)
         return
@@ -65,44 +65,42 @@ fun RatingCommandController.addRating(
         ratingCreator.sendMessage(Translation.cantRateSelf)
         return
     }
-    println("Time since first played: ${(System.currentTimeMillis() - ratingCreator.firstPlayed) / 1000}")
     if (System.currentTimeMillis() - ratingCreator.firstPlayed < Config.minTimeOnServer) {
         ratingCreator.sendMessage(Translation.notEnoughOnServer)
         return
     }
-    val message = args.toList().subList(2, args.size).joinToString(" ")
 
     AsyncHelper.launch {
-        val discordMember = getLinkedDiscordID(ratingCreator)?.let { getDiscordMember(it) }
-        if (Config.needDiscordLinked && discordMember == null) {
-            ratingCreator.sendMessage(Translation.needDiscordLinked)
-            return@launch
+        if (Config.needDiscordLinked) {
+            val discordMember = getLinkedDiscordID(ratingCreator)?.let { getDiscordMember(it) }
+            if (discordMember == null) {
+                ratingCreator.sendMessage(Translation.needDiscordLinked)
+                return@launch
+            }
+            val wasInDiscordSince = discordMember.timeJoined.toInstant().toEpochMilli()
+            if (System.currentTimeMillis() - wasInDiscordSince < Config.minTimeOnDiscord) {
+                ratingCreator.sendMessage(Translation.notEnoughOnDiscord)
+                return@launch
+            }
         }
-        val discordTime = discordMember?.let {
-            System.currentTimeMillis() - it.timeJoined.toInstant().toEpochMilli() < Config.minTimeOnDiscord
-        } ?: !Config.needDiscordLinked
 
-        if (discordTime) {
-            ratingCreator.sendMessage(Translation.notEnoughOnDiscord)
-            return@launch
-        }
-
-        val todayVoted = DatabaseApi.countPlayerTotalDayRated(ratingCreator as Player) ?: 0
-        val votedOnPlayer = DatabaseApi.countPlayerOnPlayerDayRated(ratingCreator, ratedPlayer) ?: 0
+        val todayVotedAmount = DatabaseApi.countPlayerTotalDayRated(ratingCreator as Player) ?: 0
+        val votedOnPlayerAmount = DatabaseApi.countPlayerOnPlayerDayRated(ratingCreator, ratedPlayer) ?: 0
 
         val maxVotesPerDay = AstraPermission.MaxRatePerDay.permissionSize(ratingCreator) ?: Config.maxRatingPerDay
         val maxVotePerPlayer =
             AstraPermission.SinglePlayerPerDay.permissionSize(ratingCreator) ?: Config.maxRatingPerPlayer
 
-        if (todayVoted > maxVotesPerDay) {
+        if (todayVotedAmount > maxVotesPerDay) {
             ratingCreator.sendMessage(Translation.alreadyMaxDayVotes)
             return@launch
         }
-        if (votedOnPlayer > maxVotePerPlayer) {
+        if (votedOnPlayerAmount > maxVotePerPlayer) {
             ratingCreator.sendMessage(Translation.alreadyMaxPlayerVotes)
             return@launch
         }
-        if (!IntRange(5, 30).contains(message.length)) {
+        val message = args.toList().subList(2, args.size).joinToString(" ")
+        if (message.length<5 || message.length>30) {
             ratingCreator.sendMessage(Translation.wrongMessageLen)
             return@launch
         }
@@ -112,7 +110,6 @@ fun RatingCommandController.addRating(
             ratingCreator.sendMessage(Translation.dbError)
             return@launch
         }
-
         val ratingEntity = UserRating(-1, playerCreatedID, playerReportedID, rating, message)
         DatabaseApi.insertUserRating(ratingEntity)
         if (rating > 0)

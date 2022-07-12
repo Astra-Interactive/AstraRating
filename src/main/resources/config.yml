@@ -1,12 +1,36 @@
 # Maximum rating player can give players in total
 # Can be overwritten in LuckPerms
-maxRatingPerDay: 50
+maxRatingPerDay: 10
 # Maximum rating player can give another player per day
 # Can be overwritten in LuckPerms
-maxRatingPerPlayer: 10
+maxRatingPerPlayer: 3
 # Check if player, which creates report need linked DiscordSRV
 needDiscordLinked: false
 # Minimum time played on server required to add players rating
-minTimeOnServer: 10
+# In milliseconds
+# ex: 1 hours = 1h*60m*60s*1000ms = 3600000
+minTimeOnServer: 3600000
 # Minimum time on discord required to let rating on players
-minTimeOnDiscord: 10
+# In milliseconds
+# ex: 1 hours = 1h*60m*60s*1000ms = 3600000
+minTimeOnDiscord: 3600000
+gui:
+  showFirstConnection: true
+  showLastConnection: true
+  showDeleteReport: true
+  # Don't modify this if you don't know how it works
+  format: "yyyy-MM-dd"
+  # Buttons in GUI
+  buttons:
+    back:
+      material: PAPER
+      customModelData: 0
+    prev:
+      material: PAPER
+      customModelData: 0
+    next:
+      material: PAPER
+      customModelData: 0
+    sort:
+      material: SUNFLOWER
+      customModelData: 0
