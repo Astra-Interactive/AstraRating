@@ -6,7 +6,8 @@ import com.astrainteractive.astralibs.Logger
 import com.astrainteractive.astralibs.ServerVersion
 import com.astrainteractive.astralibs.events.GlobalEventManager
 import com.astrainteractive.astrarating.events.EventHandler
-import com.astrainteractive.astrarating.sqldatabase.Database
+import com.astrainteractive.astrarating.sqldatabase.DatabaseCore
+import com.astrainteractive.astrarating.sqldatabase.SQLDatabase
 import com.astrainteractive.astrarating.utils.PluginTranslation
 import com.astrainteractive.astrarating.utils._Files
 import com.astrainteractive.astrarating.utils.EmpireConfig
@@ -18,11 +19,10 @@ import org.bukkit.plugin.java.JavaPlugin
  * Initial class for your plugin
  */
 class AstraRating : JavaPlugin() {
-    lateinit var database: Database
-        private set
-    companion object{
-        lateinit var instance:AstraRating
+    companion object {
+        lateinit var instance: AstraRating
     }
+
     init {
         instance = this
     }
@@ -39,7 +39,6 @@ class AstraRating : JavaPlugin() {
      */
     private lateinit var commandManager: CommandManager
 
-
     /**
      * This method called when server starts or PlugMan load plugin.
      */
@@ -51,7 +50,7 @@ class AstraRating : JavaPlugin() {
         eventHandler = EventHandler()
         commandManager = CommandManager()
         EmpireConfig.create()
-        database = Database().apply { runBlocking { onEnable() } }
+        runBlocking { SQLDatabase.onEnable() }
         if (ServerVersion.version == ServerVersion.UNMAINTAINED)
             Logger.warn("Your server version is not maintained and might be not fully functional!", "AstraTemplate")
         else
@@ -66,7 +65,7 @@ class AstraRating : JavaPlugin() {
      */
     override fun onDisable() {
         eventHandler.onDisable()
-        runBlocking { database.onDisable() }
+        runBlocking { SQLDatabase.close() }
         HandlerList.unregisterAll(this)
         GlobalEventManager.onDisable()
     }

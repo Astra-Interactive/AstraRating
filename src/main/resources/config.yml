@@ -1,14 +1,12 @@
-config1: "string config"
-confi2: 0
-config3: false
-section:
-  value1: "value"
-  value2: 0
-list:
-  - "config"
-  - "config"
-another_list:
-  - value1: "value"
-    value2: 0
-  - value1: "value2"
-    value2: 0
+# Maximum rating player can give players in total
+# Can be overwritten in LuckPerms
+maxRatingPerDay: 50
+# Maximum rating player can give another player per day
+# Can be overwritten in LuckPerms
+maxRatingPerPlayer: 10
+# Check if player, which creates report need linked DiscordSRV
+needDiscordLinked: false
+# Minimum time played on server required to add players rating
+minTimeOnServer: 10
+# Minimum time on discord required to let rating on players
+minTimeOnDiscord: 10

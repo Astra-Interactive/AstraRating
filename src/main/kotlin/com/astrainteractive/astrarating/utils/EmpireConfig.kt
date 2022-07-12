@@ -1,17 +1,21 @@
 package com.astrainteractive.astrarating.utils
 
 import com.astrainteractive.astralibs.AstraYamlParser
-import com.astrainteractive.astralibs.Logger
 
+
+val Config: EmpireConfig
+    get() = EmpireConfig.instance
 
 /**
  * Example config file with 3 types of initialization
  */
 data class EmpireConfig(
     // Maximum rating player can give players in total
+    // Can be overwritten in LuckPerms
     val maxRatingPerDay: Int = 5,
     // Maximum rating player can give another player per day
-    val ratingPerDayPerPlayer: Int = 1,
+    // Can be overwritten in LuckPerms
+    val maxRatingPerPlayer: Int = 1,
     // Check if player, which creates report need linked DiscordSRV
     val needDiscordLinked: Boolean = false,
     // Minimum time played on server required to add players rating

@@ -5,7 +5,6 @@ import com.astrainteractive.astralibs.catching
 import com.astrainteractive.astrarating.api.DatabaseApi.NON_EXISTS_KEY
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
 import java.sql.ResultSet
 
 data class User(
@@ -22,24 +21,24 @@ data class User(
         val TABLE: String
             get() = "users"
         val id: EntityInfo
-            get() = EntityInfo("id", "INTEGER", primaryKey = true, autoIncrement = true)
+            get() = EntityInfo("user_id", "INTEGER", primaryKey = true, autoIncrement = true)
         val minecraftUUID: EntityInfo
             get() = EntityInfo("minecraft_uuid", "varchar(16)", unique = true)
-        val name: EntityInfo
-            get() = EntityInfo("name", "varchar(16)")
+        val minecraftName: EntityInfo
+            get() = EntityInfo("minecraft_name", "varchar(16)")
         val discordID: EntityInfo
             get() = EntityInfo("discord_id", "varchar(16)", nullable = true)
         val lastUpdated: EntityInfo
             get() = EntityInfo("last_updated", "INTEGER")
         val entities: List<EntityInfo>
-            get() = listOf(id, discordID, minecraftUUID, name, lastUpdated)
+            get() = listOf(id, discordID, minecraftUUID, minecraftName, lastUpdated)
 
         fun fromResultSet(rs: ResultSet?) = catching(true) {
             rs?.let {
                 return@catching User(
                     id = it.getLong(id.name),
                     minecraftUUID = it.getString(minecraftUUID.name),
-                    minecraftName = it.getString(name.name),
+                    minecraftName = it.getString(minecraftName.name),
                     discordID = it.getString(discordID.name),
                     lastUpdated = it.getLong(lastUpdated.name)
                 )

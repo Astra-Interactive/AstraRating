@@ -16,7 +16,6 @@ class CommandManager {
      */
     init {
         tabCompleter()
-        tempGUI()
         reload()
         ratingCommand()
     }

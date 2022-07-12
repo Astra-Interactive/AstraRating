@@ -3,7 +3,7 @@ package com.astrainteractive.astrarating.commands
 import CommandManager
 import com.astrainteractive.astralibs.commands.AstraDSLCommand
 import com.astrainteractive.astrarating.AstraRating
-import com.astrainteractive.astrarating.utils.EmpirePermissions
+import com.astrainteractive.astrarating.utils.AstraPermission
 import com.astrainteractive.astrarating.utils.Translation
 
 /**
@@ -15,8 +15,8 @@ import com.astrainteractive.astrarating.utils.Translation
  *
  * Here you should also check for permission
  */
-fun CommandManager.reload() = AstraDSLCommand.command("atempreload") {
-    this.noPermission(EmpirePermissions.reload) {
+fun CommandManager.reload() = AstraDSLCommand.command("aratingreload") {
+    this.noPermission(AstraPermission.Reload.value) {
         sender.sendMessage(Translation.noPermission)
     } ?: return@command
     sender.sendMessage(Translation.reload)

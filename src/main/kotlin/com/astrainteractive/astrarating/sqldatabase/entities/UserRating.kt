@@ -15,7 +15,7 @@ data class UserRating(
         val TABLE: String
             get() = "users_ratings"
         val id: EntityInfo
-            get() = EntityInfo("id", "INTEGER", primaryKey = true, autoIncrement = true)
+            get() = EntityInfo("user_rating_id", "INTEGER", primaryKey = true, autoIncrement = true)
         val userCreatedReport: EntityInfo
             get() = EntityInfo("user_created_report", "INTEGER")
         val reportedUser: EntityInfo

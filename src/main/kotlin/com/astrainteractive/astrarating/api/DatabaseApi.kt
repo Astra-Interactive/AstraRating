@@ -1,89 +1,90 @@
 package com.astrainteractive.astrarating.api
 
-import com.astrainteractive.astralibs.Logger
 import com.astrainteractive.astralibs.catching
 import com.astrainteractive.astralibs.mapNotNull
-import com.astrainteractive.astrarating.sqldatabase.Database
-import com.astrainteractive.astrarating.sqldatabase.entities.EntityInfo
+import com.astrainteractive.astrarating.sqldatabase.DatabaseCore.Companion.sqlString
+import com.astrainteractive.astrarating.sqldatabase.SQLDatabase
 import com.astrainteractive.astrarating.sqldatabase.entities.User
+import com.astrainteractive.astrarating.sqldatabase.entities.UserAndRating
 import com.astrainteractive.astrarating.sqldatabase.entities.UserRating
+import org.bukkit.OfflinePlayer
+import org.bukkit.entity.Player
 import java.sql.Connection
-import java.sql.ResultSet
 
 
 /**
  * API with all SQL commands
  */
 object DatabaseApi {
-    private val connection: Connection
-        get() = Database.connection
+    private val connection: Connection?
+        get() = SQLDatabase.connection
     const val NON_EXISTS_KEY = 0L
     private val TAG = "DatabaseApi"
-    private suspend fun createTable(table: String, entites: List<EntityInfo>) = catching(true) {
-        val query = "CREATE TABLE IF NOT EXISTS $table (" + entites.joinToString(",") {
-            mutableListOf<String>().apply {
-                add("${it.name} ${it.type}")
-                if (it.primaryKey) add("PRIMARY KEY")
-                if (it.autoIncrement) add("AUTOINCREMENT")
-                if (!it.nullable) add("NOT NULL")
-                if (it.unique) add("UNIQUE")
-            }.joinToString(" ")
-        } + "); "
-        Logger.log("createTable query: $query", TAG)
-        return@catching connection.prepareStatement(query).execute()
-    }
+
 
     suspend fun createUsersTable() = catching {
-        return@catching createTable(User.TABLE, User.entities)
+        return@catching SQLDatabase.createTable(User.TABLE, User.entities)
     }
 
     suspend fun createUsersRatingsTable() = catching {
-        return@catching createTable(UserRating.TABLE, UserRating.entities)
+        return@catching SQLDatabase.createTable(UserRating.TABLE, UserRating.entities)
     }
 
-    fun sqlString(value: String) = "\"$value\""
+
     suspend fun insertUserTable(it: User): Int? {
-        return insert(
+        return SQLDatabase.insert(
             User.TABLE,
-            User.minecraftUUID to sqlString(it.minecraftUUID),
-            User.name to sqlString(it.minecraftName),
-            User.discordID to sqlString(it.discordID),
+            User.minecraftUUID to it.minecraftUUID.sqlString,
+            User.minecraftName to it.minecraftName.sqlString,
+            User.discordID to it.discordID.sqlString,
             User.lastUpdated to it.lastUpdated
         )
     }
 
     suspend fun insertUserRating(it: UserRating) {
-        insert(
+        SQLDatabase.insert(
             UserRating.TABLE,
             UserRating.userCreatedReport to it.userCreatedReport,
             UserRating.reportedUser to it.reportedUser,
             UserRating.rating to it.rating,
-            UserRating.message to sqlString(it.message),
+            UserRating.message to it.message.sqlString,
             UserRating.time to it.time
         )
     }
 
-    private suspend fun insert(table: String, vararg entry: Pair<EntityInfo, Any>): Int? = catching(true) {
-        val names = "(" + entry.map { it.first.name }.joinToString(",") + ") "
-        val values = "VALUES(" + entry.map { it.second }.joinToString(",") + ");"
-        val query = "INSERT INTO $table $names $values"
-        return@catching connection.prepareStatement(query).executeUpdate()
+    suspend fun deleteUserRating(it: UserRating) {
+        SQLDatabase.deleteEntryByID(UserRating.TABLE, UserRating.id.name, it.id)
     }
 
-    suspend fun <T, K> selectEntryByID(table: String, idName: String, id: K, builder: (ResultSet) -> T?): T? =
-        catching(true) {
-            val query = "SELECT * FROM $table WHERE $idName=$id"
-            val rs = connection.createStatement().executeQuery(query)
-            return@catching rs.mapNotNull { builder(it) }.firstOrNull()
-        }
-
-    suspend fun <T> select(table: String, builder: (ResultSet) -> T): List<T>? = catching {
-        val rs = connection.createStatement().executeQuery("SELECT * FROM $table")
-        return@catching rs.mapNotNull { builder(it) }
+    suspend fun fetchUserRatings(player: OfflinePlayer): List<UserAndRating>? {
+        val query =
+            "SELECT * FROM ${UserRating.TABLE} A JOIN ${User.TABLE} B on A.${UserRating.userCreatedReport.name}=B.${User.id.name} WHERE A.${UserRating.reportedUser.name}=(SELECT ${User.id.name} FROM ${User.TABLE} WHERE ${User.minecraftName.name}=${player.name?.sqlString} LIMIT 1)"
+        val rs = SQLDatabase.connection?.createStatement()?.executeQuery(query)
+        return rs?.mapNotNull { UserAndRating.fromResultSet(it, player) }
     }
 
-    suspend fun deleteEntryByID(table: String, idName: String, id: Int): Boolean? = catching {
-        val query = "DELETE FROM $table WHERE $idName=$id"
-        return@catching connection.prepareStatement(query).execute()
+    suspend fun fetchUsersTotalRating(): List<UserAndRating>? {
+        val query =
+            "SELECT SUM(A.${UserRating.rating.name}) ${UserRating.rating.name},* FROM ${UserRating.TABLE} A JOIN ${User.TABLE} B on A.${UserRating.reportedUser.name}=B.${User.id.name} GROUP BY ${User.minecraftName.name}"
+        val rs = SQLDatabase.connection?.createStatement()?.executeQuery(query)
+        return rs?.mapNotNull { UserAndRating.fromResultSet(it) }
     }
+
+    suspend fun countPlayerTotalDayRated(player: Player): Int? = catching() {
+        val query =
+            "SELECT COUNT(*) total FROM ${UserRating.TABLE} WHERE ${UserRating.userCreatedReport.name}=(SELECT ${User.id.name} FROM ${User.TABLE} WHERE ${User.minecraftName.name}=${player.name.sqlString}) AND (${System.currentTimeMillis()} - ${UserRating.time.name} < ${24 * 60 * 60 * 1000})"
+        val rs = SQLDatabase.connection?.createStatement()?.executeQuery(query)
+        return@catching rs?.getInt("total")
+    }
+
+    suspend fun countPlayerOnPlayerDayRated(player: Player, ratedPlayer: OfflinePlayer): Int? = catching() {
+        val query =
+            "SELECT COUNT(*) total FROM ${UserRating.TABLE} " +
+                    "WHERE ${UserRating.userCreatedReport.name}=(SELECT ${User.id.name} FROM ${User.TABLE} WHERE ${User.minecraftName.name}=${player.name.sqlString})  " +
+                    "AND ${UserRating.reportedUser.name}=(SELECT ${User.id.name} FROM ${User.TABLE} WHERE ${User.minecraftName.name}=${ratedPlayer.name?.sqlString})" +
+                    "AND (${System.currentTimeMillis()} - ${UserRating.time.name} < ${24 * 60 * 60 * 1000})"
+        val rs = SQLDatabase.connection?.createStatement()?.executeQuery(query)
+        return@catching rs?.getInt("total")
+    }
+
 }
