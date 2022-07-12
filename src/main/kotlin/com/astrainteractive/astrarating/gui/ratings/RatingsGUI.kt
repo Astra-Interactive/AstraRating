@@ -66,7 +66,8 @@ class RatingsGUI(override val playerMenuUtility: AstraPlayerMenuUtility) : Pagin
             viewModel.onSortClicked()
             setMenuItems()
         } else AsyncHelper.launch {
-            val item = viewModel.userRatings.value[maxItemsPerPage * page * e.slot]
+            val item = viewModel.userRatings.value[maxItemsPerPage * page + e.slot]
+            println("Clicked ${item}")
             PlayerRatingsGUI(Bukkit.getOfflinePlayer(item.userCreatedReport.minecraftName), playerMenuUtility).open()
         }
     }

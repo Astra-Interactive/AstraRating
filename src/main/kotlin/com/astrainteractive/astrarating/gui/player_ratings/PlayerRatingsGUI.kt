@@ -70,7 +70,7 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, override val playerMen
         } else {
             if (!AstraPermission.DeleteReport.hasPermission(playerMenuUtility.player)) return
             if (e.click != ClickType.LEFT) return
-            val item = viewModel.userRatings.value[maxItemsPerPage * page * e.slot]
+            val item = viewModel.userRatings.value[maxItemsPerPage * page + e.slot]
             viewModel.onDeleteClicked(item)
 
         }
