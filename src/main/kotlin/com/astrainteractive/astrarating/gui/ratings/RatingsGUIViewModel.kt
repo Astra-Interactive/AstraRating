@@ -12,7 +12,9 @@ import com.mojang.authlib.properties.Property
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import java.util.*
@@ -22,25 +24,12 @@ import java.util.*
  */
 class RatingsGUIViewModel {
     companion object {
-        private val _skinByName = MutableStateFlow<MutableMap<String, Pair<String, String>>>(mutableMapOf())
-        suspend fun rememberSkin(name: String?) {
-            name ?: return
-            if (_skinByName.value.contains(name)) return
-            getSkinByName(name)?.let {
-                _skinByName.value[name] = it
-            }
-        }
-
-
-        fun getHead(name: String): ItemStack {
+        fun getHead(playerName:String) = Companion.getHead(Bukkit.getOfflinePlayer(playerName))
+        fun getHead(player:OfflinePlayer): ItemStack {
             val item = ItemStack(Material.PLAYER_HEAD)
-            _skinByName.value[name]?.let { skin ->
-                val meta: SkullMeta = item.itemMeta as SkullMeta
-                val profile = GameProfile(UUID.randomUUID(), null)
-                profile.properties.put("textures", Property("textures", skin?.first, skin?.second))
-                setDeclaredField(meta::class.java, meta, "profile", profile)
-                item.itemMeta = meta
-            }
+            val meta: SkullMeta = item.itemMeta as SkullMeta
+            meta.owningPlayer = Bukkit.getOfflinePlayer(player.uniqueId)
+            item.itemMeta = meta
             return item
         }
     }
@@ -64,10 +53,6 @@ class RatingsGUIViewModel {
     init {
         AsyncHelper.launch {
             _userRatings.value = DatabaseApi.fetchUsersTotalRating() ?: emptyList()
-            _userRatings.value.forEach {
-                rememberSkin(it.reportedPlayer?.minecraftName)
-                rememberSkin(it.userCreatedReport.minecraftName)
-            }
         }
     }
 

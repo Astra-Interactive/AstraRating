@@ -15,6 +15,7 @@ object Spigot {
     const val essentials = "2.19.5-SNAPSHOT"
     const val discordSRV = "1.25.0"
     const val luckPerms = "5.4"
+    const val bstats = "3.0.0"
 }
 
 group = "com.astrainteractive"
@@ -67,6 +68,7 @@ dependencies {
     implementation("com.charleskorn.kaml:kaml:${Kotlin.kaml}")
     // AstraLibs
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+    implementation("org.bstats:bstats-bukkit:${Spigot.bstats}")
     // Test
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.5.20")
     testImplementation("junit:junit:4.13.2")
@@ -132,7 +134,9 @@ tasks.shadowJar {
         include(dependency("org.jetbrains.kotlin:kotlin-serialization:${Kotlin.version}"))
         include(dependency("org.jetbrains.kotlinx:kotlinx-serialization-json:${Kotlin.json}"))
         include(dependency("com.charleskorn.kaml:kaml:${Kotlin.kaml}"))
+        include(dependency("org.bstats:bstats-bukkit:${Spigot.bstats}"))
     }
+    relocate("org.bstats", "com.astrainteractive.astrarating")
     isReproducibleFileOrder = true
     mergeServiceFiles()
     dependsOn(configurations)
@@ -140,6 +144,6 @@ tasks.shadowJar {
     from(sourceSets.main.get().output)
     from(project.configurations.runtimeClasspath)
     minimize()
-    destinationDirectory.set(File("D:\\Minecraft Servers\\TEST_SERVER\\plugins"))
+    destinationDirectory.set(File("D:\\Minecraft Servers\\1_19\\paper\\plugins"))
 //    destinationDirectory.set(File("/media/makeevrserg/Новый том/Servers/Server/plugins"))
 }

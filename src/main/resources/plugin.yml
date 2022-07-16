@@ -7,7 +7,7 @@ authors: [ MakeevRoman ]
 author: MakeevRoman
 website: AstraInteractive.ru
 api-version: 1.13
-softdepend: [ DiscordSRV ]
+softdepend: [ DiscordSRV, PlaceholderAPI ]
 depend: [ ]
 loadbefore: [ ]
 commands:

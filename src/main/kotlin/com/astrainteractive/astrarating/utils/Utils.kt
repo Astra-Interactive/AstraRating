@@ -50,7 +50,7 @@ val randomColor: ChatColor
     get() = ChatColor.values()[Random.nextInt(ChatColor.values().size)]
 
 fun getLinkedDiscordID(player: OfflinePlayer) =
-    AstraRating.discordSRV?.accountLinkManager?.getDiscordId(UUID.fromString(player.uuid))
+    AstraRating.discordSRV?.accountLinkManager?.getDiscordId(player.uniqueId)
 
 suspend fun getDiscordUser(id: String) = DiscordUtil.getUserById(id)
 suspend fun getDiscordMember(id: String) = DiscordUtil.getMemberById(id)

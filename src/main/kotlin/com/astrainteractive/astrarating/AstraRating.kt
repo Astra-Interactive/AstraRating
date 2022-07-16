@@ -6,18 +6,31 @@ import com.astrainteractive.astralibs.Logger
 import com.astrainteractive.astralibs.ServerVersion
 import com.astrainteractive.astralibs.catching
 import com.astrainteractive.astralibs.events.GlobalEventManager
+import com.astrainteractive.astrarating.api.RatingPAPIExpansion
 import com.astrainteractive.astrarating.events.EventHandler
-import com.astrainteractive.astrarating.sqldatabase.DatabaseCore
 import com.astrainteractive.astrarating.sqldatabase.SQLDatabase
 import com.astrainteractive.astrarating.utils.PluginTranslation
 import com.astrainteractive.astrarating.utils._Files
 import com.astrainteractive.astrarating.utils.EmpireConfig
 import github.scarsz.discordsrv.DiscordSRV
 import kotlinx.coroutines.runBlocking
+import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
 
+
+class BStats private constructor(private val id:Int) {
+    private val metrics = Metrics(AstraRating.instance,id)
+    companion object {
+        private var instance: BStats? = null
+        fun create() {
+            if (instance != null) return
+            instance = BStats(15801)
+        }
+
+    }
+}
 /**
  * Initial class for your plugin
  */
@@ -54,6 +67,7 @@ class AstraRating : JavaPlugin() {
         _Files()
         eventHandler = EventHandler()
         commandManager = CommandManager()
+        BStats.create()
         EmpireConfig.create()
         runBlocking { SQLDatabase.onEnable() }
         if (ServerVersion.version == ServerVersion.UNMAINTAINED)
@@ -63,6 +77,10 @@ class AstraRating : JavaPlugin() {
                 "Your server version is: ${ServerVersion.getServerVersion()}. This version is supported!",
                 "AstraTemplate"
             )
+        Bukkit.getPluginManager().getPlugin("PlaceholderAPI")?.let {
+            if (RatingPAPIExpansion.isRegistered) return@let
+            RatingPAPIExpansion.register()
+        }
     }
 
     /**
