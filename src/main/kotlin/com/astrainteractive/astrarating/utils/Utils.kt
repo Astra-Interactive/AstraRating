@@ -1,6 +1,6 @@
 package com.astrainteractive.astrarating.utils
 
-import com.astrainteractive.astralibs.catching
+import com.astrainteractive.astralibs.utils.catching
 import com.astrainteractive.astrarating.AstraRating
 import com.google.gson.JsonParser
 import github.scarsz.discordsrv.util.DiscordUtil
@@ -54,19 +54,6 @@ fun getLinkedDiscordID(player: OfflinePlayer) =
 
 suspend fun getDiscordUser(id: String) = DiscordUtil.getUserById(id)
 suspend fun getDiscordMember(id: String) = DiscordUtil.getMemberById(id)
-suspend fun getSkinByName(name: String) = catching {
-    val url = URL("https://api.mojang.com/users/profiles/minecraft/$name")
-    val reader = InputStreamReader(url.openStream())
-    val uuid = JsonParser().parse(reader).asJsonObject.get("id").asString
-    val url2 = URL("https://sessionserver.mojang.com/session/minecraft/profile/$uuid?unsigned=false")
-    val reader2 = InputStreamReader(url2.openStream())
-    val property =
-        JsonParser().parse(reader2).asJsonObject.get("properties").asJsonArray.get(0).asJsonObject
-    val value = property.get("value").asString
-    val signature = property.get("signature").asString
-    value to signature
-}
-
 fun <T, K> setDeclaredField(clazz: Class<T>, instance: Any, name: String, value: K?) = catching(true) {
     clazz.getDeclaredField(name).run {
         isAccessible = true

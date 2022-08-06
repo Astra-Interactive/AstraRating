@@ -19,7 +19,7 @@ object Spigot {
 }
 
 group = "com.astrainteractive"
-version = "1.0.1"
+version = "1.0.4"
 val name = "AstraRating"
 description = "AstraRating allows players to rate other players"
 
@@ -144,6 +144,6 @@ tasks.shadowJar {
     from(sourceSets.main.get().output)
     from(project.configurations.runtimeClasspath)
     minimize()
-    destinationDirectory.set(File("D:\\Minecraft Servers\\1_19\\paper\\plugins"))
+    destinationDirectory.set(File("D:\\Minecraft Servers\\TEST_SERVER\\plugins"))
 //    destinationDirectory.set(File("/media/makeevrserg/Новый том/Servers/Server/plugins"))
 }

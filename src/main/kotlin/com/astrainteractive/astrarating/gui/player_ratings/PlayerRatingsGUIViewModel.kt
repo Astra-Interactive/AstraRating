@@ -3,22 +3,12 @@ package com.astrainteractive.astrarating.gui.player_ratings
 import com.astrainteractive.astralibs.async.AsyncHelper
 import com.astrainteractive.astrarating.api.DatabaseApi
 import com.astrainteractive.astrarating.api.UserRatingsSort
-import com.astrainteractive.astrarating.api.UsersRatingsSort
-import com.astrainteractive.astrarating.gui.ratings.RatingsGUIViewModel
-import com.astrainteractive.astrarating.sqldatabase.entities.UserAndRating
-import com.astrainteractive.astrarating.utils.getSkinByName
+import com.astrainteractive.astrarating.sqldatabase.UserAndRating
 import com.astrainteractive.astrarating.utils.next
-import com.astrainteractive.astrarating.utils.setDeclaredField
-import com.mojang.authlib.GameProfile
-import com.mojang.authlib.properties.Property
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.bukkit.Material
 import org.bukkit.OfflinePlayer
-import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.SkullMeta
 import java.util.*
 
 /**
@@ -57,11 +47,13 @@ class PlayerRatingsGUIViewModel(val player: OfflinePlayer) {
 
     }
 
-    fun onDeleteClicked(item: UserAndRating) {
+    fun onDeleteClicked(item: UserAndRating,onResult:()->Unit) {
         AsyncHelper.launch {
-            println("Delete clicked")
             DatabaseApi.deleteUserRating(item.rating)
-            _userRatings.value = DatabaseApi.fetchUserRatings(player) ?: emptyList()
+            val list = DatabaseApi.fetchUserRatings(player) ?: emptyList()
+            _userRatings.emit(list)
+            _userRatings.value = list
+            AsyncHelper.callSyncMethod(onResult)
         }
     }
 }

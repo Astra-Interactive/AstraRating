@@ -4,10 +4,10 @@ import CommandManager
 import com.astrainteractive.astralibs.AstraLibs
 import com.astrainteractive.astralibs.Logger
 import com.astrainteractive.astralibs.ServerVersion
-import com.astrainteractive.astralibs.catching
 import com.astrainteractive.astralibs.events.GlobalEventManager
+import com.astrainteractive.astralibs.menu.MenuListener
+import com.astrainteractive.astralibs.utils.catching
 import com.astrainteractive.astrarating.api.RatingPAPIExpansion
-import com.astrainteractive.astrarating.events.EventHandler
 import com.astrainteractive.astrarating.sqldatabase.SQLDatabase
 import com.astrainteractive.astrarating.utils.PluginTranslation
 import com.astrainteractive.astrarating.utils._Files
@@ -46,11 +46,6 @@ class AstraRating : JavaPlugin() {
     }
 
     /**
-     * Class for handling all of your events
-     */
-    private lateinit var eventHandler: EventHandler
-
-    /**
      * Command manager for your commands.
      *
      * You can create multiple managers.
@@ -65,11 +60,10 @@ class AstraRating : JavaPlugin() {
         Logger.prefix = "AstraTemplate"
         PluginTranslation()
         _Files()
-        eventHandler = EventHandler()
         commandManager = CommandManager()
         BStats.create()
         EmpireConfig.create()
-        runBlocking { SQLDatabase.onEnable() }
+        runBlocking { SQLDatabase().onEnable() }
         if (ServerVersion.version == ServerVersion.UNMAINTAINED)
             Logger.warn("Your server version is not maintained and might be not fully functional!", "AstraTemplate")
         else
@@ -81,14 +75,14 @@ class AstraRating : JavaPlugin() {
             if (RatingPAPIExpansion.isRegistered) return@let
             RatingPAPIExpansion.register()
         }
+        MenuListener().apply { onEnable(GlobalEventManager) }
     }
 
     /**
      * This method called when server is shutting down or when PlugMan disable plugin.
      */
     override fun onDisable() {
-        eventHandler.onDisable()
-        runBlocking { SQLDatabase.close() }
+        runBlocking { SQLDatabase.instance?.close() }
         HandlerList.unregisterAll(this)
         GlobalEventManager.onDisable()
     }

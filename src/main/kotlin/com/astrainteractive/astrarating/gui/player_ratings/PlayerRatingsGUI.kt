@@ -69,29 +69,21 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, override val playerMen
             if (!AstraPermission.DeleteReport.hasPermission(playerMenuUtility.player)) return
             if (e.click != ClickType.LEFT) return
             val item = viewModel.userRatings.value[maxItemsPerPage * page + e.slot]
-            viewModel.onDeleteClicked(item)
+            viewModel.onDeleteClicked(item){
+                setMenuItems()
+            }
 
         }
     }
 
 
-    /**
-     * Handling current inventory closing
-     */
-    inner class CloseInventoryEventManager : EventManager {
-        override val handlers: MutableList<EventListener> = mutableListOf()
-        private val menuCloseHandler = DSLEvent.event(InventoryCloseEvent::class.java, this) {
-            if (it.player != playerMenuUtility.player) return@event
-            if (it.inventory.holder !is PlayerRatingsGUI) return@event
-            viewModel.onDisable()
-            stateFlowHolder.cancel()
-            onDisable()
-        }
+    override fun onInventoryClose(it: InventoryCloseEvent, manager: EventManager) {
+        viewModel.onDisable()
+        stateFlowHolder.cancel()
     }
-
-    private val innerClassHolder = CloseInventoryEventManager()
     private val stateFlowHolder = AsyncHelper.launch {
         viewModel.userRatings.collectLatest {
+            println("Collected")
             setMenuItems()
         }
     }
@@ -107,9 +99,9 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, override val playerMen
                 continue
             val userAndRating = list[index]
             val color = if (userAndRating.rating.rating > 0) Translation.positiveColor else Translation.negativeColor
-            val item = RatingsGUIViewModel.getHead(userAndRating.userCreatedReport.minecraftName).apply {
+            val item = RatingsGUIViewModel.getHead(userAndRating.userCreatedReport.normalName).apply {
                 editMeta {
-                    it.setDisplayName(Translation.playerNameColor + userAndRating.userCreatedReport.minecraftName)
+                    it.setDisplayName(Translation.playerNameColor + userAndRating.userCreatedReport.normalName)
                     it.lore = mutableListOf<String>().apply {
                         subListFromString("${Translation.message} $color${userAndRating.rating.message}",Config.trimMessageAfter).forEachIndexed { index, it ->
                             add("$color$it")

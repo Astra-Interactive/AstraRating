@@ -3,11 +3,12 @@ package com.astrainteractive.astrarating.commands
 import CommandManager
 import com.astrainteractive.astralibs.AstraLibs
 import com.astrainteractive.astralibs.async.AsyncHelper
-import com.astrainteractive.astralibs.registerCommand
+import com.astrainteractive.astralibs.utils.registerCommand
 import com.astrainteractive.astrarating.api.DatabaseApi
 import com.astrainteractive.astrarating.api.use_cases.InsertUserUseCase
 import com.astrainteractive.astrarating.gui.ratings.RatingsGUI
-import com.astrainteractive.astrarating.sqldatabase.entities.UserRating
+import com.astrainteractive.astrarating.sqldatabase.NON_EXISTS_KEY
+import com.astrainteractive.astrarating.sqldatabase.UserRating
 import com.astrainteractive.astrarating.utils.*
 import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
@@ -100,7 +101,7 @@ fun RatingCommandController.addRating(
             return@launch
         }
         val message = args.toList().subList(2, args.size).joinToString(" ")
-        if (message.length< Config.minMessageLength || message.length> Config.maxMessageLength) {
+        if (message.length < Config.minMessageLength || message.length > Config.maxMessageLength) {
             ratingCreator.sendMessage(Translation.wrongMessageLen)
             return@launch
         }
@@ -110,7 +111,7 @@ fun RatingCommandController.addRating(
             ratingCreator.sendMessage(Translation.dbError)
             return@launch
         }
-        val ratingEntity = UserRating(-1, playerCreatedID, playerReportedID, rating, message)
+        val ratingEntity = UserRating(NON_EXISTS_KEY, playerCreatedID, playerReportedID, rating, message)
         DatabaseApi.insertUserRating(ratingEntity)
         if (rating > 0)
             ratingCreator.sendMessage(Translation.likedUser.replace("%player%", args[1]))

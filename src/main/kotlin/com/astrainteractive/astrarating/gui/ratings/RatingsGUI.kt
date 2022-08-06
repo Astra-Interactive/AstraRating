@@ -17,6 +17,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.ItemStack
+import java.util.*
 
 class RatingsGUI(override val playerMenuUtility: AstraPlayerMenuUtility) : PaginatedMenu() {
     constructor(player: Player) : this(AstraPlayerMenuUtility(player))
@@ -66,27 +67,16 @@ class RatingsGUI(override val playerMenuUtility: AstraPlayerMenuUtility) : Pagin
             }
             else -> AsyncHelper.launch {
                 val item = viewModel.userRatings.value[maxItemsPerPage * page + e.slot]
-                PlayerRatingsGUI(Bukkit.getOfflinePlayer(item.reportedPlayer.minecraftName), playerMenuUtility).open()
+                PlayerRatingsGUI(Bukkit.getOfflinePlayer(UUID.fromString(item.reportedPlayer.minecraftUUID)), playerMenuUtility).open()
             }
         }
     }
 
 
-    /**
-     * Handling current inventory closing
-     */
-    inner class CloseInventoryEventManager : EventManager {
-        override val handlers: MutableList<EventListener> = mutableListOf()
-        private val menuCloseHandler = DSLEvent.event(InventoryCloseEvent::class.java, this) {
-            if (it.player != playerMenuUtility.player) return@event
-            if (it.inventory.holder !is RatingsGUI) return@event
-            viewModel.onDisable()
-            stateFlowHolder.cancel()
-            onDisable()
-        }
+    override fun onInventoryClose(it: InventoryCloseEvent, manager: EventManager) {
+        viewModel.onDisable()
+        stateFlowHolder.cancel()
     }
-
-    private val innerClassHolder = CloseInventoryEventManager()
     private val stateFlowHolder = AsyncHelper.launch {
         viewModel.userRatings.collectLatest {
             setMenuItems()
@@ -104,9 +94,9 @@ class RatingsGUI(override val playerMenuUtility: AstraPlayerMenuUtility) : Pagin
                 continue
             val userAndRating = list[index]
             val color = if (userAndRating.rating.rating > 0) Translation.positiveColor else Translation.negativeColor
-            val item = RatingsGUIViewModel.getHead(userAndRating.reportedPlayer.minecraftName).apply {
+            val item = RatingsGUIViewModel.getHead(userAndRating.reportedPlayer.normalName).apply {
                 editMeta {
-                    it.setDisplayName(Translation.playerNameColor + userAndRating.reportedPlayer.minecraftName)
+                    it.setDisplayName(Translation.playerNameColor + userAndRating.reportedPlayer.normalName)
                     it.lore = mutableListOf<String>().apply {
                         if (Config.gui.showFirstConnection)
                             add("${Translation.firstConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.firstPlayed)}")
