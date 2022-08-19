@@ -7,6 +7,8 @@ import com.astrainteractive.astralibs.events.EventManager
 import com.astrainteractive.astralibs.menu.AstraMenuSize
 import com.astrainteractive.astralibs.menu.AstraPlayerMenuUtility
 import com.astrainteractive.astralibs.menu.PaginatedMenu
+import com.astrainteractive.astralibs.utils.close
+import com.astrainteractive.astralibs.utils.editMeta
 import com.astrainteractive.astrarating.gui.player_ratings.PlayerRatingsGUI
 import com.astrainteractive.astrarating.utils.*
 import kotlinx.coroutines.flow.collectLatest

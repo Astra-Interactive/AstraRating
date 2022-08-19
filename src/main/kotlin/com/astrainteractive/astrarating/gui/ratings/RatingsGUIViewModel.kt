@@ -1,10 +1,10 @@
 package com.astrainteractive.astrarating.gui.ratings
 
 import com.astrainteractive.astralibs.async.AsyncHelper
+import com.astrainteractive.astralibs.utils.next
 import com.astrainteractive.astrarating.api.DatabaseApi
 import com.astrainteractive.astrarating.api.UsersRatingsSort
 import com.astrainteractive.astrarating.sqldatabase.UserAndRating
-import com.astrainteractive.astrarating.utils.next
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

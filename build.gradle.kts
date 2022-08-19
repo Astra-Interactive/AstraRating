@@ -135,8 +135,10 @@ tasks.shadowJar {
         include(dependency("org.jetbrains.kotlinx:kotlinx-serialization-json:${Kotlin.json}"))
         include(dependency("com.charleskorn.kaml:kaml:${Kotlin.kaml}"))
         include(dependency("org.bstats:bstats-bukkit:${Spigot.bstats}"))
+
     }
     relocate("org.bstats", "com.astrainteractive.astrarating")
+    relocate("kotlin", "com.astrainteractive.astrarating.kotlin")
     isReproducibleFileOrder = true
     mergeServiceFiles()
     dependsOn(configurations)
@@ -144,6 +146,6 @@ tasks.shadowJar {
     from(sourceSets.main.get().output)
     from(project.configurations.runtimeClasspath)
     minimize()
-    destinationDirectory.set(File("D:\\Minecraft Servers\\TEST_SERVER\\plugins"))
+    destinationDirectory.set(File("D:\\Minecraft Servers\\1_19\\paper\\plugins"))
 //    destinationDirectory.set(File("/media/makeevrserg/Новый том/Servers/Server/plugins"))
 }

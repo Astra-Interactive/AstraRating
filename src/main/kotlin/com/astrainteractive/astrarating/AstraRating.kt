@@ -4,6 +4,7 @@ import CommandManager
 import com.astrainteractive.astralibs.AstraLibs
 import com.astrainteractive.astralibs.Logger
 import com.astrainteractive.astralibs.ServerVersion
+import com.astrainteractive.astralibs.async.AsyncHelper
 import com.astrainteractive.astralibs.events.GlobalEventManager
 import com.astrainteractive.astralibs.menu.MenuListener
 import com.astrainteractive.astralibs.utils.catching
@@ -13,6 +14,7 @@ import com.astrainteractive.astrarating.utils.PluginTranslation
 import com.astrainteractive.astrarating.utils._Files
 import com.astrainteractive.astrarating.utils.EmpireConfig
 import github.scarsz.discordsrv.DiscordSRV
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
@@ -42,6 +44,7 @@ class AstraRating : JavaPlugin() {
 
     init {
         instance = this
+        AstraLibs.rememberPlugin(this)
         discordSRV = catching { Bukkit.getPluginManager().getPlugin("DiscordSRV") as DiscordSRV }
     }
 
@@ -56,14 +59,13 @@ class AstraRating : JavaPlugin() {
      * This method called when server starts or PlugMan load plugin.
      */
     override fun onEnable() {
-        AstraLibs.rememberPlugin(this)
         Logger.prefix = "AstraTemplate"
         PluginTranslation()
         _Files()
         commandManager = CommandManager()
         BStats.create()
         EmpireConfig.create()
-        runBlocking { SQLDatabase().onEnable() }
+        AsyncHelper.launch { SQLDatabase().onEnable() }
         if (ServerVersion.version == ServerVersion.UNMAINTAINED)
             Logger.warn("Your server version is not maintained and might be not fully functional!", "AstraTemplate")
         else
@@ -82,7 +84,7 @@ class AstraRating : JavaPlugin() {
      * This method called when server is shutting down or when PlugMan disable plugin.
      */
     override fun onDisable() {
-        runBlocking { SQLDatabase.instance?.close() }
+        AsyncHelper.launch { SQLDatabase.instance?.close() }
         HandlerList.unregisterAll(this)
         GlobalEventManager.onDisable()
     }

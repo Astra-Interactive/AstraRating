@@ -6,9 +6,7 @@ import com.astrainteractive.astralibs.database.isConnected
 import com.astrainteractive.astralibs.utils.catching
 import com.astrainteractive.astrarating.AstraRating
 import com.astrainteractive.astrarating.utils.Translation
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 import java.io.File
 import java.sql.Connection
 import java.sql.DriverManager
@@ -29,7 +27,7 @@ class SQLDatabase(filePath: String = "${AstraRating.instance.dataFolder}${File.s
         }
         createTable<User>()
         createTable<UserRating>()
-        select<User>()?.filter { it.minecraftName!=it.minecraftName.uppercase() }?.map {
+        select<User>()?.filter { it.minecraftName != it.minecraftName.uppercase() }?.map {
             coroutineScope {
                 async {
                     update(it.copy(minecraftName = it.minecraftName.uppercase()))
@@ -44,6 +42,14 @@ class SQLDatabase(filePath: String = "${AstraRating.instance.dataFolder}${File.s
     }
 
     init {
-        instance = this
+        runBlocking(Dispatchers.IO) {
+            val connection = instance?.connection?.apply { close() }
+            while (connection?.isClosed == false) {
+                Logger.warn("Waiting previous database to close: $connection; ${connection?.isClosed}")
+
+                delay(500)
+            }
+            instance = this@SQLDatabase
+        }
     }
 }

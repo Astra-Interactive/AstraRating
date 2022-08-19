@@ -26,7 +26,7 @@ object RatingPAPIExpansion : PlaceholderExpansion() {
             if (params=="rating")
                 return CachedTotalRating.getPlayerRating(it).toString()
         }
-        return null
+        return ""
     }
 
 }

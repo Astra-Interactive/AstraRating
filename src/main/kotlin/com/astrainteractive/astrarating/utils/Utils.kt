@@ -16,33 +16,7 @@ import java.util.*
 import kotlin.math.max
 import kotlin.random.Random
 
-inline fun <reified T : kotlin.Enum<T>> T.addIndex(offset: Int): T {
-    val values = T::class.java.enumConstants
-    var res = ordinal + offset
-    if (res <= -1) res = values.size - 1
-    val index = res % values.size
-    return values[index]
-}
 
-inline fun <reified T : kotlin.Enum<T>> T.next(): T {
-    return addIndex(1)
-}
-
-inline fun <reified T : kotlin.Enum<T>> T.prev(): T {
-    return addIndex(-1)
-}
-
-fun ItemStack.editMeta(metaBuilder: (ItemMeta) -> Unit) {
-    val meta = itemMeta ?: return
-    metaBuilder(meta)
-    this.itemMeta = meta
-}
-
-fun Inventory.close() {
-    this.viewers?.toList()?.forEach {
-        it?.closeInventory()
-    }
-}
 
 val OfflinePlayer.uuid: String
     get() = uniqueId.toString()
@@ -63,11 +37,13 @@ fun <T, K> setDeclaredField(clazz: Class<T>, instance: Any, name: String, value:
 
 }
 fun subListFromString(text:String, threshold:Int): List<String> {
-    return if (Config.cutWords) text.chunked(threshold)
+    val res =  if (Config.cutWords) text.chunked(threshold)
     else text.split(" ").chunked(max(1,(text.length)/threshold)).map {
         it.joinToString(" ")
     }
+    return  res
 }
+
 
 object TimeUtility {
     fun formatToString(time: Long, format: String = Config.gui.timeFormat): String? {
