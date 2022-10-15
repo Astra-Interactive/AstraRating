@@ -1,7 +1,7 @@
 package com.astrainteractive.astrarating.utils
 
-import com.astrainteractive.astralibs.AstraYamlParser
-import com.astrainteractive.astralibs.Logger
+import ru.astrainteractive.astralibs.AstraYamlParser
+import ru.astrainteractive.astralibs.Logger
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
@@ -65,7 +65,7 @@ data class EmpireConfig(
          */
         fun create(): EmpireConfig {
             val config = try {
-                AstraYamlParser.fileConfigurationToClass<EmpireConfig>(Files.configFile.getConfig()) ?: EmpireConfig()
+                AstraYamlParser.fileConfigurationToClass<EmpireConfig>(Files.configFile.fileConfiguration) ?: EmpireConfig()
             } catch (e: java.lang.Exception) {
                 Logger.error("Could not load config.yml check for errors. Loaded default configs", "Config")
                 EmpireConfig()

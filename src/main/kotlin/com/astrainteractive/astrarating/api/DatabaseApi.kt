@@ -1,8 +1,8 @@
 package com.astrainteractive.astrarating.api
 
-import com.astrainteractive.astralibs.database.*
-import com.astrainteractive.astralibs.utils.mapNotNull
-import com.astrainteractive.astralibs.utils.catching
+import ru.astrainteractive.astralibs.database.*
+import ru.astrainteractive.astralibs.utils.mapNotNull
+import ru.astrainteractive.astralibs.utils.catching
 import com.astrainteractive.astrarating.sqldatabase.*
 import com.astrainteractive.astrarating.utils.uuid
 import org.bukkit.OfflinePlayer

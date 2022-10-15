@@ -1,13 +1,7 @@
 package com.astrainteractive.astrarating.gui.player_ratings
 
-import com.astrainteractive.astralibs.async.AsyncHelper
-import com.astrainteractive.astralibs.events.DSLEvent
-import com.astrainteractive.astralibs.events.EventListener
-import com.astrainteractive.astralibs.events.EventManager
-import com.astrainteractive.astralibs.menu.AstraMenuSize
-import com.astrainteractive.astralibs.menu.AstraPlayerMenuUtility
-import com.astrainteractive.astralibs.menu.PaginatedMenu
-import com.astrainteractive.astralibs.utils.editMeta
+import ru.astrainteractive.astralibs.events.EventManager
+import ru.astrainteractive.astralibs.utils.editMeta
 import com.astrainteractive.astrarating.gui.ratings.RatingsGUI
 import com.astrainteractive.astrarating.gui.ratings.RatingsGUIViewModel
 import com.astrainteractive.astrarating.utils.*
@@ -15,37 +9,52 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.bukkit.Material
 import org.bukkit.OfflinePlayer
+import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.ItemStack
+import ru.astrainteractive.astralibs.async.PluginScope
+import ru.astrainteractive.astralibs.menu.*
 
-class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, override val playerMenuUtility: AstraPlayerMenuUtility) :
-    PaginatedMenu() {
+class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, player: Player) : PaginatedMenu() {
+    override val playerMenuUtility: IPlayerHolder = DefaultPlayerHolder(player)
 
     private val viewModel = PlayerRatingsGUIViewModel(selectedPlayer)
     val sortButtonIndex: Int = 50
-    override val backButtonIndex: Int = 49
-    override val nextButtonIndex: Int = 53
-    override val prevButtonIndex: Int = 45
 
-    override var menuName: String = Translation.playerRatingTitle.replace("%player%", selectedPlayer.name ?: "")
+    override var menuTitle: String = Translation.playerRatingTitle.replace("%player%", selectedPlayer.name ?: "")
     override val menuSize: AstraMenuSize = AstraMenuSize.XL
-    override val backPageButton: ItemStack = Config.gui.buttons.back.toItemStack().apply {
-        editMeta {
-            it.setDisplayName(Translation.menuBack)
+
+    override val backPageButton = object : IInventoryButton {
+        override val index: Int = 49
+        override val item: ItemStack = Config.gui.buttons.back.toItemStack().apply {
+            editMeta {
+                it.setDisplayName(Translation.menuClose)
+            }
         }
+
     }
-    override val nextPageButton: ItemStack = Config.gui.buttons.next.toItemStack().apply {
-        editMeta {
-            it.setDisplayName(Translation.menuNextPage)
+    override val nextPageButton = object : IInventoryButton {
+        override val index: Int = 53
+        override val item: ItemStack = Config.gui.buttons.next.toItemStack().apply {
+            editMeta {
+                it.setDisplayName(Translation.menuNextPage)
+            }
         }
+
     }
-    override val prevPageButton: ItemStack = Config.gui.buttons.prev.toItemStack().apply {
-        editMeta {
-            it.setDisplayName(Translation.menuPrevPage)
+    override val prevPageButton = object : IInventoryButton {
+        override val index: Int = 45
+        override val item: ItemStack = Config.gui.buttons.prev.toItemStack().apply {
+            editMeta {
+                it.setDisplayName(Translation.menuPrevPage)
+            }
         }
+
     }
+
+
     private val sortButton: ItemStack
         get() = Config.gui.buttons.sort.toItemStack().apply {
             editMeta {
@@ -57,41 +66,49 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, override val playerMen
     override val maxItemsAmount: Int
         get() = 0
 
+    override fun onInventoryClicked(e: InventoryClickEvent) {
+        super.onInventoryClicked(e)
+        when (e.slot) {
+            backPageButton.index -> PluginScope.launch {
+                RatingsGUI(playerMenuUtility.player).open()
+            }
 
-    override fun handleMenu(e: InventoryClickEvent) {
-        super.handleMenu(e)
-        if (e.slot == backButtonIndex) AsyncHelper.launch {
-            RatingsGUI(playerMenuUtility).open()
-        }
-        else if (e.slot == sortButtonIndex) {
-            viewModel.onSortClicked()
-            setMenuItems()
-        } else {
-            if (!AstraPermission.DeleteReport.hasPermission(playerMenuUtility.player)) return
-            if (e.click != ClickType.LEFT) return
-            val item = viewModel.userRatings.value[maxItemsPerPage * page + e.slot]
-            viewModel.onDeleteClicked(item){
+            sortButtonIndex -> {
+                viewModel.onSortClicked()
                 setMenuItems()
             }
 
+            else -> {
+                if (!AstraPermission.DeleteReport.hasPermission(playerMenuUtility.player)) return
+                if (e.click != ClickType.LEFT) return
+                val item = viewModel.userRatings.value[maxItemsPerPage * page + e.slot]
+                viewModel.onDeleteClicked(item) {
+                    setMenuItems()
+                }
+
+            }
         }
     }
 
-
-    override fun onInventoryClose(it: InventoryCloseEvent, manager: EventManager) {
+    override fun onInventoryClose(it: InventoryCloseEvent) {
         viewModel.onDisable()
-        stateFlowHolder.cancel()
     }
-    private val stateFlowHolder = AsyncHelper.launch {
-        viewModel.userRatings.collectLatest {
-            println("Collected")
+
+    override fun onPageChanged() {
+        setMenuItems()
+    }
+
+
+    override fun onCreated() {
+        viewModel.userRatings.collectOn {
             setMenuItems()
         }
+        setMenuItems()
     }
 
-    override fun setMenuItems() {
+    fun setMenuItems() {
         inventory.clear()
-        addManageButtons()
+        setManageButtons()
         inventory.setItem(sortButtonIndex, sortButton)
         val list = viewModel.userRatings.value
         for (i in 0 until maxItemsPerPage) {
@@ -104,7 +121,10 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, override val playerMen
                 editMeta {
                     it.setDisplayName(Translation.playerNameColor + userAndRating.userCreatedReport.normalName)
                     it.lore = mutableListOf<String>().apply {
-                        subListFromString("${Translation.message} $color${userAndRating.rating.message}",Config.trimMessageAfter).forEachIndexed { index, it ->
+                        subListFromString(
+                            "${Translation.message} $color${userAndRating.rating.message}",
+                            Config.trimMessageAfter
+                        ).forEachIndexed { index, it ->
                             add("$color$it")
                         }
 

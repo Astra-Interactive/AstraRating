@@ -6,6 +6,7 @@ import com.astrainteractive.astrarating.sqldatabase.User
 import com.astrainteractive.astrarating.utils.getLinkedDiscordID
 import com.astrainteractive.astrarating.utils.uuid
 import org.bukkit.OfflinePlayer
+import ru.astrainteractive.astralibs.domain.IUseCase
 import java.sql.Connection
 import java.util.*
 
@@ -14,7 +15,7 @@ import java.util.*
  * @param player owner of auction
  * @return boolean - true if succesfully removed
  */
-object InsertUserUseCase : UseCase<Long?, OfflinePlayer>() {
+object InsertUserUseCase : IUseCase<Long?, OfflinePlayer> {
     private val discordUsers = mutableMapOf<String, String>()
 
     val database: SQLDatabase?

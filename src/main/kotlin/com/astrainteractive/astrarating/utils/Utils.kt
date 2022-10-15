@@ -1,6 +1,6 @@
 package com.astrainteractive.astrarating.utils
 
-import com.astrainteractive.astralibs.utils.catching
+import ru.astrainteractive.astralibs.utils.catching
 import com.astrainteractive.astrarating.AstraRating
 import com.google.gson.JsonParser
 import github.scarsz.discordsrv.util.DiscordUtil

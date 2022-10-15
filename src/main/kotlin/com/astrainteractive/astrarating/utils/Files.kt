@@ -1,6 +1,6 @@
 package com.astrainteractive.astrarating.utils
 
-import com.astrainteractive.astralibs.FileManager
+import ru.astrainteractive.astralibs.file_manager.FileManager
 
 
 val Files: _Files

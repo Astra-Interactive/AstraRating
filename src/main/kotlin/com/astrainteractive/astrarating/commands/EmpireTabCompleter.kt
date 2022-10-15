@@ -2,8 +2,8 @@ package com.astrainteractive.astrarating.commands
 
 
 import CommandManager
-import com.astrainteractive.astralibs.AstraLibs
-import com.astrainteractive.astralibs.utils.registerTabCompleter
+import ru.astrainteractive.astralibs.AstraLibs
+import ru.astrainteractive.astralibs.utils.registerTabCompleter
 import org.bukkit.Bukkit
 
 /**

@@ -1,7 +1,6 @@
 package com.astrainteractive.astrarating.gui.ratings
 
-import com.astrainteractive.astralibs.async.AsyncHelper
-import com.astrainteractive.astralibs.utils.next
+import ru.astrainteractive.astralibs.utils.next
 import com.astrainteractive.astrarating.api.DatabaseApi
 import com.astrainteractive.astrarating.api.UsersRatingsSort
 import com.astrainteractive.astrarating.sqldatabase.UserAndRating
@@ -13,15 +12,17 @@ import org.bukkit.Material
 import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
+import ru.astrainteractive.astralibs.architecture.ViewModel
+import ru.astrainteractive.astralibs.async.PluginScope
 import java.util.*
 
 /**
  * MVVM technique
  */
-class RatingsGUIViewModel {
+class RatingsGUIViewModel : ViewModel() {
     companion object {
-        fun getHead(playerName:String) = Companion.getHead(Bukkit.getOfflinePlayer(playerName))
-        fun getHead(player:OfflinePlayer): ItemStack {
+        fun getHead(playerName: String) = Companion.getHead(Bukkit.getOfflinePlayer(playerName))
+        fun getHead(player: OfflinePlayer): ItemStack {
             val item = ItemStack(Material.PLAYER_HEAD)
             val meta: SkullMeta = item.itemMeta as SkullMeta
             meta.owningPlayer = Bukkit.getOfflinePlayer(player.uniqueId)
@@ -47,7 +48,7 @@ class RatingsGUIViewModel {
     }
 
     init {
-        AsyncHelper.launch {
+        PluginScope.launch {
             _userRatings.value = DatabaseApi.fetchUsersTotalRating() ?: emptyList()
         }
     }

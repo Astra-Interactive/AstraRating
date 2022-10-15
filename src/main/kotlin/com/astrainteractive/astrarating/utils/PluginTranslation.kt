@@ -1,8 +1,8 @@
 package com.astrainteractive.astrarating.utils
 
-import com.astrainteractive.astralibs.FileManager
-import com.astrainteractive.astralibs.utils.HEX
-import com.astrainteractive.astralibs.utils.getHEXString
+import ru.astrainteractive.astralibs.file_manager.FileManager
+import ru.astrainteractive.astralibs.utils.HEX
+import ru.astrainteractive.astralibs.utils.getHEXString
 
 val Translation: PluginTranslation
     get() = PluginTranslation.instance
@@ -25,13 +25,13 @@ class PluginTranslation {
      * This is a default translation file. Don't forget to create translation.yml in resources of the plugin
      */
     private val _translationFile: FileManager = FileManager("translations.yml")
-    private val translation = _translationFile.getConfig()
+    private val translation = _translationFile.fileConfiguration
 
     private fun getHEXString(path: String,default:String): String {
         val msg = translation.getHEXString(path)?:default.HEX()
         if (!translation.contains(path)) {
             translation.set(path, default)
-            _translationFile.saveConfig()
+            _translationFile.save()
         }
         return msg
     }

@@ -1,9 +1,8 @@
 package com.astrainteractive.astrarating.commands
 
 import CommandManager
-import com.astrainteractive.astralibs.AstraLibs
-import com.astrainteractive.astralibs.async.AsyncHelper
-import com.astrainteractive.astralibs.utils.registerCommand
+import ru.astrainteractive.astralibs.AstraLibs
+import ru.astrainteractive.astralibs.utils.registerCommand
 import com.astrainteractive.astrarating.api.DatabaseApi
 import com.astrainteractive.astrarating.api.use_cases.InsertUserUseCase
 import com.astrainteractive.astrarating.gui.ratings.RatingsGUI
@@ -15,6 +14,7 @@ import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import ru.astrainteractive.astralibs.async.PluginScope
 
 /**
  * /arating reload
@@ -71,7 +71,7 @@ fun RatingCommandController.addRating(
         return
     }
 
-    AsyncHelper.launch {
+    PluginScope.launch {
         if (Config.needDiscordLinked) {
             val discordMember = getLinkedDiscordID(ratingCreator)?.let { getDiscordMember(it) }
             if (discordMember == null) {
@@ -121,7 +121,7 @@ fun RatingCommandController.addRating(
 }
 
 fun RatingCommandController.rating(sender: CommandSender, args: Array<out String>) {
-    AsyncHelper.launch {
+    PluginScope.launch {
         RatingsGUI(sender as Player).open()
     }
 }

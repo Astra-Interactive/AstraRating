@@ -1,8 +1,8 @@
 package com.astrainteractive.astrarating.api
 
-import com.astrainteractive.astralibs.async.AsyncHelper
 import kotlinx.coroutines.launch
 import org.bukkit.OfflinePlayer
+import ru.astrainteractive.astralibs.async.PluginScope
 import java.util.*
 
 object CachedTotalRating {
@@ -17,7 +17,7 @@ object CachedTotalRating {
     }
 
     fun getPlayerRating(player: OfflinePlayer): Int {
-        AsyncHelper.launch { rememberPlayer(player) }
+        PluginScope.launch { rememberPlayer(player) }
         return ratingByPlayer[player.uniqueId] ?: 0
     }
 }

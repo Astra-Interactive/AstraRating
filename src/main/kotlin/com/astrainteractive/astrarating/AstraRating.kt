@@ -1,13 +1,11 @@
 package com.astrainteractive.astrarating
 
 import CommandManager
-import com.astrainteractive.astralibs.AstraLibs
-import com.astrainteractive.astralibs.Logger
-import com.astrainteractive.astralibs.ServerVersion
-import com.astrainteractive.astralibs.async.AsyncHelper
-import com.astrainteractive.astralibs.events.GlobalEventManager
-import com.astrainteractive.astralibs.menu.MenuListener
-import com.astrainteractive.astralibs.utils.catching
+import ru.astrainteractive.astralibs.AstraLibs
+import ru.astrainteractive.astralibs.Logger
+import ru.astrainteractive.astralibs.ServerVersion
+import ru.astrainteractive.astralibs.events.GlobalEventManager
+import ru.astrainteractive.astralibs.utils.catching
 import com.astrainteractive.astrarating.api.RatingPAPIExpansion
 import com.astrainteractive.astrarating.sqldatabase.SQLDatabase
 import com.astrainteractive.astrarating.utils.PluginTranslation
@@ -20,6 +18,7 @@ import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
+import ru.astrainteractive.astralibs.async.PluginScope
 
 
 class BStats private constructor(private val id:Int) {
@@ -65,7 +64,7 @@ class AstraRating : JavaPlugin() {
         commandManager = CommandManager()
         BStats.create()
         EmpireConfig.create()
-        AsyncHelper.launch { SQLDatabase().onEnable() }
+        PluginScope.launch { SQLDatabase().onEnable() }
         if (ServerVersion.version == ServerVersion.UNMAINTAINED)
             Logger.warn("Your server version is not maintained and might be not fully functional!", "AstraTemplate")
         else
@@ -77,14 +76,13 @@ class AstraRating : JavaPlugin() {
             if (RatingPAPIExpansion.isRegistered) return@let
             RatingPAPIExpansion.register()
         }
-        MenuListener().apply { onEnable(GlobalEventManager) }
     }
 
     /**
      * This method called when server is shutting down or when PlugMan disable plugin.
      */
     override fun onDisable() {
-        AsyncHelper.launch { SQLDatabase.instance?.close() }
+        PluginScope.launch { SQLDatabase.instance?.close() }
         HandlerList.unregisterAll(this)
         GlobalEventManager.onDisable()
     }

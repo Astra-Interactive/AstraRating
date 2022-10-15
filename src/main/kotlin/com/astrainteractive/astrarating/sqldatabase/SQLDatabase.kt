@@ -1,9 +1,9 @@
 package com.astrainteractive.astrarating.sqldatabase
 
-import com.astrainteractive.astralibs.Logger
-import com.astrainteractive.astralibs.database.DatabaseCore
-import com.astrainteractive.astralibs.database.isConnected
-import com.astrainteractive.astralibs.utils.catching
+import ru.astrainteractive.astralibs.Logger
+import ru.astrainteractive.astralibs.database.DatabaseCore
+import ru.astrainteractive.astralibs.database.isConnected
+import ru.astrainteractive.astralibs.utils.catching
 import com.astrainteractive.astrarating.AstraRating
 import com.astrainteractive.astrarating.utils.Translation
 import kotlinx.coroutines.*

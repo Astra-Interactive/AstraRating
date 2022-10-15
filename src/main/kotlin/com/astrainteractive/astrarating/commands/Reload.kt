@@ -1,7 +1,7 @@
 package com.astrainteractive.astrarating.commands
 
 import CommandManager
-import com.astrainteractive.astralibs.commands.AstraDSLCommand
+import ru.astrainteractive.astralibs.commands.AstraDSLCommand
 import com.astrainteractive.astrarating.AstraRating
 import com.astrainteractive.astrarating.utils.AstraPermission
 import com.astrainteractive.astrarating.utils.Translation

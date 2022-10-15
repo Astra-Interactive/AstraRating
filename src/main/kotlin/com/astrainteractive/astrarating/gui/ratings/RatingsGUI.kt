@@ -1,51 +1,56 @@
 package com.astrainteractive.astrarating.gui.ratings
 
-import com.astrainteractive.astralibs.async.AsyncHelper
-import com.astrainteractive.astralibs.events.DSLEvent
-import com.astrainteractive.astralibs.events.EventListener
-import com.astrainteractive.astralibs.events.EventManager
-import com.astrainteractive.astralibs.menu.AstraMenuSize
-import com.astrainteractive.astralibs.menu.AstraPlayerMenuUtility
-import com.astrainteractive.astralibs.menu.PaginatedMenu
-import com.astrainteractive.astralibs.utils.close
-import com.astrainteractive.astralibs.utils.editMeta
 import com.astrainteractive.astrarating.gui.player_ratings.PlayerRatingsGUI
-import com.astrainteractive.astrarating.utils.*
-import kotlinx.coroutines.flow.collectLatest
+import com.astrainteractive.astrarating.utils.Config
+import com.astrainteractive.astrarating.utils.TimeUtility
+import com.astrainteractive.astrarating.utils.Translation
 import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
-import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.ItemStack
+import ru.astrainteractive.astralibs.async.PluginScope
+import ru.astrainteractive.astralibs.menu.*
+import ru.astrainteractive.astralibs.utils.close
+import ru.astrainteractive.astralibs.utils.editMeta
 import java.util.*
 
-class RatingsGUI(override val playerMenuUtility: AstraPlayerMenuUtility) : PaginatedMenu() {
-    constructor(player: Player) : this(AstraPlayerMenuUtility(player))
+
+class RatingsGUI(player: Player) : PaginatedMenu() {
+    override val playerMenuUtility: IPlayerHolder = DefaultPlayerHolder(player)
 
     private val viewModel = RatingsGUIViewModel()
     val sortButtonIndex: Int = 50
-    override val backButtonIndex: Int = 49
-    override val nextButtonIndex: Int = 53
-    override val prevButtonIndex: Int = 45
 
-    override var menuName: String = Translation.ratingsTitle
+    override var menuTitle: String = Translation.ratingsTitle
     override val menuSize: AstraMenuSize = AstraMenuSize.XL
-    override val backPageButton: ItemStack = Config.gui.buttons.back.toItemStack().apply {
-        editMeta {
-            it.setDisplayName(Translation.menuClose)
+    override val backPageButton = object : IInventoryButton {
+        override val index: Int = 49
+        override val item: ItemStack = Config.gui.buttons.back.toItemStack().apply {
+            editMeta {
+                it.setDisplayName(Translation.menuClose)
+            }
         }
+
     }
-    override val nextPageButton: ItemStack = Config.gui.buttons.next.toItemStack().apply {
-        editMeta {
-            it.setDisplayName(Translation.menuNextPage)
+    override val nextPageButton = object : IInventoryButton {
+        override val index: Int = 53
+        override val item: ItemStack = Config.gui.buttons.next.toItemStack().apply {
+            editMeta {
+                it.setDisplayName(Translation.menuNextPage)
+            }
         }
+
     }
-    override val prevPageButton: ItemStack = Config.gui.buttons.prev.toItemStack().apply {
-        editMeta {
-            it.setDisplayName(Translation.menuPrevPage)
+    override val prevPageButton = object : IInventoryButton {
+        override val index: Int = 45
+        override val item: ItemStack = Config.gui.buttons.prev.toItemStack().apply {
+            editMeta {
+                it.setDisplayName(Translation.menuPrevPage)
+            }
         }
+
     }
     private val sortButton: ItemStack
         get() = Config.gui.buttons.sort.toItemStack().apply {
@@ -59,35 +64,42 @@ class RatingsGUI(override val playerMenuUtility: AstraPlayerMenuUtility) : Pagin
         get() = 0
 
 
-    override fun handleMenu(e: InventoryClickEvent) {
-        super.handleMenu(e)
+    override fun onInventoryClicked(e: InventoryClickEvent) {
+        super.onInventoryClicked(e)
         when (e.slot) {
-            backButtonIndex -> inventory.close()
+            backPageButton.index -> inventory.close()
             sortButtonIndex -> {
                 viewModel.onSortClicked()
                 setMenuItems()
             }
-            else -> AsyncHelper.launch {
+
+            else -> PluginScope.launch {
                 val item = viewModel.userRatings.value[maxItemsPerPage * page + e.slot]
-                PlayerRatingsGUI(Bukkit.getOfflinePlayer(UUID.fromString(item.reportedPlayer.minecraftUUID)), playerMenuUtility).open()
+                PlayerRatingsGUI(
+                    Bukkit.getOfflinePlayer(UUID.fromString(item.reportedPlayer.minecraftUUID)),
+                    playerMenuUtility.player
+                ).open()
             }
         }
     }
 
-
-    override fun onInventoryClose(it: InventoryCloseEvent, manager: EventManager) {
+    override fun onInventoryClose(it: InventoryCloseEvent) {
         viewModel.onDisable()
-        stateFlowHolder.cancel()
-    }
-    private val stateFlowHolder = AsyncHelper.launch {
-        viewModel.userRatings.collectLatest {
-            setMenuItems()
-        }
+
     }
 
-    override fun setMenuItems() {
+    override fun onPageChanged() {
+        setMenuItems()
+    }
+
+    override fun onCreated() {
+        viewModel.userRatings.collectOn { setMenuItems() }
+        setMenuItems()
+    }
+
+    fun setMenuItems() {
         inventory.clear()
-        addManageButtons()
+        setManageButtons()
         inventory.setItem(sortButtonIndex, sortButton)
         val list = viewModel.userRatings.value
         for (i in 0 until maxItemsPerPage) {

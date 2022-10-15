@@ -1,14 +1,17 @@
 package com.astrainteractive.astrarating.gui.player_ratings
 
-import com.astrainteractive.astralibs.async.AsyncHelper
-import com.astrainteractive.astralibs.utils.next
+import ru.astrainteractive.astralibs.utils.next
 import com.astrainteractive.astrarating.api.DatabaseApi
 import com.astrainteractive.astrarating.api.UserRatingsSort
 import com.astrainteractive.astrarating.sqldatabase.UserAndRating
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.bukkit.OfflinePlayer
+import ru.astrainteractive.astralibs.async.BukkitMain
+import ru.astrainteractive.astralibs.async.PluginScope
 import java.util.*
 
 /**
@@ -37,7 +40,7 @@ class PlayerRatingsGUIViewModel(val player: OfflinePlayer) {
     }
 
     init {
-        AsyncHelper.launch {
+        PluginScope.launch {
             _userRatings.value = DatabaseApi.fetchUserRatings(player) ?: emptyList()
         }
     }
@@ -48,12 +51,14 @@ class PlayerRatingsGUIViewModel(val player: OfflinePlayer) {
     }
 
     fun onDeleteClicked(item: UserAndRating,onResult:()->Unit) {
-        AsyncHelper.launch {
+        PluginScope.launch {
             DatabaseApi.deleteUserRating(item.rating)
             val list = DatabaseApi.fetchUserRatings(player) ?: emptyList()
             _userRatings.emit(list)
             _userRatings.value = list
-            AsyncHelper.callSyncMethod(onResult)
+            withContext(Dispatchers.BukkitMain){
+                onResult()
+            }
         }
     }
 }

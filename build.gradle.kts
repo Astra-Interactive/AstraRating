@@ -1,23 +1,3 @@
-object Kotlin {
-    const val version = "1.7.0"
-    const val coroutines = "1.6.3"
-    const val json = "1.3.3"
-    const val kaml = "0.46.0"
-}
-object Spigot {
-    const val version = "1.19-R0.1-SNAPSHOT"
-    const val placeholderAPI = "2.11.2"
-    const val protocolLib = "4.8.0"
-    const val worldGuard = "7.0.7"
-    const val vault = "1.7"
-    const val coreProtect = "21.2"
-    const val modelEngine = "R2.5.0"
-    const val essentials = "2.19.5-SNAPSHOT"
-    const val discordSRV = "1.25.0"
-    const val luckPerms = "5.4"
-    const val bstats = "3.0.0"
-}
-
 group = "com.astrainteractive"
 version = "1.0.4"
 val name = "AstraRating"
@@ -53,40 +33,44 @@ repositories {
     maven("https://m2.dv8tion.net/releases")
     maven("https://maven.playpro.com")
     maven("https://jitpack.io")
-    flatDir { dirs("libs") }
+    maven {
+        url = uri("https://maven.pkg.github.com/Astra-Interactive/AstraLibs")
+        val config = project.getConfig()
+        credentials {
+            username = config.username
+            password = config.token
+        }
+    }
 }
 
 dependencies {
     // Kotlin
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${Kotlin.version}")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${Dependencies.Kotlin.version}")
     // Coroutines
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Kotlin.coroutines}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:${Kotlin.coroutines}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Dependencies.Kotlin.coroutines}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:${Dependencies.Kotlin.coroutines}")
     // Serialization
-    implementation("org.jetbrains.kotlin:kotlin-serialization:${Kotlin.version}")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Kotlin.json}")
-    implementation("com.charleskorn.kaml:kaml:${Kotlin.kaml}")
+    implementation("org.jetbrains.kotlin:kotlin-serialization:${Dependencies.Kotlin.version}")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Dependencies.Kotlin.json}")
+    implementation("com.charleskorn.kaml:kaml:${Dependencies.Kotlin.kaml}")
     // AstraLibs
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation("org.bstats:bstats-bukkit:${Spigot.bstats}")
+    implementation("ru.astrainteractive.astralibs:ktx-core:${Dependencies.Kotlin.astraLibs}")
+    implementation("ru.astrainteractive.astralibs:spigot-core:${Dependencies.Kotlin.astraLibs}")
+    implementation("org.bstats:bstats-bukkit:${Dependencies.Spigot.bstats}")
     // Test
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.5.20")
-    testImplementation("junit:junit:4.13.2")
-    testImplementation("com.github.seeseemelk:MockBukkit-v1.18:2.26.0")
-    testImplementation("io.kotest:kotest-runner-junit5:5.3.1")
-    testImplementation("io.kotest:kotest-assertions-core:5.3.1")
     testImplementation(kotlin("test"))
+    testImplementation("org.testng:testng:7.1.0")
     // Spigot dependencies
-//    compileOnly("io.papermc.paper:paper-api:${Spigot.version}")
-    compileOnly("org.spigotmc:spigot-api:${Spigot.version}")
-    compileOnly("org.spigotmc:spigot:${Spigot.version}")
-    compileOnly("com.sk89q.worldguard:worldguard-bukkit:${Spigot.worldGuard}")
-    compileOnly("com.comphenix.protocol:ProtocolLib:${Spigot.protocolLib}")
-    compileOnly("net.coreprotect:coreprotect:${Spigot.coreProtect}")
-    compileOnly("net.essentialsx:EssentialsX:${Spigot.essentials}")
-    compileOnly("me.clip:placeholderapi:${Spigot.placeholderAPI}")
-    compileOnly("com.discordsrv:discordsrv:${Spigot.discordSRV}")
-    compileOnly("com.github.MilkBowl:VaultAPI:${Spigot.vault}")
+//    compileOnly("io.papermc.paper:paper-api:${Dependencies.Spigot.version}")
+    compileOnly("org.spigotmc:spigot-api:${Dependencies.Spigot.version}")
+    compileOnly("org.spigotmc:spigot:${Dependencies.Spigot.version}")
+    compileOnly("com.sk89q.worldguard:worldguard-bukkit:${Dependencies.Spigot.worldGuard}")
+    compileOnly("com.comphenix.protocol:ProtocolLib:${Dependencies.Spigot.protocolLib}")
+    compileOnly("net.coreprotect:coreprotect:${Dependencies.Spigot.coreProtect}")
+    compileOnly("net.essentialsx:EssentialsX:${Dependencies.Spigot.essentials}")
+    compileOnly("me.clip:placeholderapi:${Dependencies.Spigot.placeholderAPI}")
+    compileOnly("com.discordsrv:discordsrv:${Dependencies.Spigot.discordSRV}")
+    compileOnly("com.github.MilkBowl:VaultAPI:${Dependencies.Spigot.vault}")
 }
 
 tasks {
@@ -128,13 +112,13 @@ tasks {
 tasks.shadowJar {
     dependencies {
         include(dependency(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", ".aar")))))
-        include(dependency("org.jetbrains.kotlin:kotlin-gradle-plugin:${Kotlin.version}"))
-        include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Kotlin.coroutines}"))
-        include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:${Kotlin.coroutines}"))
-        include(dependency("org.jetbrains.kotlin:kotlin-serialization:${Kotlin.version}"))
-        include(dependency("org.jetbrains.kotlinx:kotlinx-serialization-json:${Kotlin.json}"))
-        include(dependency("com.charleskorn.kaml:kaml:${Kotlin.kaml}"))
-        include(dependency("org.bstats:bstats-bukkit:${Spigot.bstats}"))
+        include(dependency("org.jetbrains.kotlin:kotlin-gradle-plugin:${Dependencies.Kotlin.version}"))
+        include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Dependencies.Kotlin.coroutines}"))
+        include(dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:${Dependencies.Kotlin.coroutines}"))
+        include(dependency("org.jetbrains.kotlin:kotlin-serialization:${Dependencies.Kotlin.version}"))
+        include(dependency("org.jetbrains.kotlinx:kotlinx-serialization-json:${Dependencies.Kotlin.json}"))
+        include(dependency("com.charleskorn.kaml:kaml:${Dependencies.Kotlin.kaml}"))
+        include(dependency("org.bstats:bstats-bukkit:${Dependencies.Spigot.bstats}"))
 
     }
     relocate("org.bstats", "com.astrainteractive.astrarating")

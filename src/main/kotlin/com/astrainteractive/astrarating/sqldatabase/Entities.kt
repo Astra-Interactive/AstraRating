@@ -1,8 +1,8 @@
 package com.astrainteractive.astrarating.sqldatabase
 
-import com.astrainteractive.astralibs.database.ColumnInfo
-import com.astrainteractive.astralibs.database.Entity
-import com.astrainteractive.astralibs.database.PrimaryKey
+import ru.astrainteractive.astralibs.database.ColumnInfo
+import ru.astrainteractive.astralibs.database.Entity
+import ru.astrainteractive.astralibs.database.PrimaryKey
 import com.astrainteractive.astrarating.api.DatabaseApi
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
