@@ -4,23 +4,10 @@ import ru.astrainteractive.astralibs.file_manager.FileManager
 import ru.astrainteractive.astralibs.utils.HEX
 import ru.astrainteractive.astralibs.utils.getHEXString
 
-val Translation: PluginTranslation
-    get() = PluginTranslation.instance
-
 /**
  * All translation stored here
  */
 class PluginTranslation {
-    /**
-     * For better access better to create [instance]
-     */
-    companion object {
-        internal lateinit var instance: PluginTranslation
-    }
-    init {
-        instance = this
-    }
-
     /**
      * This is a default translation file. Don't forget to create translation.yml in resources of the plugin
      */

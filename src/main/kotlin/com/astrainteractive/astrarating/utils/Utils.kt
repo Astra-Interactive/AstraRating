@@ -2,6 +2,7 @@ package com.astrainteractive.astrarating.utils
 
 import ru.astrainteractive.astralibs.utils.catching
 import com.astrainteractive.astrarating.AstraRating
+import com.astrainteractive.astrarating.modules.ConfigProvider
 import com.google.gson.JsonParser
 import github.scarsz.discordsrv.util.DiscordUtil
 import org.bukkit.ChatColor
@@ -37,7 +38,7 @@ fun <T, K> setDeclaredField(clazz: Class<T>, instance: Any, name: String, value:
 
 }
 fun subListFromString(text:String, threshold:Int): List<String> {
-    val res =  if (Config.cutWords) text.chunked(threshold)
+    val res =  if (ConfigProvider.value.cutWords) text.chunked(threshold)
     else text.split(" ").chunked(max(1,(text.length)/threshold)).map {
         it.joinToString(" ")
     }
@@ -46,7 +47,7 @@ fun subListFromString(text:String, threshold:Int): List<String> {
 
 
 object TimeUtility {
-    fun formatToString(time: Long, format: String = Config.gui.timeFormat): String? {
+    fun formatToString(time: Long, format: String = ConfigProvider.value.gui.timeFormat): String? {
         return SimpleDateFormat(format).format(Date(time))
     }
 }

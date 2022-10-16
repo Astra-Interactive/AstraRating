@@ -1,9 +1,10 @@
 package com.astrainteractive.astrarating.gui.player_ratings
 
 import ru.astrainteractive.astralibs.utils.next
-import com.astrainteractive.astrarating.api.DatabaseApi
-import com.astrainteractive.astrarating.api.UserRatingsSort
-import com.astrainteractive.astrarating.sqldatabase.UserAndRating
+import com.astrainteractive.astrarating.domain.api.DatabaseApi
+import com.astrainteractive.astrarating.domain.api.UserRatingsSort
+import com.astrainteractive.astrarating.domain.entities.UserAndRating
+import com.astrainteractive.astrarating.modules.DatabaseApiModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,12 +13,13 @@ import kotlinx.coroutines.withContext
 import org.bukkit.OfflinePlayer
 import ru.astrainteractive.astralibs.async.BukkitMain
 import ru.astrainteractive.astralibs.async.PluginScope
-import java.util.*
 
 /**
  * MVVM technique
  */
 class PlayerRatingsGUIViewModel(val player: OfflinePlayer) {
+    private val databaseApi:DatabaseApi
+        get() = DatabaseApiModule.value
 
     private val _userRatings = MutableStateFlow<List<UserAndRating>>(emptyList())
     val userRatings: StateFlow<List<UserAndRating>>
@@ -41,7 +43,7 @@ class PlayerRatingsGUIViewModel(val player: OfflinePlayer) {
 
     init {
         PluginScope.launch {
-            _userRatings.value = DatabaseApi.fetchUserRatings(player) ?: emptyList()
+            _userRatings.value = databaseApi.fetchUserRatings(player) ?: emptyList()
         }
     }
 
@@ -50,10 +52,10 @@ class PlayerRatingsGUIViewModel(val player: OfflinePlayer) {
 
     }
 
-    fun onDeleteClicked(item: UserAndRating,onResult:()->Unit) {
+    fun onDeleteClicked(item: UserAndRating, onResult:()->Unit) {
         PluginScope.launch {
-            DatabaseApi.deleteUserRating(item.rating)
-            val list = DatabaseApi.fetchUserRatings(player) ?: emptyList()
+            databaseApi.deleteUserRating(item.rating)
+            val list = databaseApi.fetchUserRatings(player) ?: emptyList()
             _userRatings.emit(list)
             _userRatings.value = list
             withContext(Dispatchers.BukkitMain){

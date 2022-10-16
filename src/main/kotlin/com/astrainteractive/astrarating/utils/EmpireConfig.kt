@@ -6,9 +6,6 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 
-val Config: EmpireConfig
-    get() = EmpireConfig.instance
-
 /**
  * Example config file with 3 types of initialization
  */
@@ -54,24 +51,6 @@ data class EmpireConfig(
                     itemMeta = meta
                 }
             }
-        }
-    }
-
-    companion object {
-        lateinit var instance: EmpireConfig
-
-        /**
-         * If you are lazy - you can use auto parser for your config
-         */
-        fun create(): EmpireConfig {
-            val config = try {
-                AstraYamlParser.fileConfigurationToClass<EmpireConfig>(Files.configFile.fileConfiguration) ?: EmpireConfig()
-            } catch (e: java.lang.Exception) {
-                Logger.error("Could not load config.yml check for errors. Loaded default configs", "Config")
-                EmpireConfig()
-            }
-            instance = config
-            return config
         }
     }
 }

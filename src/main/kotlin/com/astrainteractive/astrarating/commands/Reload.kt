@@ -2,9 +2,6 @@ package com.astrainteractive.astrarating.commands
 
 import CommandManager
 import ru.astrainteractive.astralibs.commands.AstraDSLCommand
-import com.astrainteractive.astrarating.AstraRating
-import com.astrainteractive.astrarating.utils.AstraPermission
-import com.astrainteractive.astrarating.utils.Translation
 
 /**
  * Reload command handler

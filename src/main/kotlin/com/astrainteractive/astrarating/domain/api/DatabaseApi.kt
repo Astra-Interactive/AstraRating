@@ -1,17 +1,20 @@
-package com.astrainteractive.astrarating.api
+package com.astrainteractive.astrarating.domain.api
 
+import com.astrainteractive.astrarating.domain.*
+import com.astrainteractive.astrarating.domain.SQLDatabase.Companion.NON_EXISTS_KEY
+import com.astrainteractive.astrarating.domain.entities.User
+import com.astrainteractive.astrarating.domain.entities.UserAndRating
+import com.astrainteractive.astrarating.domain.entities.UserRating
 import ru.astrainteractive.astralibs.database.*
 import ru.astrainteractive.astralibs.utils.mapNotNull
 import ru.astrainteractive.astralibs.utils.catching
-import com.astrainteractive.astrarating.sqldatabase.*
-import com.astrainteractive.astrarating.utils.uuid
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import java.sql.Connection
 
-object DatabaseApi {
-    val database: SQLDatabase?
-        get() = SQLDatabase.instance
+
+
+class DatabaseApi(private val database: SQLDatabase) {
     val connection: Connection?
         get() = database?.connection
 
@@ -23,7 +26,7 @@ object DatabaseApi {
     }
 
     suspend fun selectUser(it:OfflinePlayer) = database?.select<User>("WHERE ${User::minecraftName.columnName}=${it.name?.uppercase()?.sqlString}")?.firstOrNull()
-    suspend fun updateUser(it:User) = database?.update(it)
+    suspend fun updateUser(it: User) = database?.update(it)
     suspend fun insertUser(it: User) = database?.insert(it.copy(minecraftName = it.minecraftName.uppercase()),true)
     suspend fun insertUserRating(it: UserRating) = database?.insert(it)
     suspend fun deleteUserRating(it: UserRating) = database?.delete(it)

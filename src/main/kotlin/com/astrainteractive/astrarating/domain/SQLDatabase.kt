@@ -1,18 +1,20 @@
-package com.astrainteractive.astrarating.sqldatabase
+package com.astrainteractive.astrarating.domain
 
 import ru.astrainteractive.astralibs.Logger
 import ru.astrainteractive.astralibs.database.DatabaseCore
 import ru.astrainteractive.astralibs.database.isConnected
 import ru.astrainteractive.astralibs.utils.catching
 import com.astrainteractive.astrarating.AstraRating
-import com.astrainteractive.astrarating.utils.Translation
+import com.astrainteractive.astrarating.domain.entities.User
+import com.astrainteractive.astrarating.domain.entities.UserRating
+import com.astrainteractive.astrarating.modules.TranslationProvider
 import kotlinx.coroutines.*
 import java.io.File
 import java.sql.Connection
 import java.sql.DriverManager
 
 
-class SQLDatabase(filePath: String = "${AstraRating.instance.dataFolder}${File.separator}data.db") : DatabaseCore() {
+class SQLDatabase(filePath: String ) : DatabaseCore() {
 
     override val connectionBuilder: () -> Connection? = {
         catching { DriverManager.getConnection(("jdbc:sqlite:${filePath}")) }
@@ -20,9 +22,9 @@ class SQLDatabase(filePath: String = "${AstraRating.instance.dataFolder}${File.s
 
     override suspend fun onEnable() {
         if (connection.isConnected)
-            Logger.log(Translation.dbSuccess, "Database")
+            Logger.log(TranslationProvider.value.dbSuccess, "Database")
         else {
-            Logger.error(Translation.dbFail, "Database")
+            Logger.error(TranslationProvider.value.dbFail, "Database")
             return
         }
         createTable<User>()
@@ -37,19 +39,6 @@ class SQLDatabase(filePath: String = "${AstraRating.instance.dataFolder}${File.s
     }
 
     companion object {
-        var instance: SQLDatabase? = null
-            private set
-    }
-
-    init {
-        runBlocking(Dispatchers.IO) {
-            val connection = instance?.connection?.apply { close() }
-            while (connection?.isClosed == false) {
-                Logger.warn("Waiting previous database to close: $connection; ${connection?.isClosed}")
-
-                delay(500)
-            }
-            instance = this@SQLDatabase
-        }
+        const val NON_EXISTS_KEY = -1L
     }
 }

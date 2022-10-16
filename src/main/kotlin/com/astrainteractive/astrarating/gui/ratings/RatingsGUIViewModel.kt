@@ -1,9 +1,10 @@
 package com.astrainteractive.astrarating.gui.ratings
 
 import ru.astrainteractive.astralibs.utils.next
-import com.astrainteractive.astrarating.api.DatabaseApi
-import com.astrainteractive.astrarating.api.UsersRatingsSort
-import com.astrainteractive.astrarating.sqldatabase.UserAndRating
+import com.astrainteractive.astrarating.domain.api.DatabaseApi
+import com.astrainteractive.astrarating.domain.api.UsersRatingsSort
+import com.astrainteractive.astrarating.domain.entities.UserAndRating
+import com.astrainteractive.astrarating.modules.DatabaseApiModule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -14,12 +15,13 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import ru.astrainteractive.astralibs.architecture.ViewModel
 import ru.astrainteractive.astralibs.async.PluginScope
-import java.util.*
 
 /**
  * MVVM technique
  */
 class RatingsGUIViewModel : ViewModel() {
+    private val databaseApi:DatabaseApi
+        get() = DatabaseApiModule.value
     companion object {
         fun getHead(playerName: String) = Companion.getHead(Bukkit.getOfflinePlayer(playerName))
         fun getHead(player: OfflinePlayer): ItemStack {
@@ -49,7 +51,7 @@ class RatingsGUIViewModel : ViewModel() {
 
     init {
         PluginScope.launch {
-            _userRatings.value = DatabaseApi.fetchUsersTotalRating() ?: emptyList()
+            _userRatings.value = databaseApi.fetchUsersTotalRating() ?: emptyList()
         }
     }
 

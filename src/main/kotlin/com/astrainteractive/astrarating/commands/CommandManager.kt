@@ -1,7 +1,7 @@
 import com.astrainteractive.astrarating.AstraRating
 import com.astrainteractive.astrarating.commands.*
+import com.astrainteractive.astrarating.modules.TranslationProvider
 import com.astrainteractive.astrarating.utils.AstraPermission
-import com.astrainteractive.astrarating.utils.Translation
 import org.bukkit.command.CommandSender
 
 
@@ -27,12 +27,12 @@ class CommandManager {
     companion object {
         fun reload(sender: CommandSender) {
             if (!AstraPermission.Reload.hasPermission(sender)) {
-                sender.sendMessage(Translation.noPermission)
+                sender.sendMessage(TranslationProvider.value.noPermission)
                 return
             }
-            sender.sendMessage(Translation.reload)
+            sender.sendMessage(TranslationProvider.value.reload)
             AstraRating.instance.reloadPlugin()
-            sender.sendMessage(Translation.reloadComplete)
+            sender.sendMessage(TranslationProvider.value.reloadComplete)
         }
     }
 

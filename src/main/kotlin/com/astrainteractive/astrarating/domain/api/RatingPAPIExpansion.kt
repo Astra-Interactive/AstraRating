@@ -1,11 +1,14 @@
-package com.astrainteractive.astrarating.api
+package com.astrainteractive.astrarating.domain.api
 
+import com.astrainteractive.astrarating.modules.CachedTotalRatingModule
 import me.clip.placeholderapi.PlaceholderAPI
 import me.clip.placeholderapi.expansion.PlaceholderExpansion
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 
 object RatingPAPIExpansion : PlaceholderExpansion() {
+    private val cachedTotalRating:CachedTotalRating
+        get() = CachedTotalRatingModule.value
     override fun getIdentifier(): String = "erating"
 
     override fun getAuthor(): String = "RomanMakeev"
@@ -20,11 +23,11 @@ object RatingPAPIExpansion : PlaceholderExpansion() {
         val params = PlaceholderAPI.setPlaceholders(player,params.replace("<","%").replace(">","%"))
         Bukkit.getOfflinePlayer(params).let {
             if (it.firstPlayed != 0L)
-                return CachedTotalRating.getPlayerRating(it).toString()
+                return cachedTotalRating.getPlayerRating(it).toString()
         }
         player?.let{
             if (params=="rating")
-                return CachedTotalRating.getPlayerRating(it).toString()
+                return cachedTotalRating.getPlayerRating(it).toString()
         }
         return ""
     }

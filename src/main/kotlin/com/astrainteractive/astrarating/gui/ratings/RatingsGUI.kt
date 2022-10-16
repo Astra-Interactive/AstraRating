@@ -1,9 +1,11 @@
 package com.astrainteractive.astrarating.gui.ratings
 
 import com.astrainteractive.astrarating.gui.player_ratings.PlayerRatingsGUI
-import com.astrainteractive.astrarating.utils.Config
+import com.astrainteractive.astrarating.modules.ConfigProvider
+import com.astrainteractive.astrarating.modules.TranslationProvider
+import com.astrainteractive.astrarating.utils.EmpireConfig
+import com.astrainteractive.astrarating.utils.PluginTranslation
 import com.astrainteractive.astrarating.utils.TimeUtility
-import com.astrainteractive.astrarating.utils.Translation
 import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -19,43 +21,47 @@ import java.util.*
 
 class RatingsGUI(player: Player) : PaginatedMenu() {
     override val playerMenuUtility: IPlayerHolder = DefaultPlayerHolder(player)
+    private val config: EmpireConfig
+        get() = ConfigProvider.value
+    private val translation:PluginTranslation
+        get() = TranslationProvider.value
 
     private val viewModel = RatingsGUIViewModel()
     val sortButtonIndex: Int = 50
 
-    override var menuTitle: String = Translation.ratingsTitle
+    override var menuTitle: String = translation.ratingsTitle
     override val menuSize: AstraMenuSize = AstraMenuSize.XL
     override val backPageButton = object : IInventoryButton {
         override val index: Int = 49
-        override val item: ItemStack = Config.gui.buttons.back.toItemStack().apply {
+        override val item: ItemStack = config.gui.buttons.back.toItemStack().apply {
             editMeta {
-                it.setDisplayName(Translation.menuClose)
+                it.setDisplayName(translation.menuClose)
             }
         }
 
     }
     override val nextPageButton = object : IInventoryButton {
         override val index: Int = 53
-        override val item: ItemStack = Config.gui.buttons.next.toItemStack().apply {
+        override val item: ItemStack = config.gui.buttons.next.toItemStack().apply {
             editMeta {
-                it.setDisplayName(Translation.menuNextPage)
+                it.setDisplayName(translation.menuNextPage)
             }
         }
 
     }
     override val prevPageButton = object : IInventoryButton {
         override val index: Int = 45
-        override val item: ItemStack = Config.gui.buttons.prev.toItemStack().apply {
+        override val item: ItemStack = config.gui.buttons.prev.toItemStack().apply {
             editMeta {
-                it.setDisplayName(Translation.menuPrevPage)
+                it.setDisplayName(translation.menuPrevPage)
             }
         }
 
     }
     private val sortButton: ItemStack
-        get() = Config.gui.buttons.sort.toItemStack().apply {
+        get() = config.gui.buttons.sort.toItemStack().apply {
             editMeta {
-                it.setDisplayName("${Translation.sort}: ${viewModel.sort.value.desc}")
+                it.setDisplayName("${translation.sort}: ${viewModel.sort.value.desc}")
             }
         }
     override var maxItemsPerPage: Int = 45
@@ -66,6 +72,7 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
 
     override fun onInventoryClicked(e: InventoryClickEvent) {
         super.onInventoryClicked(e)
+        e.isCancelled = true
         when (e.slot) {
             backPageButton.index -> inventory.close()
             sortButtonIndex -> {
@@ -107,16 +114,16 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
             if (index >= list.size)
                 continue
             val userAndRating = list[index]
-            val color = if (userAndRating.rating.rating > 0) Translation.positiveColor else Translation.negativeColor
+            val color = if (userAndRating.rating.rating > 0) translation.positiveColor else translation.negativeColor
             val item = RatingsGUIViewModel.getHead(userAndRating.reportedPlayer.normalName).apply {
                 editMeta {
-                    it.setDisplayName(Translation.playerNameColor + userAndRating.reportedPlayer.normalName)
+                    it.setDisplayName(translation.playerNameColor + userAndRating.reportedPlayer.normalName)
                     it.lore = mutableListOf<String>().apply {
-                        if (Config.gui.showFirstConnection)
-                            add("${Translation.firstConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.firstPlayed)}")
-                        if (Config.gui.showLastConnection)
-                            add("${Translation.lastConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.lastPlayed)}")
-                        add("${Translation.rating}: ${color}${userAndRating.rating.rating}")
+                        if (config.gui.showFirstConnection)
+                            add("${translation.firstConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.firstPlayed)}")
+                        if (config.gui.showLastConnection)
+                            add("${translation.lastConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.lastPlayed)}")
+                        add("${translation.rating}: ${color}${userAndRating.rating.rating}")
                     }
                 }
             }

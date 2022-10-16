@@ -4,6 +4,8 @@ import ru.astrainteractive.astralibs.events.EventManager
 import ru.astrainteractive.astralibs.utils.editMeta
 import com.astrainteractive.astrarating.gui.ratings.RatingsGUI
 import com.astrainteractive.astrarating.gui.ratings.RatingsGUIViewModel
+import com.astrainteractive.astrarating.modules.ConfigProvider
+import com.astrainteractive.astrarating.modules.TranslationProvider
 import com.astrainteractive.astrarating.utils.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -18,37 +20,41 @@ import ru.astrainteractive.astralibs.async.PluginScope
 import ru.astrainteractive.astralibs.menu.*
 
 class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, player: Player) : PaginatedMenu() {
+    private val config: EmpireConfig
+        get() = ConfigProvider.value
+    private val translation:PluginTranslation
+        get() = TranslationProvider.value
     override val playerMenuUtility: IPlayerHolder = DefaultPlayerHolder(player)
 
     private val viewModel = PlayerRatingsGUIViewModel(selectedPlayer)
     val sortButtonIndex: Int = 50
 
-    override var menuTitle: String = Translation.playerRatingTitle.replace("%player%", selectedPlayer.name ?: "")
+    override var menuTitle: String = translation.playerRatingTitle.replace("%player%", selectedPlayer.name ?: "")
     override val menuSize: AstraMenuSize = AstraMenuSize.XL
 
     override val backPageButton = object : IInventoryButton {
         override val index: Int = 49
-        override val item: ItemStack = Config.gui.buttons.back.toItemStack().apply {
+        override val item: ItemStack = config.gui.buttons.back.toItemStack().apply {
             editMeta {
-                it.setDisplayName(Translation.menuClose)
+                it.setDisplayName(translation.menuClose)
             }
         }
 
     }
     override val nextPageButton = object : IInventoryButton {
         override val index: Int = 53
-        override val item: ItemStack = Config.gui.buttons.next.toItemStack().apply {
+        override val item: ItemStack = config.gui.buttons.next.toItemStack().apply {
             editMeta {
-                it.setDisplayName(Translation.menuNextPage)
+                it.setDisplayName(translation.menuNextPage)
             }
         }
 
     }
     override val prevPageButton = object : IInventoryButton {
         override val index: Int = 45
-        override val item: ItemStack = Config.gui.buttons.prev.toItemStack().apply {
+        override val item: ItemStack = config.gui.buttons.prev.toItemStack().apply {
             editMeta {
-                it.setDisplayName(Translation.menuPrevPage)
+                it.setDisplayName(translation.menuPrevPage)
             }
         }
 
@@ -56,9 +62,9 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, player: Player) : Pagi
 
 
     private val sortButton: ItemStack
-        get() = Config.gui.buttons.sort.toItemStack().apply {
+        get() = config.gui.buttons.sort.toItemStack().apply {
             editMeta {
-                it.setDisplayName("${Translation.sortRating}: ${viewModel.sort.value.desc}")
+                it.setDisplayName("${translation.sortRating}: ${viewModel.sort.value.desc}")
             }
         }
     override var maxItemsPerPage: Int = 45
@@ -68,6 +74,7 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, player: Player) : Pagi
 
     override fun onInventoryClicked(e: InventoryClickEvent) {
         super.onInventoryClicked(e)
+        e.isCancelled = true
         when (e.slot) {
             backPageButton.index -> PluginScope.launch {
                 RatingsGUI(playerMenuUtility.player).open()
@@ -116,24 +123,24 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, player: Player) : Pagi
             if (index >= list.size)
                 continue
             val userAndRating = list[index]
-            val color = if (userAndRating.rating.rating > 0) Translation.positiveColor else Translation.negativeColor
+            val color = if (userAndRating.rating.rating > 0) translation.positiveColor else translation.negativeColor
             val item = RatingsGUIViewModel.getHead(userAndRating.userCreatedReport.normalName).apply {
                 editMeta {
-                    it.setDisplayName(Translation.playerNameColor + userAndRating.userCreatedReport.normalName)
+                    it.setDisplayName(translation.playerNameColor + userAndRating.userCreatedReport.normalName)
                     it.lore = mutableListOf<String>().apply {
                         subListFromString(
-                            "${Translation.message} $color${userAndRating.rating.message}",
-                            Config.trimMessageAfter
+                            "${translation.message} $color${userAndRating.rating.message}",
+                            config.trimMessageAfter
                         ).forEachIndexed { index, it ->
                             add("$color$it")
                         }
 
-                        if (Config.gui.showFirstConnection)
-                            add("${Translation.firstConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.firstPlayed)}")
-                        if (Config.gui.showLastConnection)
-                            add("${Translation.lastConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.lastPlayed)}")
-                        if (AstraPermission.DeleteReport.hasPermission(playerMenuUtility.player) && Config.gui.showDeleteReport)
-                            add(Translation.clickToDeleteReport)
+                        if (config.gui.showFirstConnection)
+                            add("${translation.firstConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.firstPlayed)}")
+                        if (config.gui.showLastConnection)
+                            add("${translation.lastConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.lastPlayed)}")
+                        if (AstraPermission.DeleteReport.hasPermission(playerMenuUtility.player) && config.gui.showDeleteReport)
+                            add(translation.clickToDeleteReport)
                     }
                 }
             }
