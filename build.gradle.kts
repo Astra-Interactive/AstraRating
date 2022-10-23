@@ -65,6 +65,7 @@ dependencies {
     compileOnly(Dependencies.Libraries.discordsrv)
     compileOnly(Dependencies.Libraries.vaultAPI)
     compileOnly(Dependencies.Libraries.coreprotect)
+    testImplementation("org.xerial:sqlite-jdbc:3.34.0")
 }
 
 tasks {

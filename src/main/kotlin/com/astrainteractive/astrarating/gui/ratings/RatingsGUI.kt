@@ -6,12 +6,16 @@ import com.astrainteractive.astrarating.modules.TranslationProvider
 import com.astrainteractive.astrarating.utils.EmpireConfig
 import com.astrainteractive.astrarating.utils.PluginTranslation
 import com.astrainteractive.astrarating.utils.TimeUtility
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
+import ru.astrainteractive.astralibs.async.BukkitMain
 import ru.astrainteractive.astralibs.async.PluginScope
 import ru.astrainteractive.astralibs.menu.*
 import ru.astrainteractive.astralibs.utils.close
@@ -80,7 +84,7 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
                 setMenuItems()
             }
 
-            else -> PluginScope.launch {
+            else -> PluginScope.launch(Dispatchers.IO) {
                 val item = viewModel.userRatings.value[maxItemsPerPage * page + e.slot]
                 PlayerRatingsGUI(
                     Bukkit.getOfflinePlayer(UUID.fromString(item.reportedPlayer.minecraftUUID)),
@@ -100,6 +104,7 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
     }
 
     override fun onCreated() {
+        println("RatingsGUI ${this as InventoryHolder}")
         viewModel.userRatings.collectOn { setMenuItems() }
         setMenuItems()
     }

@@ -3,15 +3,9 @@ package com.astrainteractive.astrarating.utils
 import ru.astrainteractive.astralibs.utils.catching
 import com.astrainteractive.astrarating.AstraRating
 import com.astrainteractive.astrarating.modules.ConfigProvider
-import com.google.gson.JsonParser
 import github.scarsz.discordsrv.util.DiscordUtil
 import org.bukkit.ChatColor
 import org.bukkit.OfflinePlayer
-import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.meta.ItemMeta
-import java.io.InputStreamReader
-import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.max
@@ -47,7 +41,7 @@ fun subListFromString(text:String, threshold:Int): List<String> {
 
 
 object TimeUtility {
-    fun formatToString(time: Long, format: String = ConfigProvider.value.gui.timeFormat): String? {
+    fun formatToString(time: Long, format: String = ConfigProvider.value.gui.format): String? {
         return SimpleDateFormat(format).format(Date(time))
     }
 }

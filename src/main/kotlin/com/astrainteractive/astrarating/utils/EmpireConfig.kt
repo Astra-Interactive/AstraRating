@@ -1,7 +1,5 @@
 package com.astrainteractive.astrarating.utils
 
-import ru.astrainteractive.astralibs.AstraYamlParser
-import ru.astrainteractive.astralibs.Logger
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
@@ -32,7 +30,7 @@ data class EmpireConfig(
         val showFirstConnection: Boolean = true,
         val showLastConnection: Boolean = true,
         val showDeleteReport: Boolean = true,
-        val timeFormat: String = "yyyy-MM-dd",
+        val format: String = "yyyy-MM-dd",
         val buttons: Buttons = Buttons()
     ) {
         data class Buttons(

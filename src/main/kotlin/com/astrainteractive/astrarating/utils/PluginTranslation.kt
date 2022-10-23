@@ -44,7 +44,7 @@ class PluginTranslation {
     val onlyPlayerCommand:String = getHEXString("general.only_player_command","#ca271bКоманда доступна только игрокам!")
     val playerNotExists:String = getHEXString("general.player_not_exists","#ca271bТакого игрока нет!")
     val cantRateSelf:String = getHEXString("general.cant_rate_self","#ca271bВы не можете поставить рейтинг самому себe!")
-    val wrongMessageLen:String = getHEXString("general.cant_rate_self","#ca271bДлина причина рейтинга должна быть в диапазоне [5;30]")
+    val wrongMessageLen:String = getHEXString("general.wrong_message_len","#ca271bДлина причина рейтинга должна быть в диапазоне [5;30]")
     val likedUser:String = getHEXString("general.liked_user","#1B76CAВы повысили рейтинг игрока %player%")
     val dislikedUser:String = getHEXString("general.disliked_user","#ca271bВы понизили рейтинг игрока %player%")
     val alreadyMaxDayVotes:String = getHEXString("general.max_day_voted","#ca271bВы уже проголосовали максимальное количество раз за день")

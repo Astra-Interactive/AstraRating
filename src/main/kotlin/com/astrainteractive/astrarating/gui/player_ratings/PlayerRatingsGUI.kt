@@ -7,6 +7,7 @@ import com.astrainteractive.astrarating.gui.ratings.RatingsGUIViewModel
 import com.astrainteractive.astrarating.modules.ConfigProvider
 import com.astrainteractive.astrarating.modules.TranslationProvider
 import com.astrainteractive.astrarating.utils.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.bukkit.Material
@@ -15,6 +16,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import ru.astrainteractive.astralibs.async.PluginScope
 import ru.astrainteractive.astralibs.menu.*
@@ -76,7 +78,7 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, player: Player) : Pagi
         super.onInventoryClicked(e)
         e.isCancelled = true
         when (e.slot) {
-            backPageButton.index -> PluginScope.launch {
+            backPageButton.index -> PluginScope.launch(Dispatchers.IO) {
                 RatingsGUI(playerMenuUtility.player).open()
             }
 

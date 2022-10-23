@@ -1,7 +1,7 @@
 package com.astrainteractive.astrarating.gui.ratings
 
 import ru.astrainteractive.astralibs.utils.next
-import com.astrainteractive.astrarating.domain.api.DatabaseApi
+import com.astrainteractive.astrarating.domain.api.IRatingAPI
 import com.astrainteractive.astrarating.domain.api.UsersRatingsSort
 import com.astrainteractive.astrarating.domain.entities.UserAndRating
 import com.astrainteractive.astrarating.modules.DatabaseApiModule
@@ -20,7 +20,7 @@ import ru.astrainteractive.astralibs.async.PluginScope
  * MVVM technique
  */
 class RatingsGUIViewModel : ViewModel() {
-    private val databaseApi:DatabaseApi
+    private val databaseApi: IRatingAPI
         get() = DatabaseApiModule.value
     companion object {
         fun getHead(playerName: String) = Companion.getHead(Bukkit.getOfflinePlayer(playerName))

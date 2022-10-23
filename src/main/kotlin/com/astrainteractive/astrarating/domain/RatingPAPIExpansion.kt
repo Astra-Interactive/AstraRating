@@ -1,5 +1,6 @@
-package com.astrainteractive.astrarating.domain.api
+package com.astrainteractive.astrarating.domain
 
+import com.astrainteractive.astrarating.domain.api.CachedTotalRating
 import com.astrainteractive.astrarating.modules.CachedTotalRatingModule
 import me.clip.placeholderapi.PlaceholderAPI
 import me.clip.placeholderapi.expansion.PlaceholderExpansion
@@ -7,7 +8,7 @@ import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 
 object RatingPAPIExpansion : PlaceholderExpansion() {
-    private val cachedTotalRating:CachedTotalRating
+    private val cachedTotalRating: CachedTotalRating
         get() = CachedTotalRatingModule.value
     override fun getIdentifier(): String = "erating"
 

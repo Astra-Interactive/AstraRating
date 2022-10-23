@@ -6,20 +6,19 @@ import ru.astrainteractive.astralibs.Logger
 import ru.astrainteractive.astralibs.ServerVersion
 import ru.astrainteractive.astralibs.events.GlobalEventManager
 import ru.astrainteractive.astralibs.utils.catching
-import com.astrainteractive.astrarating.domain.api.RatingPAPIExpansion
+import com.astrainteractive.astrarating.domain.RatingPAPIExpansion
 import com.astrainteractive.astrarating.modules.BStats
 import com.astrainteractive.astrarating.modules.ConfigProvider
 import com.astrainteractive.astrarating.modules.TranslationProvider
-import com.astrainteractive.astrarating.domain.SQLDatabase
 import com.astrainteractive.astrarating.modules.DBModule
 import com.astrainteractive.astrarating.utils.Files
 import github.scarsz.discordsrv.DiscordSRV
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.bukkit.Bukkit
 import org.bukkit.event.HandlerList
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.plugin.java.JavaPlugin
-import ru.astrainteractive.astralibs.async.PluginScope
+import ru.astrainteractive.astralibs.events.DSLEvent
 
 
 /**
@@ -55,6 +54,9 @@ class AstraRating : JavaPlugin() {
         Bukkit.getPluginManager().getPlugin("PlaceholderAPI")?.let {
             if (RatingPAPIExpansion.isRegistered) return@let
             RatingPAPIExpansion.register()
+        }
+        DSLEvent.event(InventoryClickEvent::class.java){ e->
+            println(e.inventory.holder)
         }
     }
 
