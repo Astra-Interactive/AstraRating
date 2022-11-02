@@ -1,7 +1,7 @@
 package com.astrainteractive.astrarating.utils
 
-import com.astrainteractive.astrarating.domain.api.UserRatingsSort
-import com.astrainteractive.astrarating.domain.api.UsersRatingsSort
+import com.astrainteractive.astrarating.domain.entities.UserRatingsSort
+import com.astrainteractive.astrarating.domain.entities.UsersRatingsSort
 import com.astrainteractive.astrarating.domain.entities.User
 import com.astrainteractive.astrarating.modules.TranslationProvider
 import org.bukkit.Bukkit

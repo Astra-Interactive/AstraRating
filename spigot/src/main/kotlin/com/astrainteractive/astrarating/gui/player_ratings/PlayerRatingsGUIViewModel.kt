@@ -2,7 +2,7 @@ package com.astrainteractive.astrarating.gui.player_ratings
 
 import ru.astrainteractive.astralibs.utils.next
 import com.astrainteractive.astrarating.domain.api.IRatingAPI
-import com.astrainteractive.astrarating.domain.api.UserRatingsSort
+import com.astrainteractive.astrarating.domain.entities.UserRatingsSort
 import com.astrainteractive.astrarating.domain.entities.UserAndRating
 import com.astrainteractive.astrarating.modules.DatabaseApiModule
 import kotlinx.coroutines.Dispatchers

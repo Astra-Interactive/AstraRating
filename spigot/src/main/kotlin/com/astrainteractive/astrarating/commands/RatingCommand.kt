@@ -5,7 +5,7 @@ import com.astrainteractive.astrarating.domain.SQLDatabase.Companion.NON_EXISTS_
 import ru.astrainteractive.astralibs.AstraLibs
 import ru.astrainteractive.astralibs.utils.registerCommand
 import com.astrainteractive.astrarating.domain.api.IRatingAPI
-import com.astrainteractive.astrarating.domain.api.use_cases.InsertUserUseCase
+import com.astrainteractive.astrarating.domain.use_cases.InsertUserUseCase
 import com.astrainteractive.astrarating.domain.entities.UserRating
 import com.astrainteractive.astrarating.exception.ValidationException
 import com.astrainteractive.astrarating.exception.ValidationExceptionHandler

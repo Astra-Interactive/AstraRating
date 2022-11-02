@@ -1,4 +1,4 @@
-package com.astrainteractive.astrarating.domain.api.use_cases
+package com.astrainteractive.astrarating.domain.use_cases
 
 import com.astrainteractive.astrarating.domain.api.IRatingAPI
 import com.astrainteractive.astrarating.domain.entities.User
