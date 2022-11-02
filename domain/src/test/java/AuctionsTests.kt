@@ -1,8 +1,8 @@
 import kotlinx.coroutines.runBlocking
 import com.astrainteractive.astrarating.domain.api.IRatingAPI
 import com.astrainteractive.astrarating.domain.api.TableAPI
-import com.astrainteractive.astrarating.domain.entities.User
-import com.astrainteractive.astrarating.domain.entities.UserRating
+import com.astrainteractive.astrarating.domain.entities.tables.dto.UserDTO
+import com.astrainteractive.astrarating.domain.entities.tables.dto.UserRatingDTO
 import com.astrainteractive.astrarating.domain.entities.tables.UserRatingTable
 import com.astrainteractive.astrarating.domain.entities.tables.UserTable
 import ru.astrainteractive.astralibs.database_v2.Database
@@ -15,8 +15,8 @@ class AuctionsTests {
     private lateinit var databaseV2: Database
     private lateinit var api: IRatingAPI
 
-    val randomUser: User
-        get() = User(
+    val randomUser: UserDTO
+        get() = UserDTO(
             minecraftUUID = UUID.randomUUID().toString(),
             minecraftName = UUID.randomUUID().toString(),
             discordID = UUID.randomUUID().toString(),
@@ -25,7 +25,7 @@ class AuctionsTests {
     fun userRating(
         userCreatedReport: Long,
         reportedUser: Long,
-    ): UserRating = UserRating(
+    ): UserRatingDTO = UserRatingDTO(
         userCreatedReport = userCreatedReport,
         reportedUser = reportedUser,
         rating = Random.nextInt(-10, 10),

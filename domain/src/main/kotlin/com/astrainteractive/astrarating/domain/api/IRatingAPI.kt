@@ -1,16 +1,16 @@
 package com.astrainteractive.astrarating.domain.api
 
-import com.astrainteractive.astrarating.domain.entities.User
-import com.astrainteractive.astrarating.domain.entities.UserAndRating
-import com.astrainteractive.astrarating.domain.entities.UserRating
+import com.astrainteractive.astrarating.domain.entities.tables.dto.UserDTO
+import com.astrainteractive.astrarating.domain.entities.tables.dto.UserAndRating
+import com.astrainteractive.astrarating.domain.entities.tables.dto.UserRatingDTO
 
 interface IRatingAPI {
-    suspend fun selectUser(playerName: String): User?
-    suspend fun updateUser(user: User)
-    suspend fun insertUser(user: User): Long?
+    suspend fun selectUser(playerName: String): UserDTO?
+    suspend fun updateUser(user: UserDTO)
+    suspend fun insertUser(user: UserDTO): Long?
 
-    suspend fun insertUserRating(it: UserRating): Long?
-    suspend fun deleteUserRating(it: UserRating)
+    suspend fun insertUserRating(it: UserRatingDTO): Long?
+    suspend fun deleteUserRating(it: UserRatingDTO)
 
     suspend fun fetchUserRatings(playerName: String): List<UserAndRating>?
     suspend fun fetchUsersTotalRating(): List<UserAndRating>?

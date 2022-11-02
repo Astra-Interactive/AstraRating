@@ -2,7 +2,7 @@ package com.astrainteractive.astrarating.utils
 
 import com.astrainteractive.astrarating.domain.entities.UserRatingsSort
 import com.astrainteractive.astrarating.domain.entities.UsersRatingsSort
-import com.astrainteractive.astrarating.domain.entities.User
+import com.astrainteractive.astrarating.domain.entities.tables.dto.UserDTO
 import com.astrainteractive.astrarating.modules.TranslationProvider
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
@@ -12,10 +12,10 @@ import java.util.*
 
 private val translation by TranslationProvider
 
-val User.offlinePlayer: OfflinePlayer
+val UserDTO.offlinePlayer: OfflinePlayer
     get() = Bukkit.getOfflinePlayer(UUID.fromString(minecraftUUID))
 
-val User.normalName: String
+val UserDTO.normalName: String
     get() = Bukkit.getOfflinePlayer(UUID.fromString(minecraftUUID)).name
         ?: Bukkit.getOfflinePlayer(minecraftName)?.name ?: minecraftName
 

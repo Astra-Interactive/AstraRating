@@ -3,7 +3,7 @@ package com.astrainteractive.astrarating.gui.ratings
 import ru.astrainteractive.astralibs.utils.next
 import com.astrainteractive.astrarating.domain.api.IRatingAPI
 import com.astrainteractive.astrarating.domain.entities.UsersRatingsSort
-import com.astrainteractive.astrarating.domain.entities.UserAndRating
+import com.astrainteractive.astrarating.domain.entities.tables.dto.UserAndRating
 import com.astrainteractive.astrarating.modules.DatabaseApiModule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

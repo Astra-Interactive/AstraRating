@@ -1,7 +1,7 @@
 package com.astrainteractive.astrarating.domain.use_cases
 
 import com.astrainteractive.astrarating.domain.api.IRatingAPI
-import com.astrainteractive.astrarating.domain.entities.User
+import com.astrainteractive.astrarating.domain.entities.tables.dto.UserDTO
 import ru.astrainteractive.astralibs.domain.IUseCase
 import java.util.*
 
@@ -29,7 +29,7 @@ class InsertUserUseCase(private val databaseApi: IRatingAPI,val discordIDProvide
             databaseApi.updateUser(it.copy(discordID = discordID))
             it.id
         } ?: databaseApi.insertUser(
-            User(
+            UserDTO(
                 minecraftName = params.name ?: "UNDEFINED_NAME",
                 minecraftUUID = uuid,
                 discordID = discordID,

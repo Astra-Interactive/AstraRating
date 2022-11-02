@@ -4,8 +4,8 @@ import ru.astrainteractive.astralibs.Logger
 import ru.astrainteractive.astralibs.database.DatabaseCore
 import ru.astrainteractive.astralibs.database.isConnected
 import ru.astrainteractive.astralibs.utils.catching
-import com.astrainteractive.astrarating.domain.entities.User
-import com.astrainteractive.astrarating.domain.entities.UserRating
+import com.astrainteractive.astrarating.domain.entities.tables.dto.UserDTO
+import com.astrainteractive.astrarating.domain.entities.tables.dto.UserRatingDTO
 import kotlinx.coroutines.*
 import java.sql.Connection
 import java.sql.DriverManager
@@ -24,9 +24,9 @@ class SQLDatabase(filePath: String ) : DatabaseCore() {
             Logger.error("Database error", "Database")
             return
         }
-        createTable<User>()
-        createTable<UserRating>()
-        select<User>()?.filter { it.minecraftName != it.minecraftName.uppercase() }?.map {
+        createTable<UserDTO>()
+        createTable<UserRatingDTO>()
+        select<UserDTO>()?.filter { it.minecraftName != it.minecraftName.uppercase() }?.map {
             coroutineScope {
                 async {
                     update(it.copy(minecraftName = it.minecraftName.uppercase()))

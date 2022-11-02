@@ -64,7 +64,7 @@ class AstraRating : JavaPlugin() {
      * This method called when server is shutting down or when PlugMan disable plugin.
      */
     override fun onDisable() {
-        runBlocking { DBModule.value.close()}
+        runBlocking { DBModule.value.closeConnection()}
         HandlerList.unregisterAll(this)
         GlobalEventManager.onDisable()
     }

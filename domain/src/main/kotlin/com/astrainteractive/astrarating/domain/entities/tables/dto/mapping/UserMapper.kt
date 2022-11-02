@@ -1,17 +1,15 @@
 package com.astrainteractive.astrarating.domain.entities.tables.dto.mapping
 
-import com.astrainteractive.astrarating.domain.entities.User
-import com.astrainteractive.astrarating.domain.entities.UserRating
+import com.astrainteractive.astrarating.domain.entities.tables.dto.UserDTO
 import com.astrainteractive.astrarating.domain.entities.tables.UserEntity
-import com.astrainteractive.astrarating.domain.entities.tables.UserRatingEntity
 import ru.astrainteractive.astralibs.domain.mapping.IMapper
 
-object UserMapper : IMapper<UserEntity, User> {
-    override fun fromDTO(it: User): UserEntity {
+object UserMapper : IMapper<UserEntity, UserDTO> {
+    override fun fromDTO(it: UserDTO): UserEntity {
         return (null as UserEntity)
     }
 
-    override fun toDTO(it: UserEntity): User = User(
+    override fun toDTO(it: UserEntity): UserDTO = UserDTO(
         id = it.id,
         minecraftUUID = it.minecraftUUID,
         minecraftName = it.minecraftName,
