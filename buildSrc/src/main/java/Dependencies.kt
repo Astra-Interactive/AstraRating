@@ -6,7 +6,7 @@ import java.net.URI
 import java.util.*
 
 object Dependencies {
-    const val version = "1.1.0"
+    const val version = "1.2.0"
     const val group = "com.astrainteractive"
     const val destinationDirectoryPath = "D:\\Minecraft Servers\\TEST_SERVER\\plugins"
 

@@ -7,7 +7,7 @@ import ru.astrainteractive.astralibs.database_v2.Table
 
 object UserRatingTable : Table<Long>("users_ratings") {
     override val id: Column<Long> = long("user_rating_id").primaryKey().autoIncrement()
-    val userCreatedReport = long("user_created_report").nullable()
+    val userCreatedReport = long("user_created_report")
     val reportedUser = long("reported_user")
     val rating = integer("rating")
     val message = text("message")
