@@ -39,8 +39,19 @@ dependencies {
     // AstraLibs
     implementation(Dependencies.Libraries.astraLibsKtxCore)
     implementation(Dependencies.Libraries.astraLibsSpigotCore)
+    // Test
+    testImplementation(kotlin("test"))
+    testImplementation(Dependencies.Libraries.orgTeting)
+    testImplementation("org.xerial:sqlite-jdbc:3.34.0")
 }
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+}
+tasks.test {
+    useJUnit()
+    testLogging {
+        events("passed", "skipped", "failed")
+        this.showStandardStreams = true
+    }
 }

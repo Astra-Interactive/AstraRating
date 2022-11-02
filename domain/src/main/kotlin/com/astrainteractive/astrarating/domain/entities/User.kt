@@ -12,7 +12,7 @@ data class User(
     @PrimaryKey
     val id: Long = NON_EXISTS_KEY,
     @ColumnInfo("minecraft_uuid")
-    val minecraftUUID: String = "",
+    var minecraftUUID: String = "",
     @ColumnInfo("minecraft_name")
     val minecraftName: String = "",
     @ColumnInfo("discord_id", nullable = true)
