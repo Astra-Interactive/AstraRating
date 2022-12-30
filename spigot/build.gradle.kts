@@ -33,7 +33,6 @@ repositories {
     maven(Dependencies.Repositories.scarsz)
     maven(Dependencies.Repositories.maven2)
     modelEngige(project)
-    astraLibs(project)
     paperMC(project)
 }
 
@@ -120,13 +119,13 @@ tasks.shadowJar {
 
     }
     relocate("org.bstats", "com.astrainteractive.astrarating")
-    relocate("kotlin", "com.astrainteractive.astrarating.kotlin")
     isReproducibleFileOrder = true
     mergeServiceFiles()
     dependsOn(configurations)
     archiveClassifier.set(null as String?)
     from(sourceSets.main.get().output)
     from(project.configurations.runtimeClasspath)
+    archiveBaseName.set("AstraRating")
     minimize()
     destinationDirectory.set(File(Dependencies.destinationDirectoryPath))
 }

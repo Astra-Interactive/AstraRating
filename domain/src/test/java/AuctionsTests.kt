@@ -5,11 +5,13 @@ import com.astrainteractive.astrarating.domain.entities.tables.dto.UserDTO
 import com.astrainteractive.astrarating.domain.entities.tables.dto.UserRatingDTO
 import com.astrainteractive.astrarating.domain.entities.tables.UserRatingTable
 import com.astrainteractive.astrarating.domain.entities.tables.UserTable
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import ru.astrainteractive.astralibs.database_v2.Database
 import java.io.File
 import java.util.*
 import kotlin.random.Random
-import kotlin.test.*
 
 class AuctionsTests {
     private lateinit var databaseV2: Database
@@ -32,7 +34,7 @@ class AuctionsTests {
         message = UUID.randomUUID().toString()
     )
 
-    @BeforeTest
+    @BeforeEach
     fun setup(): Unit = runBlocking {
         val dbName = "dbv2_auction.db"
         File(dbName).delete()
@@ -43,7 +45,7 @@ class AuctionsTests {
         api = TableAPI(databaseV2)
     }
 
-    @AfterTest
+    @AfterEach
     fun destruct(): Unit = runBlocking {
         databaseV2.closeConnection()
     }

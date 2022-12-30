@@ -77,7 +77,8 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
 
     override fun onInventoryClicked(e: InventoryClickEvent) {
         super.onInventoryClicked(e)
-        e.isCancelled = true
+        if (e.whoClicked == playerMenuUtility.player) e.isCancelled = true
+        if (e.clickedInventory != inventory) return
         when (e.slot) {
             backPageButton.index -> inventory.close()
             sortButtonIndex -> {
@@ -105,7 +106,6 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
     }
 
     override fun onCreated() {
-        println("RatingsGUI ${this as InventoryHolder}")
         viewModel.userRatings.collectOn { setMenuItems() }
         setMenuItems()
     }

@@ -19,6 +19,7 @@ import org.bukkit.event.HandlerList
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.plugin.java.JavaPlugin
 import ru.astrainteractive.astralibs.events.DSLEvent
+import ru.astrainteractive.astralibs.utils.setupWithSpigot
 
 
 /**
@@ -27,36 +28,24 @@ import ru.astrainteractive.astralibs.events.DSLEvent
 class AstraRating : JavaPlugin() {
     companion object {
         lateinit var instance: AstraRating
-        var discordSRV: DiscordSRV? = null
-    }
-
-    init {
-        instance = this
-        AstraLibs.rememberPlugin(this)
-        discordSRV = catching { Bukkit.getPluginManager().getPlugin("DiscordSRV") as DiscordSRV }
+        val discordSRV: DiscordSRV? by lazy {
+            kotlin.runCatching { Bukkit.getPluginManager().getPlugin("DiscordSRV") as DiscordSRV }.getOrNull()
+        }
     }
 
     /**
      * This method called when server starts or PlugMan load plugin.
      */
     override fun onEnable() {
-        Logger.prefix = "AstraTemplate"
+        AstraLibs.rememberPlugin(this)
+        Logger.setupWithSpigot("AstraRating")
+        instance = this
         reloadPlugin()
         CommandManager()
         BStats.value
-        if (ServerVersion.version == ServerVersion.UNMAINTAINED)
-            Logger.warn("Your server version is not maintained and might be not fully functional!", "AstraTemplate")
-        else
-            Logger.log(
-                "Your server version is: ${ServerVersion.getServerVersion()}. This version is supported!",
-                "AstraTemplate"
-            )
         Bukkit.getPluginManager().getPlugin("PlaceholderAPI")?.let {
             if (RatingPAPIExpansion.isRegistered) return@let
             RatingPAPIExpansion.register()
-        }
-        DSLEvent.event(InventoryClickEvent::class.java){ e->
-            println(e.inventory.holder)
         }
     }
 

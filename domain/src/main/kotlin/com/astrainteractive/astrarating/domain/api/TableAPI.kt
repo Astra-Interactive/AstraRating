@@ -19,7 +19,7 @@ import ru.astrainteractive.astralibs.utils.mapNotNull
 class TableAPI(private val database: Database) : IRatingAPI {
     override suspend fun selectUser(playerName: String): UserDTO? {
         return UserTable.find(constructor = ::UserEntity) {
-            UserTable.minecraftName.eq(playerName)
+            UserTable.minecraftName.eq(playerName.uppercase())
         }.map(UserMapper::toDTO).firstOrNull()
     }
 
@@ -36,7 +36,7 @@ class TableAPI(private val database: Database) : IRatingAPI {
         return UserTable.insert {
             this[UserTable.lastUpdated] = user.lastUpdated
             this[UserTable.minecraftUUID] = user.minecraftUUID
-            this[UserTable.minecraftName] = user.minecraftName
+            this[UserTable.minecraftName] = user.minecraftName.uppercase()
             this[UserTable.discordID] = user.discordID
         }.toLong()
     }
@@ -61,10 +61,11 @@ class TableAPI(private val database: Database) : IRatingAPI {
         val query = """
             SELECT * FROM ${UserRatingTable.tableName} A 
             JOIN ${UserTable.tableName} B on A.${UserRatingTable.userCreatedReport.name}=B.${UserTable.id.name} WHERE A.${UserRatingTable.reportedUser.name}=
-            (SELECT ${UserTable.id.name} FROM ${UserTable.tableName} WHERE ${UserTable.minecraftName.name}=${playerName?.sqlString} LIMIT 1)
+            (SELECT ${UserTable.id.name} FROM ${UserTable.tableName} WHERE ${UserTable.minecraftName.name}=${playerName?.sqlString?.uppercase()} LIMIT 1)
         """.trimIndent()
+        println(query)
         val reportedUser = UserTable.find(constructor = ::UserEntity){
-            UserTable.minecraftName.eq(playerName)
+            UserTable.minecraftName.eq(playerName.uppercase())
         }.firstOrNull()?.let(UserMapper::toDTO)!!
         val rs = database?.connection?.createStatement()?.executeQuery(query)
         return rs?.mapNotNull {
@@ -95,7 +96,7 @@ class TableAPI(private val database: Database) : IRatingAPI {
         val query = """
             SELECT COUNT(*) total FROM ${UserRatingTable.tableName} 
             WHERE ${UserRatingTable.userCreatedReport.name}=
-              (SELECT ${UserRatingTable.id.name} FROM ${UserTable.tableName} WHERE ${UserTable.minecraftName.name}=${playerName.sqlString}) AND (${System.currentTimeMillis()} - ${UserRatingDTO::time.columnName} < ${24 * 60 * 60 * 1000})
+              (SELECT ${UserRatingTable.id.name} FROM ${UserTable.tableName} WHERE ${UserTable.minecraftName.name}=${playerName.sqlString.uppercase()}) AND (${System.currentTimeMillis()} - ${UserRatingDTO::time.columnName} < ${24 * 60 * 60 * 1000})
         """.trimIndent()
         val rs = database.connection?.createStatement()?.executeQuery(query)
         return rs?.getInt("total") ?: 0
@@ -106,9 +107,9 @@ class TableAPI(private val database: Database) : IRatingAPI {
             """
                     SELECT COUNT(*) total FROM ${UserRatingTable.tableName} 
                     WHERE ${UserRatingTable.userCreatedReport.name} = 
-                      (SELECT ${UserTable.id.name} FROM ${UserTable.tableName} WHERE ${UserTable.minecraftName.name}=${playerName.sqlString})   
+                      (SELECT ${UserTable.id.name} FROM ${UserTable.tableName} WHERE ${UserTable.minecraftName.name}=${playerName.sqlString.uppercase()})   
                     AND ${UserRatingTable.reportedUser.name} = 
-                      (SELECT ${UserTable.id.name} FROM ${UserTable.tableName} WHERE ${UserTable.minecraftName.name}=${ratedPlayerName?.sqlString}) 
+                      (SELECT ${UserTable.id.name} FROM ${UserTable.tableName} WHERE ${UserTable.minecraftName.name}=${ratedPlayerName?.sqlString?.uppercase()}) 
                     AND (${System.currentTimeMillis()} - ${UserRatingTable.time.name} < ${24 * 60 * 60 * 1000})
                     """
         val rs = database.connection?.createStatement()?.executeQuery(query)

@@ -24,7 +24,7 @@ import ru.astrainteractive.astralibs.menu.*
 class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, player: Player) : PaginatedMenu() {
     private val config: EmpireConfig
         get() = ConfigProvider.value
-    private val translation:PluginTranslation
+    private val translation: PluginTranslation
         get() = TranslationProvider.value
     override val playerMenuUtility: IPlayerHolder = DefaultPlayerHolder(player)
 
@@ -78,7 +78,8 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, player: Player) : Pagi
 
     override fun onInventoryClicked(e: InventoryClickEvent) {
         super.onInventoryClicked(e)
-        e.isCancelled = true
+        if (e.whoClicked == playerMenuUtility.player) e.isCancelled = true
+        if (e.clickedInventory != inventory) return
         when (e.slot) {
             backPageButton.index -> PluginScope.launch(Dispatchers.IO) {
                 RatingsGUI(playerMenuUtility.player).open()

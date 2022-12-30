@@ -9,7 +9,12 @@ plugins {
 
 group = "com.astrainteractive.astrarating.domain"
 version = "1.0.4"
-
+java {
+    withSourcesJar()
+    withJavadocJar()
+    java.sourceCompatibility = JavaVersion.VERSION_1_8
+    java.targetCompatibility = JavaVersion.VERSION_17
+}
 repositories {
     mavenLocal()
     mavenCentral()
@@ -26,7 +31,6 @@ repositories {
     maven(Dependencies.Repositories.scarsz)
     maven(Dependencies.Repositories.maven2)
     modelEngige(project)
-    astraLibs(project)
     paperMC(project)
 }
 
@@ -42,16 +46,28 @@ dependencies {
     // Test
     testImplementation(kotlin("test"))
     testImplementation(Dependencies.Libraries.orgTeting)
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
     testImplementation("org.xerial:sqlite-jdbc:3.34.0")
 }
 
-tasks.getByName<Test>("test") {
-    useJUnitPlatform()
-}
-tasks.test {
-    useJUnit()
-    testLogging {
-        events("passed", "skipped", "failed")
-        this.showStandardStreams = true
+tasks{
+    withType<JavaCompile>() {
+        options.encoding = "UTF-8"
+    }
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions.jvmTarget = "17"
+    }
+    withType<Jar> {
+        archiveClassifier.set("min")
+    }
+    compileJava {
+        options.encoding = "UTF-8"
+    }
+    test {
+        useJUnitPlatform()
+        testLogging {
+            events("passed", "skipped", "failed")
+            this.showStandardStreams = true
+        }
     }
 }
