@@ -7,6 +7,7 @@ import java.util.*
 
 class CachedTotalRating(private val databaseApi: IRatingAPI) {
     private val _ratingByPlayer: MutableMap<UUID, Int> = mutableMapOf()
+    private val limitedDispatcher = Dispatchers.IO.limitedParallelism(1)
     val ratingByPlayer: Map<UUID, Int>
         get() = _ratingByPlayer
 
@@ -17,7 +18,7 @@ class CachedTotalRating(private val databaseApi: IRatingAPI) {
     }
 
     fun getPlayerRating(name: String, uuid: UUID): Int {
-        PluginScope.launch(Dispatchers.IO) { rememberPlayer(name, uuid) }
+        PluginScope.launch(limitedDispatcher) { rememberPlayer(name, uuid) }
         return ratingByPlayer[uuid] ?: 0
     }
 }

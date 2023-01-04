@@ -1,22 +1,17 @@
 package com.astrainteractive.astrarating.gui.player_ratings
 
-import ru.astrainteractive.astralibs.events.EventManager
-import ru.astrainteractive.astralibs.utils.editMeta
 import com.astrainteractive.astrarating.gui.ratings.RatingsGUI
 import com.astrainteractive.astrarating.gui.ratings.RatingsGUIViewModel
 import com.astrainteractive.astrarating.modules.ConfigProvider
 import com.astrainteractive.astrarating.modules.TranslationProvider
 import com.astrainteractive.astrarating.utils.*
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.bukkit.Material
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
-import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import ru.astrainteractive.astralibs.async.PluginScope
 import ru.astrainteractive.astralibs.menu.*
@@ -77,9 +72,8 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, player: Player) : Pagi
         get() = 0
 
     override fun onInventoryClicked(e: InventoryClickEvent) {
-        super.onInventoryClicked(e)
-        if (e.whoClicked == playerMenuUtility.player) e.isCancelled = true
-        if (e.clickedInventory != inventory) return
+        e.isCancelled = true
+        handleChangePageClick(e.slot)
         when (e.slot) {
             backPageButton.index -> PluginScope.launch(Dispatchers.IO) {
                 RatingsGUI(playerMenuUtility.player).open()

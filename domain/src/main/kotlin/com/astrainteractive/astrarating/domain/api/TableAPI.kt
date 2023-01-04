@@ -63,10 +63,9 @@ class TableAPI(private val database: Database) : IRatingAPI {
             JOIN ${UserTable.tableName} B on A.${UserRatingTable.userCreatedReport.name}=B.${UserTable.id.name} WHERE A.${UserRatingTable.reportedUser.name}=
             (SELECT ${UserTable.id.name} FROM ${UserTable.tableName} WHERE ${UserTable.minecraftName.name}=${playerName?.sqlString?.uppercase()} LIMIT 1)
         """.trimIndent()
-        println(query)
         val reportedUser = UserTable.find(constructor = ::UserEntity){
             UserTable.minecraftName.eq(playerName.uppercase())
-        }.firstOrNull()?.let(UserMapper::toDTO)!!
+        }.firstOrNull()?.let(UserMapper::toDTO) ?: return null
         val rs = database?.connection?.createStatement()?.executeQuery(query)
         return rs?.mapNotNull {
             UserAndRating(

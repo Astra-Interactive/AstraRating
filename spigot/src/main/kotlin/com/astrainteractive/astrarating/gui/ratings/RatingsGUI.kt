@@ -6,18 +6,13 @@ import com.astrainteractive.astrarating.modules.TranslationProvider
 import com.astrainteractive.astrarating.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
-import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
-import ru.astrainteractive.astralibs.async.BukkitMain
 import ru.astrainteractive.astralibs.async.PluginScope
 import ru.astrainteractive.astralibs.menu.*
-import ru.astrainteractive.astralibs.utils.close
-import ru.astrainteractive.astralibs.utils.editMeta
 import java.util.*
 
 
@@ -76,9 +71,8 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
 
 
     override fun onInventoryClicked(e: InventoryClickEvent) {
-        super.onInventoryClicked(e)
-        if (e.whoClicked == playerMenuUtility.player) e.isCancelled = true
-        if (e.clickedInventory != inventory) return
+        e.isCancelled = true
+        handleChangePageClick(e.slot)
         when (e.slot) {
             backPageButton.index -> inventory.close()
             sortButtonIndex -> {
