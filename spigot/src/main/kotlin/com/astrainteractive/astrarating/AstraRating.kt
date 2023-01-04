@@ -40,7 +40,9 @@ class AstraRating : JavaPlugin() {
         CommandManager()
         BStats.value
         Bukkit.getPluginManager().getPlugin("PlaceholderAPI")?.let {
-            if (RatingPAPIExpansion.isRegistered) return@let
+            if (RatingPAPIExpansion.isRegistered)
+                RatingPAPIExpansion.unregister()
+
             RatingPAPIExpansion.register()
         }
     }

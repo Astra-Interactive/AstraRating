@@ -12,6 +12,10 @@ import ru.astrainteractive.astralibs.database_v2.Database
 import java.io.File
 import java.util.*
 import kotlin.random.Random
+import kotlin.test.DefaultAsserter.assertEquals
+import kotlin.test.DefaultAsserter.assertNotNull
+import kotlin.test.assertEquals
+import kotlin.test.*
 
 class AuctionsTests {
     private lateinit var databaseV2: Database

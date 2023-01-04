@@ -1,5 +1,6 @@
 package com.astrainteractive.astrarating.utils
 
+import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
@@ -7,6 +8,7 @@ import org.bukkit.inventory.ItemStack
 /**
  * Example config file with 3 types of initialization
  */
+@Serializable
 data class EmpireConfig(
     // Maximum rating player can give players in total
     // Can be overwritten in LuckPerms
@@ -26,6 +28,7 @@ data class EmpireConfig(
     val cutWords:Boolean = false,
     val gui: Gui = Gui()
 ) {
+    @Serializable
     data class Gui(
         val showFirstConnection: Boolean = true,
         val showLastConnection: Boolean = true,
@@ -33,12 +36,14 @@ data class EmpireConfig(
         val format: String = "yyyy-MM-dd",
         val buttons: Buttons = Buttons()
     ) {
+        @Serializable
         data class Buttons(
             val back: Button = Button(Material.PAPER.name),
             val prev: Button = Button(Material.PAPER.name),
             val next: Button = Button(Material.PAPER.name),
             val sort: Button = Button(Material.SUNFLOWER.name)
         ) {
+            @Serializable
             data class Button(
                 val material: String,
                 val customModelData: Int = 0

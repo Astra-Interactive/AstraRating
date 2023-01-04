@@ -1,7 +1,7 @@
 main: com.astrainteractive.astrarating.AstraRating
 prefix: '${name}'
 description: '${description}'
-name: AstraRating
+name: '${name}'
 version: '${version}'
 authors: [ MakeevRoman ]
 author: MakeevRoman

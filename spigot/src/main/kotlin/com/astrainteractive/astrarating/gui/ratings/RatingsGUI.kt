@@ -81,7 +81,7 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
             }
 
             else -> PluginScope.launch(Dispatchers.IO) {
-                val item = viewModel.userRatings.value[maxItemsPerPage * page + e.slot]
+                val item = viewModel.userRatings.value.getOrNull(maxItemsPerPage * page + e.slot)?:return@launch
                 PlayerRatingsGUI(
                     Bukkit.getOfflinePlayer(UUID.fromString(item.reportedPlayer.minecraftUUID)),
                     playerMenuUtility.player

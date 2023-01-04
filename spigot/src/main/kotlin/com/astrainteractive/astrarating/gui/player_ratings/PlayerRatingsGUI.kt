@@ -87,7 +87,7 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, player: Player) : Pagi
             else -> {
                 if (!AstraPermission.DeleteReport.hasPermission(playerMenuUtility.player)) return
                 if (e.click != ClickType.LEFT) return
-                val item = viewModel.userRatings.value[maxItemsPerPage * page + e.slot]
+                val item = viewModel.userRatings.value.getOrNull(maxItemsPerPage * page + e.slot)?:return
                 viewModel.onDeleteClicked(item) {
                     setMenuItems()
                 }

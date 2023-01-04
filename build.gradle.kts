@@ -1,8 +1,13 @@
+group = libs.versions.group.get()
+version = libs.versions.plugin.get()
+description = libs.versions.description.get()
+
 plugins {
     java
-    `maven-publish`
     `java-library`
-    kotlin("jvm") version Dependencies.Kotlin.version apply false
-    kotlin("plugin.serialization") version Dependencies.Kotlin.version apply false
-    id("com.github.johnrengelman.shadow") version Dependencies.Kotlin.shadow apply false
+    alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.kotlin.serialization) apply false
+    alias(libs.plugins.shadow) apply false
+    id("convention.publication") apply false
+    alias(libs.plugins.kotlin.dokka) apply false
 }

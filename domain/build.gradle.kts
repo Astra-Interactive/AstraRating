@@ -1,73 +1,29 @@
 plugins {
-    java
-    `maven-publish`
-    `java-library`
-    kotlin("jvm") version Dependencies.Kotlin.version
-    kotlin("plugin.serialization") version Dependencies.Kotlin.version
-    id("com.github.johnrengelman.shadow") version Dependencies.Kotlin.shadow
+    kotlin("jvm")
+    kotlin("plugin.serialization")
+    id("com.github.johnrengelman.shadow")
+    id("basic-plugin")
 }
-
-group = "com.astrainteractive.astrarating.domain"
-version = "1.0.4"
-java {
-    withSourcesJar()
-    withJavadocJar()
-    java.sourceCompatibility = JavaVersion.VERSION_1_8
-    java.targetCompatibility = JavaVersion.VERSION_17
-}
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven(Dependencies.Repositories.extendedclip)
-    maven(Dependencies.Repositories.maven2Apache)
-    maven(Dependencies.Repositories.essentialsx)
-    maven(Dependencies.Repositories.enginehub)
-    maven(Dependencies.Repositories.spigotmc)
-    maven(Dependencies.Repositories.dmulloy2)
-    maven(Dependencies.Repositories.papermc)
-    maven(Dependencies.Repositories.dv8tion)
-    maven(Dependencies.Repositories.playpro)
-    maven(Dependencies.Repositories.jitpack)
-    maven(Dependencies.Repositories.scarsz)
-    maven(Dependencies.Repositories.maven2)
-    modelEngige(project)
-    paperMC(project)
-}
-
 dependencies {
     // Kotlin
-    implementation(Dependencies.Libraries.kotlinGradlePlugin)
+    implementation(libs.kotlinGradlePlugin)
     // Coroutines
-    implementation(Dependencies.Libraries.kotlinxCoroutinesCoreJVM)
-    implementation(Dependencies.Libraries.kotlinxCoroutinesCore)
+    implementation(libs.coroutines.coreJvm)
+    implementation(libs.coroutines.core)
+    // Serialization
+    implementation(libs.kotlin.serialization)
+    implementation(libs.kotlin.serializationJson)
+    implementation(libs.kotlin.serializationKaml)
     // AstraLibs
-    implementation(Dependencies.Libraries.astraLibsKtxCore)
-    implementation(Dependencies.Libraries.astraLibsSpigotCore)
-    // Test
-    testImplementation(kotlin("test"))
-    testImplementation(Dependencies.Libraries.orgTeting)
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1")
-    testImplementation("org.xerial:sqlite-jdbc:3.34.0")
-}
-
-tasks{
-    withType<JavaCompile>() {
-        options.encoding = "UTF-8"
-    }
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions.jvmTarget = "17"
-    }
-    withType<Jar> {
-        archiveClassifier.set("min")
-    }
-    compileJava {
-        options.encoding = "UTF-8"
-    }
-    test {
-        useJUnitPlatform()
-        testLogging {
-            events("passed", "skipped", "failed")
-            this.showStandardStreams = true
-        }
-    }
+    implementation(libs.astralibs.ktxCore)
+    implementation(libs.astralibs.spigotCore)
+    implementation(libs.bstats.bukkit)
+    // Test-Core
+    testImplementation(kotlin("test-junit5"))
+    testImplementation(platform(libs.junit.bom))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    // Test-libs
+    testImplementation(libs.coroutines.core)
+    testImplementation(libs.coroutines.coreJvm)
+    testImplementation(libs.xerial.sqlite.jdbc)
 }

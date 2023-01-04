@@ -13,11 +13,6 @@ import kotlin.random.Random
 
 
 
-val OfflinePlayer.uuid: String
-    get() = uniqueId.toString()
-val randomColor: ChatColor
-    get() = ChatColor.values()[Random.nextInt(ChatColor.values().size)]
-
 fun getLinkedDiscordID(player: OfflinePlayer) =
     getLinkedDiscordID(player.uniqueId)
 
