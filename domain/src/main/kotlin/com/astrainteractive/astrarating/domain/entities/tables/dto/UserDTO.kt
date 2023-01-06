@@ -1,6 +1,6 @@
 package com.astrainteractive.astrarating.domain.entities.tables.dto
 
-import com.astrainteractive.astrarating.domain.SQLDatabase.Companion.NON_EXISTS_KEY
+import com.astrainteractive.astrarating.domain.api.NON_EXISTS_KEY
 
 
 data class UserDTO(

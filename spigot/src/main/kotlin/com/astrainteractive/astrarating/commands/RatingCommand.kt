@@ -2,15 +2,15 @@ package com.astrainteractive.astrarating.commands
 
 import CommandManager
 import ru.astrainteractive.astralibs.AstraLibs
-import ru.astrainteractive.astralibs.utils.registerCommand
 import com.astrainteractive.astrarating.modules.TranslationProvider
+import ru.astrainteractive.astralibs.commands.registerCommand
 
 /**
  * /arating reload
  * /arating like/dislike <player> <message>
  * /arating rating <player>
  */
-fun CommandManager.ratingCommand() = AstraLibs.registerCommand("arating") { sender, args ->
+fun CommandManager.ratingCommand() = AstraLibs.instance.registerCommand("arating") {
     val argument = args.getOrNull(0)
     if (argument == null) {
         sender.sendMessage(TranslationProvider.value.wrongUsage)

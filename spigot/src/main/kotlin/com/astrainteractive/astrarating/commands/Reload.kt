@@ -2,7 +2,8 @@ package com.astrainteractive.astrarating.commands
 
 import CommandManager
 import com.astrainteractive.astrarating.utils.AstraPermission
-import ru.astrainteractive.astralibs.commands.DSLCommand
+import ru.astrainteractive.astralibs.AstraLibs
+import ru.astrainteractive.astralibs.commands.registerCommand
 
 /**
  * Reload command handler
@@ -13,8 +14,8 @@ import ru.astrainteractive.astralibs.commands.DSLCommand
  *
  * Here you should also check for permission
  */
-fun CommandManager.reload() = DSLCommand.invoke("aratingreload") {
-    if (!AstraPermission.Reload.hasPermission(this.sender)) return@invoke
+fun CommandManager.reload() = AstraLibs.instance.registerCommand("aratingreload") {
+    if (!AstraPermission.Reload.hasPermission(this.sender)) return@registerCommand
     CommandManager.reload(this.sender)
 }
 

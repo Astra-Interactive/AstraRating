@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import ru.astrainteractive.astralibs.AstraLibs
 import ru.astrainteractive.astralibs.Logger
 import ru.astrainteractive.astralibs.events.GlobalEventManager
+import ru.astrainteractive.astralibs.menu.SharedInventoryClickEvent
 import ru.astrainteractive.astralibs.utils.setupWithSpigot
 
 
@@ -45,6 +46,7 @@ class AstraRating : JavaPlugin() {
 
             RatingPAPIExpansion.register()
         }
+        SharedInventoryClickEvent.onEnable(GlobalEventManager)
     }
 
     /**

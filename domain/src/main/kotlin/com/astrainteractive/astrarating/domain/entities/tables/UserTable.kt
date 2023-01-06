@@ -1,8 +1,9 @@
 package com.astrainteractive.astrarating.domain.entities.tables
 
-import ru.astrainteractive.astralibs.database_v2.Column
-import ru.astrainteractive.astralibs.database_v2.Entity
-import ru.astrainteractive.astralibs.database_v2.Table
+import ru.astrainteractive.astralibs.orm.database.Column
+import ru.astrainteractive.astralibs.orm.database.Constructable
+import ru.astrainteractive.astralibs.orm.database.Entity
+import ru.astrainteractive.astralibs.orm.database.Table
 
 
 object UserTable : Table<Long>("users") {
@@ -20,4 +21,5 @@ class UserEntity : Entity<Long>(UserTable) {
     val minecraftName by UserTable.minecraftName
     var discordID by UserTable.discordID
     var lastUpdated by UserTable.lastUpdated
+    companion object: Constructable<UserEntity>(::UserEntity)
 }

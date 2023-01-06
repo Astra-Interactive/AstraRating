@@ -8,7 +8,8 @@ import com.astrainteractive.astrarating.domain.entities.tables.UserTable
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import ru.astrainteractive.astralibs.database_v2.Database
+import ru.astrainteractive.astralibs.orm.DBConnection
+import ru.astrainteractive.astralibs.orm.Database
 import java.io.File
 import java.util.*
 import kotlin.random.Random
@@ -43,7 +44,7 @@ class AuctionsTests {
         val dbName = "dbv2_auction.db"
         File(dbName).delete()
         databaseV2 = Database()
-        databaseV2.openConnection("jdbc:sqlite:$dbName", "org.sqlite.JDBC")
+        databaseV2.openConnection("$dbName", DBConnection.SQLite)
         UserTable.create()
         UserRatingTable.create()
         api = TableAPI(databaseV2)

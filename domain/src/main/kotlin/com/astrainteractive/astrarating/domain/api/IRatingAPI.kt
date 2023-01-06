@@ -4,6 +4,7 @@ import com.astrainteractive.astrarating.domain.entities.tables.dto.UserDTO
 import com.astrainteractive.astrarating.domain.entities.tables.dto.UserAndRating
 import com.astrainteractive.astrarating.domain.entities.tables.dto.UserRatingDTO
 
+const val NON_EXISTS_KEY = -1L
 interface IRatingAPI {
     suspend fun selectUser(playerName: String): UserDTO?
     suspend fun updateUser(user: UserDTO)

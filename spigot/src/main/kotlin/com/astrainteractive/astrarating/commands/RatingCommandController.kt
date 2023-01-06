@@ -1,7 +1,7 @@
 package com.astrainteractive.astrarating.commands
 
-import com.astrainteractive.astrarating.domain.SQLDatabase
 import com.astrainteractive.astrarating.domain.api.IRatingAPI
+import com.astrainteractive.astrarating.domain.api.NON_EXISTS_KEY
 import com.astrainteractive.astrarating.domain.use_cases.InsertUserUseCase
 import com.astrainteractive.astrarating.domain.entities.tables.dto.UserRatingDTO
 import com.astrainteractive.astrarating.exception.ValidationException
@@ -97,7 +97,7 @@ object RatingCommandController {
                 return@launch
             }
 
-            val ratingEntity = UserRatingDTO(SQLDatabase.NON_EXISTS_KEY, playerCreatedID, playerReportedID, rating, message)
+            val ratingEntity = UserRatingDTO(NON_EXISTS_KEY, playerCreatedID, playerReportedID, rating, message)
             databaseApi.insertUserRating(ratingEntity)
             if (rating > 0)
                 ratingCreator.sendMessage(translation.likedUser.replace("%player%", args[1]))

@@ -13,13 +13,13 @@ import org.bukkit.Material
 import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
-import ru.astrainteractive.astralibs.architecture.ViewModel
+import ru.astrainteractive.astralibs.async.AsyncComponent
 import ru.astrainteractive.astralibs.async.PluginScope
 
 /**
  * MVVM technique
  */
-class RatingsGUIViewModel : ViewModel() {
+class RatingsGUIViewModel : AsyncComponent() {
     private val databaseApi: IRatingAPI
         get() = DatabaseApiModule.value
     companion object {

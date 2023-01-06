@@ -17,7 +17,7 @@ import java.util.*
 
 
 class RatingsGUI(player: Player) : PaginatedMenu() {
-    override val playerMenuUtility: IPlayerHolder = DefaultPlayerHolder(player)
+    override val playerMenuUtility: IPlayerHolder = PlayerHolder(player)
     private val config: EmpireConfig
         get() = ConfigProvider.value
     private val translation:PluginTranslation
@@ -27,7 +27,7 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
     val sortButtonIndex: Int = 50
 
     override var menuTitle: String = translation.ratingsTitle
-    override val menuSize: AstraMenuSize = AstraMenuSize.XL
+    override val menuSize: MenuSize = MenuSize.XL
     override val backPageButton = object : IInventoryButton {
         override val index: Int = 49
         override val item: ItemStack = config.gui.buttons.back.toItemStack().apply {

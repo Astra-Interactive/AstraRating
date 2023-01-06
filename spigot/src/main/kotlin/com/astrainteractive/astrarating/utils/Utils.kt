@@ -1,6 +1,5 @@
 package com.astrainteractive.astrarating.utils
 
-import ru.astrainteractive.astralibs.utils.catching
 import com.astrainteractive.astrarating.AstraRating
 import com.astrainteractive.astrarating.modules.ConfigProvider
 import github.scarsz.discordsrv.util.DiscordUtil
@@ -21,14 +20,7 @@ fun getLinkedDiscordID(uuid:UUID) =
 
 suspend fun getDiscordUser(id: String) = DiscordUtil.getUserById(id)
 suspend fun getDiscordMember(id: String) = DiscordUtil.getMemberById(id)
-fun <T, K> setDeclaredField(clazz: Class<T>, instance: Any, name: String, value: K?) = catching(true) {
-    clazz.getDeclaredField(name).run {
-        isAccessible = true
-        set(instance, value)
-        isAccessible = false
-    }
 
-}
 fun subListFromString(text:String, threshold:Int): List<String> {
     val res =  if (ConfigProvider.value.cutWords) text.chunked(threshold)
     else text.split(" ").chunked(max(1,(text.length)/threshold)).map {

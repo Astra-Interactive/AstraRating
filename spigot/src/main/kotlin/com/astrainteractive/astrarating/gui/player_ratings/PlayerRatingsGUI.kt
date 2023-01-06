@@ -21,13 +21,13 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, player: Player) : Pagi
         get() = ConfigProvider.value
     private val translation: PluginTranslation
         get() = TranslationProvider.value
-    override val playerMenuUtility: IPlayerHolder = DefaultPlayerHolder(player)
+    override val playerMenuUtility: IPlayerHolder = PlayerHolder(player)
 
     private val viewModel = PlayerRatingsGUIViewModel(selectedPlayer)
     val sortButtonIndex: Int = 50
 
     override var menuTitle: String = translation.playerRatingTitle.replace("%player%", selectedPlayer.name ?: "")
-    override val menuSize: AstraMenuSize = AstraMenuSize.XL
+    override val menuSize: MenuSize = MenuSize.XL
 
     override val backPageButton = object : IInventoryButton {
         override val index: Int = 49

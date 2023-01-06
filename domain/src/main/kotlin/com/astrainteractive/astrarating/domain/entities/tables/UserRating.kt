@@ -1,8 +1,9 @@
 package com.astrainteractive.astrarating.domain.entities.tables
 
-import ru.astrainteractive.astralibs.database_v2.Column
-import ru.astrainteractive.astralibs.database_v2.Entity
-import ru.astrainteractive.astralibs.database_v2.Table
+import ru.astrainteractive.astralibs.orm.database.Column
+import ru.astrainteractive.astralibs.orm.database.Constructable
+import ru.astrainteractive.astralibs.orm.database.Entity
+import ru.astrainteractive.astralibs.orm.database.Table
 
 
 object UserRatingTable : Table<Long>("users_ratings") {
@@ -22,4 +23,5 @@ class UserRatingEntity : Entity<Long>(UserRatingTable) {
     val rating by UserRatingTable.rating
     val message by UserRatingTable.message
     val time by UserRatingTable.time
+    companion object: Constructable<UserRatingEntity>(::UserRatingEntity)
 }
