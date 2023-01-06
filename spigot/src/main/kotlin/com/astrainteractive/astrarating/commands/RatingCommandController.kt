@@ -107,7 +107,7 @@ object RatingCommandController {
     }
 
     fun rating(sender: CommandSender, args: Array<out String>) {
-        PluginScope.launch {
+        PluginScope.launch(Dispatchers.IO) {
             RatingsGUI(sender as Player).open()
         }
     }

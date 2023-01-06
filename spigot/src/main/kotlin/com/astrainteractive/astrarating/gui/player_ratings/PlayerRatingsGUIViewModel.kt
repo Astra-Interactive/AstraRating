@@ -11,13 +11,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.bukkit.OfflinePlayer
+import ru.astrainteractive.astralibs.async.AsyncComponent
 import ru.astrainteractive.astralibs.async.BukkitMain
 import ru.astrainteractive.astralibs.async.PluginScope
 
 /**
  * MVVM technique
  */
-class PlayerRatingsGUIViewModel(val player: OfflinePlayer) {
+class PlayerRatingsGUIViewModel(val player: OfflinePlayer): AsyncComponent() {
     private val databaseApi: IRatingAPI
         get() = DatabaseApiModule.value
 
@@ -30,37 +31,30 @@ class PlayerRatingsGUIViewModel(val player: OfflinePlayer) {
         get() = _sort
 
     fun onSortClicked() {
-        _sort.value = sort.value.next()
-        _userRatings.value = when (sort.value) {
-            UserRatingsSort.DATE_ASC -> _userRatings.value.sortedBy { it.rating.time }
-            UserRatingsSort.DATE_DESC -> _userRatings.value.sortedByDescending { it.rating.time }
-            UserRatingsSort.PLAYER_ASC -> _userRatings.value.sortedBy { it.userCreatedReport.id }
-            UserRatingsSort.PLAYER_DESC -> _userRatings.value.sortedByDescending { it.userCreatedReport.id }
-            UserRatingsSort.RATING_ASC -> _userRatings.value.sortedBy { it.rating.rating }
-            UserRatingsSort.RATING_DESC -> _userRatings.value.sortedBy { it.rating.rating }
+
+        componentScope.launch(Dispatchers.IO) {
+            _sort.value = sort.value.next()
+            _userRatings.value = when (sort.value) {
+                UserRatingsSort.DATE_ASC -> _userRatings.value.sortedBy { it.rating.time }
+                UserRatingsSort.DATE_DESC -> _userRatings.value.sortedByDescending { it.rating.time }
+                UserRatingsSort.PLAYER_ASC -> _userRatings.value.sortedBy { it.userCreatedReport.id }
+                UserRatingsSort.PLAYER_DESC -> _userRatings.value.sortedByDescending { it.userCreatedReport.id }
+                UserRatingsSort.RATING_ASC -> _userRatings.value.sortedBy { it.rating.rating }
+                UserRatingsSort.RATING_DESC -> _userRatings.value.sortedBy { it.rating.rating }
+            }
         }
     }
 
     init {
-        PluginScope.launch {
+        componentScope.launch(Dispatchers.IO) {
             _userRatings.value = databaseApi.fetchUserRatings(player.name?:"NULL") ?: emptyList()
         }
     }
-
-
-    fun onDisable() {
-
-    }
-
-    fun onDeleteClicked(item: UserAndRating, onResult:()->Unit) {
-        PluginScope.launch {
+    fun onDeleteClicked(item: UserAndRating) {
+        PluginScope.launch(Dispatchers.IO) {
             databaseApi.deleteUserRating(item.rating)
             val list = databaseApi.fetchUserRatings(player.name?:"NULL") ?: emptyList()
-            _userRatings.emit(list)
             _userRatings.value = list
-            withContext(Dispatchers.BukkitMain){
-                onResult()
-            }
         }
     }
 }

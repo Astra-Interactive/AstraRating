@@ -5,6 +5,7 @@ import com.astrainteractive.astrarating.domain.api.IRatingAPI
 import com.astrainteractive.astrarating.domain.entities.UsersRatingsSort
 import com.astrainteractive.astrarating.domain.entities.tables.dto.UserAndRating
 import com.astrainteractive.astrarating.modules.DatabaseApiModule
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -50,13 +51,8 @@ class RatingsGUIViewModel : AsyncComponent() {
     }
 
     init {
-        PluginScope.launch {
+        PluginScope.launch(Dispatchers.IO) {
             _userRatings.value = databaseApi.fetchUsersTotalRating() ?: emptyList()
         }
-    }
-
-
-    fun onDisable() {
-
     }
 }

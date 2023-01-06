@@ -6,19 +6,25 @@ import ru.astrainteractive.astralibs.async.PluginScope
 import java.util.*
 
 class CachedTotalRating(private val databaseApi: IRatingAPI) {
-    private val _ratingByPlayer: MutableMap<UUID, Int> = mutableMapOf()
+    private val _ratingByPlayer: MutableMap<UUID, PlayerData> = mutableMapOf()
     private val limitedDispatcher = Dispatchers.IO.limitedParallelism(1)
-    val ratingByPlayer: Map<UUID, Int>
+    class PlayerData(
+        val lastRequestMillis: Long = System.currentTimeMillis(),
+        val rating: Int
+    )
+    val ratingByPlayer: Map<UUID, PlayerData>
         get() = _ratingByPlayer
 
     private suspend fun rememberPlayer(name: String, uuid: UUID) {
         databaseApi.fetchUserRatings(name ?: "NULL")?.sumOf { it.rating.rating }?.let {
-            _ratingByPlayer[uuid] = it
+            _ratingByPlayer[uuid] = PlayerData(rating = it)
         }
     }
 
     fun getPlayerRating(name: String, uuid: UUID): Int {
-        PluginScope.launch(limitedDispatcher) { rememberPlayer(name, uuid) }
-        return ratingByPlayer[uuid] ?: 0
+        val data = ratingByPlayer[uuid] ?: return 0
+        if (System.currentTimeMillis() - data.lastRequestMillis > 10_000L)
+            PluginScope.launch(limitedDispatcher) { rememberPlayer(name, uuid) }
+        return data.rating
     }
 }

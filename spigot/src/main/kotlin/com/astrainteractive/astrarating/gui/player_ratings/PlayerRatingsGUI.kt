@@ -88,16 +88,14 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, player: Player) : Pagi
                 if (!AstraPermission.DeleteReport.hasPermission(playerMenuUtility.player)) return
                 if (e.click != ClickType.LEFT) return
                 val item = viewModel.userRatings.value.getOrNull(maxItemsPerPage * page + e.slot)?:return
-                viewModel.onDeleteClicked(item) {
-                    setMenuItems()
-                }
-
+                viewModel.onDeleteClicked(item)
             }
         }
     }
 
     override fun onInventoryClose(it: InventoryCloseEvent) {
-        viewModel.onDisable()
+        super.onInventoryClose(it)
+        viewModel.close()
     }
 
     override fun onPageChanged() {
@@ -109,7 +107,6 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, player: Player) : Pagi
         viewModel.userRatings.collectOn {
             setMenuItems()
         }
-        setMenuItems()
     }
 
     fun setMenuItems() {

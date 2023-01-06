@@ -1,5 +1,6 @@
 package com.astrainteractive.astrarating.gui.ratings
 
+import com.astrainteractive.astrarating.domain.entities.tables.dto.UserAndRating
 import com.astrainteractive.astrarating.gui.player_ratings.PlayerRatingsGUI
 import com.astrainteractive.astrarating.modules.ConfigProvider
 import com.astrainteractive.astrarating.modules.TranslationProvider
@@ -80,19 +81,21 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
                 setMenuItems()
             }
 
-            else -> PluginScope.launch(Dispatchers.IO) {
-                val item = viewModel.userRatings.value.getOrNull(maxItemsPerPage * page + e.slot)?:return@launch
-                PlayerRatingsGUI(
-                    Bukkit.getOfflinePlayer(UUID.fromString(item.reportedPlayer.minecraftUUID)),
-                    playerMenuUtility.player
-                ).open()
+            else -> {
+                val item = viewModel.userRatings.value.getOrNull(maxItemsPerPage * page + e.slot) ?: return
+                PluginScope.launch(Dispatchers.IO) {
+                    PlayerRatingsGUI(
+                        Bukkit.getOfflinePlayer(UUID.fromString(item.reportedPlayer.minecraftUUID)),
+                        playerMenuUtility.player
+                    ).open()
+                }
             }
         }
     }
 
     override fun onInventoryClose(it: InventoryCloseEvent) {
-        viewModel.onDisable()
-
+        super.onInventoryClose(it)
+        viewModel.close()
     }
 
     override fun onPageChanged() {
@@ -100,15 +103,13 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
     }
 
     override fun onCreated() {
-        viewModel.userRatings.collectOn { setMenuItems() }
-        setMenuItems()
+        viewModel.userRatings.collectOn(Dispatchers.IO) { setMenuItems() }
     }
 
-    fun setMenuItems() {
+    fun setMenuItems(list:List<UserAndRating> = viewModel.userRatings.value) {
         inventory.clear()
         setManageButtons()
         inventory.setItem(sortButtonIndex, sortButton)
-        val list = viewModel.userRatings.value
         for (i in 0 until maxItemsPerPage) {
             val index = maxItemsPerPage * page + i
             if (index >= list.size)
