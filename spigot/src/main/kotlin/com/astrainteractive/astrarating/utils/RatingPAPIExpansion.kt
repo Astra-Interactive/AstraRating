@@ -6,6 +6,7 @@ import me.clip.placeholderapi.PlaceholderAPI
 import me.clip.placeholderapi.expansion.PlaceholderExpansion
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
+import ru.astrainteractive.astralibs.di.getValue
 
 
 object RatingPAPIExpansion : KPlaceholderExpansion(
@@ -13,22 +14,15 @@ object RatingPAPIExpansion : KPlaceholderExpansion(
     "RomanMakeev",
     "1.0.0"
 ) {
-    private val cachedTotalRating: CachedTotalRating
-        get() = CachedTotalRatingModule.value
+    private val cachedTotalRating: CachedTotalRating by CachedTotalRatingModule
 
     /**
      * erating_RomaRoman
      * erating_rating
      */
     override fun onRequest(player: OfflinePlayer, params: String): String? {
-        val params = PlaceholderAPI.setPlaceholders(player, params.replace("<", "%").replace(">", "%"))
-        Bukkit.getOfflinePlayer(params).let {
-            if (it.firstPlayed != 0L) return cachedTotalRating.getPlayerRating(it.name ?: "NULL", it.uniqueId)
-                .toString()
-        }
-        player?.let {
-            if (params == "rating") return cachedTotalRating.getPlayerRating(it.name ?: "NULL", it.uniqueId).toString()
-        }
+        if (params == "rating")
+            return cachedTotalRating.getPlayerRating(player?.name ?: "NULL", player.uniqueId).toString()
         return ""
     }
 

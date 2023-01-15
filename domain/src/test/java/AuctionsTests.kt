@@ -45,8 +45,8 @@ class AuctionsTests {
         File(dbName).delete()
         databaseV2 = Database()
         databaseV2.openConnection("$dbName", DBConnection.SQLite)
-        UserTable.create()
-        UserRatingTable.create()
+        UserTable.create(databaseV2)
+        UserRatingTable.create(databaseV2)
         api = TableAPI(databaseV2)
     }
 

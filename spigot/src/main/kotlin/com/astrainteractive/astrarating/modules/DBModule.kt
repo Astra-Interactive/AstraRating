@@ -13,8 +13,8 @@ object DBModule : IModule<Database>() {
     override fun initializer(): Database = runBlocking {
         val db = Database()
         db.openConnection("${AstraRating.instance.dataFolder}${File.separator}data.db", DBConnection.SQLite)
-        UserRatingTable.create()
-        UserTable.create()
+        UserRatingTable.create(db)
+        UserTable.create(db)
         db
     }
 }

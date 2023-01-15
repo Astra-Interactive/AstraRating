@@ -12,8 +12,6 @@ class CachedTotalRating(private val databaseApi: IRatingAPI) {
         val lastRequestMillis: Long = System.currentTimeMillis(),
         val rating: Int
     )
-    val ratingByPlayer: Map<UUID, PlayerData>
-        get() = _ratingByPlayer
 
     private suspend fun rememberPlayer(name: String, uuid: UUID) {
         databaseApi.fetchUserRatings(name ?: "NULL")?.sumOf { it.rating.rating }?.let {
@@ -22,9 +20,9 @@ class CachedTotalRating(private val databaseApi: IRatingAPI) {
     }
 
     fun getPlayerRating(name: String, uuid: UUID): Int {
-        val data = ratingByPlayer[uuid] ?: return 0
-        if (System.currentTimeMillis() - data.lastRequestMillis > 10_000L)
+        val data = _ratingByPlayer[uuid]
+        if (System.currentTimeMillis() - (data?.lastRequestMillis ?: 0L) > 10_000L)
             PluginScope.launch(limitedDispatcher) { rememberPlayer(name, uuid) }
-        return data.rating
+        return data?.rating?:0
     }
 }
