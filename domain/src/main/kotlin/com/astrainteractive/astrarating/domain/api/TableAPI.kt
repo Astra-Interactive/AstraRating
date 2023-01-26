@@ -28,28 +28,28 @@ class TableAPI(private val database: Database) : IRatingAPI {
         val userEntity = UserTable.find(database,constructor = UserEntity) {
             UserTable.id.eq(user.id)
         }.firstOrNull()
-        userEntity?.lastUpdated = user.lastUpdated
+        userEntity?.lastUpdated = System.currentTimeMillis()
         user.discordID?.let { userEntity?.discordID = it }
         userEntity?.let { UserTable.update(database,entity = it) }
     }
 
-    override suspend fun insertUser(user: UserDTO): Long? {
+    override suspend fun insertUser(user: UserDTO): Int? {
         return UserTable.insert(database) {
-            this[UserTable.lastUpdated] = user.lastUpdated
+            this[UserTable.lastUpdated] = System.currentTimeMillis()
             this[UserTable.minecraftUUID] = user.minecraftUUID
             this[UserTable.minecraftName] = user.minecraftName.uppercase()
             this[UserTable.discordID] = user.discordID
-        }.toLong()
+        }
     }
 
-    override suspend fun insertUserRating(it: UserRatingDTO): Long? {
+    override suspend fun insertUserRating(it: UserRatingDTO): Int? {
         return UserRatingTable.insert(database) {
             this[UserRatingTable.userCreatedReport] = it.userCreatedReport
             this[UserRatingTable.reportedUser] = it.reportedUser
             this[UserRatingTable.rating] = it.rating
             this[UserRatingTable.message] = it.message
-            this[UserRatingTable.time] = it.time
-        }.toLong()
+            this[UserRatingTable.time] = System.currentTimeMillis()
+        }
     }
 
     override suspend fun deleteUserRating(it: UserRatingDTO) {
@@ -82,16 +82,17 @@ class TableAPI(private val database: Database) : IRatingAPI {
 
     override suspend fun fetchUsersTotalRating(): List<UserAndRating>? {
         val query = """
-            SELECT SUM(A.${UserRatingTable.rating.name}) ${UserRatingTable.rating.name},* FROM ${UserRatingTable.tableName} A 
+            SELECT *, SUM(A.${UserRatingTable.rating.name}) rating__ FROM ${UserRatingTable.tableName} A 
             JOIN ${UserTable.tableName} B on A.${UserRatingTable.reportedUser.name}=B.${UserTable.id.name} GROUP BY ${UserTable.minecraftName.name}
         """.trimIndent()
         val statement = database?.connection?.createStatement()
         val rs = statement?.executeQuery(query)
-        val result =  rs?.mapNotNull {
+        val result = rs?.mapNotNull {
+            val rating = it.getInt("rating__")
             UserAndRating(
                 UserTable.wrap(it,UserEntity).let(UserMapper::toDTO),
                 UserDTO(NON_EXISTS_KEY, "", "", "", System.currentTimeMillis()),
-                UserRatingTable.wrap(it,UserRatingEntity).let(UserRatingMapper::toDTO),
+                UserRatingTable.wrap(it,UserRatingEntity).let(UserRatingMapper::toDTO).copy(rating = rating),
             )
         }
         statement?.close()
@@ -102,14 +103,17 @@ class TableAPI(private val database: Database) : IRatingAPI {
         val query = """
             SELECT COUNT(*) total FROM ${UserRatingTable.tableName} 
             WHERE ${UserRatingTable.userCreatedReport.name}=
-              (SELECT ${UserRatingTable.id.name} FROM ${UserTable.tableName} WHERE ${UserTable.minecraftName.name}=${playerName.sqlString.uppercase()}) AND (${System.currentTimeMillis()} - ${UserRatingTable.time.name} < ${24 * 60 * 60 * 1000})
+              (SELECT ${UserTable.id.name} FROM ${UserTable.tableName} WHERE ${UserTable.minecraftName.name}=${playerName.sqlString.uppercase()}) AND (${System.currentTimeMillis()} - ${UserRatingTable.time.name} < ${24 * 60 * 60 * 1000})
         """.trimIndent()
         val statement = database.connection?.createStatement()
         val rs = statement?.executeQuery(query)
-        val result = rs?.getInt("total") ?: 0
+        if (rs?.next()==true){
+            val result =  rs?.getInt("total") ?: 0
+            statement?.close()
+            return result
+        }
         statement?.close()
-        database?.connection?.autoCommit
-        return result
+        return 0
     }
 
     override suspend fun countPlayerOnPlayerDayRated(playerName: String, ratedPlayerName: String): Int? {
@@ -124,8 +128,12 @@ class TableAPI(private val database: Database) : IRatingAPI {
                     """
         val statement = database.connection?.createStatement()
         val rs = statement?.executeQuery(query)
-        val result =  rs?.getInt("total") ?: 0
+        if (rs?.next()==true){
+            val result =  rs?.getInt("total") ?: 0
+            statement?.close()
+            return result
+        }
         statement?.close()
-        return result
+        return 0
     }
 }

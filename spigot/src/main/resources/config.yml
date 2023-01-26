@@ -22,6 +22,17 @@ maxMessageLength: 30
 trimMessageAfter: 15
 # If set false then trim will not cut words
 cutWords: false
+# Use only one!!!
+# MySql has higher priority!!!
+databaseConnection:
+  sqlite: true
+  mysql:
+    database: "my_database_name"
+    host: "127.0.0.1"
+    port: 3306
+    username: "my_username"
+    password: "XXX_SUPER_PASSWORD_SECURITY"
+
 gui:
   showFirstConnection: true
   showLastConnection: true

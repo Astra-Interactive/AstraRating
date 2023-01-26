@@ -4,7 +4,7 @@ import com.astrainteractive.astrarating.domain.api.NON_EXISTS_KEY
 
 
 data class UserDTO(
-    val id: Long = NON_EXISTS_KEY,
+    val id: Int = NON_EXISTS_KEY,
     var minecraftUUID: String = "",
     val minecraftName: String = "",
     val discordID: String? = "",
