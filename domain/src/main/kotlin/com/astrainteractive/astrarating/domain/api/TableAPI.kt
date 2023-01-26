@@ -105,7 +105,6 @@ class TableAPI(private val database: Database) : IRatingAPI {
             WHERE ${UserRatingTable.userCreatedReport.name}=
               (SELECT ${UserTable.id.name} FROM ${UserTable.tableName} WHERE ${UserTable.minecraftName.name}=${playerName.sqlString.uppercase()}) AND (${System.currentTimeMillis()} - ${UserRatingTable.time.name} < ${24 * 60 * 60 * 1000})
         """.trimIndent()
-        println(query)
         val statement = database.connection?.createStatement()
         val rs = statement?.executeQuery(query)
         if (rs?.next()==true){

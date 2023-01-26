@@ -1,5 +1,5 @@
 [versions]
-plugin = "1.3.4"
+plugin = "1.4.b0"
 name = "AstraRating"
 group =  "com.astrainteractive"
 description = "Rating plugin for EmpireSMP"
