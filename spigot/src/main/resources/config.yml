@@ -24,7 +24,7 @@ trimMessageAfter: 15
 cutWords: false
 # Use only one!!!
 # MySql has higher priority!!!
-connection:
+databaseConnection:
   sqlite: true
   mysql:
     database: "my_database_name"

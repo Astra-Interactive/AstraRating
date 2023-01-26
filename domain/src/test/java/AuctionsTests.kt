@@ -18,16 +18,16 @@ class AuctionsTests : ORMTest() {
     private lateinit var api: IRatingAPI
     private val dbName = "dbv2_auction.db"
 
-//        override val builder: () -> Database
+//    override val builder: () -> Database
 //        get() = { DefaultDatabase(DBConnection.SQLite(dbName), DBSyntax.SQLite) }
     override val builder: () -> Database
         get() = {
             val dbconnection = DBConnection.MySQL(
-                database = "XXXXXXX",
-                ip = "XXXXXXX",
+                database = "XXXXXXXXX",
+                ip = "XXXXXX",
                 port = 3306,
-                username = "XXXXXX",
-                password = "XXXXXXXXXXXXXXX"
+                username = "XXXXXXXXXX",
+                password = "XXXXXXXXXXXXX"
             )
             DefaultDatabase(dbconnection, DBSyntax.MySQL)
         }
@@ -106,7 +106,7 @@ class AuctionsTests : ORMTest() {
         }
         api.countPlayerTotalDayRated(userCreatedReport.minecraftName).also { count ->
             assertNotNull(count)
-//            assertEquals(1, count) TODO
+            assertEquals(1, count)
         }
         api.fetchUsersTotalRating().also { ratings ->
             assertNotNull(ratings)

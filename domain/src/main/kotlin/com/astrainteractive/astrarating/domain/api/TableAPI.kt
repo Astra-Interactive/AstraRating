@@ -28,14 +28,14 @@ class TableAPI(private val database: Database) : IRatingAPI {
         val userEntity = UserTable.find(database,constructor = UserEntity) {
             UserTable.id.eq(user.id)
         }.firstOrNull()
-        userEntity?.lastUpdated = user.lastUpdated
+        userEntity?.lastUpdated = System.currentTimeMillis()
         user.discordID?.let { userEntity?.discordID = it }
         userEntity?.let { UserTable.update(database,entity = it) }
     }
 
     override suspend fun insertUser(user: UserDTO): Int? {
         return UserTable.insert(database) {
-            this[UserTable.lastUpdated] = user.lastUpdated
+            this[UserTable.lastUpdated] = System.currentTimeMillis()
             this[UserTable.minecraftUUID] = user.minecraftUUID
             this[UserTable.minecraftName] = user.minecraftName.uppercase()
             this[UserTable.discordID] = user.discordID
@@ -48,7 +48,7 @@ class TableAPI(private val database: Database) : IRatingAPI {
             this[UserRatingTable.reportedUser] = it.reportedUser
             this[UserRatingTable.rating] = it.rating
             this[UserRatingTable.message] = it.message
-            this[UserRatingTable.time] = it.time
+            this[UserRatingTable.time] = System.currentTimeMillis()
         }
     }
 
@@ -103,8 +103,9 @@ class TableAPI(private val database: Database) : IRatingAPI {
         val query = """
             SELECT COUNT(*) total FROM ${UserRatingTable.tableName} 
             WHERE ${UserRatingTable.userCreatedReport.name}=
-              (SELECT ${UserRatingTable.id.name} FROM ${UserTable.tableName} WHERE ${UserTable.minecraftName.name}=${playerName.sqlString.uppercase()}) AND (${System.currentTimeMillis()} - ${UserRatingTable.time.name} < ${24 * 60 * 60 * 1000})
+              (SELECT ${UserTable.id.name} FROM ${UserTable.tableName} WHERE ${UserTable.minecraftName.name}=${playerName.sqlString.uppercase()}) AND (${System.currentTimeMillis()} - ${UserRatingTable.time.name} < ${24 * 60 * 60 * 1000})
         """.trimIndent()
+        println(query)
         val statement = database.connection?.createStatement()
         val rs = statement?.executeQuery(query)
         if (rs?.next()==true){
