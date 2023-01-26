@@ -10,7 +10,7 @@ import java.util.*
  * @param player owner of auction
  * @return boolean - true if succesfully removed
  */
-class InsertUserUseCase(private val databaseApi: IRatingAPI,val discordIDProvider: (UUID) -> String?) : IUseCase<Long?, InsertUserUseCase.Param> {
+class InsertUserUseCase(private val databaseApi: IRatingAPI,val discordIDProvider: (UUID) -> String?) : IUseCase<Int?, InsertUserUseCase.Param> {
     private val discordUsers = mutableMapOf<String, String>()
 
     class Param(
@@ -18,7 +18,7 @@ class InsertUserUseCase(private val databaseApi: IRatingAPI,val discordIDProvide
         val name: String,
     )
 
-    override suspend fun run(params: Param): Long? {
+    override suspend fun run(params: Param): Int? {
         val uuid = params.uuid.toString()
         val discordID = discordUsers[uuid] ?: discordIDProvider(params.uuid)?.let {
             discordUsers[uuid] = it

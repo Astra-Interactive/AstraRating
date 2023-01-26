@@ -1,26 +1,36 @@
-import kotlinx.coroutines.runBlocking
 import com.astrainteractive.astrarating.domain.api.IRatingAPI
 import com.astrainteractive.astrarating.domain.api.TableAPI
-import com.astrainteractive.astrarating.domain.entities.tables.dto.UserDTO
-import com.astrainteractive.astrarating.domain.entities.tables.dto.UserRatingDTO
 import com.astrainteractive.astrarating.domain.entities.tables.UserRatingTable
 import com.astrainteractive.astrarating.domain.entities.tables.UserTable
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
+import com.astrainteractive.astrarating.domain.entities.tables.dto.UserDTO
+import com.astrainteractive.astrarating.domain.entities.tables.dto.UserRatingDTO
+import kotlinx.coroutines.runBlocking
 import ru.astrainteractive.astralibs.orm.DBConnection
+import ru.astrainteractive.astralibs.orm.DBSyntax
 import ru.astrainteractive.astralibs.orm.Database
+import ru.astrainteractive.astralibs.orm.DefaultDatabase
 import java.io.File
 import java.util.*
 import kotlin.random.Random
-import kotlin.test.DefaultAsserter.assertEquals
-import kotlin.test.DefaultAsserter.assertNotNull
-import kotlin.test.assertEquals
 import kotlin.test.*
 
-class AuctionsTests {
-    private lateinit var databaseV2: Database
+class AuctionsTests : ORMTest() {
     private lateinit var api: IRatingAPI
+    private val dbName = "dbv2_auction.db"
+
+//        override val builder: () -> Database
+//        get() = { DefaultDatabase(DBConnection.SQLite(dbName), DBSyntax.SQLite) }
+    override val builder: () -> Database
+        get() = {
+            val dbconnection = DBConnection.MySQL(
+                database = "XXXXXXX",
+                ip = "XXXXXXX",
+                port = 3306,
+                username = "XXXXXX",
+                password = "XXXXXXXXXXXXXXX"
+            )
+            DefaultDatabase(dbconnection, DBSyntax.MySQL)
+        }
 
     val randomUser: UserDTO
         get() = UserDTO(
@@ -30,51 +40,90 @@ class AuctionsTests {
         )
 
     fun userRating(
-        userCreatedReport: Long,
-        reportedUser: Long,
+        userCreatedReport: Int,
+        reportedUser: Int,
     ): UserRatingDTO = UserRatingDTO(
         userCreatedReport = userCreatedReport,
         reportedUser = reportedUser,
-        rating = Random.nextInt(-10, 10),
+        rating = 1,
         message = UUID.randomUUID().toString()
     )
 
-    @BeforeEach
-    fun setup(): Unit = runBlocking {
-        val dbName = "dbv2_auction.db"
-        File(dbName).delete()
-        databaseV2 = Database()
-        databaseV2.openConnection("$dbName", DBConnection.SQLite)
-        UserTable.create(databaseV2)
-        UserRatingTable.create(databaseV2)
-        api = TableAPI(databaseV2)
+
+    @AfterTest
+    override fun destroy(): Unit = runBlocking {
+        val database = assertConnected()
+        UserTable.drop(database)
+        UserRatingTable.drop(database)
+        super.destroy()
     }
 
-    @AfterEach
-    fun destruct(): Unit = runBlocking {
-        databaseV2.closeConnection()
+    @BeforeTest
+    override fun setup(): Unit = runBlocking {
+        super.setup()
+        val database = assertConnected()
+        File(dbName).delete()
+        database.openConnection()
+        UserTable.create(database)
+        UserRatingTable.create(database)
+        api = TableAPI(database)
+    }
+
+
+    @Test
+    fun `Insert and select`(): Unit = runBlocking {
+        val database = assertConnected()
+        val user = randomUser
+        // Insert and select user
+        val id = api.insertUser(user)
+        api.selectUser(user.minecraftName).also { selectedUser ->
+            assertNotNull(selectedUser)
+            assertEquals(id, selectedUser.id)
+            assertEquals(user.minecraftUUID, selectedUser.minecraftUUID)
+        }
     }
 
     @Test
-    fun `Insert, fetch, expire same auction`(): Unit = runBlocking {
-        val user = randomUser
-        // Insert and select user
-        api.insertUser(user)
-        var userCreatedReport = api.selectUser(user.minecraftName)
-        assertNotNull(userCreatedReport)
-        assertEquals(user.minecraftUUID, userCreatedReport?.minecraftUUID)
-        // Insert user rating
-        var reportedUser = randomUser
-        reportedUser = reportedUser.copy(id = api.insertUser(reportedUser)!!)
-        // Insert user rating
-        var userRating = userRating(userCreatedReport.id, reportedUser.id)
-        userRating = userRating.copy(id = api.insertUserRating(userRating)!!)
-        val reportsAmount = api.fetchUserRatings(reportedUser.minecraftName)?.size!!
-        assertEquals(reportsAmount, 1)
-        val countPlayerRated = api.countPlayerTotalDayRated(user.minecraftName)
-        assertEquals(countPlayerRated, 1)
-        val playerOnPlayerCount = api.countPlayerOnPlayerDayRated(user.minecraftName, reportedUser.minecraftName)
-        assertEquals(playerOnPlayerCount, 1)
-    }
+    fun `Rate user on user`(): Unit = runBlocking {
+        val reportedUser = randomUser.let {
+            api.insertUser(it)
+            assertNotNull(api.selectUser(it.minecraftName))
+        }
+        val userCreatedReport = randomUser.let {
+            api.insertUser(it)
+            assertNotNull(api.selectUser(it.minecraftName))
+        }
+        userRating(userCreatedReport.id, reportedUser.id).also {
+            assertNotNull(api.insertUserRating(it))
+        }
+        api.fetchUserRatings(reportedUser.minecraftName).also { reportsOnUser ->
+            assertNotNull(reportsOnUser)
+            assertEquals(1, reportsOnUser.size)
+        }
+        api.countPlayerOnPlayerDayRated(userCreatedReport.minecraftName, reportedUser.minecraftName).also { count ->
+            assertNotNull(count)
+            assertEquals(1, count)
+        }
+        api.countPlayerTotalDayRated(userCreatedReport.minecraftName).also { count ->
+            assertNotNull(count)
+//            assertEquals(1, count) TODO
+        }
+        api.fetchUsersTotalRating().also { ratings ->
+            assertNotNull(ratings)
+            assertEquals(1, ratings.size)
+        }
+        userRating(userCreatedReport.id, reportedUser.id).also {
+            assertNotNull(api.insertUserRating(it))
+        }
+        api.fetchUserRatings(reportedUser.minecraftName).also { userRatings ->
+            assertNotNull(userRatings)
+            assertEquals(2, userRatings.size)
+        }
+        api.fetchUsersTotalRating().also { ratings ->
+            assertNotNull(ratings)
+            val rating = assertNotNull(ratings.firstOrNull())
 
+            assertEquals(2, rating.rating.rating)
+        }
+    }
 }

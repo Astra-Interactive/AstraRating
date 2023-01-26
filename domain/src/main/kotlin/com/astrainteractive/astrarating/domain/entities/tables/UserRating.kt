@@ -6,17 +6,17 @@ import ru.astrainteractive.astralibs.orm.database.Entity
 import ru.astrainteractive.astralibs.orm.database.Table
 
 
-object UserRatingTable : Table<Long>("users_ratings") {
-    override val id: Column<Long> = long("user_rating_id").primaryKey().autoIncrement()
-    val userCreatedReport = long("user_created_report")
-    val reportedUser = long("reported_user")
+object UserRatingTable : Table<Int>("users_ratings") {
+    override val id: Column<Int> = integer("user_rating_id").primaryKey().autoIncrement()
+    val userCreatedReport = integer("user_created_report")
+    val reportedUser = integer("reported_user")
     val rating = integer("rating")
     val message = text("message")
-    val time = long("time")
+    val time = bigint("time")
 }
 
 
-class UserRatingEntity : Entity<Long>(UserRatingTable) {
+class UserRatingEntity : Entity<Int>(UserRatingTable) {
     val id by UserRatingTable.id
     val userCreatedReport by UserRatingTable.userCreatedReport
     val reportedUser by UserRatingTable.reportedUser

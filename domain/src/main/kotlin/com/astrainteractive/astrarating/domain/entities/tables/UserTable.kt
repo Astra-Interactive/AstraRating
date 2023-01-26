@@ -6,16 +6,16 @@ import ru.astrainteractive.astralibs.orm.database.Entity
 import ru.astrainteractive.astralibs.orm.database.Table
 
 
-object UserTable : Table<Long>("users") {
-    override val id: Column<Long> = long("user_id").primaryKey().autoIncrement()
+object UserTable : Table<Int>("users") {
+    override val id: Column<Int> = integer("user_id").primaryKey().autoIncrement()
     val minecraftUUID = text("minecraft_uuid").unique()
     val minecraftName = text("minecraft_name").unique()
-    val discordID = text("discord_id").unique()
-    val lastUpdated = long("last_updated")
+    val discordID = text("discord_id").unique().nullable()
+    val lastUpdated = bigint("last_updated")
 }
 
 
-class UserEntity : Entity<Long>(UserTable) {
+class UserEntity : Entity<Int>(UserTable) {
     val id by UserTable.id
     val minecraftUUID by UserTable.minecraftUUID
     val minecraftName by UserTable.minecraftName

@@ -2,7 +2,7 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
     id("com.github.johnrengelman.shadow")
-    id("basic-plugin")
+    id("convention.library")
 }
 dependencies {
     // Kotlin
@@ -21,6 +21,7 @@ dependencies {
     implementation(libs.astralibs.orm)
     implementation(libs.bstats.bukkit)
     // Test-Core
+    testImplementation("org.testng:testng:7.1.0")
     testImplementation(kotlin("test-junit5"))
     testImplementation(platform(libs.junit.bom))
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -28,4 +29,5 @@ dependencies {
     testImplementation(libs.coroutines.core)
     testImplementation(libs.coroutines.coreJvm)
     testImplementation(libs.xerial.sqlite.jdbc)
+    testImplementation("mysql:mysql-connector-java:8.0.32")
 }
