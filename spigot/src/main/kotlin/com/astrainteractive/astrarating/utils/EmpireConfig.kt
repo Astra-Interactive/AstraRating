@@ -26,8 +26,24 @@ data class EmpireConfig(
     val maxMessageLength:Int = 30,
     val trimMessageAfter:Int = 10,
     val cutWords:Boolean = false,
-    val gui: Gui = Gui()
+    val gui: Gui = Gui(),
+    val databaseConnection: Connection = Connection()
 ) {
+    @Serializable
+    data class Connection(
+        val sqlite: Boolean = true,
+        val mysql: MySqlConnection? = null
+    ){
+        @Serializable
+        data class MySqlConnection(
+            val database: String,
+            val host: String,
+            val port: Int,
+            val username: String,
+            val password: String
+
+        )
+    }
     @Serializable
     data class Gui(
         val showFirstConnection: Boolean = true,
