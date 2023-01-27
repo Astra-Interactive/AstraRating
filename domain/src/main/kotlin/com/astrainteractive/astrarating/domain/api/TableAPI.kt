@@ -1,36 +1,40 @@
 package com.astrainteractive.astrarating.domain.api
 
-import com.astrainteractive.astrarating.domain.entities.tables.dto.UserDTO
-import com.astrainteractive.astrarating.domain.entities.tables.dto.UserAndRating
-import com.astrainteractive.astrarating.domain.entities.tables.dto.UserRatingDTO
 import com.astrainteractive.astrarating.domain.entities.tables.UserEntity
 import com.astrainteractive.astrarating.domain.entities.tables.UserRatingEntity
 import com.astrainteractive.astrarating.domain.entities.tables.UserRatingTable
 import com.astrainteractive.astrarating.domain.entities.tables.UserTable
+import com.astrainteractive.astrarating.domain.entities.tables.dto.UserAndRating
+import com.astrainteractive.astrarating.domain.entities.tables.dto.UserDTO
+import com.astrainteractive.astrarating.domain.entities.tables.dto.UserRatingDTO
 import com.astrainteractive.astrarating.domain.entities.tables.dto.mapping.UserMapper
 import com.astrainteractive.astrarating.domain.entities.tables.dto.mapping.UserRatingMapper
 import ru.astrainteractive.astralibs.orm.Database
+import ru.astrainteractive.astralibs.orm.firstOrNull
 import ru.astrainteractive.astralibs.orm.query.CountQuery
+import ru.astrainteractive.astralibs.orm.query.SelectQuery
+import ru.astrainteractive.astralibs.orm.with
 import ru.astrainteractive.astralibs.utils.mapNotNull
+import java.sql.Statement
 
 
 class TableAPI(private val database: Database) : IRatingAPI {
-    private val String.sqlString:String
+    private val String.sqlString: String
         get() = "\"$this\""
 
     override suspend fun selectUser(playerName: String): UserDTO? {
-        return UserTable.find(database,constructor = UserEntity) {
+        return UserTable.find(database, constructor = UserEntity) {
             UserTable.minecraftName.eq(playerName.uppercase())
         }.map(UserMapper::toDTO).firstOrNull()
     }
 
     override suspend fun updateUser(user: UserDTO) {
-        val userEntity = UserTable.find(database,constructor = UserEntity) {
+        val userEntity = UserTable.find(database, constructor = UserEntity) {
             UserTable.id.eq(user.id)
         }.firstOrNull()
         userEntity?.lastUpdated = System.currentTimeMillis()
         user.discordID?.let { userEntity?.discordID = it }
-        userEntity?.let { UserTable.update(database,entity = it) }
+        userEntity?.let { UserTable.update(database, entity = it) }
     }
 
     override suspend fun insertUser(user: UserDTO): Int? {
@@ -64,16 +68,16 @@ class TableAPI(private val database: Database) : IRatingAPI {
             JOIN ${UserTable.tableName} B on A.${UserRatingTable.userCreatedReport.name}=B.${UserTable.id.name} WHERE A.${UserRatingTable.reportedUser.name}=
             (SELECT ${UserTable.id.name} FROM ${UserTable.tableName} WHERE ${UserTable.minecraftName.name}=${playerName?.sqlString?.uppercase()} LIMIT 1)
         """.trimIndent()
-        val reportedUser = UserTable.find(database,constructor = UserEntity){
+        val reportedUser = UserTable.find(database, constructor = UserEntity) {
             UserTable.minecraftName.eq(playerName.uppercase())
         }.firstOrNull()?.let(UserMapper::toDTO) ?: return null
         val statement = database?.connection?.createStatement()
         val rs = statement?.executeQuery(query)
-        val result =  rs?.mapNotNull {
+        val result = rs?.mapNotNull {
             UserAndRating(
                 reportedUser,
-                UserTable.wrap(it,UserEntity).let(UserMapper::toDTO),
-                UserRatingTable.wrap(it,UserRatingEntity).let(UserRatingMapper::toDTO),
+                UserTable.wrap(it, UserEntity).let(UserMapper::toDTO),
+                UserRatingTable.wrap(it, UserRatingEntity).let(UserRatingMapper::toDTO),
             )
         }
         statement?.close()
@@ -90,9 +94,9 @@ class TableAPI(private val database: Database) : IRatingAPI {
         val result = rs?.mapNotNull {
             val rating = it.getInt("rating__")
             UserAndRating(
-                UserTable.wrap(it,UserEntity).let(UserMapper::toDTO),
+                UserTable.wrap(it, UserEntity).let(UserMapper::toDTO),
                 UserDTO(NON_EXISTS_KEY, "", "", "", System.currentTimeMillis()),
-                UserRatingTable.wrap(it,UserRatingEntity).let(UserRatingMapper::toDTO).copy(rating = rating),
+                UserRatingTable.wrap(it, UserRatingEntity).let(UserRatingMapper::toDTO).copy(rating = rating),
             )
         }
         statement?.close()
@@ -100,40 +104,39 @@ class TableAPI(private val database: Database) : IRatingAPI {
     }
 
     override suspend fun countPlayerTotalDayRated(playerName: String): Int? {
-        val query = """
-            SELECT COUNT(*) total FROM ${UserRatingTable.tableName} 
-            WHERE ${UserRatingTable.userCreatedReport.name}=
-              (SELECT ${UserTable.id.name} FROM ${UserTable.tableName} WHERE ${UserTable.minecraftName.name}=${playerName.sqlString.uppercase()}) AND (${System.currentTimeMillis()} - ${UserRatingTable.time.name} < ${24 * 60 * 60 * 1000})
-        """.trimIndent()
-        val statement = database.connection?.createStatement()
-        val rs = statement?.executeQuery(query)
-        if (rs?.next()==true){
-            val result =  rs?.getInt("total") ?: 0
-            statement?.close()
-            return result
+        val query = CountQuery(UserRatingTable) {
+            UserRatingTable.userCreatedReport.eq {
+                SelectQuery(UserTable, UserTable.id) {
+                    UserTable.minecraftName.eq(playerName.uppercase()).and {
+                        UserRatingTable.time.more(System.currentTimeMillis() - 24 * 60 * 60 * 1000)
+                    }
+                }
+            }
+        }.generate()
+        return database.connection?.createStatement()?.with {
+            executeQuery(query)?.firstOrNull {
+                it.getInt("total")
+            } ?: 0
         }
-        statement?.close()
-        return 0
     }
 
+
     override suspend fun countPlayerOnPlayerDayRated(playerName: String, ratedPlayerName: String): Int? {
-        val query =
-            """
-                    SELECT COUNT(*) total FROM ${UserRatingTable.tableName} 
-                    WHERE ${UserRatingTable.userCreatedReport.name} = 
-                      (SELECT ${UserTable.id.name} FROM ${UserTable.tableName} WHERE ${UserTable.minecraftName.name}=${playerName.sqlString.uppercase()})   
-                    AND ${UserRatingTable.reportedUser.name} = 
-                      (SELECT ${UserTable.id.name} FROM ${UserTable.tableName} WHERE ${UserTable.minecraftName.name}=${ratedPlayerName?.sqlString?.uppercase()}) 
-                    AND (${System.currentTimeMillis()} - ${UserRatingTable.time.name} < ${24 * 60 * 60 * 1000})
-                    """
-        val statement = database.connection?.createStatement()
-        val rs = statement?.executeQuery(query)
-        if (rs?.next()==true){
-            val result =  rs?.getInt("total") ?: 0
-            statement?.close()
-            return result
+        val query = CountQuery(UserRatingTable) {
+            UserRatingTable.userCreatedReport.eq {
+                SelectQuery(UserTable, UserTable.id) {
+                    UserTable.minecraftName.eq(playerName.uppercase())
+                }
+            }.andQuery {
+                SelectQuery(UserTable, UserTable.id) {
+                    UserTable.minecraftName.eq(ratedPlayerName.uppercase())
+                }
+            }.and(UserRatingTable.time.more(System.currentTimeMillis() - 24 * 60 * 60 * 1000))
+        }.generate()
+        return database.connection?.createStatement()?.with {
+            executeQuery(query)?.firstOrNull {
+                it.getInt("total")
+            } ?: 0
         }
-        statement?.close()
-        return 0
     }
 }
