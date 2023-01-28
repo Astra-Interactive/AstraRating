@@ -57,8 +57,14 @@ coloring:
   # If <-10 -> #9c0303
   - less: -10
     color: #9c0303
-  # If ==0 -> #000000
-  - equals: 0
+  # If <0 -> #FFFFFF
+  - less: 0
+    color: #FFFFFF
+  # If ==0 -> #FFFFFF
+  - equal: 0
+    color: #FFFFFF
+  # If >0 -> #FFFFFF
+  - more: 0
     color: #FFFFFF
   # If >5 -> #51a8f5
   - more: 5
