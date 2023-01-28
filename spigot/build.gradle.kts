@@ -23,9 +23,16 @@ dependencies {
     implementation(libs.astralibs.spigotGui)
     implementation(libs.astralibs.orm)
     // Test-Core
+    testImplementation("org.testng:testng:7.1.0")
     testImplementation(kotlin("test-junit5"))
     testImplementation(platform(libs.junit.bom))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    // Test-libs
+    testImplementation(libs.coroutines.core)
+    testImplementation(libs.coroutines.coreJvm)
+    testImplementation(libs.xerial.sqlite.jdbc)
+    testImplementation("mysql:mysql-connector-java:8.0.32")
     // Spigot dependencies
     compileOnly(libs.essentialsx)
     compileOnly(libs.paperApi)
@@ -38,6 +45,5 @@ dependencies {
     compileOnly(libs.vaultapi)
     compileOnly(libs.coreprotect)
     implementation(libs.bstats.bukkit)
-    testImplementation("org.xerial:sqlite-jdbc:3.34.0")
     implementation(project(":domain"))
 }

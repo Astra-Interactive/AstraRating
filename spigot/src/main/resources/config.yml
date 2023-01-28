@@ -32,6 +32,25 @@ databaseConnection:
     port: 3306
     username: "my_username"
     password: "XXX_SUPER_PASSWORD_SECURITY"
+# Color are sorted by value: [-10, -5, 0, 5, 10]
+# Be sure to fill ALL GAPS/INTERVALS - if not you'll have errors in console
+# If you don't want this feature - remove coloring section or comment it using '#' symbol
+#coloring:
+#  # If <-5 -> #eb3131
+#  - less: -5
+#    color: #eb3131
+#  # If <-10 -> #9c0303
+#  - less: -10
+#    color: #9c0303
+#  # If ==0 -> #000000
+#  - equals: 0
+#    color: #FFFFFF
+#  # If >5 -> #51a8f5
+#  - more: 5
+#    color: #51a8f5
+#  # If >10 -> #0872cf
+#  - more: 10
+#    color: #0872cf
 
 gui:
   showFirstConnection: true
