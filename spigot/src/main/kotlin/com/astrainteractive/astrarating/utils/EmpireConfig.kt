@@ -1,6 +1,8 @@
 package com.astrainteractive.astrarating.utils
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.serializer
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
@@ -22,18 +24,28 @@ data class EmpireConfig(
     val minTimeOnServer: Long = 0,
     // Minimum time on discord required to let rating on players
     val minTimeOnDiscord: Long = 0,
-    val minMessageLength:Int = 5,
-    val maxMessageLength:Int = 30,
-    val trimMessageAfter:Int = 10,
-    val cutWords:Boolean = false,
+    val minMessageLength: Int = 5,
+    val maxMessageLength: Int = 30,
+    val trimMessageAfter: Int = 10,
+    val cutWords: Boolean = false,
     val gui: Gui = Gui(),
-    val databaseConnection: Connection = Connection()
+    val databaseConnection: Connection = Connection(),
+    @SerialName("coloring")
+    val coloring: List<Coloring> = emptyList()
 ) {
+    @Serializable
+    data class Coloring(
+        val less: Int? = null,
+        val equal: Int? = null,
+        val more: Int? = null,
+        val color: String
+    )
+
     @Serializable
     data class Connection(
         val sqlite: Boolean = true,
         val mysql: MySqlConnection? = null
-    ){
+    ) {
         @Serializable
         data class MySqlConnection(
             val database: String,
@@ -44,6 +56,7 @@ data class EmpireConfig(
 
         )
     }
+
     @Serializable
     data class Gui(
         val showFirstConnection: Boolean = true,

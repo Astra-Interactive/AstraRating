@@ -19,10 +19,10 @@ class CachedTotalRating(private val databaseApi: IRatingAPI) {
         }
     }
 
-    fun getPlayerRating(name: String, uuid: UUID): Int {
+    fun getPlayerRating(name: String, uuid: UUID): Int? {
         val data = _ratingByPlayer[uuid]
         if (System.currentTimeMillis() - (data?.lastRequestMillis ?: 0L) > 10_000L)
             PluginScope.launch(limitedDispatcher) { rememberPlayer(name, uuid) }
-        return data?.rating?:0
+        return data?.rating
     }
 }

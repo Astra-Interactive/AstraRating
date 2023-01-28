@@ -18,6 +18,10 @@ sourceSets {
         }
     }
 }
+sourceSets.named("main") {
+    java.srcDir("src/main/kotlin")
+}
+
 tasks.test {
     useJUnitPlatform()
     testLogging {
@@ -25,7 +29,4 @@ tasks.test {
         this.showStandardStreams = true
         ignoreFailures = true
     }
-}
-sourceSets.named("main") {
-    java.srcDir("src/main/kotlin")
 }

@@ -1,4 +1,7 @@
 
+import gradle.kotlin.dsl.accessors._64acc05bf1a66f2c855e386526b4bcff.main
+import gradle.kotlin.dsl.accessors._64acc05bf1a66f2c855e386526b4bcff.sourceSets
+import gradle.kotlin.dsl.accessors._64acc05bf1a66f2c855e386526b4bcff.test
 import org.gradle.ide.visualstudio.tasks.internal.RelativeFileNameTransformer
 
 plugins {
