@@ -33,3 +33,4 @@ target/
 astra.properties
 .gradle
 libs
+domain/src/test/resources/mysql.json

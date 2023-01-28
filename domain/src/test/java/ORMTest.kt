@@ -9,11 +9,16 @@ abstract class ORMTest {
     fun assertConnected(): Database {
         return database ?: throw DatabaseException.DatabaseNotConnectedException
     }
+    protected fun disableFullGroupBy() {
+        val query = "SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));"
+        database?.connection?.createStatement()?.executeUpdate(query)
+    }
 
     @BeforeTest
     open fun setup(): Unit = runBlocking {
         database = builder()
         database?.openConnection()
+        disableFullGroupBy()
     }
 
     @AfterTest

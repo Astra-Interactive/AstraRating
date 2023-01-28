@@ -8,9 +8,9 @@ import ru.astrainteractive.astralibs.orm.database.Table
 
 object UserTable : Table<Int>("users") {
     override val id: Column<Int> = integer("user_id").primaryKey().autoIncrement()
-    val minecraftUUID = text("minecraft_uuid").unique()
-    val minecraftName = text("minecraft_name").unique()
-    val discordID = text("discord_id").unique().nullable()
+    val minecraftUUID = varchar("minecraft_uuid",64).unique()
+    val minecraftName = varchar("minecraft_name",64).unique()
+    val discordID = varchar("discord_id",64).unique().nullable()
     val lastUpdated = bigint("last_updated")
 }
 

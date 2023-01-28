@@ -11,7 +11,7 @@ object UserRatingTable : Table<Int>("users_ratings") {
     val userCreatedReport = integer("user_created_report")
     val reportedUser = integer("reported_user")
     val rating = integer("rating")
-    val message = text("message")
+    val message = text("message",4096)
     val time = bigint("time")
 }
 

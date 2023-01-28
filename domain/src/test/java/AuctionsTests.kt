@@ -18,19 +18,7 @@ class AuctionsTests : ORMTest() {
     private lateinit var api: IRatingAPI
     private val dbName = "dbv2_auction.db"
 
-    override val builder: () -> Database
-        get() = { DefaultDatabase(DBConnection.SQLite(dbName), DBSyntax.SQLite) }
-//    override val builder: () -> Database
-//        get() = {
-//            val dbconnection = DBConnection.MySQL(
-//                database = "XXXXXXXXX",
-//                ip = "XXXXXX",
-//                port = 3306,
-//                username = "XXXXXXXXXX",
-//                password = "XXXXXXXXXXXXX"
-//            )
-//            DefaultDatabase(dbconnection, DBSyntax.MySQL)
-//        }
+    override val builder: () -> Database = Resource::getDatabase
 
     val randomUser: UserDTO
         get() = UserDTO(
