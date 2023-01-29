@@ -73,3 +73,4 @@ coloring:
   - more: 10
     color: #0872cf
 ```
+<img src="https://bstats.org/signatures/bukkit/AstraRating.svg"/>
