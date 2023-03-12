@@ -1,6 +1,6 @@
 package com.astrainteractive.astrarating.gui.ratings
 
-import com.astrainteractive.astrarating.domain.entities.tables.dto.UserAndRating
+import com.astrainteractive.astrarating.dto.UserAndRating
 import com.astrainteractive.astrarating.gui.player_ratings.PlayerRatingsGUI
 import com.astrainteractive.astrarating.modules.ConfigProvider
 import com.astrainteractive.astrarating.modules.TranslationProvider
@@ -11,58 +11,71 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
-import org.bukkit.inventory.ItemStack
 import ru.astrainteractive.astralibs.async.PluginScope
-import ru.astrainteractive.astralibs.menu.*
+import ru.astrainteractive.astralibs.menu.holder.DefaultPlayerHolder
+import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
+import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
+import ru.astrainteractive.astralibs.menu.utils.InventoryButton
+import ru.astrainteractive.astralibs.menu.utils.ItemStackButtonBuilder
+import ru.astrainteractive.astralibs.menu.utils.MenuSize
+import ru.astrainteractive.astralibs.menu.utils.click.MenuClickListener
 import java.util.*
 
 
 class RatingsGUI(player: Player) : PaginatedMenu() {
-    override val playerMenuUtility: IPlayerHolder = PlayerHolder(player)
+    val clickListener = MenuClickListener()
+    override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
     private val config: EmpireConfig
         get() = ConfigProvider.value
-    private val translation:PluginTranslation
+    private val translation: PluginTranslation
         get() = TranslationProvider.value
 
     private val viewModel = RatingsGUIViewModel()
-    val sortButtonIndex: Int = 50
+
 
     override var menuTitle: String = translation.ratingsTitle
     override val menuSize: MenuSize = MenuSize.XL
-    override val backPageButton = object : IInventoryButton {
-        override val index: Int = 49
-        override val item: ItemStack = config.gui.buttons.back.toItemStack().apply {
+
+    override val backPageButton = ItemStackButtonBuilder {
+        index = 49
+        itemStack = config.gui.buttons.back.toItemStack().apply {
             editMeta {
                 it.setDisplayName(translation.menuClose)
             }
         }
-        override val onClick: (e: InventoryClickEvent) -> Unit = {}
+        onClick = { inventory.close() }
 
     }
-    override val nextPageButton = object : IInventoryButton {
-        override val index: Int = 53
-        override val item: ItemStack = config.gui.buttons.next.toItemStack().apply {
+    override val nextPageButton = ItemStackButtonBuilder {
+        index = 53
+        itemStack = config.gui.buttons.next.toItemStack().apply {
             editMeta {
                 it.setDisplayName(translation.menuNextPage)
             }
         }
-        override val onClick: (e: InventoryClickEvent) -> Unit = {}
 
     }
-    override val prevPageButton = object : IInventoryButton {
-        override val index: Int = 45
-        override val item: ItemStack = config.gui.buttons.prev.toItemStack().apply {
+    override val prevPageButton = ItemStackButtonBuilder {
+        index = 45
+        itemStack = config.gui.buttons.prev.toItemStack().apply {
             editMeta {
                 it.setDisplayName(translation.menuPrevPage)
             }
         }
-        override val onClick: (e: InventoryClickEvent) -> Unit = {}
 
     }
-    private val sortButton: ItemStack
-        get() = config.gui.buttons.sort.toItemStack().apply {
-            editMeta {
-                it.setDisplayName("${translation.sort}: ${viewModel.sort.value.desc}")
+    private val sortButton: InventoryButton
+        get() = ItemStackButtonBuilder {
+            index = 50
+            itemStack = config.gui.buttons.sort.toItemStack().apply {
+                editMeta {
+                    it.setDisplayName("${translation.sort}: ${viewModel.sort.value.desc}")
+                }
+            }
+            onClick = {
+
+                viewModel.onSortClicked()
+                setMenuItems()
             }
         }
     override var maxItemsPerPage: Int = 45
@@ -73,24 +86,7 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
 
     override fun onInventoryClicked(e: InventoryClickEvent) {
         e.isCancelled = true
-        handleChangePageClick(e.slot)
-        when (e.slot) {
-            backPageButton.index -> inventory.close()
-            sortButtonIndex -> {
-                viewModel.onSortClicked()
-                setMenuItems()
-            }
-
-            else -> {
-                val item = viewModel.userRatings.value.getOrNull(maxItemsPerPage * page + e.slot) ?: return
-                PluginScope.launch(Dispatchers.IO) {
-                    PlayerRatingsGUI(
-                        Bukkit.getOfflinePlayer(UUID.fromString(item.reportedPlayer.minecraftUUID)),
-                        playerMenuUtility.player
-                    ).open()
-                }
-            }
-        }
+        clickListener.onClick(e)
     }
 
     override fun onInventoryClose(it: InventoryCloseEvent) {
@@ -105,29 +101,39 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
         viewModel.userRatings.collectOn(Dispatchers.IO) { setMenuItems() }
     }
 
-    fun setMenuItems(list:List<UserAndRating> = viewModel.userRatings.value) {
+    fun setMenuItems(list: List<UserAndRating> = viewModel.userRatings.value) {
         inventory.clear()
-        setManageButtons()
-        inventory.setItem(sortButtonIndex, sortButton)
+        setManageButtons(clickListener)
+        sortButton.also(clickListener::remember).setInventoryButton()
         for (i in 0 until maxItemsPerPage) {
             val index = maxItemsPerPage * page + i
             if (index >= list.size)
                 continue
             val userAndRating = list[index]
             val color = if (userAndRating.rating.rating > 0) translation.positiveColor else translation.negativeColor
-            val item = RatingsGUIViewModel.getHead(userAndRating.reportedPlayer.normalName).apply {
-                editMeta {
-                    it.setDisplayName(translation.playerNameColor + userAndRating.reportedPlayer.normalName)
-                    it.lore = mutableListOf<String>().apply {
-                        if (config.gui.showFirstConnection)
-                            add("${translation.firstConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.firstPlayed)}")
-                        if (config.gui.showLastConnection)
-                            add("${translation.lastConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.lastPlayed)}")
-                        add("${translation.rating}: ${color}${userAndRating.rating.rating}")
+            ItemStackButtonBuilder {
+                this.index = i
+                itemStack = RatingsGUIViewModel.getHead(userAndRating.reportedPlayer.normalName).apply {
+                    editMeta {
+                        it.setDisplayName(translation.playerNameColor + userAndRating.reportedPlayer.normalName)
+                        it.lore = mutableListOf<String>().apply {
+                            if (config.gui.showFirstConnection)
+                                add("${translation.firstConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.firstPlayed)}")
+                            if (config.gui.showLastConnection)
+                                add("${translation.lastConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.lastPlayed)}")
+                            add("${translation.rating}: ${color}${userAndRating.rating.rating}")
+                        }
                     }
                 }
-            }
-            inventory.setItem(i, item)
+                onClick = {
+                    PluginScope.launch(Dispatchers.IO) {
+                        PlayerRatingsGUI(
+                            Bukkit.getOfflinePlayer(UUID.fromString(userAndRating.reportedPlayer.minecraftUUID)),
+                            playerHolder.player
+                        ).open()
+                    }
+                }
+            }.also(clickListener::remember).setInventoryButton()
         }
 
     }

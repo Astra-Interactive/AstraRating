@@ -1,8 +1,8 @@
 package com.astrainteractive.astrarating.utils
 
-import com.astrainteractive.astrarating.domain.entities.UserRatingsSort
-import com.astrainteractive.astrarating.domain.entities.UsersRatingsSort
-import com.astrainteractive.astrarating.domain.entities.tables.dto.UserDTO
+import com.astrainteractive.astrarating.models.UserRatingsSort
+import com.astrainteractive.astrarating.models.UsersRatingsSort
+import com.astrainteractive.astrarating.dto.UserDTO
 import com.astrainteractive.astrarating.modules.TranslationProvider
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer

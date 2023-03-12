@@ -1,25 +1,23 @@
 package com.astrainteractive.astrarating.gui.player_ratings
 
 import ru.astrainteractive.astralibs.utils.next
-import com.astrainteractive.astrarating.domain.api.IRatingAPI
-import com.astrainteractive.astrarating.domain.entities.UserRatingsSort
-import com.astrainteractive.astrarating.domain.entities.tables.dto.UserAndRating
+import com.astrainteractive.astrarating.domain.api.RatingDBApi
+import com.astrainteractive.astrarating.models.UserRatingsSort
+import com.astrainteractive.astrarating.dto.UserAndRating
 import com.astrainteractive.astrarating.modules.DatabaseApiModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.bukkit.OfflinePlayer
 import ru.astrainteractive.astralibs.async.AsyncComponent
-import ru.astrainteractive.astralibs.async.BukkitMain
 import ru.astrainteractive.astralibs.async.PluginScope
 
 /**
  * MVVM technique
  */
 class PlayerRatingsGUIViewModel(val player: OfflinePlayer): AsyncComponent() {
-    private val databaseApi: IRatingAPI
+    private val databaseApi: RatingDBApi
         get() = DatabaseApiModule.value
 
     private val _userRatings = MutableStateFlow<List<UserAndRating>>(emptyList())
@@ -47,13 +45,13 @@ class PlayerRatingsGUIViewModel(val player: OfflinePlayer): AsyncComponent() {
 
     init {
         componentScope.launch(Dispatchers.IO) {
-            _userRatings.value = databaseApi.fetchUserRatings(player.name?:"NULL") ?: emptyList()
+            _userRatings.value = databaseApi.fetchUserRatings(player.name?:"NULL").getOrDefault(emptyList())
         }
     }
     fun onDeleteClicked(item: UserAndRating) {
         PluginScope.launch(Dispatchers.IO) {
             databaseApi.deleteUserRating(item.rating)
-            val list = databaseApi.fetchUserRatings(player.name?:"NULL") ?: emptyList()
+            val list = databaseApi.fetchUserRatings(player.name?:"NULL").getOrDefault(emptyList())
             _userRatings.value = list
         }
     }

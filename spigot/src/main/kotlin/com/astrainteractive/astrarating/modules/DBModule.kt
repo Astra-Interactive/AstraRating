@@ -1,12 +1,12 @@
 package com.astrainteractive.astrarating.modules
 
 import com.astrainteractive.astrarating.AstraRating
-import com.astrainteractive.astrarating.domain.entities.tables.UserRatingTable
-import com.astrainteractive.astrarating.domain.entities.tables.UserTable
-import com.astrainteractive.astrarating.domain.entities.tables.dto.RatingTypeDTO
+import com.astrainteractive.astrarating.domain.entities.UserRatingTable
+import com.astrainteractive.astrarating.domain.entities.UserTable
+import com.astrainteractive.astrarating.dto.RatingType
 import com.astrainteractive.astrarating.utils.EmpireConfig
 import kotlinx.coroutines.runBlocking
-import ru.astrainteractive.astralibs.di.IModule
+import ru.astrainteractive.astralibs.di.Module
 import ru.astrainteractive.astralibs.di.getValue
 import ru.astrainteractive.astralibs.orm.DBConnection
 import ru.astrainteractive.astralibs.orm.DBSyntax
@@ -15,7 +15,7 @@ import ru.astrainteractive.astralibs.orm.DefaultDatabase
 import java.io.File
 import java.sql.Connection
 
-object DBModule : IModule<Database>() {
+object DBModule : Module<Database>() {
     private fun createSqliteDatabase(): Database = DefaultDatabase(
         DBConnection.SQLite("${AstraRating.instance.dataFolder}${File.separator}data.db"),
         DBSyntax.SQLite
@@ -48,7 +48,7 @@ object DBModule : IModule<Database>() {
     }
 
     /**
-     * This is needed to update SQL database - add custom type [RatingTypeDTO]
+     * This is needed to update SQL database - add custom type [RatingType]
      */
     private fun addCustomType(connection: Connection) = kotlin.runCatching {
         val statement = connection.createStatement()

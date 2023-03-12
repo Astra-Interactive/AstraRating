@@ -1,9 +1,9 @@
 package com.astrainteractive.astrarating.utils.coloring
 
 import com.astrainteractive.astrarating.utils.EmpireConfig
-import ru.astrainteractive.astralibs.domain.mapping.IMapper
+import ru.astrainteractive.astralibs.domain.mapping.Mapper
 
-object ColoringMapper : IMapper<EmpireConfig.Coloring,Coloring> {
+object ColoringMapper : Mapper<EmpireConfig.Coloring,Coloring> {
     override fun toDTO(it: EmpireConfig.Coloring): Coloring {
         return it.equal?.let { value ->
             Coloring.Equals(value, it.color)

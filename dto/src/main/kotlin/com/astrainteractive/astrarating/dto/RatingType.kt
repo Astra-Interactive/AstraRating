@@ -1,9 +1,9 @@
-package com.astrainteractive.astrarating.domain.entities.tables.dto
+package com.astrainteractive.astrarating.dto
 
 /**
  * Enum class with all rating types
  */
-enum class RatingTypeDTO {
+enum class RatingType {
     /**
      * Is used to create user rating type
      */

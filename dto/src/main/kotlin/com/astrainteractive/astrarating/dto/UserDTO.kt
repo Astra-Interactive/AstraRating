@@ -1,10 +1,8 @@
-package com.astrainteractive.astrarating.domain.entities.tables.dto
-
-import com.astrainteractive.astrarating.domain.api.NON_EXISTS_KEY
+package com.astrainteractive.astrarating.dto
 
 
 data class UserDTO(
-    val id: Int = NON_EXISTS_KEY,
+    val id: Int,
     var minecraftUUID: String = "",
     val minecraftName: String = "",
     val discordID: String? = "",

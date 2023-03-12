@@ -1,7 +1,7 @@
 package com.astrainteractive.astrarating.commands
 
 import CommandManager
-import com.astrainteractive.astrarating.domain.entities.tables.dto.RatingTypeDTO
+import com.astrainteractive.astrarating.dto.RatingType
 import ru.astrainteractive.astralibs.AstraLibs
 import com.astrainteractive.astrarating.modules.TranslationProvider
 import org.bukkit.Bukkit
@@ -29,7 +29,7 @@ fun CommandManager.ratingCommand() = AstraLibs.instance.registerCommand("arating
                 rating = amount,
                 message = message,
                 ratedPlayer = ratedPlayer,
-                typeDTO = RatingTypeDTO.USER_RATING
+                typeDTO = RatingType.USER_RATING
             )
         }
 

@@ -1,9 +1,9 @@
 package com.astrainteractive.astrarating.gui.ratings
 
 import ru.astrainteractive.astralibs.utils.next
-import com.astrainteractive.astrarating.domain.api.IRatingAPI
-import com.astrainteractive.astrarating.domain.entities.UsersRatingsSort
-import com.astrainteractive.astrarating.domain.entities.tables.dto.UserAndRating
+import com.astrainteractive.astrarating.domain.api.RatingDBApi
+import com.astrainteractive.astrarating.models.UsersRatingsSort
+import com.astrainteractive.astrarating.dto.UserAndRating
 import com.astrainteractive.astrarating.modules.DatabaseApiModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,8 +21,9 @@ import ru.astrainteractive.astralibs.async.PluginScope
  * MVVM technique
  */
 class RatingsGUIViewModel : AsyncComponent() {
-    private val databaseApi: IRatingAPI
+    private val databaseApi: RatingDBApi
         get() = DatabaseApiModule.value
+
     companion object {
         fun getHead(playerName: String) = Companion.getHead(Bukkit.getOfflinePlayer(playerName))
         fun getHead(player: OfflinePlayer): ItemStack {
@@ -52,7 +53,7 @@ class RatingsGUIViewModel : AsyncComponent() {
 
     init {
         PluginScope.launch(Dispatchers.IO) {
-            _userRatings.value = databaseApi.fetchUsersTotalRating() ?: emptyList()
+            _userRatings.value = databaseApi.fetchUsersTotalRating().getOrDefault(emptyList())
         }
     }
 }

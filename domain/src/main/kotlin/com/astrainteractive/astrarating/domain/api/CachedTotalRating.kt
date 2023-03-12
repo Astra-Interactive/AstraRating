@@ -5,7 +5,7 @@ import kotlinx.coroutines.launch
 import ru.astrainteractive.astralibs.async.PluginScope
 import java.util.*
 
-class CachedTotalRating(private val databaseApi: IRatingAPI) {
+class CachedTotalRating(private val databaseApi: RatingDBApi) {
     private val _ratingByPlayer: MutableMap<UUID, PlayerData> = mutableMapOf()
     private val limitedDispatcher = Dispatchers.IO.limitedParallelism(1)
     class PlayerData(
@@ -14,7 +14,7 @@ class CachedTotalRating(private val databaseApi: IRatingAPI) {
     )
 
     private suspend fun rememberPlayer(name: String, uuid: UUID) {
-        databaseApi.fetchUserRatings(name ?: "NULL")?.sumOf { it.rating.rating }?.let {
+        databaseApi.fetchUserRatings(name).getOrNull()?.sumOf { it.rating.rating }?.let {
             _ratingByPlayer[uuid] = PlayerData(rating = it)
         }
     }

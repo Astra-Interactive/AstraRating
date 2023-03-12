@@ -1,4 +1,4 @@
-package com.astrainteractive.astrarating.domain.entities.tables
+package com.astrainteractive.astrarating.domain.entities
 
 import ru.astrainteractive.astralibs.orm.database.Column
 import ru.astrainteractive.astralibs.orm.database.Constructable

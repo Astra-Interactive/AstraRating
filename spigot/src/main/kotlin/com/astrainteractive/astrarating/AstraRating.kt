@@ -12,8 +12,8 @@ import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
 import ru.astrainteractive.astralibs.AstraLibs
 import ru.astrainteractive.astralibs.Logger
-import ru.astrainteractive.astralibs.events.GlobalEventManager
-import ru.astrainteractive.astralibs.menu.SharedInventoryClickEvent
+import ru.astrainteractive.astralibs.events.GlobalEventListener
+import ru.astrainteractive.astralibs.menu.event.SharedInventoryClickEvent
 import ru.astrainteractive.astralibs.utils.setupWithSpigot
 import kotlin.reflect.KProperty
 
@@ -34,7 +34,7 @@ class AstraRating : JavaPlugin() {
     override fun onEnable() {
         instance = this
         AstraLibs.rememberPlugin(this)
-        Logger.setupWithSpigot("AstraRating")
+        Logger.setupWithSpigot("AstraRating", this)
         reloadPlugin()
         CommandManager()
         DBModule.value
@@ -45,7 +45,7 @@ class AstraRating : JavaPlugin() {
 
             RatingPAPIExpansion.register()
         }
-        SharedInventoryClickEvent.onEnable(GlobalEventManager)
+        SharedInventoryClickEvent.onEnable(this)
         Bukkit.getPluginManager().getPlugin("AstraLibs")
         EventManagerModule.value
 
@@ -56,9 +56,9 @@ class AstraRating : JavaPlugin() {
      * This method called when server is shutting down or when PlugMan disable plugin.
      */
     override fun onDisable() {
-        runBlocking { DBModule.value.closeConnection()}
+        runBlocking { DBModule.value.closeConnection() }
         HandlerList.unregisterAll(this)
-        GlobalEventManager.onDisable()
+        GlobalEventListener.onDisable()
         RatingPAPIExpansion.unregister()
     }
 
@@ -71,7 +71,6 @@ class AstraRating : JavaPlugin() {
         TranslationProvider.reload()
 
     }
-
 
 
 }

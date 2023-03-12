@@ -1,34 +1,35 @@
 package com.astrainteractive.astrarating.domain.api
 
-import com.astrainteractive.astrarating.domain.entities.tables.UserEntity
-import com.astrainteractive.astrarating.domain.entities.tables.UserRatingEntity
-import com.astrainteractive.astrarating.domain.entities.tables.UserRatingTable
-import com.astrainteractive.astrarating.domain.entities.tables.UserTable
-import com.astrainteractive.astrarating.domain.entities.tables.dto.UserAndRating
-import com.astrainteractive.astrarating.domain.entities.tables.dto.UserDTO
-import com.astrainteractive.astrarating.domain.entities.tables.dto.UserRatingDTO
-import com.astrainteractive.astrarating.domain.entities.tables.dto.mapping.UserMapper
-import com.astrainteractive.astrarating.domain.entities.tables.dto.mapping.UserRatingMapper
+import com.astrainteractive.astrarating.domain.entities.UserEntity
+import com.astrainteractive.astrarating.domain.entities.UserRatingEntity
+import com.astrainteractive.astrarating.domain.entities.UserRatingTable
+import com.astrainteractive.astrarating.domain.entities.UserTable
+import com.astrainteractive.astrarating.dto.UserAndRating
+import com.astrainteractive.astrarating.dto.UserDTO
+import com.astrainteractive.astrarating.dto.UserRatingDTO
+import com.astrainteractive.astrarating.domain.mapping.UserMapper
+import com.astrainteractive.astrarating.domain.mapping.UserRatingMapper
+import com.astrainteractive.astrarating.dto.RatingType
+import com.astrainteractive.astrarating.models.UserModel
 import ru.astrainteractive.astralibs.orm.Database
 import ru.astrainteractive.astralibs.orm.firstOrNull
+import ru.astrainteractive.astralibs.orm.mapNotNull
 import ru.astrainteractive.astralibs.orm.query.CountQuery
 import ru.astrainteractive.astralibs.orm.query.SelectQuery
 import ru.astrainteractive.astralibs.orm.with
-import ru.astrainteractive.astralibs.utils.mapNotNull
-import java.sql.Statement
 
 
-class TableAPI(private val database: Database) : IRatingAPI {
+class RatingDBApiImpl(private val database: Database) : RatingDBApi {
     private val String.sqlString: String
         get() = "\"$this\""
 
-    override suspend fun selectUser(playerName: String): UserDTO? {
-        return UserTable.find(database, constructor = UserEntity) {
+    override suspend fun selectUser(playerName: String): Result<UserDTO> = kotlin.runCatching {
+        UserTable.find(database, constructor = UserEntity) {
             UserTable.minecraftName.eq(playerName.uppercase())
-        }.map(UserMapper::toDTO).firstOrNull()
+        }.map(UserMapper::toDTO).first()
     }
 
-    override suspend fun updateUser(user: UserDTO) {
+    override suspend fun updateUser(user: UserDTO) = kotlin.runCatching {
         val userEntity = UserTable.find(database, constructor = UserEntity) {
             UserTable.id.eq(user.id)
         }.firstOrNull()
@@ -37,33 +38,39 @@ class TableAPI(private val database: Database) : IRatingAPI {
         userEntity?.let { UserTable.update(database, entity = it) }
     }
 
-    override suspend fun insertUser(user: UserDTO): Int? {
-        return UserTable.insert(database) {
+    override suspend fun insertUser(user: UserModel) = kotlin.runCatching {
+        UserTable.insert(database) {
             this[UserTable.lastUpdated] = System.currentTimeMillis()
-            this[UserTable.minecraftUUID] = user.minecraftUUID
+            this[UserTable.minecraftUUID] = user.minecraftUUID.toString()
             this[UserTable.minecraftName] = user.minecraftName.uppercase()
             this[UserTable.discordID] = user.discordID
         }
     }
 
-    override suspend fun insertUserRating(it: UserRatingDTO): Int? {
-        return UserRatingTable.insert(database) {
-            this[UserRatingTable.userCreatedReport] = it.userCreatedReport
-            this[UserRatingTable.reportedUser] = it.reportedUser
-            this[UserRatingTable.rating] = it.rating
-            this[UserRatingTable.message] = it.message
+    override suspend fun insertUserRating(
+        reporter: UserDTO?,
+        reported: UserDTO,
+        message: String,
+        type: RatingType,
+        ratingValue: Int
+    ) = kotlin.runCatching {
+        UserRatingTable.insert(database) {
+            this[UserRatingTable.userCreatedReport] = reporter?.id
+            this[UserRatingTable.reportedUser] = reported.id
+            this[UserRatingTable.rating] = ratingValue
+            this[UserRatingTable.message] = message
             this[UserRatingTable.time] = System.currentTimeMillis()
-            this[UserRatingTable.ratingTypeIndex] = it.ratingType.ordinal
+            this[UserRatingTable.ratingTypeIndex] = type.ordinal
         }
     }
 
-    override suspend fun deleteUserRating(it: UserRatingDTO) {
+    override suspend fun deleteUserRating(it: UserRatingDTO) = kotlin.runCatching {
         UserRatingTable.delete<UserRatingEntity>(database) {
             UserRatingTable.id.eq(it.id)
         }
     }
 
-    override suspend fun fetchUserRatings(playerName: String): List<UserAndRating>? {
+    override suspend fun fetchUserRatings(playerName: String) = kotlin.runCatching {
         val query = """
             SELECT * FROM ${UserRatingTable.tableName} A 
             JOIN ${UserTable.tableName} B on A.${UserRatingTable.userCreatedReport.name}=B.${UserTable.id.name} WHERE A.${UserRatingTable.reportedUser.name}=
@@ -71,7 +78,7 @@ class TableAPI(private val database: Database) : IRatingAPI {
         """.trimIndent()
         val reportedUser = UserTable.find(database, constructor = UserEntity) {
             UserTable.minecraftName.eq(playerName.uppercase())
-        }.firstOrNull()?.let(UserMapper::toDTO) ?: return null
+        }.firstOrNull()?.let(UserMapper::toDTO) ?: throw IllegalStateException()
         val statement = database?.connection?.createStatement()
         val rs = statement?.executeQuery(query)
         val result = rs?.mapNotNull {
@@ -82,10 +89,10 @@ class TableAPI(private val database: Database) : IRatingAPI {
             )
         }
         statement?.close()
-        return result
+        result ?: emptyList()
     }
 
-    override suspend fun fetchUsersTotalRating(): List<UserAndRating>? {
+    override suspend fun fetchUsersTotalRating() = kotlin.runCatching {
         val query = """
             SELECT *, SUM(A.${UserRatingTable.rating.name}) rating__ FROM ${UserRatingTable.tableName} A 
             JOIN ${UserTable.tableName} B on A.${UserRatingTable.reportedUser.name}=B.${UserTable.id.name} GROUP BY ${UserTable.minecraftName.name}
@@ -96,15 +103,15 @@ class TableAPI(private val database: Database) : IRatingAPI {
             val rating = it.getInt("rating__")
             UserAndRating(
                 UserTable.wrap(it, UserEntity).let(UserMapper::toDTO),
-                UserDTO(NON_EXISTS_KEY, "", "", "", System.currentTimeMillis()),
+                UserDTO(-1, "", "", "", System.currentTimeMillis()),
                 UserRatingTable.wrap(it, UserRatingEntity).let(UserRatingMapper::toDTO).copy(rating = rating),
             )
         }
         statement?.close()
-        return result
+        result ?: emptyList()
     }
 
-    override suspend fun countPlayerTotalDayRated(playerName: String): Int? {
+    override suspend fun countPlayerTotalDayRated(playerName: String) = kotlin.runCatching {
         val query = CountQuery(UserRatingTable) {
             UserRatingTable.userCreatedReport.eq {
                 SelectQuery(UserTable, UserTable.id) {
@@ -114,15 +121,15 @@ class TableAPI(private val database: Database) : IRatingAPI {
                 }
             }
         }.generate()
-        return database.connection?.createStatement()?.with {
+        database.connection?.createStatement()?.with {
             executeQuery(query)?.firstOrNull {
                 it.getInt("total")
             } ?: 0
-        }
+        } ?: 0
     }
 
 
-    override suspend fun countPlayerOnPlayerDayRated(playerName: String, ratedPlayerName: String): Int? {
+    override suspend fun countPlayerOnPlayerDayRated(playerName: String, ratedPlayerName: String) = kotlin.runCatching {
         val query = CountQuery(UserRatingTable) {
             UserRatingTable.userCreatedReport.eq {
                 SelectQuery(UserTable, UserTable.id) {
@@ -134,10 +141,10 @@ class TableAPI(private val database: Database) : IRatingAPI {
                 }
             }.and(UserRatingTable.time.more(System.currentTimeMillis() - 24 * 60 * 60 * 1000))
         }.generate()
-        return database.connection?.createStatement()?.with {
+        database.connection?.createStatement()?.with {
             executeQuery(query)?.firstOrNull {
                 it.getInt("total")
             } ?: 0
-        }
+        } ?: 0
     }
 }

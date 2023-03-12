@@ -15,55 +15,70 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.ItemStack
 import ru.astrainteractive.astralibs.async.PluginScope
 import ru.astrainteractive.astralibs.menu.*
+import ru.astrainteractive.astralibs.menu.holder.DefaultPlayerHolder
+import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
+import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
+import ru.astrainteractive.astralibs.menu.utils.InventoryButton
+import ru.astrainteractive.astralibs.menu.utils.ItemStackButtonBuilder
+import ru.astrainteractive.astralibs.menu.utils.MenuSize
+import ru.astrainteractive.astralibs.menu.utils.click.MenuClickListener
 
 class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, player: Player) : PaginatedMenu() {
+    private val clickListener = MenuClickListener()
     private val config: EmpireConfig
         get() = ConfigProvider.value
     private val translation: PluginTranslation
         get() = TranslationProvider.value
-    override val playerMenuUtility: IPlayerHolder = PlayerHolder(player)
+    override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
 
     private val viewModel = PlayerRatingsGUIViewModel(selectedPlayer)
-    val sortButtonIndex: Int = 50
 
     override var menuTitle: String = translation.playerRatingTitle.replace("%player%", selectedPlayer.name ?: "")
     override val menuSize: MenuSize = MenuSize.XL
 
-    override val backPageButton = object : IInventoryButton {
-        override val index: Int = 49
-        override val item: ItemStack = config.gui.buttons.back.toItemStack().apply {
+    override val backPageButton = ItemStackButtonBuilder {
+        index = 49
+        itemStack = config.gui.buttons.back.toItemStack().apply {
             editMeta {
                 it.setDisplayName(translation.menuClose)
             }
         }
-        override val onClick: (e: InventoryClickEvent) -> Unit = {}
+        onClick = {
+            PluginScope.launch(Dispatchers.IO) {
+                RatingsGUI(playerHolder.player).open()
+            }
+        }
 
     }
-    override val nextPageButton = object : IInventoryButton {
-        override val index: Int = 53
-        override val item: ItemStack = config.gui.buttons.next.toItemStack().apply {
+    override val nextPageButton = ItemStackButtonBuilder {
+        index = 53
+        itemStack = config.gui.buttons.next.toItemStack().apply {
             editMeta {
                 it.setDisplayName(translation.menuNextPage)
             }
         }
-        override val onClick: (e: InventoryClickEvent) -> Unit = {}
     }
-    override val prevPageButton = object : IInventoryButton {
-        override val index: Int = 45
-        override val item: ItemStack = config.gui.buttons.prev.toItemStack().apply {
+    override val prevPageButton = ItemStackButtonBuilder {
+        index = 45
+        itemStack = config.gui.buttons.prev.toItemStack().apply {
             editMeta {
                 it.setDisplayName(translation.menuPrevPage)
             }
         }
-        override val onClick: (e: InventoryClickEvent) -> Unit = {}
-
     }
 
 
-    private val sortButton: ItemStack
-        get() = config.gui.buttons.sort.toItemStack().apply {
-            editMeta {
-                it.setDisplayName("${translation.sortRating}: ${viewModel.sort.value.desc}")
+    private val sortButton: InventoryButton
+        get() = ItemStackButtonBuilder {
+            index = 50
+            itemStack = config.gui.buttons.sort.toItemStack().apply {
+                editMeta {
+                    it.setDisplayName("${translation.sortRating}: ${viewModel.sort.value.desc}")
+                }
+            }
+            onClick = {
+                viewModel.onSortClicked()
+                setMenuItems()
             }
         }
     override var maxItemsPerPage: Int = 45
@@ -73,22 +88,10 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, player: Player) : Pagi
 
     override fun onInventoryClicked(e: InventoryClickEvent) {
         e.isCancelled = true
-        handleChangePageClick(e.slot)
+        clickListener.onClick(e)
         when (e.slot) {
-            backPageButton.index -> PluginScope.launch(Dispatchers.IO) {
-                RatingsGUI(playerMenuUtility.player).open()
-            }
-
-            sortButtonIndex -> {
-                viewModel.onSortClicked()
-                setMenuItems()
-            }
 
             else -> {
-                if (!AstraPermission.DeleteReport.hasPermission(playerMenuUtility.player)) return
-                if (e.click != ClickType.LEFT) return
-                val item = viewModel.userRatings.value.getOrNull(maxItemsPerPage * page + e.slot)?:return
-                viewModel.onDeleteClicked(item)
             }
         }
     }
@@ -110,8 +113,8 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, player: Player) : Pagi
 
     fun setMenuItems() {
         inventory.clear()
-        setManageButtons()
-        inventory.setItem(sortButtonIndex, sortButton)
+        setManageButtons(clickListener)
+        sortButton.also(clickListener::remember).setInventoryButton()
         val list = viewModel.userRatings.value
         for (i in 0 until maxItemsPerPage) {
             val index = maxItemsPerPage * page + i
@@ -119,27 +122,35 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, player: Player) : Pagi
                 continue
             val userAndRating = list[index]
             val color = if (userAndRating.rating.rating > 0) translation.positiveColor else translation.negativeColor
-            val item = RatingsGUIViewModel.getHead(userAndRating.userCreatedReport.normalName).apply {
-                editMeta {
-                    it.setDisplayName(translation.playerNameColor + userAndRating.userCreatedReport.normalName)
-                    it.lore = mutableListOf<String>().apply {
-                        subListFromString(
-                            "${translation.message} $color${userAndRating.rating.message}",
-                            config.trimMessageAfter
-                        ).forEachIndexed { index, it ->
-                            add("$color$it")
-                        }
+            ItemStackButtonBuilder {
+                this.index = i
+                itemStack = RatingsGUIViewModel.getHead(userAndRating.userCreatedReport.normalName).apply {
+                    editMeta {
+                        it.setDisplayName(translation.playerNameColor + userAndRating.userCreatedReport.normalName)
+                        it.lore = mutableListOf<String>().apply {
+                            subListFromString(
+                                "${translation.message} $color${userAndRating.rating.message}",
+                                config.trimMessageAfter
+                            ).forEachIndexed { index, it ->
+                                add("$color$it")
+                            }
 
-                        if (config.gui.showFirstConnection)
-                            add("${translation.firstConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.firstPlayed)}")
-                        if (config.gui.showLastConnection)
-                            add("${translation.lastConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.lastPlayed)}")
-                        if (AstraPermission.DeleteReport.hasPermission(playerMenuUtility.player) && config.gui.showDeleteReport)
-                            add(translation.clickToDeleteReport)
+                            if (config.gui.showFirstConnection)
+                                add("${translation.firstConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.firstPlayed)}")
+                            if (config.gui.showLastConnection)
+                                add("${translation.lastConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.lastPlayed)}")
+                            if (AstraPermission.DeleteReport.hasPermission(playerHolder.player) && config.gui.showDeleteReport)
+                                add(translation.clickToDeleteReport)
+                        }
                     }
                 }
-            }
-            inventory.setItem(i, item)
+                onClick = onClick@{ e ->
+                    if (!AstraPermission.DeleteReport.hasPermission(playerHolder.player)) return@onClick
+                    if (e.click != ClickType.LEFT) return@onClick
+                    val item = viewModel.userRatings.value.getOrNull(maxItemsPerPage * page + e.slot) ?: return@onClick
+                    viewModel.onDeleteClicked(item)
+                }
+            }.also(clickListener::remember).setInventoryButton()
         }
 
     }

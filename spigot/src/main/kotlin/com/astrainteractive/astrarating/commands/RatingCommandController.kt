@@ -1,13 +1,14 @@
 package com.astrainteractive.astrarating.commands
 
-import com.astrainteractive.astrarating.domain.api.IRatingAPI
-import com.astrainteractive.astrarating.domain.api.NON_EXISTS_KEY
-import com.astrainteractive.astrarating.domain.entities.tables.dto.RatingTypeDTO
+import com.astrainteractive.astrarating.domain.api.RatingDBApi
+import com.astrainteractive.astrarating.dto.RatingType
 import com.astrainteractive.astrarating.domain.use_cases.InsertUserUseCase
-import com.astrainteractive.astrarating.domain.entities.tables.dto.UserRatingDTO
+import com.astrainteractive.astrarating.dto.UserDTO
+import com.astrainteractive.astrarating.dto.UserRatingDTO
 import com.astrainteractive.astrarating.exception.ValidationException
 import com.astrainteractive.astrarating.exception.ValidationExceptionHandler
 import com.astrainteractive.astrarating.gui.ratings.RatingsGUI
+import com.astrainteractive.astrarating.models.UserModel
 import com.astrainteractive.astrarating.modules.ConfigProvider
 import com.astrainteractive.astrarating.modules.DatabaseApiModule
 import com.astrainteractive.astrarating.modules.InsertUserUseCaseModule
@@ -15,11 +16,11 @@ import com.astrainteractive.astrarating.modules.TranslationProvider
 import com.astrainteractive.astrarating.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.async.PluginScope
+import ru.astrainteractive.astralibs.utils.uuid
 
 object RatingCommandController {
 
@@ -27,7 +28,7 @@ object RatingCommandController {
         get() = TranslationProvider.value
     private val config: EmpireConfig
         get() = ConfigProvider.value
-    private val databaseApi: IRatingAPI
+    private val databaseApi: RatingDBApi
         get() = DatabaseApiModule.value
     private val insertUserUseCase: InsertUserUseCase
         get() = InsertUserUseCaseModule.value
@@ -37,7 +38,7 @@ object RatingCommandController {
         message: String,
         ratedPlayer: OfflinePlayer?,
         rating: Int,
-        typeDTO: RatingTypeDTO
+        typeDTO: RatingType
     ) = ValidationExceptionHandler.intercept {
         if (!AstraPermission.Vote.hasPermission(ratingCreator)) throw ValidationException.NoPermission(ratingCreator)
 
@@ -70,9 +71,9 @@ object RatingCommandController {
                 }
             }
 
-            val todayVotedAmount = databaseApi.countPlayerTotalDayRated(ratingCreator.name) ?: 0
+            val todayVotedAmount = databaseApi.countPlayerTotalDayRated(ratingCreator.name).getOrNull() ?: 0
             val votedOnPlayerAmount =
-                databaseApi.countPlayerOnPlayerDayRated(ratingCreator.name, ratedPlayer.name ?: "NULL") ?: 0
+                databaseApi.countPlayerOnPlayerDayRated(ratingCreator.name, ratedPlayer.name ?: "NULL").getOrNull() ?: 0
 
 
             if (todayVotedAmount > maxVotesPerDay) {
@@ -91,22 +92,29 @@ object RatingCommandController {
                 return@launch
             }
 
-            val playerCreatedID = insertUserUseCase(InsertUserUseCase.Param(ratingCreator.uniqueId, ratingCreator.name))
+            val playerCreatedID = insertUserUseCase(UserModel(ratingCreator.uniqueId, ratingCreator.name))
             val playerReportedID =
-                insertUserUseCase(InsertUserUseCase.Param(ratedPlayer.uniqueId, ratedPlayer?.name ?: "NULL"))
+                insertUserUseCase(UserModel(ratedPlayer.uniqueId, ratedPlayer?.name ?: "NULL"))
             if (playerCreatedID == null || playerReportedID == null) {
                 ratingCreator.sendMessage(translation.dbError)
                 return@launch
             }
-
-            val ratingEntity = UserRatingDTO(
-                userCreatedReport = playerCreatedID,
-                reportedUser = playerReportedID,
-                rating = rating,
+            databaseApi.insertUserRating(
+                reporter = UserDTO(
+                    id = playerCreatedID,
+                    minecraftUUID = ratingCreator.uuid,
+                    minecraftName = ratingCreator.name ?: "-"
+                ),
+                reported = UserDTO(
+                    id = playerReportedID,
+                    minecraftUUID = ratedPlayer.uuid,
+                    minecraftName = ratedPlayer.name ?: "-"
+                ),
                 message = message,
-                ratingType = typeDTO
+                type = typeDTO,
+                ratingValue = rating
             )
-            databaseApi.insertUserRating(ratingEntity)
+
             if (rating > 0)
                 ratingCreator.sendMessage(translation.likedUser.replace("%player%", ratedPlayer.name ?: "-"))
             else

@@ -42,3 +42,4 @@ dependencyResolutionManagement {
 rootProject.name = "AstraRating"
 include("domain")
 include("spigot")
+include("dto")

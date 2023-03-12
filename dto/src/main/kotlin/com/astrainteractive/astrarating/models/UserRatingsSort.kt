@@ -1,4 +1,4 @@
-package com.astrainteractive.astrarating.domain.entities
+package com.astrainteractive.astrarating.models
 
 enum class UserRatingsSort {
     PLAYER_ASC,

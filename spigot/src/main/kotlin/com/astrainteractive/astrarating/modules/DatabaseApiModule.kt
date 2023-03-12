@@ -1,12 +1,11 @@
 package com.astrainteractive.astrarating.modules
 
-import com.astrainteractive.astrarating.domain.api.IRatingAPI
-import com.astrainteractive.astrarating.domain.api.TableAPI
-import kotlinx.coroutines.runBlocking
-import ru.astrainteractive.astralibs.di.IModule
+import com.astrainteractive.astrarating.domain.api.RatingDBApi
+import com.astrainteractive.astrarating.domain.api.RatingDBApiImpl
+import ru.astrainteractive.astralibs.di.Module
 
-object DatabaseApiModule : IModule<IRatingAPI>() {
-    override fun initializer(): IRatingAPI {
-        return TableAPI(DBModule.value)
+object DatabaseApiModule : Module<RatingDBApi>() {
+    override fun initializer(): RatingDBApi {
+        return RatingDBApiImpl(DBModule.value)
     }
 }

@@ -1,8 +1,8 @@
 package com.astrainteractive.astrarating.domain.use_cases
 
-import com.astrainteractive.astrarating.domain.api.IRatingAPI
-import com.astrainteractive.astrarating.domain.entities.tables.dto.UserDTO
-import ru.astrainteractive.astralibs.domain.IUseCase
+import com.astrainteractive.astrarating.domain.api.RatingDBApi
+import com.astrainteractive.astrarating.models.UserModel
+import ru.astrainteractive.astralibs.domain.UseCase
 import java.util.*
 
 /**
@@ -10,31 +10,21 @@ import java.util.*
  * @param player owner of auction
  * @return boolean - true if succesfully removed
  */
-class InsertUserUseCase(private val databaseApi: IRatingAPI,val discordIDProvider: (UUID) -> String?) : IUseCase<Int?, InsertUserUseCase.Param> {
+class InsertUserUseCase(private val databaseApi: RatingDBApi, val discordIDProvider: (UUID) -> String?) : UseCase<Int?, UserModel> {
     private val discordUsers = mutableMapOf<String, String>()
 
-    class Param(
-        val uuid: UUID,
-        val name: String,
-    )
 
-    override suspend fun run(params: Param): Int? {
-        val uuid = params.uuid.toString()
-        val discordID = discordUsers[uuid] ?: discordIDProvider(params.uuid)?.let {
+    override suspend fun run(params: UserModel): Int? {
+        val uuid = params.minecraftUUID.toString()
+        val name = params.minecraftName
+        val discordID = discordUsers[uuid] ?: discordIDProvider(params.minecraftUUID)?.let {
             discordUsers[uuid] = it
             it
         }
-        val user = databaseApi.selectUser(params.name ?: "NULL")
+        val user = databaseApi.selectUser(params.minecraftName).getOrNull()
         return user?.let {
             databaseApi.updateUser(it.copy(discordID = discordID))
             it.id
-        } ?: databaseApi.insertUser(
-            UserDTO(
-                minecraftName = params.name ?: "UNDEFINED_NAME",
-                minecraftUUID = uuid,
-                discordID = discordID,
-                lastUpdated = System.currentTimeMillis()
-            )
-        )
+        } ?: databaseApi.insertUser(params).getOrNull()
     }
 }

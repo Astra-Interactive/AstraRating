@@ -46,4 +46,5 @@ dependencies {
     compileOnly(libs.coreprotect)
     implementation(libs.bstats.bukkit)
     implementation(project(":domain"))
+    implementation(project(":dto"))
 }
