@@ -84,7 +84,7 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, player: Player) : Pagi
     override var maxItemsPerPage: Int = 45
     override var page: Int = 0
     override val maxItemsAmount: Int
-        get() = 0
+        get() = viewModel.userRatings.value.size
 
     override fun onInventoryClicked(e: InventoryClickEvent) {
         e.isCancelled = true

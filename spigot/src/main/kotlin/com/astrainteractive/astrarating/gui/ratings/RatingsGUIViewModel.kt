@@ -39,7 +39,7 @@ class RatingsGUIViewModel : AsyncComponent() {
     val userRatings: StateFlow<List<UserAndRating>>
         get() = _userRatings
 
-    private val _sort = MutableStateFlow(UsersRatingsSort.DESC)
+    private val _sort = MutableStateFlow(UsersRatingsSort.values().last())
     val sort: StateFlow<UsersRatingsSort>
         get() = _sort
 
@@ -54,6 +54,7 @@ class RatingsGUIViewModel : AsyncComponent() {
     init {
         PluginScope.launch(Dispatchers.IO) {
             _userRatings.value = databaseApi.fetchUsersTotalRating().getOrDefault(emptyList())
+            onSortClicked()
         }
     }
 }

@@ -53,6 +53,7 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
                 it.setDisplayName(translation.menuNextPage)
             }
         }
+        onClick = { showPage(page + 1) }
 
     }
     override val prevPageButton = ItemStackButtonBuilder {
@@ -62,6 +63,7 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
                 it.setDisplayName(translation.menuPrevPage)
             }
         }
+        onClick = { showPage(page - 1) }
 
     }
     private val sortButton: InventoryButton
@@ -81,7 +83,7 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
     override var maxItemsPerPage: Int = 45
     override var page: Int = 0
     override val maxItemsAmount: Int
-        get() = 0
+        get() = viewModel.userRatings.value.size
 
 
     override fun onInventoryClicked(e: InventoryClickEvent) {
@@ -104,6 +106,10 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
     fun setMenuItems(list: List<UserAndRating> = viewModel.userRatings.value) {
         inventory.clear()
         setManageButtons(clickListener)
+//        backPageButton.also(clickListener::remember).setInventoryButton()
+//        nextPageButton.also(clickListener::remember).setInventoryButton()
+//        prevPageButton.also(clickListener::remember).setInventoryButton()
+
         sortButton.also(clickListener::remember).setInventoryButton()
         for (i in 0 until maxItemsPerPage) {
             val index = maxItemsPerPage * page + i

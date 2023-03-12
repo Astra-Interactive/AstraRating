@@ -24,7 +24,7 @@ class PlayerRatingsGUIViewModel(val player: OfflinePlayer): AsyncComponent() {
     val userRatings: StateFlow<List<UserAndRating>>
         get() = _userRatings
 
-    private val _sort = MutableStateFlow(UserRatingsSort.DATE_DESC)
+    private val _sort = MutableStateFlow(UserRatingsSort.values().last())
     val sort: StateFlow<UserRatingsSort>
         get() = _sort
 
@@ -53,6 +53,7 @@ class PlayerRatingsGUIViewModel(val player: OfflinePlayer): AsyncComponent() {
             databaseApi.deleteUserRating(item.rating)
             val list = databaseApi.fetchUserRatings(player.name?:"NULL").getOrDefault(emptyList())
             _userRatings.value = list
+            onSortClicked()
         }
     }
 }
