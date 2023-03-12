@@ -73,4 +73,14 @@ coloring:
   - more: 10
     color: #0872cf
 ```
+
+### Adding events
+Section will be created by default if you installing plugin first time
+```yaml
+events:
+  kill_player:
+    change_by: -2
+    enabled: false
+```
+
 <img src="https://bstats.org/signatures/bukkit/AstraRating.svg"/>
