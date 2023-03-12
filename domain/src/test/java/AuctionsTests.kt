@@ -1,41 +1,29 @@
-import com.astrainteractive.astrarating.domain.api.IRatingAPI
-import com.astrainteractive.astrarating.domain.api.TableAPI
-import com.astrainteractive.astrarating.domain.entities.tables.UserRatingTable
-import com.astrainteractive.astrarating.domain.entities.tables.UserTable
-import com.astrainteractive.astrarating.domain.entities.tables.dto.UserDTO
-import com.astrainteractive.astrarating.domain.entities.tables.dto.UserRatingDTO
+import com.astrainteractive.astrarating.domain.api.RatingDBApi
+import com.astrainteractive.astrarating.domain.api.RatingDBApiImpl
+import com.astrainteractive.astrarating.domain.entities.UserRatingTable
+import com.astrainteractive.astrarating.domain.entities.UserTable
+import com.astrainteractive.astrarating.dto.RatingType
+import com.astrainteractive.astrarating.dto.UserDTO
+import com.astrainteractive.astrarating.dto.UserRatingDTO
+import com.astrainteractive.astrarating.models.UserModel
 import kotlinx.coroutines.runBlocking
-import ru.astrainteractive.astralibs.orm.DBConnection
-import ru.astrainteractive.astralibs.orm.DBSyntax
 import ru.astrainteractive.astralibs.orm.Database
-import ru.astrainteractive.astralibs.orm.DefaultDatabase
 import java.io.File
 import java.util.*
-import kotlin.random.Random
 import kotlin.test.*
 
 class AuctionsTests : ORMTest() {
-    private lateinit var api: IRatingAPI
+    private lateinit var api: RatingDBApi
     private val dbName = "dbv2_auction.db"
 
     override val builder: () -> Database = Resource::getDatabase
 
-    val randomUser: UserDTO
-        get() = UserDTO(
-            minecraftUUID = UUID.randomUUID().toString(),
+    val randomUser: UserModel
+        get() = UserModel(
+            minecraftUUID = UUID.randomUUID(),
             minecraftName = UUID.randomUUID().toString(),
             discordID = UUID.randomUUID().toString(),
         )
-
-    fun userRating(
-        userCreatedReport: Int,
-        reportedUser: Int,
-    ): UserRatingDTO = UserRatingDTO(
-        userCreatedReport = userCreatedReport,
-        reportedUser = reportedUser,
-        rating = 1,
-        message = UUID.randomUUID().toString()
-    )
 
 
     @AfterTest
@@ -54,7 +42,7 @@ class AuctionsTests : ORMTest() {
         database.openConnection()
         UserTable.create(database)
         UserRatingTable.create(database)
-        api = TableAPI(database)
+        api = RatingDBApiImpl(database)
     }
 
 
@@ -63,51 +51,60 @@ class AuctionsTests : ORMTest() {
         val database = assertConnected()
         val user = randomUser
         // Insert and select user
-        val id = api.insertUser(user)
-        api.selectUser(user.minecraftName).also { selectedUser ->
+        val id = api.insertUser(user).getOrThrow()
+        api.selectUser(user.minecraftName).getOrThrow().also { selectedUser ->
             assertNotNull(selectedUser)
             assertEquals(id, selectedUser.id)
-            assertEquals(user.minecraftUUID, selectedUser.minecraftUUID)
+            assertEquals(user.minecraftUUID.toString(), selectedUser.minecraftUUID)
         }
     }
 
     @Test
     fun `Rate user on user`(): Unit = runBlocking {
         val reportedUser = randomUser.let {
-            api.insertUser(it)
-            assertNotNull(api.selectUser(it.minecraftName))
+            api.insertUser(it).getOrThrow()
+            api.selectUser(it.minecraftName).getOrThrow()
         }
         val userCreatedReport = randomUser.let {
-            api.insertUser(it)
-            assertNotNull(api.selectUser(it.minecraftName))
+            api.insertUser(it).getOrThrow()
+            api.selectUser(it.minecraftName).getOrThrow()
         }
-        userRating(userCreatedReport.id, reportedUser.id).also {
-            assertNotNull(api.insertUserRating(it))
-        }
-        api.fetchUserRatings(reportedUser.minecraftName).also { reportsOnUser ->
+        api.insertUserRating(
+            reporter = userCreatedReport,
+            reported = reportedUser,
+            message = "",
+            type = RatingType.USER_RATING,
+            ratingValue = 1
+        ).getOrThrow()
+        api.fetchUserRatings(reportedUser.minecraftName).getOrThrow().also { reportsOnUser ->
             assertNotNull(reportsOnUser)
             assertEquals(1, reportsOnUser.size)
         }
-        api.countPlayerOnPlayerDayRated(userCreatedReport.minecraftName, reportedUser.minecraftName).also { count ->
+        api.countPlayerOnPlayerDayRated(userCreatedReport.minecraftName, reportedUser.minecraftName).getOrThrow()
+            .also { count ->
+                assertNotNull(count)
+                assertEquals(1, count)
+            }
+        api.countPlayerTotalDayRated(userCreatedReport.minecraftName).getOrThrow().also { count ->
             assertNotNull(count)
             assertEquals(1, count)
         }
-        api.countPlayerTotalDayRated(userCreatedReport.minecraftName).also { count ->
-            assertNotNull(count)
-            assertEquals(1, count)
-        }
-        api.fetchUsersTotalRating().also { ratings ->
+        api.fetchUsersTotalRating().getOrThrow().also { ratings ->
             assertNotNull(ratings)
             assertEquals(1, ratings.size)
         }
-        userRating(userCreatedReport.id, reportedUser.id).also {
-            assertNotNull(api.insertUserRating(it))
-        }
-        api.fetchUserRatings(reportedUser.minecraftName).also { userRatings ->
+        api.insertUserRating(
+            reporter = userCreatedReport,
+            reported = reportedUser,
+            message = "",
+            type = RatingType.USER_RATING,
+            ratingValue = 1
+        ).getOrThrow()
+        api.fetchUserRatings(reportedUser.minecraftName).getOrThrow().also { userRatings ->
             assertNotNull(userRatings)
             assertEquals(2, userRatings.size)
         }
-        api.fetchUsersTotalRating().also { ratings ->
+        api.fetchUsersTotalRating().getOrThrow().also { ratings ->
             assertNotNull(ratings)
             val rating = assertNotNull(ratings.firstOrNull())
 
