@@ -11,6 +11,7 @@ object UserRatingTable : Table<Int>("users_ratings") {
     val userCreatedReport = integer("user_created_report")
     val reportedUser = integer("reported_user")
     val rating = integer("rating")
+    val ratingTypeIndex = integer("rating_type_index")
     val message = text("message",4096)
     val time = bigint("time")
 }
@@ -21,6 +22,7 @@ class UserRatingEntity : Entity<Int>(UserRatingTable) {
     val userCreatedReport by UserRatingTable.userCreatedReport
     val reportedUser by UserRatingTable.reportedUser
     val rating by UserRatingTable.rating
+    val ratingTypeIndex by UserRatingTable.ratingTypeIndex
     val message by UserRatingTable.message
     val time by UserRatingTable.time
     companion object: Constructable<UserRatingEntity>(::UserRatingEntity)

@@ -49,6 +49,7 @@ class AstraRating : JavaPlugin() {
         }
         SharedInventoryClickEvent.onEnable(GlobalEventManager)
         Bukkit.getPluginManager().getPlugin("AstraLibs")
+        
     }
 
 

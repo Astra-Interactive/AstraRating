@@ -2,6 +2,7 @@ package com.astrainteractive.astrarating.commands
 
 import com.astrainteractive.astrarating.domain.api.IRatingAPI
 import com.astrainteractive.astrarating.domain.api.NON_EXISTS_KEY
+import com.astrainteractive.astrarating.domain.entities.tables.dto.RatingTypeDTO
 import com.astrainteractive.astrarating.domain.use_cases.InsertUserUseCase
 import com.astrainteractive.astrarating.domain.entities.tables.dto.UserRatingDTO
 import com.astrainteractive.astrarating.exception.ValidationException
@@ -69,7 +70,8 @@ object RatingCommandController {
             }
 
             val todayVotedAmount = databaseApi.countPlayerTotalDayRated(ratingCreator.name) ?: 0
-            val votedOnPlayerAmount = databaseApi.countPlayerOnPlayerDayRated(ratingCreator.name, ratedPlayer.name?:"NULL") ?: 0
+            val votedOnPlayerAmount =
+                databaseApi.countPlayerOnPlayerDayRated(ratingCreator.name, ratedPlayer.name ?: "NULL") ?: 0
 
 
 
@@ -90,14 +92,21 @@ object RatingCommandController {
                 return@launch
             }
 
-            val playerCreatedID = insertUserUseCase(InsertUserUseCase.Param(ratingCreator.uniqueId,ratingCreator.name))
-            val playerReportedID = insertUserUseCase(InsertUserUseCase.Param(ratedPlayer.uniqueId,ratedPlayer?.name?:"NULL"))
+            val playerCreatedID = insertUserUseCase(InsertUserUseCase.Param(ratingCreator.uniqueId, ratingCreator.name))
+            val playerReportedID =
+                insertUserUseCase(InsertUserUseCase.Param(ratedPlayer.uniqueId, ratedPlayer?.name ?: "NULL"))
             if (playerCreatedID == null || playerReportedID == null) {
                 ratingCreator.sendMessage(translation.dbError)
                 return@launch
             }
 
-            val ratingEntity = UserRatingDTO(NON_EXISTS_KEY, playerCreatedID, playerReportedID, rating, message)
+            val ratingEntity = UserRatingDTO(
+                userCreatedReport = playerCreatedID,
+                reportedUser = playerReportedID,
+                rating = rating,
+                message = message,
+                ratingType = RatingTypeDTO.USER_RATING
+            )
             databaseApi.insertUserRating(ratingEntity)
             if (rating > 0)
                 ratingCreator.sendMessage(translation.likedUser.replace("%player%", args[1]))

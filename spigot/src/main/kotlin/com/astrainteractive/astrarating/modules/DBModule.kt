@@ -3,6 +3,7 @@ package com.astrainteractive.astrarating.modules
 import com.astrainteractive.astrarating.AstraRating
 import com.astrainteractive.astrarating.domain.entities.tables.UserRatingTable
 import com.astrainteractive.astrarating.domain.entities.tables.UserTable
+import com.astrainteractive.astrarating.domain.entities.tables.dto.RatingTypeDTO
 import com.astrainteractive.astrarating.utils.EmpireConfig
 import kotlinx.coroutines.runBlocking
 import ru.astrainteractive.astralibs.di.IModule
@@ -12,6 +13,7 @@ import ru.astrainteractive.astralibs.orm.DBSyntax
 import ru.astrainteractive.astralibs.orm.Database
 import ru.astrainteractive.astralibs.orm.DefaultDatabase
 import java.io.File
+import java.sql.Connection
 
 object DBModule : IModule<Database>() {
     private fun createSqliteDatabase(): Database = DefaultDatabase(
@@ -29,6 +31,7 @@ object DBModule : IModule<Database>() {
         )
         return DefaultDatabase(dbconnection, DBSyntax.MySQL)
     }
+
     private fun getConnection(config: EmpireConfig): Database {
         return config.databaseConnection.mysql?.let(::createMySqlDatabase) ?: createSqliteDatabase()
     }
@@ -39,6 +42,21 @@ object DBModule : IModule<Database>() {
         db.openConnection()
         UserRatingTable.create(db)
         UserTable.create(db)
+        db.connection?.let(::addCustomType)
         db
+    }
+
+    /**
+     * This is needed to update SQL database - add custom type [RatingTypeDTO]
+     */
+    private fun addCustomType(connection: Connection) {
+        val statement = connection.createStatement()
+        statement.execute(
+            """
+                    ALTER TABLE ${UserRatingTable.tableName}
+                    ADD ${UserRatingTable.ratingTypeIndex.name} ${UserRatingTable.ratingTypeIndex.type} NOT NULL DEFAULT(0)
+                """.trimIndent()
+        )
+        statement.close()
     }
 }

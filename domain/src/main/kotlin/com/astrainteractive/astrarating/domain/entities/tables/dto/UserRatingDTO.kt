@@ -8,5 +8,6 @@ data class UserRatingDTO(
     val reportedUser: Int,
     val rating: Int,
     val message: String,
+    val ratingType: RatingTypeDTO,
     val time: Long = System.currentTimeMillis(),
 )

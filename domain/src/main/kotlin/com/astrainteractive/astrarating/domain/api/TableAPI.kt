@@ -53,6 +53,7 @@ class TableAPI(private val database: Database) : IRatingAPI {
             this[UserRatingTable.rating] = it.rating
             this[UserRatingTable.message] = it.message
             this[UserRatingTable.time] = System.currentTimeMillis()
+            this[UserRatingTable.ratingTypeIndex] = it.ratingType.ordinal
         }
     }
 
