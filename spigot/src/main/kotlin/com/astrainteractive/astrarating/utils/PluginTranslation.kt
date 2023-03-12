@@ -75,4 +75,8 @@ class PluginTranslation : BaseTranslation() {
     val rating: String = translationValue("menu.rating", "#1B76CAРейтинг")
     val message: String = translationValue("menu.message", "#1B76CAСообщение:")
 
+    // Events
+    private val killedPlayer = translationValue("events.kill_player", "#9c0303Убил игрока %killed_player%")
+    fun killedPlayer(playerName: String) = killedPlayer.replace("%killed_player%", playerName)
+
 }

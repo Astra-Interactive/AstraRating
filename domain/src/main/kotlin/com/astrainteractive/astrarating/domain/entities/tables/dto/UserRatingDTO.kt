@@ -4,7 +4,7 @@ import com.astrainteractive.astrarating.domain.api.NON_EXISTS_KEY
 
 data class UserRatingDTO(
     val id: Int = NON_EXISTS_KEY,
-    val userCreatedReport: Int,
+    val userCreatedReport: Int?,
     val reportedUser: Int,
     val rating: Int,
     val message: String,

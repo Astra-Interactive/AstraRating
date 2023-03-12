@@ -42,14 +42,15 @@ object DBModule : IModule<Database>() {
         db.openConnection()
         UserRatingTable.create(db)
         UserTable.create(db)
-        db.connection?.let(::addCustomType)
+        db.connection?.let { addCustomType(it) } ?: throw Exception("Could not alter table! Database is not connected!")
+        db.connection?.let { updateColumn(it) } ?: throw Exception("Could not alter table! Database is not connected!")
         db
     }
 
     /**
      * This is needed to update SQL database - add custom type [RatingTypeDTO]
      */
-    private fun addCustomType(connection: Connection) {
+    private fun addCustomType(connection: Connection) = kotlin.runCatching {
         val statement = connection.createStatement()
         statement.execute(
             """
@@ -58,5 +59,41 @@ object DBModule : IModule<Database>() {
                 """.trimIndent()
         )
         statement.close()
-    }
+    }.onFailure { it.printStackTrace() }
+
+    private fun updateColumn(connection: Connection) = kotlin.runCatching {
+        val statement = connection.createStatement()
+        val tableName = UserRatingTable.tableName
+        val columnName = UserRatingTable.userCreatedReport.name
+        val columnNameOld = "${UserRatingTable.userCreatedReport.name}_old"
+        statement.execute(
+            """                
+                ALTER TABLE
+                    users_ratings
+                RENAME COLUMN user_created_report TO user_created_report_old;            
+        """.trimIndent()
+        )
+        statement.execute(
+            """                            
+                ALTER TABLE
+                    users_ratings
+                ADD COLUMN
+                    user_created_report INT NULL;
+        """.trimIndent()
+        )
+        statement.execute(
+            """                            
+                UPDATE users_ratings SET user_created_report=user_created_report_old;
+        """.trimIndent()
+        )
+        statement.execute(
+            """
+                ALTER TABLE
+                    users_ratings
+                DROP COLUMN
+                    user_created_report_old;            
+        """.trimIndent()
+        )
+        statement.close()
+    }.onFailure { it.printStackTrace() }
 }

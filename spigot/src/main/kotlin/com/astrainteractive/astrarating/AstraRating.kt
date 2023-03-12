@@ -1,10 +1,7 @@
 package com.astrainteractive.astrarating
 
 import CommandManager
-import com.astrainteractive.astrarating.modules.BStats
-import com.astrainteractive.astrarating.modules.ConfigProvider
-import com.astrainteractive.astrarating.modules.DBModule
-import com.astrainteractive.astrarating.modules.TranslationProvider
+import com.astrainteractive.astrarating.modules.*
 import com.astrainteractive.astrarating.utils.Files
 import com.astrainteractive.astrarating.utils.RatingPAPIExpansion
 import com.astrainteractive.astrarating.utils.Singleton
@@ -40,6 +37,7 @@ class AstraRating : JavaPlugin() {
         Logger.setupWithSpigot("AstraRating")
         reloadPlugin()
         CommandManager()
+        DBModule.value
         BStats.value
         Bukkit.getPluginManager().getPlugin("PlaceholderAPI")?.let {
             if (RatingPAPIExpansion.isRegistered)
@@ -49,7 +47,8 @@ class AstraRating : JavaPlugin() {
         }
         SharedInventoryClickEvent.onEnable(GlobalEventManager)
         Bukkit.getPluginManager().getPlugin("AstraLibs")
-        
+        EventManagerModule.value
+
     }
 
 

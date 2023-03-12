@@ -32,6 +32,10 @@ databaseConnection:
   #  port: 3306
   #  username: "my_username"
   #  password: "XXX_SUPER_PASSWORD_SECURITY"
+events:
+  kill_player:
+    change_by: -2
+    enabled: false
 # Color are sorted by value: [-10, -5, 0, 5, 10]
 # Be sure to fill ALL GAPS/INTERVALS - if not you'll have errors in console
 # If you don't want this feature - remove coloring section or comment it using '#' symbol

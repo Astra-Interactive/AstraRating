@@ -16,6 +16,7 @@ import com.astrainteractive.astrarating.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
+import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.async.PluginScope
@@ -33,14 +34,14 @@ object RatingCommandController {
 
     fun addRating(
         ratingCreator: CommandSender,
-        args: Array<out String>,
+        message: String,
+        ratedPlayer: OfflinePlayer?,
         rating: Int,
+        typeDTO: RatingTypeDTO
     ) = ValidationExceptionHandler.intercept {
         if (!AstraPermission.Vote.hasPermission(ratingCreator)) throw ValidationException.NoPermission(ratingCreator)
 
         if (ratingCreator !is Player) throw ValidationException.OnlyPlayerCommand(ratingCreator)
-
-        val ratedPlayer = args.getOrNull(1)?.let { Bukkit.getOfflinePlayer(it) }
 
         if (ratedPlayer == null || ratedPlayer.firstPlayed == 0L)
             throw ValidationException.PlayerNotExists(ratingCreator)
@@ -74,8 +75,6 @@ object RatingCommandController {
                 databaseApi.countPlayerOnPlayerDayRated(ratingCreator.name, ratedPlayer.name ?: "NULL") ?: 0
 
 
-
-
             if (todayVotedAmount > maxVotesPerDay) {
                 ratingCreator.sendMessage(translation.alreadyMaxDayVotes)
                 return@launch
@@ -86,7 +85,7 @@ object RatingCommandController {
                 return@launch
             }
 
-            val message = args.toList().subList(2, args.size).joinToString(" ")
+
             if (message.length < config.minMessageLength || message.length > config.maxMessageLength) {
                 ratingCreator.sendMessage(translation.wrongMessageLen)
                 return@launch
@@ -105,13 +104,13 @@ object RatingCommandController {
                 reportedUser = playerReportedID,
                 rating = rating,
                 message = message,
-                ratingType = RatingTypeDTO.USER_RATING
+                ratingType = typeDTO
             )
             databaseApi.insertUserRating(ratingEntity)
             if (rating > 0)
-                ratingCreator.sendMessage(translation.likedUser.replace("%player%", args[1]))
+                ratingCreator.sendMessage(translation.likedUser.replace("%player%", ratedPlayer.name ?: "-"))
             else
-                ratingCreator.sendMessage(translation.dislikedUser.replace("%player%", args[1]))
+                ratingCreator.sendMessage(translation.dislikedUser.replace("%player%", ratedPlayer.name ?: "-"))
         }
     }
 
