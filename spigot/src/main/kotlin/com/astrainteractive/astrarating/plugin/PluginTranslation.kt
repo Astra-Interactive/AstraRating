@@ -1,6 +1,6 @@
-package com.astrainteractive.astrarating.utils
+package com.astrainteractive.astrarating.plugin
 
-import ru.astrainteractive.astralibs.file_manager.FileManager
+import ru.astrainteractive.astralibs.filemanager.SpigotFileManager
 import ru.astrainteractive.astralibs.utils.BaseTranslation
 
 /**
@@ -10,7 +10,7 @@ class PluginTranslation : BaseTranslation() {
     /**
      * This is a default translation file. Don't forget to create translation.yml in resources of the plugin
      */
-    override val translationFile: FileManager = FileManager("translations.yml")
+    override val translationFile: SpigotFileManager = SpigotFileManager("translations.yml")
 
     // LightBlue #1B76CA
     // Yellow #DDB92B

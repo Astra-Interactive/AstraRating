@@ -2,16 +2,21 @@ package com.astrainteractive.astrarating.gui.ratings
 
 import com.astrainteractive.astrarating.dto.UserAndRating
 import com.astrainteractive.astrarating.gui.player_ratings.PlayerRatingsGUI
-import com.astrainteractive.astrarating.modules.ConfigProvider
-import com.astrainteractive.astrarating.modules.TranslationProvider
+import com.astrainteractive.astrarating.modules.ServiceLocator
+import com.astrainteractive.astrarating.plugin.EmpireConfig
+import com.astrainteractive.astrarating.plugin.PluginTranslation
 import com.astrainteractive.astrarating.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
+import ru.astrainteractive.astralibs.async.BukkitAsync
+import ru.astrainteractive.astralibs.async.BukkitMain
 import ru.astrainteractive.astralibs.async.PluginScope
+import ru.astrainteractive.astralibs.di.getValue
 import ru.astrainteractive.astralibs.menu.holder.DefaultPlayerHolder
 import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
 import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
@@ -25,10 +30,9 @@ import java.util.*
 class RatingsGUI(player: Player) : PaginatedMenu() {
     val clickListener = MenuClickListener()
     override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
-    private val config: EmpireConfig
-        get() = ConfigProvider.value
-    private val translation: PluginTranslation
-        get() = TranslationProvider.value
+    private val config: EmpireConfig by ServiceLocator.config
+    private val translation: PluginTranslation by ServiceLocator.translation
+
 
     private val viewModel = RatingsGUIViewModel()
 
@@ -132,11 +136,14 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
                     }
                 }
                 onClick = {
-                    PluginScope.launch(Dispatchers.IO) {
-                        PlayerRatingsGUI(
+                    PluginScope.launch(Dispatchers.BukkitAsync) {
+                        val inventory = PlayerRatingsGUI(
                             Bukkit.getOfflinePlayer(UUID.fromString(userAndRating.reportedPlayer.minecraftUUID)),
                             playerHolder.player
-                        ).open()
+                        )
+                        withContext(Dispatchers.BukkitMain){
+                            inventory.open()
+                        }
                     }
                 }
             }.also(clickListener::remember).setInventoryButton()

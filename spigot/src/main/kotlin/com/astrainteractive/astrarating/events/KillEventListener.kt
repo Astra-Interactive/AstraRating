@@ -3,10 +3,9 @@ package com.astrainteractive.astrarating.events
 import com.astrainteractive.astrarating.domain.api.RatingDBApi
 import com.astrainteractive.astrarating.dto.RatingType
 import com.astrainteractive.astrarating.dto.UserDTO
-import com.astrainteractive.astrarating.dto.UserRatingDTO
 import com.astrainteractive.astrarating.models.UserModel
-import com.astrainteractive.astrarating.utils.EmpireConfig
-import com.astrainteractive.astrarating.utils.PluginTranslation
+import com.astrainteractive.astrarating.plugin.EmpireConfig
+import com.astrainteractive.astrarating.plugin.PluginTranslation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.bukkit.event.entity.PlayerDeathEvent
@@ -14,7 +13,6 @@ import ru.astrainteractive.astralibs.async.PluginScope
 import ru.astrainteractive.astralibs.di.Dependency
 import ru.astrainteractive.astralibs.di.getValue
 import ru.astrainteractive.astralibs.events.DSLEvent
-import ru.astrainteractive.astralibs.utils.uuid
 
 class KillEventListener(
     configDependency: Dependency<EmpireConfig>,

@@ -2,19 +2,23 @@ package com.astrainteractive.astrarating.gui.player_ratings
 
 import com.astrainteractive.astrarating.gui.ratings.RatingsGUI
 import com.astrainteractive.astrarating.gui.ratings.RatingsGUIViewModel
-import com.astrainteractive.astrarating.modules.ConfigProvider
-import com.astrainteractive.astrarating.modules.TranslationProvider
+import com.astrainteractive.astrarating.modules.ServiceLocator
+import com.astrainteractive.astrarating.plugin.AstraPermission
+import com.astrainteractive.astrarating.plugin.EmpireConfig
+import com.astrainteractive.astrarating.plugin.PluginTranslation
 import com.astrainteractive.astrarating.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
-import org.bukkit.inventory.ItemStack
+import ru.astrainteractive.astralibs.async.BukkitAsync
+import ru.astrainteractive.astralibs.async.BukkitMain
 import ru.astrainteractive.astralibs.async.PluginScope
-import ru.astrainteractive.astralibs.menu.*
+import ru.astrainteractive.astralibs.di.getValue
 import ru.astrainteractive.astralibs.menu.holder.DefaultPlayerHolder
 import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
 import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
@@ -25,10 +29,8 @@ import ru.astrainteractive.astralibs.menu.utils.click.MenuClickListener
 
 class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, player: Player) : PaginatedMenu() {
     private val clickListener = MenuClickListener()
-    private val config: EmpireConfig
-        get() = ConfigProvider.value
-    private val translation: PluginTranslation
-        get() = TranslationProvider.value
+    private val config: EmpireConfig by ServiceLocator.config
+    private val translation: PluginTranslation by ServiceLocator.translation
     override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
 
     private val viewModel = PlayerRatingsGUIViewModel(selectedPlayer)
@@ -44,8 +46,11 @@ class PlayerRatingsGUI(val selectedPlayer: OfflinePlayer, player: Player) : Pagi
             }
         }
         onClick = {
-            PluginScope.launch(Dispatchers.IO) {
-                RatingsGUI(playerHolder.player).open()
+            PluginScope.launch(Dispatchers.BukkitAsync) {
+                val inventory = RatingsGUI(playerHolder.player)
+                withContext(Dispatchers.BukkitMain){
+                    inventory.open()
+                }
             }
         }
 

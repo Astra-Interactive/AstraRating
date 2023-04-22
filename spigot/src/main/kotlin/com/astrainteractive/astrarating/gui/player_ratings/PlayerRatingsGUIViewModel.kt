@@ -4,7 +4,7 @@ import ru.astrainteractive.astralibs.utils.next
 import com.astrainteractive.astrarating.domain.api.RatingDBApi
 import com.astrainteractive.astrarating.models.UserRatingsSort
 import com.astrainteractive.astrarating.dto.UserAndRating
-import com.astrainteractive.astrarating.modules.DatabaseApiModule
+import com.astrainteractive.astrarating.modules.ServiceLocator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,13 +12,13 @@ import kotlinx.coroutines.launch
 import org.bukkit.OfflinePlayer
 import ru.astrainteractive.astralibs.async.AsyncComponent
 import ru.astrainteractive.astralibs.async.PluginScope
+import ru.astrainteractive.astralibs.di.getValue
 
 /**
  * MVVM technique
  */
 class PlayerRatingsGUIViewModel(val player: OfflinePlayer): AsyncComponent() {
-    private val databaseApi: RatingDBApi
-        get() = DatabaseApiModule.value
+    private val databaseApi: RatingDBApi by ServiceLocator.dbApi
 
     private val _userRatings = MutableStateFlow<List<UserAndRating>>(emptyList())
     val userRatings: StateFlow<List<UserAndRating>>

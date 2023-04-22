@@ -1,7 +1,7 @@
 package com.astrainteractive.astrarating.commands
 
 import CommandManager
-import com.astrainteractive.astrarating.utils.AstraPermission
+import com.astrainteractive.astrarating.plugin.AstraPermission
 import ru.astrainteractive.astralibs.AstraLibs
 import ru.astrainteractive.astralibs.commands.registerCommand
 

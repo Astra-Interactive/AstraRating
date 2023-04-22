@@ -2,9 +2,8 @@ package com.astrainteractive.astrarating
 
 import CommandManager
 import com.astrainteractive.astrarating.modules.*
-import com.astrainteractive.astrarating.utils.Files
-import com.astrainteractive.astrarating.utils.RatingPAPIExpansion
-import com.astrainteractive.astrarating.utils.Singleton
+import com.astrainteractive.astrarating.plugin.Files
+import com.astrainteractive.astrarating.integrations.RatingPAPIExpansion
 import github.scarsz.discordsrv.DiscordSRV
 import kotlinx.coroutines.runBlocking
 import org.bukkit.Bukkit
@@ -14,8 +13,8 @@ import ru.astrainteractive.astralibs.AstraLibs
 import ru.astrainteractive.astralibs.Logger
 import ru.astrainteractive.astralibs.events.GlobalEventListener
 import ru.astrainteractive.astralibs.menu.event.SharedInventoryClickEvent
+import ru.astrainteractive.astralibs.utils.Singleton
 import ru.astrainteractive.astralibs.utils.setupWithSpigot
-import kotlin.reflect.KProperty
 
 
 /**
@@ -37,8 +36,8 @@ class AstraRating : JavaPlugin() {
         Logger.setupWithSpigot("AstraRating", this)
         reloadPlugin()
         CommandManager()
-        DBModule.value
-        BStats.value
+        ServiceLocator.database
+        ServiceLocator.bstats.value
         Bukkit.getPluginManager().getPlugin("PlaceholderAPI")?.let {
             if (RatingPAPIExpansion.isRegistered)
                 RatingPAPIExpansion.unregister()
@@ -47,7 +46,7 @@ class AstraRating : JavaPlugin() {
         }
         SharedInventoryClickEvent.onEnable(this)
         Bukkit.getPluginManager().getPlugin("AstraLibs")
-        EventManagerModule.value
+        ServiceLocator.eventManager.value
 
     }
 
@@ -56,7 +55,7 @@ class AstraRating : JavaPlugin() {
      * This method called when server is shutting down or when PlugMan disable plugin.
      */
     override fun onDisable() {
-        runBlocking { DBModule.value.closeConnection() }
+        runBlocking { ServiceLocator.database.value.closeConnection() }
         HandlerList.unregisterAll(this)
         GlobalEventListener.onDisable()
         RatingPAPIExpansion.unregister()
@@ -67,8 +66,8 @@ class AstraRating : JavaPlugin() {
      */
     fun reloadPlugin() {
         Files.configFile.reload()
-        ConfigProvider.reload()
-        TranslationProvider.reload()
+        ServiceLocator.config.reload()
+        ServiceLocator.translation.reload()
 
     }
 

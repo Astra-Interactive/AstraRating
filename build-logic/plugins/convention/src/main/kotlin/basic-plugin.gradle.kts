@@ -28,7 +28,7 @@ tasks {
         options.encoding = "UTF-8"
     }
     withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions.jvmTarget = "17"
+        kotlinOptions.jvmTarget = JavaVersion.VERSION_17.majorVersion
     }
     withType<Jar> {
         archiveClassifier.set("min")

@@ -1,4 +1,4 @@
-package com.astrainteractive.astrarating.utils.coloring
+package com.astrainteractive.astrarating.integrations.coloring
 
 sealed interface Coloring {
     val value: Int

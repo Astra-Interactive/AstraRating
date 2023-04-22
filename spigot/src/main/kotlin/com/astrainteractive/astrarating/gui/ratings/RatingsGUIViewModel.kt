@@ -4,7 +4,7 @@ import ru.astrainteractive.astralibs.utils.next
 import com.astrainteractive.astrarating.domain.api.RatingDBApi
 import com.astrainteractive.astrarating.models.UsersRatingsSort
 import com.astrainteractive.astrarating.dto.UserAndRating
-import com.astrainteractive.astrarating.modules.DatabaseApiModule
+import com.astrainteractive.astrarating.modules.ServiceLocator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,13 +16,13 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import ru.astrainteractive.astralibs.async.AsyncComponent
 import ru.astrainteractive.astralibs.async.PluginScope
+import ru.astrainteractive.astralibs.di.getValue
 
 /**
  * MVVM technique
  */
 class RatingsGUIViewModel : AsyncComponent() {
-    private val databaseApi: RatingDBApi
-        get() = DatabaseApiModule.value
+    private val databaseApi: RatingDBApi by ServiceLocator.dbApi
 
     companion object {
         fun getHead(playerName: String) = Companion.getHead(Bukkit.getOfflinePlayer(playerName))

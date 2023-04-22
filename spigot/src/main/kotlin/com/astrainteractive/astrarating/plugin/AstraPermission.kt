@@ -1,7 +1,5 @@
-package com.astrainteractive.astrarating.utils
+package com.astrainteractive.astrarating.plugin
 
-import org.bukkit.command.CommandSender
-import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.utils.Permission
 
 /**

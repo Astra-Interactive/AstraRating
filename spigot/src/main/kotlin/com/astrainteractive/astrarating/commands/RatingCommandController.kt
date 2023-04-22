@@ -4,42 +4,43 @@ import com.astrainteractive.astrarating.domain.api.RatingDBApi
 import com.astrainteractive.astrarating.dto.RatingType
 import com.astrainteractive.astrarating.domain.use_cases.InsertUserUseCase
 import com.astrainteractive.astrarating.dto.UserDTO
-import com.astrainteractive.astrarating.dto.UserRatingDTO
 import com.astrainteractive.astrarating.exception.ValidationException
 import com.astrainteractive.astrarating.exception.ValidationExceptionHandler
 import com.astrainteractive.astrarating.gui.ratings.RatingsGUI
 import com.astrainteractive.astrarating.models.UserModel
-import com.astrainteractive.astrarating.modules.ConfigProvider
-import com.astrainteractive.astrarating.modules.DatabaseApiModule
-import com.astrainteractive.astrarating.modules.InsertUserUseCaseModule
-import com.astrainteractive.astrarating.modules.TranslationProvider
+import com.astrainteractive.astrarating.modules.ServiceLocator
+import com.astrainteractive.astrarating.plugin.AstraPermission
+import com.astrainteractive.astrarating.plugin.EmpireConfig
+import com.astrainteractive.astrarating.plugin.PluginTranslation
 import com.astrainteractive.astrarating.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import ru.astrainteractive.astralibs.async.BukkitAsync
+import ru.astrainteractive.astralibs.async.BukkitMain
 import ru.astrainteractive.astralibs.async.PluginScope
+import ru.astrainteractive.astralibs.di.getValue
 import ru.astrainteractive.astralibs.utils.uuid
+import kotlin.jvm.Throws
 
 object RatingCommandController {
 
-    private val translation: PluginTranslation
-        get() = TranslationProvider.value
-    private val config: EmpireConfig
-        get() = ConfigProvider.value
-    private val databaseApi: RatingDBApi
-        get() = DatabaseApiModule.value
-    private val insertUserUseCase: InsertUserUseCase
-        get() = InsertUserUseCaseModule.value
+    private val translation: PluginTranslation by ServiceLocator.translation
+    private val config: EmpireConfig by ServiceLocator.config
+    private val databaseApi: RatingDBApi by ServiceLocator.dbApi
+    private val insertUserUseCase: InsertUserUseCase by ServiceLocator.insertUserUseCase
 
-    fun addRating(
+    @Throws(ValidationException::class)
+    suspend fun addRating(
         ratingCreator: CommandSender,
         message: String,
         ratedPlayer: OfflinePlayer?,
         rating: Int,
         typeDTO: RatingType
-    ) = ValidationExceptionHandler.intercept {
+    ): Result<*> = kotlin.runCatching {
         if (!AstraPermission.Vote.hasPermission(ratingCreator)) throw ValidationException.NoPermission(ratingCreator)
 
         if (ratingCreator !is Player) throw ValidationException.OnlyPlayerCommand(ratingCreator)
@@ -57,74 +58,64 @@ object RatingCommandController {
             AstraPermission.SinglePlayerPerDay.permissionSize(ratingCreator) ?: config.maxRatingPerPlayer
 
 
-        PluginScope.launch(Dispatchers.IO) {
 
-            ValidationExceptionHandler.suspendIntercept(this) {
-                if (config.needDiscordLinked) {
-                    val discordMember = getLinkedDiscordID(ratingCreator)?.let { getDiscordMember(it) }
-                        ?: throw ValidationException.DiscordNotLinked(ratingCreator)
+        if (config.needDiscordLinked) {
+            val discordMember = getLinkedDiscordID(ratingCreator)
+                ?.let { getDiscordMember(it) }
+                ?: throw ValidationException.DiscordNotLinked(ratingCreator)
 
-                    val wasInDiscordSince = discordMember.timeJoined.toInstant().toEpochMilli()
-                    if (System.currentTimeMillis() - wasInDiscordSince < config.minTimeOnDiscord) throw ValidationException.NotEnoughOnDiscord(
-                        ratingCreator
-                    )
-                }
-            }
-
-            val todayVotedAmount = databaseApi.countPlayerTotalDayRated(ratingCreator.name).getOrNull() ?: 0
-            val votedOnPlayerAmount =
-                databaseApi.countPlayerOnPlayerDayRated(ratingCreator.name, ratedPlayer.name ?: "NULL").getOrNull() ?: 0
-
-
-            if (todayVotedAmount > maxVotesPerDay) {
-                ratingCreator.sendMessage(translation.alreadyMaxDayVotes)
-                return@launch
-            }
-
-            if (votedOnPlayerAmount > maxVotePerPlayer) {
-                ratingCreator.sendMessage(translation.alreadyMaxPlayerVotes)
-                return@launch
-            }
-
-
-            if (message.length < config.minMessageLength || message.length > config.maxMessageLength) {
-                ratingCreator.sendMessage(translation.wrongMessageLen)
-                return@launch
-            }
-
-            val playerCreatedID = insertUserUseCase(UserModel(ratingCreator.uniqueId, ratingCreator.name))
-            val playerReportedID =
-                insertUserUseCase(UserModel(ratedPlayer.uniqueId, ratedPlayer?.name ?: "NULL"))
-            if (playerCreatedID == null || playerReportedID == null) {
-                ratingCreator.sendMessage(translation.dbError)
-                return@launch
-            }
-            databaseApi.insertUserRating(
-                reporter = UserDTO(
-                    id = playerCreatedID,
-                    minecraftUUID = ratingCreator.uuid,
-                    minecraftName = ratingCreator.name ?: "-"
-                ),
-                reported = UserDTO(
-                    id = playerReportedID,
-                    minecraftUUID = ratedPlayer.uuid,
-                    minecraftName = ratedPlayer.name ?: "-"
-                ),
-                message = message,
-                type = typeDTO,
-                ratingValue = rating
-            )
-
-            if (rating > 0)
-                ratingCreator.sendMessage(translation.likedUser.replace("%player%", ratedPlayer.name ?: "-"))
-            else
-                ratingCreator.sendMessage(translation.dislikedUser.replace("%player%", ratedPlayer.name ?: "-"))
+            val wasInDiscordSince = discordMember.timeJoined.toInstant().toEpochMilli()
+            if (System.currentTimeMillis() - wasInDiscordSince < config.minTimeOnDiscord)
+                throw ValidationException.NotEnoughOnDiscord(ratingCreator)
         }
+
+        val todayVotedAmount = databaseApi.countPlayerTotalDayRated(ratingCreator.name).getOrNull() ?: 0
+        val votedOnPlayerAmount =
+            databaseApi.countPlayerOnPlayerDayRated(ratingCreator.name, ratedPlayer.name ?: "NULL").getOrNull() ?: 0
+
+
+        if (todayVotedAmount > maxVotesPerDay)
+            throw ValidationException.AlreadyMaxDayVotes(ratingCreator)
+
+        if (votedOnPlayerAmount > maxVotePerPlayer)
+            throw ValidationException.AlreadyMaxVotesOnPlayer(ratingCreator)
+
+
+        if (message.length < config.minMessageLength || message.length > config.maxMessageLength)
+            throw ValidationException.WrongMessageLength(ratingCreator)
+
+        val playerCreatedID = insertUserUseCase(UserModel(ratingCreator.uniqueId, ratingCreator.name))
+        val playerReportedID =
+            insertUserUseCase(UserModel(ratedPlayer.uniqueId, ratedPlayer?.name ?: "NULL"))
+        if (playerCreatedID == null || playerReportedID == null) throw ValidationException.DBException(ratingCreator)
+        databaseApi.insertUserRating(
+            reporter = UserDTO(
+                id = playerCreatedID,
+                minecraftUUID = ratingCreator.uuid,
+                minecraftName = ratingCreator.name ?: "-"
+            ),
+            reported = UserDTO(
+                id = playerReportedID,
+                minecraftUUID = ratedPlayer.uuid,
+                minecraftName = ratedPlayer.name ?: "-"
+            ),
+            message = message,
+            type = typeDTO,
+            ratingValue = rating
+        )
+
+        if (rating > 0)
+            ratingCreator.sendMessage(translation.likedUser.replace("%player%", ratedPlayer.name ?: "-"))
+        else
+            ratingCreator.sendMessage(translation.dislikedUser.replace("%player%", ratedPlayer.name ?: "-"))
     }
 
-    fun rating(sender: CommandSender, args: Array<out String>) {
-        PluginScope.launch(Dispatchers.IO) {
-            RatingsGUI(sender as Player).open()
+    fun rating(sender: CommandSender) {
+        PluginScope.launch(Dispatchers.BukkitAsync) {
+            val inventory = RatingsGUI(sender as Player)
+            withContext(Dispatchers.BukkitMain) {
+                inventory.open()
+            }
         }
     }
 }

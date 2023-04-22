@@ -3,14 +3,14 @@ package com.astrainteractive.astrarating.utils
 import com.astrainteractive.astrarating.models.UserRatingsSort
 import com.astrainteractive.astrarating.models.UsersRatingsSort
 import com.astrainteractive.astrarating.dto.UserDTO
-import com.astrainteractive.astrarating.modules.TranslationProvider
+import com.astrainteractive.astrarating.modules.ServiceLocator
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import ru.astrainteractive.astralibs.di.getValue
 import java.util.*
 
 
-private val translation by TranslationProvider
+private val translation by ServiceLocator.translation
 
 val UserDTO.offlinePlayer: OfflinePlayer
     get() = Bukkit.getOfflinePlayer(UUID.fromString(minecraftUUID))

@@ -4,9 +4,10 @@ import com.astrainteractive.astrarating.AstraRating
 import com.astrainteractive.astrarating.domain.entities.UserRatingTable
 import com.astrainteractive.astrarating.domain.entities.UserTable
 import com.astrainteractive.astrarating.dto.RatingType
-import com.astrainteractive.astrarating.utils.EmpireConfig
+import com.astrainteractive.astrarating.plugin.EmpireConfig
 import kotlinx.coroutines.runBlocking
-import ru.astrainteractive.astralibs.di.Module
+import ru.astrainteractive.astralibs.di.Dependency
+import ru.astrainteractive.astralibs.di.Factory
 import ru.astrainteractive.astralibs.di.getValue
 import ru.astrainteractive.astralibs.orm.DBConnection
 import ru.astrainteractive.astralibs.orm.DBSyntax
@@ -15,7 +16,9 @@ import ru.astrainteractive.astralibs.orm.DefaultDatabase
 import java.io.File
 import java.sql.Connection
 
-object DBModule : Module<Database>() {
+class DBFactory(
+    val config: Dependency<EmpireConfig>
+) : Factory<Database>() {
     private fun createSqliteDatabase(): Database = DefaultDatabase(
         DBConnection.SQLite("${AstraRating.instance.dataFolder}${File.separator}data.db"),
         DBSyntax.SQLite
@@ -37,7 +40,7 @@ object DBModule : Module<Database>() {
     }
 
     override fun initializer(): Database = runBlocking {
-        val config by ConfigProvider
+        val config by config
         val db = getConnection(config)
         db.openConnection()
         UserRatingTable.create(db)
@@ -59,7 +62,7 @@ object DBModule : Module<Database>() {
                 """.trimIndent()
         )
         statement.close()
-    }.onFailure { it.printStackTrace() }
+    }
 
     private fun updateColumn(connection: Connection) = kotlin.runCatching {
         val statement = connection.createStatement()
@@ -95,5 +98,5 @@ object DBModule : Module<Database>() {
         """.trimIndent()
         )
         statement.close()
-    }.onFailure { it.printStackTrace() }
+    }
 }

@@ -1,8 +1,7 @@
-package com.astrainteractive.astrarating.utils
+package com.astrainteractive.astrarating.plugin
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.serializer
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 

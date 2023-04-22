@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
-    id("convention.library")
+    id("basic-plugin")
 }
 dependencies {
     // Kotlin

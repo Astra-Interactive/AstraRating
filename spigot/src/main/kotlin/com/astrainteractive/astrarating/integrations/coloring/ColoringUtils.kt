@@ -1,6 +1,4 @@
-package com.astrainteractive.astrarating.utils.coloring
-
-import com.astrainteractive.astrarating.utils.EmpireConfig
+package com.astrainteractive.astrarating.integrations.coloring
 
 object ColoringUtils {
     fun getColoringByRating(colorings: Collection<Coloring>, rating: Int): Coloring {

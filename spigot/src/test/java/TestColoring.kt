@@ -1,6 +1,5 @@
-import com.astrainteractive.astrarating.utils.coloring.ColoringUtils
-import com.astrainteractive.astrarating.utils.EmpireConfig
-import com.astrainteractive.astrarating.utils.coloring.Coloring
+import com.astrainteractive.astrarating.integrations.coloring.ColoringUtils
+import com.astrainteractive.astrarating.integrations.coloring.Coloring
 import kotlin.test.*
 
 class TestColoring {

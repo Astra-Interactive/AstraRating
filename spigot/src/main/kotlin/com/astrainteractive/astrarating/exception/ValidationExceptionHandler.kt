@@ -1,14 +1,14 @@
 package com.astrainteractive.astrarating.exception
 
-import com.astrainteractive.astrarating.modules.TranslationProvider
-import com.astrainteractive.astrarating.utils.PluginTranslation
+import com.astrainteractive.astrarating.modules.ServiceLocator
+import com.astrainteractive.astrarating.plugin.PluginTranslation
+import ru.astrainteractive.astralibs.di.getValue
 
-object ValidationExceptionHandler : ISealedExceptionHandler<ValidationException> {
-    override val clazz: Class<ValidationException> = ValidationException::class.java
-    private val translation: PluginTranslation
-        get() = TranslationProvider.value
+object ValidationExceptionHandler {
+    private val translation: PluginTranslation by ServiceLocator.translation
 
-    override fun handle(e: ValidationException) {
+    fun handle(e: Throwable) {
+        if (e !is ValidationException) return
         when (e) {
             is ValidationException.DiscordNotLinked -> e.sender.sendMessage(translation.needDiscordLinked)
             is ValidationException.NoPermission -> e.sender.sendMessage(translation.noPermission)
@@ -17,6 +17,10 @@ object ValidationExceptionHandler : ISealedExceptionHandler<ValidationException>
             is ValidationException.SamePlayer -> e.sender.sendMessage(translation.cantRateSelf)
             is ValidationException.OnlyPlayerCommand -> e.sender.sendMessage(translation.onlyPlayerCommand)
             is ValidationException.NotEnoughOnDiscord -> e.sender.sendMessage(translation.notEnoughOnDiscord)
+            is ValidationException.AlreadyMaxDayVotes -> e.sender.sendMessage(translation.alreadyMaxDayVotes)
+            is ValidationException.AlreadyMaxVotesOnPlayer -> e.sender.sendMessage(translation.alreadyMaxPlayerVotes)
+            is ValidationException.DBException -> e.sender.sendMessage(translation.dbError)
+            is ValidationException.WrongMessageLength -> e.sender.sendMessage(translation.wrongMessageLen)
         }
     }
 }
