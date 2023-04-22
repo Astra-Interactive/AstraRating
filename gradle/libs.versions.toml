@@ -1,7 +1,7 @@
 [versions]
 plugin = "1.7.0-RC1"
 name = "AstraRating"
-group =  "com.astrainteractive"
+group =  "com.astrainteractive.astrarating"
 description = "Rating plugin for EmpireSMP"
 wear-gms = "18.0.0"
 destinationDirectoryPath = "D:\\Minecraft Servers\\Servers\\esmp-configuration\\smp\\plugins"

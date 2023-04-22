@@ -1,7 +1,9 @@
 # Simple Rating plugin for EmpireProjekt.ru
+
 ## No-Lag and free!
 
 Advantages:
+
 - [x] Advanced sorting
 - [x] Highly customizable
 - [x] Fast and open source
@@ -9,26 +11,29 @@ Advantages:
 - [x] Convenient GUI
 - [x] Fully translatable
 
-More plugins from AstraInteractive [AstraInteractive](https://github.com/Astra-Interactive)
-### Placeholders: 
-- %erating_color% - display color of player depending on players rating value
-- %erating_rating% - display rating of player
-### Commands
-- /aratingreload - reload plugin
-- /arating reload - reload plugin
-- /arating like <player> <message> - raise player rating
-- /arating dislike <player> <message> - downgrade player rating
-- /arating rating - open menu with ratings
-### Permissions
-- astra_rating.reload - reload plugin
-- astra_rating.max_rate_per_day.N - allows player to vote N times per day
-- astra_rating.single_player_rate_per_day.M - allows player to vote M times per day for the same player
-- astra_rating.vote - allows player to vote
-- delete_report.vote - allows player to delete votes (Admin permission)
-### Adding MySql - EARLY SUPPORT!!!
-In order to add MySql support you nee to create section in your config.yml
+More plugins from [AstraInteractive](https://github.com/Astra-Interactive)
 
-Section will be created by default if you installing plugin first time
+| Placeholders        | Description        |
+|:--------------------|:-------------------|
+| `/%erating_color%`  | Show rating color  |
+| `/%erating_rating%` | Show player rating |
+
+| Command                                      | Description                                               | Permission                                |
+|:---------------------------------------------|:----------------------------------------------------------|:------------------------------------------|
+| `/aratingreload`                             | Reload plugin                                             | astra_rating.reload                       |
+| `/arating reload`                            | Reload plugin                                             | astra_rating.reload                       |
+| `/arating rating`                            | Open rating GUI                                           | -                                         |
+| `/arating <like/dislike> <player> <message>` | Raise/Downgrade player rating                             | astra_rating.vote                         |
+| `-`                                          | Delete player vote in GUI                                 | delete_report.vote                        |
+| `-`                                          | Allows player to vote M times per day for the same player | astra_rating.single_player_rate_per_day.M |
+| `-`                                          | Allows player to vote N times per day                     | astra_rating.max_rate_per_day.N           |
+
+### Adding MySql
+
+In order to add MySql support you need to create section in your config.yml
+
+Section will be created by default if you're installing plugin first time
+
 ```yaml
 # Use only one sqlite or mysql
 # If you define both mysql and sqlite - mysql will be used
@@ -44,7 +49,8 @@ databaseConnection:
 ```
 
 ### Adding Colors placeholders
-Section will be created by default if you installing plugin first time
+
+Section will be created by default if you're installing plugin first time
 
 ```yaml
 # Color are sorted by value: [-10, -5, 0, 5, 10]
@@ -75,7 +81,9 @@ coloring:
 ```
 
 ### Adding events
+
 Section will be created by default if you installing plugin first time
+
 ```yaml
 events:
   kill_player:
