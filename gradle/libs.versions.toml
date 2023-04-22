@@ -1,5 +1,5 @@
 [versions]
-plugin = "1.7.0-RC1"
+plugin = "1.7.0-RC2"
 name = "AstraRating"
 group =  "com.astrainteractive.astrarating"
 description = "Rating plugin for EmpireSMP"

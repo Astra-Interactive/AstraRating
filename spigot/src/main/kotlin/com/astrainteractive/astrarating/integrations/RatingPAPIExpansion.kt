@@ -25,24 +25,29 @@ object RatingPAPIExpansion : KPlaceholderExpansion(
         .maximumSize(1000)
         .expireAfterWrite(5, TimeUnit.MINUTES)
         .build<UUID, String>()
+
     /**
      * erating_RomaRoman
      * erating_rating
      */
-    override fun onRequest(player: OfflinePlayer, params: String): String?{
+    override fun onRequest(player: OfflinePlayer, params: String): String? {
         when (params) {
             "rating" -> {
                 val rating = cachedTotalRating.getPlayerRating(player.name ?: "NULL", player.uniqueId) ?: 0
                 return "$rating"
             }
+
             "color" -> {
                 val rating = cachedTotalRating.getPlayerRating(player.name ?: "NULL", player.uniqueId)
                 if (config.coloring.isEmpty()) return ""
-                return cachedColorRating.get(player.uniqueId){
+                return cachedColorRating.getIfPresent(player.uniqueId) ?: let {
                     val coloring = config.coloring.map(ColoringMapper::toDTO)
-                    ColoringUtils.getColoringByRating(coloring, rating).color.HEX()
+                    val color = ColoringUtils.getColoringByRating(coloring, rating).color.HEX()
+                    cachedColorRating.put(player.uniqueId, color)
+                    color
                 }
             }
+
             else -> return ""
         }
     }
