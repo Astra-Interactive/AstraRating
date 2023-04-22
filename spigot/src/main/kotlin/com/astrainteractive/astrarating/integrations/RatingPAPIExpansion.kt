@@ -23,7 +23,7 @@ object RatingPAPIExpansion : KPlaceholderExpansion(
     private val cachedColorRating = CacheBuilder
         .newBuilder()
         .maximumSize(1000)
-        .expireAfterWrite(5, TimeUnit.MINUTES)
+        .expireAfterWrite(30, TimeUnit.SECONDS)
         .build<UUID, String>()
 
     /**
@@ -39,10 +39,10 @@ object RatingPAPIExpansion : KPlaceholderExpansion(
 
             "color" -> {
                 val rating = cachedTotalRating.getPlayerRating(player.name ?: "NULL", player.uniqueId)
-                if (config.coloring.isEmpty()) return ""
+                if (config.coloring.isEmpty()) return "NONE"
                 return cachedColorRating.getIfPresent(player.uniqueId) ?: let {
                     val coloring = config.coloring.map(ColoringMapper::toDTO)
-                    val color = ColoringUtils.getColoringByRating(coloring, rating).color.HEX()
+                    val color = ColoringUtils.getColoringByRating(coloring, rating).color
                     cachedColorRating.put(player.uniqueId, color)
                     color
                 }

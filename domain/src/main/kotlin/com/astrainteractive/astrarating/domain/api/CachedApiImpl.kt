@@ -16,7 +16,7 @@ class CachedApiImpl(
     private val cached = CacheBuilder
         .newBuilder()
         .maximumSize(1000)
-        .expireAfterWrite(5, TimeUnit.MINUTES)
+        .expireAfterWrite(30, TimeUnit.SECONDS)
         .build<UUID, PlayerData>()
 
     private val limitedDispatcher = dispatcher.limitedParallelism(1)

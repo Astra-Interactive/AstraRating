@@ -2,7 +2,6 @@ package com.astrainteractive.astrarating
 
 import CommandManager
 import com.astrainteractive.astrarating.modules.*
-import com.astrainteractive.astrarating.plugin.Files
 import com.astrainteractive.astrarating.integrations.RatingPAPIExpansion
 import github.scarsz.discordsrv.DiscordSRV
 import kotlinx.coroutines.runBlocking
@@ -10,10 +9,10 @@ import org.bukkit.Bukkit
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
 import ru.astrainteractive.astralibs.AstraLibs
-import ru.astrainteractive.astralibs.Logger
+import ru.astrainteractive.astralibs.di.Singleton
 import ru.astrainteractive.astralibs.events.GlobalEventListener
+import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.astralibs.menu.event.SharedInventoryClickEvent
-import ru.astrainteractive.astralibs.utils.Singleton
 import ru.astrainteractive.astralibs.utils.setupWithSpigot
 
 
@@ -65,7 +64,7 @@ class AstraRating : JavaPlugin() {
      * As it says, function for plugin reload
      */
     fun reloadPlugin() {
-        Files.configFile.reload()
+        ServiceLocator.configFileManager.value.reload()
         ServiceLocator.config.reload()
         ServiceLocator.translation.reload()
 
