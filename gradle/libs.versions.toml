@@ -1,6 +1,6 @@
 [versions]
 # Plugin core
-plugin-version = "1.7.0-RC2"
+plugin-version = "1.7"
 plugin-name = "AstraRating"
 plugin-group = "com.astrainteractive.astrarating"
 plugin-url = "EmpireProjekt.ru"
