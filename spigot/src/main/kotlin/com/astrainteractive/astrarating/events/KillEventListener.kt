@@ -1,34 +1,31 @@
 package com.astrainteractive.astrarating.events
 
-import com.astrainteractive.astrarating.domain.api.RatingDBApi
 import com.astrainteractive.astrarating.dto.RatingType
 import com.astrainteractive.astrarating.dto.UserDTO
+import com.astrainteractive.astrarating.events.di.EventModule
 import com.astrainteractive.astrarating.models.UserModel
-import com.astrainteractive.astrarating.plugin.EmpireConfig
-import com.astrainteractive.astrarating.plugin.PluginTranslation
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.bukkit.event.entity.PlayerDeathEvent
-import ru.astrainteractive.astralibs.async.PluginScope
-import ru.astrainteractive.astralibs.di.Dependency
-import ru.astrainteractive.astralibs.di.getValue
 import ru.astrainteractive.astralibs.events.DSLEvent
+import ru.astrainteractive.astralibs.getValue
 
 class KillEventListener(
-    configDependency: Dependency<EmpireConfig>,
-    apiDependency: Dependency<RatingDBApi>,
-    translationDependency: Dependency<PluginTranslation>
+    module: EventModule
 ) {
-    private val config by configDependency
-    private val api by apiDependency
-    private val translation by translationDependency
+    private val config by module.configDependency
+    private val api by module.apiDependency
+    private val translation by module.translationDependency
+    private val scope by module.scope
+    private val eventListener by module.eventListener
+    private val plugin by module.plugin
+    private val dispatchers by module.dispatchers
 
-    val onPlayerKilledPlayer = DSLEvent.event<PlayerDeathEvent> {
-        if (!config.events.killPlayer.enabled) return@event
-        if (config.events.killPlayer.changeBy == 0) return@event
+    val onPlayerKilledPlayer = DSLEvent<PlayerDeathEvent>(eventListener, plugin) {
+        if (!config.events.killPlayer.enabled) return@DSLEvent
+        if (config.events.killPlayer.changeBy == 0) return@DSLEvent
         val killedPlayer = it.entity
-        val killerPlayer = killedPlayer.killer ?: return@event
-        PluginScope.launch(Dispatchers.IO) {
+        val killerPlayer = killedPlayer.killer ?: return@DSLEvent
+        scope.launch(dispatchers.IO) {
             val playerDTO = api.selectUser(killerPlayer.name).getOrNull() ?: run {
                 val user = UserModel(
                     minecraftUUID = killerPlayer.uniqueId,

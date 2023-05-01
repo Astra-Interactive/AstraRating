@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
-
 /**
  * Example config file with 3 types of initialization
  */
@@ -40,7 +39,6 @@ data class EmpireConfig(
         val more: Int? = null,
         val color: String
     )
-
 
     @Serializable
     class Events(

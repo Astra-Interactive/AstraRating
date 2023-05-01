@@ -1,11 +1,11 @@
 package com.astrainteractive.astrarating.gui.ratings
 
 import com.astrainteractive.astrarating.dto.UserAndRating
-import com.astrainteractive.astrarating.gui.player_ratings.PlayerRatingsGUI
-import com.astrainteractive.astrarating.modules.ServiceLocator
-import com.astrainteractive.astrarating.plugin.EmpireConfig
-import com.astrainteractive.astrarating.plugin.PluginTranslation
-import com.astrainteractive.astrarating.utils.*
+import com.astrainteractive.astrarating.gui.ratings.di.RatingsGUIModule
+import com.astrainteractive.astrarating.utils.TimeUtility
+import com.astrainteractive.astrarating.utils.desc
+import com.astrainteractive.astrarating.utils.normalName
+import com.astrainteractive.astrarating.utils.offlinePlayer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -13,29 +13,29 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
-import ru.astrainteractive.astralibs.async.BukkitAsync
-import ru.astrainteractive.astralibs.async.BukkitMain
-import ru.astrainteractive.astralibs.async.PluginScope
-import ru.astrainteractive.astralibs.di.getValue
+import ru.astrainteractive.astralibs.getValue
+import ru.astrainteractive.astralibs.menu.clicker.MenuClickListener
 import ru.astrainteractive.astralibs.menu.holder.DefaultPlayerHolder
 import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
+import ru.astrainteractive.astralibs.menu.menu.InventoryButton
+import ru.astrainteractive.astralibs.menu.menu.MenuSize
 import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
-import ru.astrainteractive.astralibs.menu.utils.InventoryButton
 import ru.astrainteractive.astralibs.menu.utils.ItemStackButtonBuilder
-import ru.astrainteractive.astralibs.menu.utils.MenuSize
-import ru.astrainteractive.astralibs.menu.utils.click.MenuClickListener
-import java.util.*
+import java.util.UUID
 
+class RatingsGUI(
+    player: Player,
+    private val module: RatingsGUIModule,
+) : PaginatedMenu() {
+    private val config by module.config
+    private val translation by module.translation
+    private val dispatchers by module.dispatchers
 
-class RatingsGUI(player: Player) : PaginatedMenu() {
+    private val viewModel = RatingsGUIViewModel(module)
+
     val clickListener = MenuClickListener()
+
     override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
-    private val config: EmpireConfig by ServiceLocator.config
-    private val translation: PluginTranslation by ServiceLocator.translation
-
-
-    private val viewModel = RatingsGUIViewModel()
-
 
     override var menuTitle: String = translation.ratingsTitle
     override val menuSize: MenuSize = MenuSize.XL
@@ -48,7 +48,6 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
             }
         }
         onClick = { inventory.close() }
-
     }
     override val nextPageButton = ItemStackButtonBuilder {
         index = 53
@@ -58,7 +57,6 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
             }
         }
         onClick = { showPage(page + 1) }
-
     }
     override val prevPageButton = ItemStackButtonBuilder {
         index = 45
@@ -68,7 +66,6 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
             }
         }
         onClick = { showPage(page - 1) }
-
     }
     private val sortButton: InventoryButton
         get() = ItemStackButtonBuilder {
@@ -88,7 +85,6 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
     override var page: Int = 0
     override val maxItemsAmount: Int
         get() = viewModel.userRatings.value.size
-
 
     override fun onInventoryClicked(e: InventoryClickEvent) {
         e.isCancelled = true
@@ -117,8 +113,9 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
         sortButton.also(clickListener::remember).setInventoryButton()
         for (i in 0 until maxItemsPerPage) {
             val index = maxItemsPerPage * page + i
-            if (index >= list.size)
+            if (index >= list.size) {
                 continue
+            }
             val userAndRating = list[index]
             val color = if (userAndRating.rating.rating > 0) translation.positiveColor else translation.negativeColor
             ItemStackButtonBuilder {
@@ -127,29 +124,36 @@ class RatingsGUI(player: Player) : PaginatedMenu() {
                     editMeta {
                         it.setDisplayName(translation.playerNameColor + userAndRating.reportedPlayer.normalName)
                         it.lore = mutableListOf<String>().apply {
-                            if (config.gui.showFirstConnection)
-                                add("${translation.firstConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.firstPlayed)}")
-                            if (config.gui.showLastConnection)
-                                add("${translation.lastConnection} ${TimeUtility.formatToString(userAndRating.reportedPlayer.offlinePlayer.lastPlayed)}")
+                            if (config.gui.showFirstConnection) {
+                                add(
+                                    "${translation.firstConnection} ${TimeUtility.formatToString(
+                                        userAndRating.reportedPlayer.offlinePlayer.firstPlayed
+                                    )}"
+                                )
+                            }
+                            if (config.gui.showLastConnection) {
+                                add(
+                                    "${translation.lastConnection} ${TimeUtility.formatToString(
+                                        userAndRating.reportedPlayer.offlinePlayer.lastPlayed
+                                    )}"
+                                )
+                            }
                             add("${translation.rating}: ${color}${userAndRating.rating.rating}")
                         }
                     }
                 }
                 onClick = {
-                    PluginScope.launch(Dispatchers.BukkitAsync) {
-                        val inventory = PlayerRatingsGUI(
+                    componentScope.launch(dispatchers.BukkitAsync) {
+                        val inventory = module.playerRatingsGuiFactory(
                             Bukkit.getOfflinePlayer(UUID.fromString(userAndRating.reportedPlayer.minecraftUUID)),
-                            playerHolder.player
-                        )
-                        withContext(Dispatchers.BukkitMain){
+                            playerHolder.player,
+                        ).build()
+                        withContext(dispatchers.BukkitMain) {
                             inventory.open()
                         }
                     }
                 }
             }.also(clickListener::remember).setInventoryButton()
         }
-
     }
-
-
 }

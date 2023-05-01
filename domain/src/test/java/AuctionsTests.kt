@@ -1,16 +1,18 @@
 import com.astrainteractive.astrarating.domain.api.RatingDBApi
-import com.astrainteractive.astrarating.domain.api.RatingDBApiImpl
+import com.astrainteractive.astrarating.domain.api.impl.RatingDBApiImpl
 import com.astrainteractive.astrarating.domain.entities.UserRatingTable
 import com.astrainteractive.astrarating.domain.entities.UserTable
 import com.astrainteractive.astrarating.dto.RatingType
-import com.astrainteractive.astrarating.dto.UserDTO
-import com.astrainteractive.astrarating.dto.UserRatingDTO
 import com.astrainteractive.astrarating.models.UserModel
 import kotlinx.coroutines.runBlocking
 import ru.astrainteractive.astralibs.orm.Database
 import java.io.File
-import java.util.*
-import kotlin.test.*
+import java.util.UUID
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 class AuctionsTests : ORMTest() {
     private lateinit var api: RatingDBApi
@@ -24,7 +26,6 @@ class AuctionsTests : ORMTest() {
             minecraftName = UUID.randomUUID().toString(),
             discordID = UUID.randomUUID().toString(),
         )
-
 
     @AfterTest
     override fun destroy(): Unit = runBlocking {
@@ -44,7 +45,6 @@ class AuctionsTests : ORMTest() {
         UserRatingTable.create(database)
         api = RatingDBApiImpl(database)
     }
-
 
     @Test
     fun `Insert and select`(): Unit = runBlocking {

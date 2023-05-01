@@ -1,11 +1,13 @@
 package com.astrainteractive.astrarating.exception
 
-import com.astrainteractive.astrarating.modules.ServiceLocator
 import com.astrainteractive.astrarating.plugin.PluginTranslation
-import ru.astrainteractive.astralibs.di.getValue
+import ru.astrainteractive.astralibs.Dependency
+import ru.astrainteractive.astralibs.getValue
 
-object ValidationExceptionHandler {
-    private val translation: PluginTranslation by ServiceLocator.translation
+class ValidationExceptionHandler(
+    translationDependency: Dependency<PluginTranslation>
+) {
+    private val translation by translationDependency
 
     fun handle(e: Throwable) {
         if (e !is ValidationException) return

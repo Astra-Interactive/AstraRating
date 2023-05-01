@@ -1,78 +1,64 @@
+@file:OptIn(UnsafeApi::class)
+
 package com.astrainteractive.astrarating
 
 import CommandManager
-import com.astrainteractive.astrarating.modules.*
-import com.astrainteractive.astrarating.integrations.RatingPAPIExpansion
-import github.scarsz.discordsrv.DiscordSRV
+import com.astrainteractive.astrarating.modules.impl.CommandsModuleImpl
+import com.astrainteractive.astrarating.modules.impl.RootModuleImpl
 import kotlinx.coroutines.runBlocking
 import org.bukkit.Bukkit
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
-import ru.astrainteractive.astralibs.AstraLibs
-import ru.astrainteractive.astralibs.di.Singleton
+import org.jetbrains.kotlin.tooling.core.UnsafeApi
 import ru.astrainteractive.astralibs.events.GlobalEventListener
-import ru.astrainteractive.astralibs.logging.Logger
-import ru.astrainteractive.astralibs.menu.event.SharedInventoryClickEvent
-import ru.astrainteractive.astralibs.utils.setupWithSpigot
-
+import ru.astrainteractive.astralibs.getValue
+import ru.astrainteractive.astralibs.menu.event.GlobalInventoryClickEvent
 
 /**
  * Initial class for your plugin
  */
 class AstraRating : JavaPlugin() {
-    companion object : Singleton<AstraRating>() {
-        val discordSRV: DiscordSRV? by lazy {
-            kotlin.runCatching { Bukkit.getPluginManager().getPlugin("DiscordSRV") as DiscordSRV }.getOrNull()
-        }
+
+    init {
+        RootModuleImpl.plugin.initialize(this)
     }
+    private val papiModule by RootModuleImpl.papiExpansion
 
     /**
      * This method called when server starts or PlugMan load plugin.
      */
     override fun onEnable() {
-        instance = this
-        AstraLibs.rememberPlugin(this)
-        Logger.setupWithSpigot("AstraRating", this)
         reloadPlugin()
-        CommandManager()
-        ServiceLocator.database
-        ServiceLocator.bstats.value
+        RootModuleImpl.database
+        RootModuleImpl.bstats.build()
         Bukkit.getPluginManager().getPlugin("PlaceholderAPI")?.let {
-            if (RatingPAPIExpansion.isRegistered)
-                RatingPAPIExpansion.unregister()
+            if (papiModule.isRegistered) {
+                papiModule.unregister()
+            }
 
-            RatingPAPIExpansion.register()
+            papiModule.register()
         }
-        SharedInventoryClickEvent.onEnable(this)
-        Bukkit.getPluginManager().getPlugin("AstraLibs")
-        ServiceLocator.eventManager.value
-
+        GlobalInventoryClickEvent.onEnable(this)
+        RootModuleImpl.eventManager.build()
+        CommandManager(this, CommandsModuleImpl)
     }
-
 
     /**
      * This method called when server is shutting down or when PlugMan disable plugin.
      */
     override fun onDisable() {
-        runBlocking { ServiceLocator.database.value.closeConnection() }
+        runBlocking { RootModuleImpl.database.value.closeConnection() }
         HandlerList.unregisterAll(this)
         GlobalEventListener.onDisable()
-        RatingPAPIExpansion.unregister()
+        papiModule.unregister()
     }
 
     /**
      * As it says, function for plugin reload
      */
     fun reloadPlugin() {
-        ServiceLocator.configFileManager.value.reload()
-        ServiceLocator.config.reload()
-        ServiceLocator.translation.reload()
-
+        RootModuleImpl.configFileManager.value.reload()
+        RootModuleImpl.config.reload()
+        RootModuleImpl.translation.reload()
     }
-
-
 }
-
-
-
-

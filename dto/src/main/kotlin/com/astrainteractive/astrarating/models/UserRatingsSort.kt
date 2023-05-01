@@ -8,4 +8,3 @@ enum class UserRatingsSort {
     RATING_DESC,
     RATING_ASC
 }
-

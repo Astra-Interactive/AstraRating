@@ -1,11 +1,8 @@
 package com.astrainteractive.astrarating.gui.ratings
 
-import ru.astrainteractive.astralibs.utils.next
-import com.astrainteractive.astrarating.domain.api.RatingDBApi
-import com.astrainteractive.astrarating.models.UsersRatingsSort
 import com.astrainteractive.astrarating.dto.UserAndRating
-import com.astrainteractive.astrarating.modules.ServiceLocator
-import kotlinx.coroutines.Dispatchers
+import com.astrainteractive.astrarating.gui.ratings.di.RatingsGUIModule
+import com.astrainteractive.astrarating.models.UsersRatingsSort
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -15,14 +12,15 @@ import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import ru.astrainteractive.astralibs.async.AsyncComponent
-import ru.astrainteractive.astralibs.async.PluginScope
-import ru.astrainteractive.astralibs.di.getValue
+import ru.astrainteractive.astralibs.getValue
+import ru.astrainteractive.astralibs.utils.next
 
 /**
  * MVVM technique
  */
-class RatingsGUIViewModel : AsyncComponent() {
-    private val databaseApi: RatingDBApi by ServiceLocator.dbApi
+class RatingsGUIViewModel(module: RatingsGUIModule) : AsyncComponent() {
+    private val databaseApi by module.dbApi
+    private val dispatchers by module.dispatchers
 
     companion object {
         fun getHead(playerName: String) = Companion.getHead(Bukkit.getOfflinePlayer(playerName))
@@ -45,14 +43,15 @@ class RatingsGUIViewModel : AsyncComponent() {
 
     fun onSortClicked() {
         _sort.value = sort.value.next()
-        if (sort.value == UsersRatingsSort.ASC)
+        if (sort.value == UsersRatingsSort.ASC) {
             _userRatings.value = _userRatings.value.sortedBy { it.rating.rating }
-        else
+        } else {
             _userRatings.value = _userRatings.value.sortedByDescending { it.rating.rating }
+        }
     }
 
     init {
-        PluginScope.launch(Dispatchers.IO) {
+        componentScope.launch(dispatchers.IO) {
             _userRatings.value = databaseApi.fetchUsersTotalRating().getOrDefault(emptyList())
             onSortClicked()
         }

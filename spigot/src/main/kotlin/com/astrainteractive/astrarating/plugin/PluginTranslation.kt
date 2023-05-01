@@ -1,27 +1,30 @@
 package com.astrainteractive.astrarating.plugin
 
+import org.bukkit.plugin.Plugin
+import ru.astrainteractive.astralibs.filemanager.DefaultSpigotFileManager
 import ru.astrainteractive.astralibs.filemanager.SpigotFileManager
 import ru.astrainteractive.astralibs.utils.BaseTranslation
 
 /**
  * All translation stored here
  */
-class PluginTranslation : BaseTranslation() {
+class PluginTranslation(
+    plugin: Plugin
+) : BaseTranslation() {
     /**
      * This is a default translation file. Don't forget to create translation.yml in resources of the plugin
      */
-    override val translationFile: SpigotFileManager = SpigotFileManager("translations.yml")
+    override val translationFile: SpigotFileManager = DefaultSpigotFileManager(plugin, "translations.yml")
 
     // LightBlue #1B76CA
     // Yellow #DDB92B
     // Red #ca271b
-    //Database
+    // Database
     val dbSuccess: String = translationValue("database.success", "#1B76CAУспешно подключено к базе данных")
     val dbFail: String = translationValue("database.fail", "#ca271bНет подключения к базе данных")
     val dbError: String = translationValue("database.error", "#ca271bПроизошла ошибка в базе данных")
 
-
-    //General
+    // General
     val prefix: String = translationValue("general.prefix", "#1B76CA[EmpireItems]")
     val wrongUsage: String = translationValue("general.wrong_usage", "#1B76CAНеверное использование команды")
     val reload: String = translationValue("general.reload", "#1B76CAПерезагрузка плагина")
@@ -39,7 +42,8 @@ class PluginTranslation : BaseTranslation() {
     val alreadyMaxDayVotes: String =
         translationValue("general.max_day_voted", "#ca271bВы уже проголосовали максимальное количество раз за день")
     val alreadyMaxPlayerVotes: String = translationValue(
-        "general.max_player_voted", "#ca271bСегодня вы выдали максимальное возможное количество голосов этому игроку"
+        "general.max_player_voted",
+        "#ca271bСегодня вы выдали максимальное возможное количество голосов этому игроку"
     )
     val clickToDeleteReport: String =
         translationValue("general.click_to_delete_report", "#ca271bНажмите ЛКМ чтобы удалить")
@@ -55,7 +59,7 @@ class PluginTranslation : BaseTranslation() {
     val firstConnection: String = translationValue("general.first_connection", "#1B76CAВпервые зашёл:")
     val lastConnection: String = translationValue("general.last_connection", "#1B76CAБыл в сети:")
 
-    //Menu
+    // Menu
     val ratingsTitle: String = translationValue("menu.ratings_title", "#1B76CAРейтинг")
     val playerRatingTitle: String = translationValue("menu.player_rating_title", "#1B76CAРейтинг игрока %player%")
     val menuPrevPage: String = translationValue("menu.prev_page", "#1B76CAПред. страницы")
@@ -78,5 +82,4 @@ class PluginTranslation : BaseTranslation() {
     // Events
     private val killedPlayer = translationValue("events.kill_player", "#9c0303Убил игрока %killed_player%")
     fun killedPlayer(playerName: String) = killedPlayer.replace("%killed_player%", playerName)
-
 }

@@ -1,7 +1,8 @@
 import kotlinx.coroutines.runBlocking
 import ru.astrainteractive.astralibs.orm.Database
 import ru.astrainteractive.astralibs.orm.exception.DatabaseException
-import kotlin.test.*
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 
 abstract class ORMTest {
     abstract val builder: () -> Database
@@ -18,7 +19,7 @@ abstract class ORMTest {
     open fun setup(): Unit = runBlocking {
         database = builder()
         database?.openConnection()
-        disableFullGroupBy()
+//        disableFullGroupBy()
     }
 
     @AfterTest
@@ -26,5 +27,4 @@ abstract class ORMTest {
         database?.closeConnection()
         database = null
     }
-
 }

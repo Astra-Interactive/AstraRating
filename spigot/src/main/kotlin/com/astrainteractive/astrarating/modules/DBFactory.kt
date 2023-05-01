@@ -1,14 +1,14 @@
 package com.astrainteractive.astrarating.modules
 
-import com.astrainteractive.astrarating.AstraRating
 import com.astrainteractive.astrarating.domain.entities.UserRatingTable
 import com.astrainteractive.astrarating.domain.entities.UserTable
 import com.astrainteractive.astrarating.dto.RatingType
 import com.astrainteractive.astrarating.plugin.EmpireConfig
 import kotlinx.coroutines.runBlocking
-import ru.astrainteractive.astralibs.di.Dependency
-import ru.astrainteractive.astralibs.di.Factory
-import ru.astrainteractive.astralibs.di.getValue
+import org.bukkit.plugin.java.JavaPlugin
+import ru.astrainteractive.astralibs.Dependency
+import ru.astrainteractive.astralibs.Factory
+import ru.astrainteractive.astralibs.getValue
 import ru.astrainteractive.astralibs.orm.DBConnection
 import ru.astrainteractive.astralibs.orm.DBSyntax
 import ru.astrainteractive.astralibs.orm.Database
@@ -17,10 +17,13 @@ import java.io.File
 import java.sql.Connection
 
 class DBFactory(
-    val config: Dependency<EmpireConfig>
-) : Factory<Database>() {
+    private val plugin: JavaPlugin,
+    config: Dependency<EmpireConfig>
+) : Factory<Database> {
+    private val config by config
+
     private fun createSqliteDatabase(): Database = DefaultDatabase(
-        DBConnection.SQLite("${AstraRating.instance.dataFolder}${File.separator}data.db"),
+        DBConnection.SQLite("${plugin.dataFolder}${File.separator}data.db"),
         DBSyntax.SQLite
     )
 
@@ -39,14 +42,13 @@ class DBFactory(
         return config.databaseConnection.mysql?.let(::createMySqlDatabase) ?: createSqliteDatabase()
     }
 
-    override fun initializer(): Database = runBlocking {
-        val config by config
+    override fun build(): Database = runBlocking {
         val db = getConnection(config)
         db.openConnection()
         UserRatingTable.create(db)
         UserTable.create(db)
-        db.connection?.let { addCustomType(it) } ?: throw Exception("Could not alter table! Database is not connected!")
-        db.connection?.let { updateColumn(it) } ?: throw Exception("Could not alter table! Database is not connected!")
+        checkNotNull(db.connection?.let { addCustomType(it) }) { "Could not alter table! Database is not connected!" }
+        checkNotNull(db.connection?.let { updateColumn(it) }) { "Could not alter table! Database is not connected!" }
         db
     }
 
@@ -59,22 +61,19 @@ class DBFactory(
             """
                     ALTER TABLE ${UserRatingTable.tableName}
                     ADD ${UserRatingTable.ratingTypeIndex.name} ${UserRatingTable.ratingTypeIndex.type} NOT NULL DEFAULT(0)
-                """.trimIndent()
+            """.trimIndent()
         )
         statement.close()
     }
 
     private fun updateColumn(connection: Connection) = kotlin.runCatching {
         val statement = connection.createStatement()
-        val tableName = UserRatingTable.tableName
-        val columnName = UserRatingTable.userCreatedReport.name
-        val columnNameOld = "${UserRatingTable.userCreatedReport.name}_old"
         statement.execute(
             """                
                 ALTER TABLE
                     users_ratings
                 RENAME COLUMN user_created_report TO user_created_report_old;            
-        """.trimIndent()
+            """.trimIndent()
         )
         statement.execute(
             """                            
@@ -82,12 +81,12 @@ class DBFactory(
                     users_ratings
                 ADD COLUMN
                     user_created_report INT NULL;
-        """.trimIndent()
+            """.trimIndent()
         )
         statement.execute(
             """                            
                 UPDATE users_ratings SET user_created_report=user_created_report_old;
-        """.trimIndent()
+            """.trimIndent()
         )
         statement.execute(
             """
@@ -95,7 +94,7 @@ class DBFactory(
                     users_ratings
                 DROP COLUMN
                     user_created_report_old;            
-        """.trimIndent()
+            """.trimIndent()
         )
         statement.close()
     }

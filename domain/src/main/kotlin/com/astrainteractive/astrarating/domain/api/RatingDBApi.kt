@@ -1,8 +1,8 @@
 package com.astrainteractive.astrarating.domain.api
 
 import com.astrainteractive.astrarating.dto.RatingType
-import com.astrainteractive.astrarating.dto.UserDTO
 import com.astrainteractive.astrarating.dto.UserAndRating
+import com.astrainteractive.astrarating.dto.UserDTO
 import com.astrainteractive.astrarating.dto.UserRatingDTO
 import com.astrainteractive.astrarating.models.UserModel
 

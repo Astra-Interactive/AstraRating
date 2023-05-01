@@ -1,6 +1,7 @@
-import com.astrainteractive.astrarating.integrations.coloring.ColoringUtils
-import com.astrainteractive.astrarating.integrations.coloring.Coloring
-import kotlin.test.*
+import com.astrainteractive.astrarating.integrations.papi.coloring.Coloring
+import com.astrainteractive.astrarating.integrations.papi.coloring.ColoringUtils
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class TestColoring {
     @Test
@@ -49,5 +50,4 @@ class TestColoring {
             assertEquals(10, it.value)
         }
     }
-
 }

@@ -16,6 +16,7 @@ object Resource {
         val password: String
     )
 
+    @Suppress("UnusedPrivateMember")
     private fun readMySqlConnection(): Database {
         val fileContent = this::class.java.classLoader.getResource("mysql.json").readText()
         val connection: Connection = Json.decodeFromString(fileContent)
@@ -29,12 +30,13 @@ object Resource {
         return DefaultDatabase(dbConnection, DBSyntax.MySQL)
     }
 
+    @Suppress("UnusedPrivateMember")
     private fun sqliteConnection(): Database {
         return DefaultDatabase(DBConnection.SQLite("db.db"), DBSyntax.SQLite)
     }
 
     fun getDatabase(): Database {
-        return readMySqlConnection()
-//        return sqliteConnection()
+//        return readMySqlConnection()
+        return sqliteConnection()
     }
 }
