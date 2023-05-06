@@ -1,5 +1,5 @@
-group = libs.versions.plugin.group.get()
-version = libs.versions.plugin.version.get()
+group = libs.versions.project.group.get()
+version = libs.versions.project.version.get()
 
 plugins {
     java
