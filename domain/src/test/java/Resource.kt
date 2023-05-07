@@ -35,8 +35,14 @@ object Resource {
         return DefaultDatabase(DBConnection.SQLite("db.db"), DBSyntax.SQLite)
     }
 
+    @Suppress("UnusedPrivateMember")
+    private fun inMemoryConnection(): Database {
+        return DefaultDatabase(DBConnection.InMemory("db.db"), DBSyntax.SQLite)
+    }
+
     fun getDatabase(): Database {
 //        return readMySqlConnection()
-        return sqliteConnection()
+//        return sqliteConnection()
+        return inMemoryConnection()
     }
 }

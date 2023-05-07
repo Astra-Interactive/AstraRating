@@ -14,9 +14,7 @@ dependencies {
     implementation(libs.minecraft.astralibs.di)
     implementation(libs.minecraft.bstats)
     // Test
-    testImplementation(platform(libs.tests.junit.bom))
-    testImplementation(libs.bundles.testing.libs)
     testImplementation(libs.bundles.testing.kotlin)
-    testImplementation(libs.driver.mysql)
+    testImplementation(libs.tests.kotlin.test)
     implementation(projects.dto)
 }
