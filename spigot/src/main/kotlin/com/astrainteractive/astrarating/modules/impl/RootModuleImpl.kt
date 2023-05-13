@@ -71,9 +71,8 @@ object RootModuleImpl : RootModule {
         RatingDBApiImpl(database.value) as RatingDBApi
     }
     override val cachedApi = Single {
-        val dispatchers by dispatchers
         val scope by scope
-        CachedApiImpl(dbApi.value, dispatchers.IO, scope) as CachedApi
+        CachedApiImpl(dbApi.value, scope) as CachedApi
     }
     override val eventManager = Factory {
         EventManager(EventModuleImpl)
