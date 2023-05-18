@@ -68,7 +68,7 @@ object RootModuleImpl : RootModule {
     }
 
     override val dbApi = Single {
-        RatingDBApiImpl(database.value) as RatingDBApi
+        RatingDBApiImpl(database.value, plugin.value.dataFolder) as RatingDBApi
     }
     override val cachedApi = Single {
         val scope by scope

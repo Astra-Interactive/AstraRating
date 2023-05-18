@@ -18,8 +18,24 @@ import ru.astrainteractive.astralibs.orm.mapNotNull
 import ru.astrainteractive.astralibs.orm.query.CountQuery
 import ru.astrainteractive.astralibs.orm.query.SelectQuery
 import ru.astrainteractive.astralibs.orm.with
+import java.io.File
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.util.Date
 
-class RatingDBApiImpl(private val database: Database) : RatingDBApi {
+class RatingDBApiImpl(private val database: Database, private val pluginFolder: File) : RatingDBApi {
+    private fun <T> Result<T>.logStackTrace(): Result<T> {
+        return this.onFailure {
+            it.printStackTrace()
+            val logsFolder = File(pluginFolder, "logs")
+            if (!logsFolder.exists()) logsFolder.mkdirs()
+            val fileName = SimpleDateFormat("dd.MM.yyyy").format(Date.from(Instant.now()))
+            val logFile = File(logsFolder, "$fileName.log")
+            if (!logFile.exists()) logFile.createNewFile()
+            logFile.appendText(it.stackTraceToString() + "\n")
+        }
+    }
+
     private val String.sqlString: String
         get() = "\"$this\""
 
@@ -27,7 +43,7 @@ class RatingDBApiImpl(private val database: Database) : RatingDBApi {
         UserTable.find(database, constructor = UserEntity) {
             UserTable.minecraftName.eq(playerName.uppercase())
         }.map(UserMapper::toDTO).first()
-    }
+    }.logStackTrace()
 
     override suspend fun updateUser(user: UserDTO) = kotlin.runCatching {
         val userEntity = UserTable.find(database, constructor = UserEntity) {
@@ -36,16 +52,16 @@ class RatingDBApiImpl(private val database: Database) : RatingDBApi {
         userEntity?.lastUpdated = System.currentTimeMillis()
         user.discordID?.let { userEntity?.discordID = it }
         userEntity?.let { UserTable.update(database, entity = it) }
-    }
+    }.logStackTrace()
 
     override suspend fun insertUser(user: UserModel) = kotlin.runCatching {
         UserTable.insert(database) {
             this[UserTable.lastUpdated] = System.currentTimeMillis()
             this[UserTable.minecraftUUID] = user.minecraftUUID.toString()
             this[UserTable.minecraftName] = user.minecraftName.uppercase()
-            this[UserTable.discordID] = user.discordID
+            this[UserTable.discordID] = null
         }
-    }
+    }.logStackTrace()
 
     override suspend fun insertUserRating(
         reporter: UserDTO?,
@@ -62,13 +78,13 @@ class RatingDBApiImpl(private val database: Database) : RatingDBApi {
             this[UserRatingTable.time] = System.currentTimeMillis()
             this[UserRatingTable.ratingTypeIndex] = type.ordinal
         }
-    }
+    }.logStackTrace()
 
     override suspend fun deleteUserRating(it: UserRatingDTO) = kotlin.runCatching {
         UserRatingTable.delete<UserRatingEntity>(database) {
             UserRatingTable.id.eq(it.id)
         }
-    }
+    }.logStackTrace()
 
     override suspend fun fetchUserRatings(playerName: String) = kotlin.runCatching {
         val query = """
@@ -91,7 +107,7 @@ class RatingDBApiImpl(private val database: Database) : RatingDBApi {
         }
         statement?.close()
         result ?: emptyList()
-    }
+    }.logStackTrace()
 
     override suspend fun fetchUsersTotalRating() = kotlin.runCatching {
         val query = """
@@ -110,7 +126,7 @@ class RatingDBApiImpl(private val database: Database) : RatingDBApi {
         }
         statement?.close()
         result ?: emptyList()
-    }
+    }.logStackTrace()
 
     override suspend fun countPlayerTotalDayRated(playerName: String) = kotlin.runCatching {
         val query = CountQuery(UserRatingTable) {
@@ -127,7 +143,7 @@ class RatingDBApiImpl(private val database: Database) : RatingDBApi {
                 it.getInt("total")
             } ?: 0
         } ?: 0
-    }
+    }.logStackTrace()
 
     override suspend fun countPlayerOnPlayerDayRated(playerName: String, ratedPlayerName: String) = kotlin.runCatching {
         val query = CountQuery(UserRatingTable) {
@@ -146,5 +162,5 @@ class RatingDBApiImpl(private val database: Database) : RatingDBApi {
                 it.getInt("total")
             } ?: 0
         } ?: 0
-    }
+    }.logStackTrace()
 }

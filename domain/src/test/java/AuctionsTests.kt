@@ -43,7 +43,7 @@ class AuctionsTests : ORMTest() {
         database.openConnection()
         UserTable.create(database)
         UserRatingTable.create(database)
-        api = RatingDBApiImpl(database)
+        api = RatingDBApiImpl(database, File("."))
     }
 
     @Test
