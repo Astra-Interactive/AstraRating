@@ -26,7 +26,6 @@ import java.util.Date
 class RatingDBApiImpl(private val database: Database, private val pluginFolder: File) : RatingDBApi {
     private fun <T> Result<T>.logStackTrace(): Result<T> {
         return this.onFailure {
-            it.printStackTrace()
             val logsFolder = File(pluginFolder, "logs")
             if (!logsFolder.exists()) logsFolder.mkdirs()
             val fileName = SimpleDateFormat("dd.MM.yyyy").format(Date.from(Instant.now()))
