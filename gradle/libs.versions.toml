@@ -1,6 +1,6 @@
 [versions]
 # Plugin core
-project-version = "1.7.4"
+project-version = "1.7.5"
 project-name = "AstraRating"
 project-group = "com.astrainteractive.astrarating"
 project-url = "EmpireProjekt.ru"
