@@ -1,3 +1,5 @@
+@file:Suppress("Filename")
+
 package com.astrainteractive.astrarating.utils
 
 import com.astrainteractive.astrarating.modules.impl.RootModuleImpl
