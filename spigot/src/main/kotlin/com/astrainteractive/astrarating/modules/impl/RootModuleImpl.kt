@@ -9,12 +9,13 @@ import com.astrainteractive.astrarating.domain.api.impl.CachedApiImpl
 import com.astrainteractive.astrarating.domain.api.impl.RatingDBApiImpl
 import com.astrainteractive.astrarating.domain.usecases.InsertUserUseCase
 import com.astrainteractive.astrarating.events.EventManager
-import com.astrainteractive.astrarating.integrations.papi.RatingPAPIExpansion
+import com.astrainteractive.astrarating.integrations.papi.RatingPAPIComponent
 import com.astrainteractive.astrarating.modules.DBFactory
 import com.astrainteractive.astrarating.modules.RootModule
 import com.astrainteractive.astrarating.plugin.EmpireConfig
 import com.astrainteractive.astrarating.plugin.PluginTranslation
 import org.bstats.bukkit.Metrics
+import org.bukkit.Bukkit
 import org.jetbrains.kotlin.tooling.core.UnsafeApi
 import ru.astrainteractive.astralibs.Dependency
 import ru.astrainteractive.astralibs.Factory
@@ -41,8 +42,16 @@ object RootModuleImpl : RootModule {
         val plugin by plugin
         DefaultSpigotFileManager(plugin, "config.yml")
     }
-    override val papiExpansion: Dependency<RatingPAPIExpansion> = Single {
-        RatingPAPIExpansion(PapiModuleImpl)
+    override val papiExpansion: Dependency<RatingPAPIComponent?> = Single {
+        runCatching {
+            if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+                RatingPAPIComponent(PapiModuleImpl)
+            } else {
+                error("No PlaceholderAPI ")
+            }
+        }.onFailure {
+            Bukkit.getLogger().severe("[AstraRating] You don't have PAPI installed. Placeholders will not be avaliable")
+        }.getOrNull()
     }
 
     override val scope: Dependency<AsyncComponent> = Single {

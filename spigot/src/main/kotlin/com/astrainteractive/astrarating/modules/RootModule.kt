@@ -5,7 +5,7 @@ import com.astrainteractive.astrarating.domain.api.CachedApi
 import com.astrainteractive.astrarating.domain.api.RatingDBApi
 import com.astrainteractive.astrarating.domain.usecases.InsertUserUseCase
 import com.astrainteractive.astrarating.events.EventManager
-import com.astrainteractive.astrarating.integrations.papi.RatingPAPIExpansion
+import com.astrainteractive.astrarating.integrations.papi.RatingPAPIComponent
 import com.astrainteractive.astrarating.plugin.EmpireConfig
 import com.astrainteractive.astrarating.plugin.PluginTranslation
 import org.bstats.bukkit.Metrics
@@ -25,7 +25,7 @@ interface RootModule : Module {
     val eventListener: Dependency<EventListener>
     val dispatchers: Dependency<BukkitDispatchers>
     val scope: Dependency<AsyncComponent>
-    val papiExpansion: Dependency<RatingPAPIExpansion>
+    val papiExpansion: Dependency<RatingPAPIComponent?>
     val configFileManager: Dependency<SpigotFileManager>
     val config: Reloadable<EmpireConfig>
     val translation: Reloadable<PluginTranslation>

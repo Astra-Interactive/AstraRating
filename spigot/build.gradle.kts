@@ -30,5 +30,5 @@ dependencies {
     implementation(projects.dto)
 }
 
-setupSpigotShadow()
+setupSpigotShadow(File("D:\\Minecraft Servers\\Servers\\esmp-configuration\\smp\\plugins"))
 setupSpigotProcessor()

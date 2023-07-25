@@ -6,7 +6,6 @@ import CommandManager
 import com.astrainteractive.astrarating.modules.impl.CommandsModuleImpl
 import com.astrainteractive.astrarating.modules.impl.RootModuleImpl
 import kotlinx.coroutines.runBlocking
-import org.bukkit.Bukkit
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.kotlin.tooling.core.UnsafeApi
@@ -22,7 +21,6 @@ class AstraRating : JavaPlugin() {
     init {
         RootModuleImpl.plugin.initialize(this)
     }
-    private val papiModule by RootModuleImpl.papiExpansion
 
     /**
      * This method called when server starts or PlugMan load plugin.
@@ -31,13 +29,7 @@ class AstraRating : JavaPlugin() {
         reloadPlugin()
         RootModuleImpl.database
         RootModuleImpl.bstats.build()
-        Bukkit.getPluginManager().getPlugin("PlaceholderAPI")?.let {
-            if (papiModule.isRegistered) {
-                papiModule.unregister()
-            }
-
-            papiModule.register()
-        }
+        RootModuleImpl.papiExpansion.value?.onEnable()
         GlobalInventoryClickEvent.onEnable(this)
         RootModuleImpl.eventManager.build()
         CommandManager(this, CommandsModuleImpl)
@@ -50,7 +42,7 @@ class AstraRating : JavaPlugin() {
         runBlocking { RootModuleImpl.database.value.closeConnection() }
         HandlerList.unregisterAll(this)
         GlobalEventListener.onDisable()
-        papiModule.unregister()
+        RootModuleImpl.papiExpansion.value?.onDisable()
     }
 
     /**
