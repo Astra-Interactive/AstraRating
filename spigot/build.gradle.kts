@@ -29,6 +29,6 @@ dependencies {
     implementation(projects.domain)
     implementation(projects.dto)
 }
-
-setupSpigotShadow(File("D:\\Minecraft Servers\\Servers\\esmp-configuration\\smp\\plugins"))
+val localFolder = File("D:\\Minecraft Servers\\Servers\\esmp-configuration\\smp\\plugins")
+if (localFolder.exists()) setupSpigotShadow(localFolder) else setupSpigotShadow()
 setupSpigotProcessor()
