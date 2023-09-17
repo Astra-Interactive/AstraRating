@@ -6,13 +6,13 @@ import com.astrainteractive.astrarating.dto.RatingType
 import com.astrainteractive.astrarating.plugin.EmpireConfig
 import kotlinx.coroutines.runBlocking
 import org.bukkit.plugin.java.JavaPlugin
-import ru.astrainteractive.astralibs.Dependency
-import ru.astrainteractive.astralibs.Factory
-import ru.astrainteractive.astralibs.getValue
 import ru.astrainteractive.astralibs.orm.DBConnection
 import ru.astrainteractive.astralibs.orm.DBSyntax
 import ru.astrainteractive.astralibs.orm.Database
 import ru.astrainteractive.astralibs.orm.DefaultDatabase
+import ru.astrainteractive.klibs.kdi.Dependency
+import ru.astrainteractive.klibs.kdi.Factory
+import ru.astrainteractive.klibs.kdi.getValue
 import java.io.File
 import java.sql.Connection
 
@@ -42,7 +42,7 @@ class DBFactory(
         return config.databaseConnection.mysql?.let(::createMySqlDatabase) ?: createSqliteDatabase()
     }
 
-    override fun build(): Database = runBlocking {
+    override fun create(): Database = runBlocking {
         val db = getConnection(config)
         db.openConnection()
         UserRatingTable.create(db)

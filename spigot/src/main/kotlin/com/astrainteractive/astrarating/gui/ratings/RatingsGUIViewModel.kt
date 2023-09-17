@@ -12,15 +12,12 @@ import org.bukkit.OfflinePlayer
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 import ru.astrainteractive.astralibs.async.AsyncComponent
-import ru.astrainteractive.astralibs.getValue
-import ru.astrainteractive.astralibs.utils.next
+import ru.astrainteractive.klibs.mikro.core.util.next
 
 /**
  * MVVM technique
  */
-class RatingsGUIViewModel(module: RatingsGUIModule) : AsyncComponent() {
-    private val databaseApi by module.dbApi
-    private val dispatchers by module.dispatchers
+class RatingsGUIViewModel(module: RatingsGUIModule) : AsyncComponent(), RatingsGUIModule by module {
 
     companion object {
         fun getHead(playerName: String) = Companion.getHead(Bukkit.getOfflinePlayer(playerName))
@@ -42,7 +39,7 @@ class RatingsGUIViewModel(module: RatingsGUIModule) : AsyncComponent() {
         get() = _sort
 
     fun onSortClicked() {
-        _sort.value = sort.value.next()
+        _sort.value = sort.value.next(UsersRatingsSort.values())
         if (sort.value == UsersRatingsSort.ASC) {
             _userRatings.value = _userRatings.value.sortedBy { it.rating.rating }
         } else {
@@ -52,7 +49,7 @@ class RatingsGUIViewModel(module: RatingsGUIModule) : AsyncComponent() {
 
     init {
         componentScope.launch(dispatchers.IO) {
-            _userRatings.value = databaseApi.fetchUsersTotalRating().getOrDefault(emptyList())
+            _userRatings.value = dbApi.fetchUsersTotalRating().getOrDefault(emptyList())
             onSortClicked()
         }
     }

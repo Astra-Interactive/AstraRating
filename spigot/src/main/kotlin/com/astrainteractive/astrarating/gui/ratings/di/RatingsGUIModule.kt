@@ -6,16 +6,15 @@ import com.astrainteractive.astrarating.plugin.EmpireConfig
 import com.astrainteractive.astrarating.plugin.PluginTranslation
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
-import ru.astrainteractive.astralibs.Dependency
-import ru.astrainteractive.astralibs.Factory
-import ru.astrainteractive.astralibs.Module
 import ru.astrainteractive.astralibs.async.BukkitDispatchers
+import ru.astrainteractive.klibs.kdi.Factory
+import ru.astrainteractive.klibs.kdi.Module
 
 interface RatingsGUIModule : Module {
-    val dbApi: Dependency<RatingDBApi>
-    val dispatchers: Dependency<BukkitDispatchers>
-    val translation: Dependency<PluginTranslation>
-    val config: Dependency<EmpireConfig>
+    val dbApi: RatingDBApi
+    val dispatchers: BukkitDispatchers
+    val translation: PluginTranslation
+    val config: EmpireConfig
     fun playerRatingsGuiFactory(
         selectedPlayer: OfflinePlayer,
         player: Player,

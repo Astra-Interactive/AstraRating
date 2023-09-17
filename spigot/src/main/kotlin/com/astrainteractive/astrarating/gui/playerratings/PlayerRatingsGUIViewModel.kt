@@ -8,8 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.bukkit.OfflinePlayer
 import ru.astrainteractive.astralibs.async.AsyncComponent
-import ru.astrainteractive.astralibs.getValue
-import ru.astrainteractive.astralibs.utils.next
+import ru.astrainteractive.klibs.mikro.core.util.next
 
 /**
  * MVVM technique
@@ -17,9 +16,7 @@ import ru.astrainteractive.astralibs.utils.next
 class PlayerRatingsGUIViewModel(
     val player: OfflinePlayer,
     module: PlayerRatingGuiModule
-) : AsyncComponent() {
-    private val databaseApi by module.dbApi
-    private val dispatchers by module.dispatchers
+) : AsyncComponent(), PlayerRatingGuiModule by module {
 
     private val _userRatings = MutableStateFlow<List<UserAndRating>>(emptyList())
     val userRatings: StateFlow<List<UserAndRating>>
@@ -31,7 +28,7 @@ class PlayerRatingsGUIViewModel(
 
     fun onSortClicked() {
         componentScope.launch(dispatchers.IO) {
-            _sort.value = sort.value.next()
+            _sort.value = sort.value.next(UserRatingsSort.values())
             _userRatings.value = when (sort.value) {
                 UserRatingsSort.DATE_ASC -> _userRatings.value.sortedBy { it.rating.time }
                 UserRatingsSort.DATE_DESC -> _userRatings.value.sortedByDescending { it.rating.time }
@@ -45,14 +42,14 @@ class PlayerRatingsGUIViewModel(
 
     init {
         componentScope.launch(dispatchers.IO) {
-            _userRatings.value = databaseApi.fetchUserRatings(player.name ?: "NULL").getOrDefault(emptyList())
+            _userRatings.value = dbApi.fetchUserRatings(player.name ?: "NULL").getOrDefault(emptyList())
         }
     }
 
     fun onDeleteClicked(item: UserAndRating) {
         componentScope.launch(dispatchers.IO) {
-            databaseApi.deleteUserRating(item.rating)
-            val list = databaseApi.fetchUserRatings(player.name ?: "NULL").getOrDefault(emptyList())
+            dbApi.deleteUserRating(item.rating)
+            val list = dbApi.fetchUserRatings(player.name ?: "NULL").getOrDefault(emptyList())
             _userRatings.value = list
             onSortClicked()
         }

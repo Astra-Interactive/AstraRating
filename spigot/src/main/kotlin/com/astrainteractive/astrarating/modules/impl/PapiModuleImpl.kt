@@ -1,17 +1,13 @@
 package com.astrainteractive.astrarating.modules.impl
 
-import com.astrainteractive.astrarating.domain.api.CachedApi
 import com.astrainteractive.astrarating.integrations.papi.di.PapiModule
 import com.astrainteractive.astrarating.modules.RootModule
-import com.astrainteractive.astrarating.plugin.EmpireConfig
-import kotlinx.coroutines.CoroutineScope
-import ru.astrainteractive.astralibs.Dependency
-import ru.astrainteractive.astralibs.getValue
+import ru.astrainteractive.klibs.kdi.getValue
 
 object PapiModuleImpl : PapiModule {
     private val rootModule: RootModule by RootModuleImpl
 
-    override val cachedApi: Dependency<CachedApi> = rootModule.cachedApi
-    override val config: Dependency<EmpireConfig> = rootModule.config
-    override val scope: Dependency<CoroutineScope> = rootModule.scope
+    override val cachedApi by rootModule.cachedApi
+    override val config by rootModule.config
+    override val scope by rootModule.scope
 }

@@ -2,13 +2,12 @@ package com.astrainteractive.astrarating.commands
 
 import CommandManager
 import org.bukkit.Bukkit
-import org.bukkit.plugin.java.JavaPlugin
-import ru.astrainteractive.astralibs.commands.registerTabCompleter
+import ru.astrainteractive.astralibs.command.registerTabCompleter
 
 /**
  * Tab completer for your plugin which is called when player typing commands
  */
-fun CommandManager.tabCompleter(plugin: JavaPlugin) = plugin.registerTabCompleter("arating") {
+fun CommandManager.tabCompleter() = plugin.registerTabCompleter("arating") {
     return@registerTabCompleter when {
         args.size == 1 -> listOf("reload", "like", "dislike", "rating")
         args.size == 2 && (

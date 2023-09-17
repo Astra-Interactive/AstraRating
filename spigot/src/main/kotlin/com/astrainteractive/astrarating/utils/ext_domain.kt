@@ -8,8 +8,8 @@ import com.astrainteractive.astrarating.models.UsersRatingsSort
 import com.astrainteractive.astrarating.modules.impl.RootModuleImpl
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
-import ru.astrainteractive.astralibs.getValue
-import java.util.*
+import ru.astrainteractive.klibs.kdi.getValue
+import java.util.UUID
 
 val UserDTO.offlinePlayer: OfflinePlayer
     get() = Bukkit.getOfflinePlayer(UUID.fromString(minecraftUUID))

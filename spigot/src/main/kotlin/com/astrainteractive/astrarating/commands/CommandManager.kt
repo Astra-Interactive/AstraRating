@@ -1,4 +1,4 @@
-import com.astrainteractive.astrarating.AstraRating
+
 import com.astrainteractive.astrarating.commands.di.CommandsModule
 import com.astrainteractive.astrarating.commands.rating.ratingCommand
 import com.astrainteractive.astrarating.commands.reload.reload
@@ -10,9 +10,8 @@ import com.astrainteractive.astrarating.commands.tabCompleter
  * @see Reload
  */
 class CommandManager(
-    val plugin: AstraRating,
     module: CommandsModule
-) {
+) : CommandsModule by module {
     /**
      * Here you should declare commands for your plugin
      *
@@ -21,8 +20,8 @@ class CommandManager(
      * etemp has TabCompleter
      */
     init {
-        tabCompleter(plugin)
-        reload(plugin, module)
-        ratingCommand(plugin, module)
+        tabCompleter()
+        reload()
+        ratingCommand()
     }
 }

@@ -13,23 +13,19 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
-import ru.astrainteractive.astralibs.getValue
+import ru.astrainteractive.astralibs.menu.clicker.Click
 import ru.astrainteractive.astralibs.menu.clicker.MenuClickListener
 import ru.astrainteractive.astralibs.menu.holder.DefaultPlayerHolder
 import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
-import ru.astrainteractive.astralibs.menu.menu.InventoryButton
+import ru.astrainteractive.astralibs.menu.menu.InventorySlot
 import ru.astrainteractive.astralibs.menu.menu.MenuSize
 import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
-import ru.astrainteractive.astralibs.menu.utils.ItemStackButtonBuilder
-import java.util.UUID
+import java.util.*
 
 class RatingsGUI(
     player: Player,
     private val module: RatingsGUIModule,
-) : PaginatedMenu() {
-    private val config by module.config
-    private val translation by module.translation
-    private val dispatchers by module.dispatchers
+) : PaginatedMenu(), RatingsGUIModule by module {
 
     private val viewModel = RatingsGUIViewModel(module)
 
@@ -40,42 +36,42 @@ class RatingsGUI(
     override var menuTitle: String = translation.ratingsTitle
     override val menuSize: MenuSize = MenuSize.XL
 
-    override val backPageButton = ItemStackButtonBuilder {
+    override val backPageButton = InventorySlot.Builder {
         index = 49
         itemStack = config.gui.buttons.back.toItemStack().apply {
             editMeta {
                 it.setDisplayName(translation.menuClose)
             }
         }
-        onClick = { inventory.close() }
+        click = Click { inventory.close() }
     }
-    override val nextPageButton = ItemStackButtonBuilder {
+    override val nextPageButton = InventorySlot.Builder {
         index = 53
         itemStack = config.gui.buttons.next.toItemStack().apply {
             editMeta {
                 it.setDisplayName(translation.menuNextPage)
             }
         }
-        onClick = { showPage(page + 1) }
+        click = Click { showPage(page + 1) }
     }
-    override val prevPageButton = ItemStackButtonBuilder {
+    override val prevPageButton = InventorySlot.Builder {
         index = 45
         itemStack = config.gui.buttons.prev.toItemStack().apply {
             editMeta {
                 it.setDisplayName(translation.menuPrevPage)
             }
         }
-        onClick = { showPage(page - 1) }
+        click = Click { showPage(page - 1) }
     }
-    private val sortButton: InventoryButton
-        get() = ItemStackButtonBuilder {
+    private val sortButton: InventorySlot
+        get() = InventorySlot.Builder {
             index = 50
             itemStack = config.gui.buttons.sort.toItemStack().apply {
                 editMeta {
                     it.setDisplayName("${translation.sort}: ${viewModel.sort.value.desc}")
                 }
             }
-            onClick = {
+            click = Click {
 
                 viewModel.onSortClicked()
                 setMenuItems()
@@ -118,7 +114,7 @@ class RatingsGUI(
             }
             val userAndRating = list[index]
             val color = if (userAndRating.rating.rating > 0) translation.positiveColor else translation.negativeColor
-            ItemStackButtonBuilder {
+            InventorySlot.Builder {
                 this.index = i
                 itemStack = RatingsGUIViewModel.getHead(userAndRating.reportedPlayer.normalName).apply {
                     editMeta {
@@ -142,12 +138,12 @@ class RatingsGUI(
                         }
                     }
                 }
-                onClick = {
+                click = Click {
                     componentScope.launch(dispatchers.BukkitAsync) {
                         val inventory = module.playerRatingsGuiFactory(
                             Bukkit.getOfflinePlayer(UUID.fromString(userAndRating.reportedPlayer.minecraftUUID)),
                             playerHolder.player,
-                        ).build()
+                        ).create()
                         withContext(dispatchers.BukkitMain) {
                             inventory.open()
                         }

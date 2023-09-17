@@ -3,8 +3,9 @@ package com.astrainteractive.astrarating.integrations.papi
 import com.astrainteractive.astrarating.integrations.papi.di.PapiModule
 import com.astrainteractive.astrarating.integrations.papi.placeholders.ColorPlaceholder
 import com.astrainteractive.astrarating.integrations.papi.placeholders.RatingAmountPlaceholder
+import com.astrainteractive.astrarating.integrations.papi.placeholders.api.RatingPlaceholder
 import org.bukkit.OfflinePlayer
-import ru.astrainteractive.astralibs.utils.KPlaceholderExpansion
+import ru.astrainteractive.astralibs.util.KPlaceholderExpansion
 
 class RatingPAPIExpansion(
     module: PapiModule
@@ -13,7 +14,7 @@ class RatingPAPIExpansion(
     "RomanMakeev",
     "1.0.0"
 ) {
-    private val placeholders = listOf(
+    private val placeholders = listOf<RatingPlaceholder>(
         RatingAmountPlaceholder(module),
         ColorPlaceholder(module)
     )

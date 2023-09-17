@@ -1,11 +1,8 @@
 package com.astrainteractive.astrarating.commands.reload
 
 import CommandManager
-import com.astrainteractive.astrarating.AstraRating
-import com.astrainteractive.astrarating.commands.di.CommandsModule
 import com.astrainteractive.astrarating.plugin.AstraPermission
-import ru.astrainteractive.astralibs.commands.registerCommand
-import ru.astrainteractive.astralibs.getValue
+import ru.astrainteractive.astralibs.command.registerCommand
 
 /**
  * Reload command handler
@@ -16,12 +13,7 @@ import ru.astrainteractive.astralibs.getValue
  *
  * Here you should also check for permission
  */
-fun CommandManager.reload(
-    plugin: AstraRating,
-    module: CommandsModule
-) = plugin.registerCommand("aratingreload") {
-    val translation by module.translation
-
+fun CommandManager.reload() = plugin.registerCommand("aratingreload") {
     if (!AstraPermission.Reload.hasPermission(sender)) {
         sender.sendMessage(translation.noPermission)
         return@registerCommand

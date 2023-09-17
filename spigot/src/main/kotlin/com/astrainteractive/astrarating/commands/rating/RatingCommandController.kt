@@ -1,6 +1,6 @@
 package com.astrainteractive.astrarating.commands.rating
 
-import com.astrainteractive.astrarating.commands.rating.di.RatingCommandControllerModule
+import com.astrainteractive.astrarating.commands.di.CommandsModule
 import com.astrainteractive.astrarating.dto.RatingType
 import com.astrainteractive.astrarating.dto.UserDTO
 import com.astrainteractive.astrarating.exception.ValidationException
@@ -11,18 +11,11 @@ import kotlinx.coroutines.withContext
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import ru.astrainteractive.astralibs.getValue
-import ru.astrainteractive.astralibs.utils.uuid
+import ru.astrainteractive.astralibs.util.uuid
 
 class RatingCommandController(
-    private val module: RatingCommandControllerModule
-) {
-    private val dispatchers by module.dispatchers
-    private val scope by module.scope
-    private val translation by module.translation
-    private val config by module.config
-    private val databaseApi by module.dbApi
-    private val insertUserUseCase by module.insertUseCase
+    module: CommandsModule
+) : CommandsModule by module {
 
     @Throws(ValidationException::class)
     @Suppress("CyclomaticComplexMethod")
@@ -47,9 +40,9 @@ class RatingCommandController(
             throw ValidationException.NotEnoughOnServer(ratingCreator)
         }
 
-        val maxVotesPerDay = AstraPermission.MaxRatePerDay.permissionSize(ratingCreator) ?: config.maxRatingPerDay
+        val maxVotesPerDay = AstraPermission.MaxRatePerDay.maxPermissionSize(ratingCreator) ?: config.maxRatingPerDay
         val maxVotePerPlayer =
-            AstraPermission.SinglePlayerPerDay.permissionSize(ratingCreator) ?: config.maxRatingPerPlayer
+            AstraPermission.SinglePlayerPerDay.maxPermissionSize(ratingCreator) ?: config.maxRatingPerPlayer
 
 //        if (config.needDiscordLinked) {
 //            val discordMember = getLinkedDiscordID(ratingCreator)
@@ -61,9 +54,9 @@ class RatingCommandController(
 //                throw ValidationException.NotEnoughOnDiscord(ratingCreator)
 //        }
 
-        val todayVotedAmount = databaseApi.countPlayerTotalDayRated(ratingCreator.name).getOrNull() ?: 0
+        val todayVotedAmount = dbApi.countPlayerTotalDayRated(ratingCreator.name).getOrNull() ?: 0
         val votedOnPlayerAmount =
-            databaseApi.countPlayerOnPlayerDayRated(ratingCreator.name, ratedPlayer.name ?: "NULL").getOrNull() ?: 0
+            dbApi.countPlayerOnPlayerDayRated(ratingCreator.name, ratedPlayer.name ?: "NULL").getOrNull() ?: 0
 
         if (todayVotedAmount > maxVotesPerDay) {
             throw ValidationException.AlreadyMaxDayVotes(ratingCreator)
@@ -77,11 +70,11 @@ class RatingCommandController(
             throw ValidationException.WrongMessageLength(ratingCreator)
         }
 
-        val playerCreatedID = insertUserUseCase(UserModel(ratingCreator.uniqueId, ratingCreator.name))
+        val playerCreatedID = insertUseCase(UserModel(ratingCreator.uniqueId, ratingCreator.name))
         val playerReportedID =
-            insertUserUseCase(UserModel(ratedPlayer.uniqueId, ratedPlayer?.name ?: "NULL"))
+            insertUseCase(UserModel(ratedPlayer.uniqueId, ratedPlayer?.name ?: "NULL"))
         if (playerCreatedID == null || playerReportedID == null) throw ValidationException.DBException(ratingCreator)
-        databaseApi.insertUserRating(
+        dbApi.insertUserRating(
             reporter = UserDTO(
                 id = playerCreatedID,
                 minecraftUUID = ratingCreator.uuid,
@@ -106,7 +99,7 @@ class RatingCommandController(
 
     fun rating(sender: CommandSender) {
         scope.launch(dispatchers.BukkitAsync) {
-            val inventory = module.ratingsGUIFactory(sender as Player).build()
+            val inventory = ratingsGUIFactory(sender as Player).create()
             withContext(dispatchers.BukkitMain) {
                 inventory.open()
             }

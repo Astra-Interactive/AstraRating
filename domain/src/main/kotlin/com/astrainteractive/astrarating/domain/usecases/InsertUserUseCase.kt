@@ -2,7 +2,7 @@ package com.astrainteractive.astrarating.domain.usecases
 
 import com.astrainteractive.astrarating.domain.api.RatingDBApi
 import com.astrainteractive.astrarating.models.UserModel
-import ru.astrainteractive.astralibs.domain.UseCase
+import ru.astrainteractive.klibs.mikro.core.domain.UseCase
 import java.util.*
 
 /**
@@ -13,19 +13,19 @@ import java.util.*
 class InsertUserUseCase(
     private val databaseApi: RatingDBApi,
     val discordIDProvider: (UUID) -> String?
-) : UseCase<Int?, UserModel> {
+) : UseCase.Parametrized<UserModel, Int?> {
     private val discordUsers = mutableMapOf<String, String>()
 
-    override suspend fun run(params: UserModel): Int? {
-        val uuid = params.minecraftUUID.toString()
-        val discordID = discordUsers[uuid] ?: discordIDProvider(params.minecraftUUID)?.let {
+    override suspend operator fun invoke(input: UserModel): Int? {
+        val uuid = input.minecraftUUID.toString()
+        val discordID = discordUsers[uuid] ?: discordIDProvider(input.minecraftUUID)?.let {
             discordUsers[uuid] = it
             it
         }
-        val user = databaseApi.selectUser(params.minecraftName).getOrNull()
+        val user = databaseApi.selectUser(input.minecraftName).getOrNull()
         return user?.let {
             databaseApi.updateUser(it.copy(discordID = discordID))
             it.id
-        } ?: databaseApi.insertUser(params).getOrNull()
+        } ?: databaseApi.insertUser(input).getOrNull()
     }
 }

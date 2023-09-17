@@ -15,23 +15,19 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
-import ru.astrainteractive.astralibs.getValue
+import ru.astrainteractive.astralibs.menu.clicker.Click
 import ru.astrainteractive.astralibs.menu.clicker.MenuClickListener
 import ru.astrainteractive.astralibs.menu.holder.DefaultPlayerHolder
 import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
-import ru.astrainteractive.astralibs.menu.menu.InventoryButton
+import ru.astrainteractive.astralibs.menu.menu.InventorySlot
 import ru.astrainteractive.astralibs.menu.menu.MenuSize
 import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
-import ru.astrainteractive.astralibs.menu.utils.ItemStackButtonBuilder
 
 class PlayerRatingsGUI(
     selectedPlayer: OfflinePlayer,
     player: Player,
     private val module: PlayerRatingGuiModule
-) : PaginatedMenu() {
-    private val config by module.config
-    private val translation by module.translation
-    private val dispatchers by module.dispatchers
+) : PaginatedMenu(), PlayerRatingGuiModule by module {
 
     private val clickListener = MenuClickListener()
     override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
@@ -41,23 +37,23 @@ class PlayerRatingsGUI(
     override var menuTitle: String = translation.playerRatingTitle.replace("%player%", selectedPlayer.name ?: "")
     override val menuSize: MenuSize = MenuSize.XL
 
-    override val backPageButton = ItemStackButtonBuilder {
+    override val backPageButton = InventorySlot.Builder {
         index = 49
         itemStack = config.gui.buttons.back.toItemStack().apply {
             editMeta {
                 it.setDisplayName(translation.menuClose)
             }
         }
-        onClick = {
+        click = Click {
             componentScope.launch(dispatchers.BukkitAsync) {
-                val inventory = module.playerRatingsGuiFactory(playerHolder.player).build()
+                val inventory = module.playerRatingsGuiFactory(playerHolder.player).create()
                 withContext(dispatchers.BukkitMain) {
                     inventory.open()
                 }
             }
         }
     }
-    override val nextPageButton = ItemStackButtonBuilder {
+    override val nextPageButton = InventorySlot.Builder {
         index = 53
         itemStack = config.gui.buttons.next.toItemStack().apply {
             editMeta {
@@ -65,7 +61,7 @@ class PlayerRatingsGUI(
             }
         }
     }
-    override val prevPageButton = ItemStackButtonBuilder {
+    override val prevPageButton = InventorySlot.Builder {
         index = 45
         itemStack = config.gui.buttons.prev.toItemStack().apply {
             editMeta {
@@ -74,15 +70,15 @@ class PlayerRatingsGUI(
         }
     }
 
-    private val sortButton: InventoryButton
-        get() = ItemStackButtonBuilder {
+    private val sortButton: InventorySlot
+        get() = InventorySlot.Builder {
             index = 50
             itemStack = config.gui.buttons.sort.toItemStack().apply {
                 editMeta {
                     it.setDisplayName("${translation.sortRating}: ${viewModel.sort.value.desc}")
                 }
             }
-            onClick = {
+            click = Click {
                 viewModel.onSortClicked()
                 setMenuItems()
             }
@@ -127,7 +123,7 @@ class PlayerRatingsGUI(
             }
             val userAndRating = list[index]
             val color = if (userAndRating.rating.rating > 0) translation.positiveColor else translation.negativeColor
-            ItemStackButtonBuilder {
+            InventorySlot.Builder {
                 this.index = i
                 itemStack = RatingsGUIViewModel.getHead(userAndRating.userCreatedReport.normalName).apply {
                     editMeta {
@@ -162,10 +158,10 @@ class PlayerRatingsGUI(
                         }
                     }
                 }
-                onClick = onClick@{ e ->
-                    if (!AstraPermission.DeleteReport.hasPermission(playerHolder.player)) return@onClick
-                    if (e.click != ClickType.LEFT) return@onClick
-                    val item = viewModel.userRatings.value.getOrNull(maxItemsPerPage * page + e.slot) ?: return@onClick
+                click = Click { e ->
+                    if (!AstraPermission.DeleteReport.hasPermission(playerHolder.player)) return@Click
+                    if (e.click != ClickType.LEFT) return@Click
+                    val item = viewModel.userRatings.value.getOrNull(maxItemsPerPage * page + e.slot) ?: return@Click
                     viewModel.onDeleteClicked(item)
                 }
             }.also(clickListener::remember).setInventoryButton()

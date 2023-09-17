@@ -7,16 +7,13 @@ import com.astrainteractive.astrarating.integrations.papi.di.PapiModule
 import com.astrainteractive.astrarating.integrations.papi.placeholders.api.RatingPlaceholder
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
-import ru.astrainteractive.astralibs.getValue
-import ru.astrainteractive.astralibs.utils.hex
+import ru.astrainteractive.astralibs.util.hex
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
 class ColorPlaceholder(
     module: PapiModule
-) : RatingPlaceholder {
-    private val cachedApi by module.cachedApi
-    private val scope by module.scope
+) : RatingPlaceholder, PapiModule by module {
 
     private val jcache = JCache<UUID, String>(
         expiresAfterAccess = 30.seconds,
@@ -34,7 +31,6 @@ class ColorPlaceholder(
     )
 
     override val key: String = "color"
-    private val config by module.config
 
     override fun asPlaceholder(param: OfflinePlayer): String {
         return jcache.getIfPresent(param.uniqueId)?.hex() ?: ""

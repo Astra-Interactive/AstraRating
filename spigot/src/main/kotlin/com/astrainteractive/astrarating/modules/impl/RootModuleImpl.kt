@@ -17,20 +17,16 @@ import com.astrainteractive.astrarating.plugin.PluginTranslation
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
 import org.jetbrains.kotlin.tooling.core.UnsafeApi
-import ru.astrainteractive.astralibs.Dependency
-import ru.astrainteractive.astralibs.Factory
-import ru.astrainteractive.astralibs.Lateinit
-import ru.astrainteractive.astralibs.Reloadable
-import ru.astrainteractive.astralibs.Single
-import ru.astrainteractive.astralibs.async.AsyncComponent
-import ru.astrainteractive.astralibs.async.BukkitDispatchers
 import ru.astrainteractive.astralibs.async.DefaultBukkitDispatchers
 import ru.astrainteractive.astralibs.async.PluginScope
 import ru.astrainteractive.astralibs.configloader.ConfigLoader
-import ru.astrainteractive.astralibs.events.EventListener
-import ru.astrainteractive.astralibs.events.GlobalEventListener
+import ru.astrainteractive.astralibs.event.GlobalEventListener
 import ru.astrainteractive.astralibs.filemanager.DefaultSpigotFileManager
-import ru.astrainteractive.astralibs.getValue
+import ru.astrainteractive.klibs.kdi.Factory
+import ru.astrainteractive.klibs.kdi.Lateinit
+import ru.astrainteractive.klibs.kdi.Reloadable
+import ru.astrainteractive.klibs.kdi.Single
+import ru.astrainteractive.klibs.kdi.getValue
 
 object RootModuleImpl : RootModule {
     override val plugin = Lateinit<AstraRating>()
@@ -42,7 +38,7 @@ object RootModuleImpl : RootModule {
         val plugin by plugin
         DefaultSpigotFileManager(plugin, "config.yml")
     }
-    override val papiExpansion: Dependency<RatingPAPIComponent?> = Single {
+    override val papiExpansion = Single {
         runCatching {
             if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
                 RatingPAPIComponent(PapiModuleImpl)
@@ -54,18 +50,18 @@ object RootModuleImpl : RootModule {
         }.getOrNull()
     }
 
-    override val scope: Dependency<AsyncComponent> = Single {
+    override val scope = Single {
         PluginScope
     }
-    override val eventListener: Dependency<EventListener> = Single {
+    override val eventListener = Single {
         GlobalEventListener
     }
-    override val dispatchers: Dependency<BukkitDispatchers> = Single {
+    override val dispatchers = Single {
         val plugin by plugin
         DefaultBukkitDispatchers(plugin)
     }
     override val config = Reloadable {
-        ConfigLoader.toClassOrDefault(configFileManager.value.configFile, ::EmpireConfig)
+        ConfigLoader().toClassOrDefault(configFileManager.value.configFile, ::EmpireConfig)
     }
     override val translation = Reloadable {
         val plugin by plugin
@@ -73,7 +69,7 @@ object RootModuleImpl : RootModule {
     }
     override val database = Single {
         val plugin by plugin
-        DBFactory(plugin, config).build()
+        DBFactory(plugin, config).create()
     }
 
     override val dbApi = Single {

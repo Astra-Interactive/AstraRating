@@ -1,7 +1,7 @@
 package com.astrainteractive.astrarating.integrations.papi.coloring
 
 import com.astrainteractive.astrarating.plugin.EmpireConfig
-import ru.astrainteractive.astralibs.domain.mapping.Mapper
+import ru.astrainteractive.klibs.mikro.core.domain.Mapper
 
 object ColoringMapper : Mapper<EmpireConfig.Coloring, Coloring> {
     override fun toDTO(it: EmpireConfig.Coloring): Coloring {

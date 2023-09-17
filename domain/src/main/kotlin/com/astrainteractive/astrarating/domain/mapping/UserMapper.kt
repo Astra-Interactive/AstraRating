@@ -2,7 +2,7 @@ package com.astrainteractive.astrarating.domain.mapping
 
 import com.astrainteractive.astrarating.domain.entities.UserEntity
 import com.astrainteractive.astrarating.dto.UserDTO
-import ru.astrainteractive.astralibs.domain.mapping.Mapper
+import ru.astrainteractive.klibs.mikro.core.domain.Mapper
 
 object UserMapper : Mapper<UserEntity, UserDTO> {
     override fun fromDTO(it: UserDTO): UserEntity {

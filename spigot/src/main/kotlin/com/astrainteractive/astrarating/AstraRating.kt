@@ -9,8 +9,7 @@ import kotlinx.coroutines.runBlocking
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.kotlin.tooling.core.UnsafeApi
-import ru.astrainteractive.astralibs.events.GlobalEventListener
-import ru.astrainteractive.astralibs.getValue
+import ru.astrainteractive.astralibs.event.GlobalEventListener
 import ru.astrainteractive.astralibs.menu.event.GlobalInventoryClickEvent
 
 /**
@@ -28,11 +27,11 @@ class AstraRating : JavaPlugin() {
     override fun onEnable() {
         reloadPlugin()
         RootModuleImpl.database
-        RootModuleImpl.bstats.build()
+        RootModuleImpl.bstats.create()
         RootModuleImpl.papiExpansion.value?.onEnable()
         GlobalInventoryClickEvent.onEnable(this)
-        RootModuleImpl.eventManager.build()
-        CommandManager(this, CommandsModuleImpl)
+        RootModuleImpl.eventManager.create()
+        CommandManager(CommandsModuleImpl)
     }
 
     /**

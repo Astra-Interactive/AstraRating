@@ -5,16 +5,15 @@ import com.astrainteractive.astrarating.plugin.EmpireConfig
 import com.astrainteractive.astrarating.plugin.PluginTranslation
 import kotlinx.coroutines.CoroutineScope
 import org.bukkit.plugin.java.JavaPlugin
-import ru.astrainteractive.astralibs.Dependency
 import ru.astrainteractive.astralibs.async.BukkitDispatchers
-import ru.astrainteractive.astralibs.events.EventListener
+import ru.astrainteractive.astralibs.event.EventListener
 
 interface EventModule {
-    val configDependency: Dependency<EmpireConfig>
-    val apiDependency: Dependency<RatingDBApi>
-    val translationDependency: Dependency<PluginTranslation>
-    val scope: Dependency<CoroutineScope>
-    val eventListener: Dependency<EventListener>
-    val plugin: Dependency<JavaPlugin>
-    val dispatchers: Dependency<BukkitDispatchers>
+    val configDependency: EmpireConfig
+    val apiDependency: RatingDBApi
+    val translationDependency: PluginTranslation
+    val scope: CoroutineScope
+    val eventListener: EventListener
+    val plugin: JavaPlugin
+    val dispatchers: BukkitDispatchers
 }
