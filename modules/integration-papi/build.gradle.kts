@@ -1,6 +1,3 @@
-import ru.astrainteractive.gradleplugin.setupSpigotProcessor
-import ru.astrainteractive.gradleplugin.setupSpigotShadow
-
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
@@ -24,15 +21,10 @@ dependencies {
     compileOnly(libs.minecraft.paper.api)
     implementation(libs.minecraft.bstats)
     compileOnly(libs.minecraft.papi)
-//    compileOnly(libs.discordsrv)
     compileOnly(libs.minecraft.vaultapi)
     implementation(libs.minecraft.bstats)
     // Local
     implementation(projects.modules.dbRating)
     implementation(projects.modules.apiRating)
     implementation(projects.modules.dto)
-    implementation(projects.modules.integrationPapi)
 }
-val localFolder = File("D:\\Minecraft Servers\\Servers\\esmp-configuration\\smp\\plugins")
-if (localFolder.exists()) setupSpigotShadow(localFolder) else setupSpigotShadow()
-setupSpigotProcessor()

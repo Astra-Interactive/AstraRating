@@ -40,6 +40,9 @@ dependencyResolutionManagement {
 }
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "AstraRating"
-include("domain")
 include("spigot")
-include("dto")
+// modules
+include("modules:db-rating")
+include("modules:api-rating")
+include("modules:dto")
+include("modules:integration-papi")

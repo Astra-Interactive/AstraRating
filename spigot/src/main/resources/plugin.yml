@@ -1,4 +1,4 @@
-main: com.astrainteractive.astrarating.AstraRating
+main: ru.astrainteractive.astrarating.AstraRating
 prefix: '${name}'
 description: '${description}'
 name: '${name}'
