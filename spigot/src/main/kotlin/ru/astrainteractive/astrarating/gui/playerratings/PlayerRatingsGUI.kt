@@ -14,8 +14,11 @@ import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
 import ru.astrainteractive.astralibs.menu.menu.InventorySlot
 import ru.astrainteractive.astralibs.menu.menu.MenuSize
 import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
+import ru.astrainteractive.astrarating.feature.playerrating.DefaultPlayerRatingsComponent
+import ru.astrainteractive.astrarating.feature.playerrating.PlayerRatingsComponent
 import ru.astrainteractive.astrarating.gui.playerratings.di.PlayerRatingGuiModule
-import ru.astrainteractive.astrarating.gui.ratings.RatingsGUIViewModel
+import ru.astrainteractive.astrarating.gui.util.PlayerHeadUtil
+import ru.astrainteractive.astrarating.model.PlayerModel
 import ru.astrainteractive.astrarating.plugin.AstraPermission
 import ru.astrainteractive.astrarating.util.TimeUtility
 import ru.astrainteractive.astrarating.util.desc
@@ -33,7 +36,14 @@ class PlayerRatingsGUI(
     private val clickListener = MenuClickListener()
     override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
 
-    private val viewModel = PlayerRatingsGUIViewModel(selectedPlayer, module)
+    private val playerRatingsComponent: PlayerRatingsComponent = DefaultPlayerRatingsComponent(
+        playerModel = PlayerModel(
+            uuid = selectedPlayer.uniqueId,
+            name = selectedPlayer.name ?: selectedPlayer.uniqueId.toString()
+        ),
+        dbApi = module.dbApi,
+        dispatchers = module.dispatchers
+    )
 
     override var menuTitle: String = translation.playerRatingTitle.replace("%player%", selectedPlayer.name ?: "")
     override val menuSize: MenuSize = MenuSize.XL
@@ -76,18 +86,24 @@ class PlayerRatingsGUI(
             index = 50
             itemStack = config.gui.buttons.sort.toItemStack().apply {
                 editMeta {
-                    it.setDisplayName("${translation.sortRating}: ${viewModel.sort.value.desc.toString(translation)}")
+                    it.setDisplayName(
+                        "${translation.sortRating}: ${
+                        playerRatingsComponent.model.value.sort.desc.toString(
+                            translation
+                        )
+                        }"
+                    )
                 }
             }
             click = Click {
-                viewModel.onSortClicked()
+                playerRatingsComponent.onSortClicked()
                 setMenuItems()
             }
         }
     override var maxItemsPerPage: Int = 45
     override var page: Int = 0
     override val maxItemsAmount: Int
-        get() = viewModel.userRatings.value.size
+        get() = playerRatingsComponent.model.value.userRatings.size
 
     override fun onInventoryClicked(e: InventoryClickEvent) {
         e.isCancelled = true
@@ -99,7 +115,7 @@ class PlayerRatingsGUI(
     }
 
     override fun onInventoryClose(it: InventoryCloseEvent) {
-        viewModel.close()
+        playerRatingsComponent.close()
     }
 
     override fun onPageChanged() {
@@ -107,16 +123,16 @@ class PlayerRatingsGUI(
     }
 
     override fun onCreated() {
-        viewModel.userRatings.collectOn(dispatchers.BukkitMain) {
+        playerRatingsComponent.model.collectOn(dispatchers.BukkitMain) {
             setMenuItems()
         }
     }
 
-    private fun setMenuItems() {
+    private fun setMenuItems(model: PlayerRatingsComponent.Model = playerRatingsComponent.model.value) {
         inventory.clear()
         setManageButtons(clickListener)
         sortButton.also(clickListener::remember).setInventoryButton()
-        val list = viewModel.userRatings.value
+        val list = model.userRatings
         for (i in 0 until maxItemsPerPage) {
             val index = maxItemsPerPage * page + i
             if (index >= list.size) {
@@ -126,7 +142,7 @@ class PlayerRatingsGUI(
             val color = if (userAndRating.rating.rating > 0) translation.positiveColor else translation.negativeColor
             InventorySlot.Builder {
                 this.index = i
-                itemStack = RatingsGUIViewModel.getHead(userAndRating.userCreatedReport.normalName).apply {
+                itemStack = PlayerHeadUtil.getHead(userAndRating.userCreatedReport.normalName).apply {
                     editMeta {
                         it.setDisplayName(translation.playerNameColor + userAndRating.userCreatedReport.normalName)
                         it.lore = mutableListOf<String>().apply {
@@ -165,8 +181,8 @@ class PlayerRatingsGUI(
                 click = Click { e ->
                     if (!AstraPermission.DeleteReport.hasPermission(playerHolder.player)) return@Click
                     if (e.click != ClickType.LEFT) return@Click
-                    val item = viewModel.userRatings.value.getOrNull(maxItemsPerPage * page + e.slot) ?: return@Click
-                    viewModel.onDeleteClicked(item)
+                    val item = model.userRatings.getOrNull(maxItemsPerPage * page + e.slot) ?: return@Click
+                    playerRatingsComponent.onDeleteClicked(item)
                 }
             }.also(clickListener::remember).setInventoryButton()
         }

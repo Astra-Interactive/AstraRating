@@ -32,6 +32,7 @@ dependencies {
     implementation(projects.modules.apiRating)
     implementation(projects.modules.dto)
     implementation(projects.modules.integrationPapi)
+    implementation(projects.modules.shared)
 }
 val localFolder = File("D:\\Minecraft Servers\\Servers\\esmp-configuration\\smp\\plugins")
 if (localFolder.exists()) setupSpigotShadow(localFolder) else setupSpigotShadow()

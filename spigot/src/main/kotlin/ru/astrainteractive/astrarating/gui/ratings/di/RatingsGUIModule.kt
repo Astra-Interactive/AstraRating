@@ -15,7 +15,7 @@ interface RatingsGUIModule : Module {
     val dispatchers: BukkitDispatchers
     val translation: PluginTranslation
     val config: EmpireConfig
-    fun playerRatingsGuiFactory(
+    fun allRatingsGuiFactory(
         selectedPlayer: OfflinePlayer,
         player: Player,
     ): Factory<PlayerRatingsGUI>

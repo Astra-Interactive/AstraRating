@@ -25,7 +25,7 @@ class GuiModuleImpl(rootModule: RootModule) : GuiModule {
         )
     }
 
-    override fun playerRatingsGuiFactory(
+    override fun allRatingsGuiFactory(
         selectedPlayer: OfflinePlayer,
         player: Player
     ): Factory<PlayerRatingsGUI> = Factory {

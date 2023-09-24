@@ -14,8 +14,10 @@ import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
 import ru.astrainteractive.astralibs.menu.menu.InventorySlot
 import ru.astrainteractive.astralibs.menu.menu.MenuSize
 import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
-import ru.astrainteractive.astrarating.dto.UserAndRating
+import ru.astrainteractive.astrarating.feature.allrating.AllRatingsComponent
+import ru.astrainteractive.astrarating.feature.allrating.DefaultAllRatingsComponent
 import ru.astrainteractive.astrarating.gui.ratings.di.RatingsGUIModule
+import ru.astrainteractive.astrarating.gui.util.PlayerHeadUtil
 import ru.astrainteractive.astrarating.util.TimeUtility
 import ru.astrainteractive.astrarating.util.desc
 import ru.astrainteractive.astrarating.util.normalName
@@ -28,9 +30,12 @@ class RatingsGUI(
     private val module: RatingsGUIModule,
 ) : PaginatedMenu(), RatingsGUIModule by module {
 
-    private val viewModel = RatingsGUIViewModel(module)
+    private val allRatingsComponent: AllRatingsComponent = DefaultAllRatingsComponent(
+        dbApi = module.dbApi,
+        dispatchers = module.dispatchers
+    )
 
-    val clickListener = MenuClickListener()
+    private val clickListener = MenuClickListener()
 
     override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
 
@@ -69,19 +74,24 @@ class RatingsGUI(
             index = 50
             itemStack = config.gui.buttons.sort.toItemStack().apply {
                 editMeta {
-                    it.setDisplayName("${translation.sort}: ${viewModel.sort.value.desc.toString(translation)}")
+                    it.setDisplayName(
+                        "${translation.sort}: ${
+                        allRatingsComponent.model.value.sort.desc.toString(
+                            translation
+                        )
+                        }"
+                    )
                 }
             }
             click = Click {
-
-                viewModel.onSortClicked()
+                allRatingsComponent.onSortClicked()
                 setMenuItems()
             }
         }
     override var maxItemsPerPage: Int = 45
     override var page: Int = 0
     override val maxItemsAmount: Int
-        get() = viewModel.userRatings.value.size
+        get() = allRatingsComponent.model.value.userRatings.size
 
     override fun onInventoryClicked(e: InventoryClickEvent) {
         e.isCancelled = true
@@ -89,7 +99,7 @@ class RatingsGUI(
     }
 
     override fun onInventoryClose(it: InventoryCloseEvent) {
-        viewModel.close()
+        allRatingsComponent.close()
     }
 
     override fun onPageChanged() {
@@ -97,44 +107,45 @@ class RatingsGUI(
     }
 
     override fun onCreated() {
-        viewModel.userRatings.collectOn(Dispatchers.IO) { setMenuItems() }
+        allRatingsComponent.model.collectOn(Dispatchers.IO) { setMenuItems() }
     }
 
-    fun setMenuItems(list: List<UserAndRating> = viewModel.userRatings.value) {
+    fun setMenuItems(model: AllRatingsComponent.Model = allRatingsComponent.model.value) {
         inventory.clear()
         setManageButtons(clickListener)
-//        backPageButton.also(clickListener::remember).setInventoryButton()
-//        nextPageButton.also(clickListener::remember).setInventoryButton()
-//        prevPageButton.also(clickListener::remember).setInventoryButton()
 
         sortButton.also(clickListener::remember).setInventoryButton()
         for (i in 0 until maxItemsPerPage) {
             val index = maxItemsPerPage * page + i
-            if (index >= list.size) {
+            if (index >= model.userRatings.size) {
                 continue
             }
-            val userAndRating = list[index]
+            val userAndRating = model.userRatings[index]
             val color = if (userAndRating.rating.rating > 0) translation.positiveColor else translation.negativeColor
             InventorySlot.Builder {
                 this.index = i
-                itemStack = RatingsGUIViewModel.getHead(userAndRating.reportedPlayer.normalName).apply {
+                itemStack = PlayerHeadUtil.getHead(userAndRating.reportedPlayer.normalName).apply {
                     editMeta {
                         it.setDisplayName(translation.playerNameColor + userAndRating.reportedPlayer.normalName)
                         it.lore = mutableListOf<String>().apply {
                             if (config.gui.showFirstConnection) {
                                 add(
-                                    "${translation.firstConnection} ${TimeUtility.formatToString(
+                                    "${translation.firstConnection} ${
+                                    TimeUtility.formatToString(
                                         time = userAndRating.reportedPlayer.offlinePlayer.firstPlayed,
                                         format = config.gui.format
-                                    )}"
+                                    )
+                                    }"
                                 )
                             }
                             if (config.gui.showLastConnection) {
                                 add(
-                                    "${translation.lastConnection} ${TimeUtility.formatToString(
+                                    "${translation.lastConnection} ${
+                                    TimeUtility.formatToString(
                                         time = userAndRating.reportedPlayer.offlinePlayer.lastPlayed,
                                         format = config.gui.format
-                                    )}"
+                                    )
+                                    }"
                                 )
                             }
                             add("${translation.rating}: ${color}${userAndRating.rating.rating}")
@@ -143,7 +154,7 @@ class RatingsGUI(
                 }
                 click = Click {
                     componentScope.launch(dispatchers.BukkitAsync) {
-                        val inventory = module.playerRatingsGuiFactory(
+                        val inventory = module.allRatingsGuiFactory(
                             Bukkit.getOfflinePlayer(UUID.fromString(userAndRating.reportedPlayer.minecraftUUID)),
                             playerHolder.player,
                         ).create()
