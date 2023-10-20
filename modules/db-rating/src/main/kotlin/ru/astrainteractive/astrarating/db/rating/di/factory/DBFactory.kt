@@ -29,7 +29,8 @@ class DBFactory(
             ip = connection.host,
             port = connection.port,
             username = connection.username,
-            password = connection.password
+            password = connection.password,
+            "sql_mode=''"
         )
         return DefaultDatabase(dbconnection, DBSyntax.MySQL)
     }

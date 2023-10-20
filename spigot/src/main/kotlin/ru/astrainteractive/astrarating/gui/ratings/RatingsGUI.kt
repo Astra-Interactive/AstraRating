@@ -85,7 +85,6 @@ class RatingsGUI(
             }
             click = Click {
                 allRatingsComponent.onSortClicked()
-                setMenuItems()
             }
         }
     override var maxItemsPerPage: Int = 45
@@ -113,8 +112,8 @@ class RatingsGUI(
     fun setMenuItems(model: AllRatingsComponent.Model = allRatingsComponent.model.value) {
         inventory.clear()
         setManageButtons(clickListener)
-
         sortButton.also(clickListener::remember).setInventoryButton()
+
         for (i in 0 until maxItemsPerPage) {
             val index = maxItemsPerPage * page + i
             if (index >= model.userRatings.size) {

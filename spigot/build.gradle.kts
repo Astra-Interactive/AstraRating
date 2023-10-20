@@ -34,6 +34,6 @@ dependencies {
     implementation(projects.modules.integrationPapi)
     implementation(projects.modules.shared)
 }
-val localFolder = File("D:\\Minecraft Servers\\Servers\\esmp-configuration\\smp\\plugins")
+val localFolder = File("D:\\Minecraft Servers\\Servers\\esmp-configuration\\anarchy\\plugins")
 if (localFolder.exists()) setupSpigotShadow(localFolder) else setupSpigotShadow()
 setupSpigotProcessor()

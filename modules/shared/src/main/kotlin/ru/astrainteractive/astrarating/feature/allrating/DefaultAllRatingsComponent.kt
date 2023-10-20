@@ -24,7 +24,10 @@ class DefaultAllRatingsComponent(
             userRatings.sortedByDescending { it.rating.rating }
         }
         model.update {
-            it.copy(userRatings = sortedUserRatings)
+            it.copy(
+                userRatings = sortedUserRatings,
+                sort = nextSort
+            )
         }
     }
 
