@@ -13,6 +13,7 @@ import ru.astrainteractive.astrarating.api.rating.usecase.InsertUserUseCase
 import ru.astrainteractive.astrarating.command.di.CommandsModule
 import ru.astrainteractive.astrarating.event.EventManager
 import ru.astrainteractive.astrarating.event.di.EventModule
+import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsRepository
 import ru.astrainteractive.astrarating.gui.di.GuiModule
 import ru.astrainteractive.astrarating.integration.papi.RatingPAPIComponent
 import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
@@ -33,6 +34,9 @@ interface RootModule : Module {
     val papiModule: PapiModule
     val eventModule: EventModule
     val guiModule: GuiModule
+
+    // Domain
+    val allRatingsRepository: Single<AllRatingsRepository>
 
     // Etc
     val bstats: Factory<Metrics>

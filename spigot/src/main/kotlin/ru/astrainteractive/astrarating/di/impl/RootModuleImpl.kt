@@ -19,6 +19,8 @@ import ru.astrainteractive.astrarating.db.rating.model.DBConnection
 import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.astrarating.event.EventManager
 import ru.astrainteractive.astrarating.event.di.EventModule
+import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsRepository
+import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsRepositoryImpl
 import ru.astrainteractive.astrarating.gui.di.GuiModule
 import ru.astrainteractive.astrarating.integration.papi.RatingPAPIComponent
 import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
@@ -49,6 +51,7 @@ class RootModuleImpl : RootModule {
     override val guiModule: GuiModule by Provider {
         GuiModuleImpl(this)
     }
+
     // Etc
 
     override val bstats = Factory {
@@ -124,5 +127,14 @@ class RootModuleImpl : RootModule {
         InsertUserUseCase(dbApi.value) {
             null
         }
+    }
+
+    // Domain
+    override val allRatingsRepository: Single<AllRatingsRepository> = Single {
+        AllRatingsRepositoryImpl(
+            dbApi = dbApi.value,
+            coroutineScope = scope.value,
+            dispatchers = dispatchers.value
+        )
     }
 }

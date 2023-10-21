@@ -4,13 +4,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.astrainteractive.astralibs.async.AsyncComponent
-import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
+import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsRepository
 import ru.astrainteractive.astrarating.model.UsersRatingsSort
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.util.next
 
 class DefaultAllRatingsComponent(
-    private val dbApi: RatingDBApi,
+    private val repository: AllRatingsRepository,
     dispatchers: KotlinDispatchers
 ) : AllRatingsComponent, AsyncComponent() {
     override val model = MutableStateFlow(AllRatingsComponent.Model())
@@ -34,7 +34,7 @@ class DefaultAllRatingsComponent(
     init {
         componentScope.launch(dispatchers.IO) {
             model.update { it.copy(isLoading = true) }
-            val userRatings = dbApi.fetchUsersTotalRating().getOrDefault(emptyList())
+            val userRatings = repository.fetchUsersTotalRating()
             model.update {
                 it.copy(userRatings = userRatings)
             }

@@ -3,6 +3,7 @@ package ru.astrainteractive.astrarating.di.impl
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import ru.astrainteractive.astrarating.di.RootModule
+import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsRepository
 import ru.astrainteractive.astrarating.gui.di.GuiModule
 import ru.astrainteractive.astrarating.gui.playerratings.PlayerRatingsGUI
 import ru.astrainteractive.astrarating.gui.ratings.RatingsGUI
@@ -15,6 +16,7 @@ class GuiModuleImpl(rootModule: RootModule) : GuiModule {
     override val dispatchers by rootModule.dispatchers
     override val translation by rootModule.translation
     override val config by rootModule.config
+    override val allRatingsRepository: AllRatingsRepository by rootModule.allRatingsRepository
 
     override fun playerRatingsGuiFactory(
         player: Player

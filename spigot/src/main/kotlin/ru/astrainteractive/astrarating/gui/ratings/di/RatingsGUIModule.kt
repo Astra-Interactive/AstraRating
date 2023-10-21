@@ -4,6 +4,7 @@ import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.async.BukkitDispatchers
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
+import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsRepository
 import ru.astrainteractive.astrarating.gui.playerratings.PlayerRatingsGUI
 import ru.astrainteractive.astrarating.model.EmpireConfig
 import ru.astrainteractive.astrarating.plugin.PluginTranslation
@@ -15,6 +16,7 @@ interface RatingsGUIModule : Module {
     val dispatchers: BukkitDispatchers
     val translation: PluginTranslation
     val config: EmpireConfig
+    val allRatingsRepository: AllRatingsRepository
     fun allRatingsGuiFactory(
         selectedPlayer: OfflinePlayer,
         player: Player,

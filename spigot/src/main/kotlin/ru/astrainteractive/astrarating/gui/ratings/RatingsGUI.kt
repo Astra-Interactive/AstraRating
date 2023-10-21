@@ -32,7 +32,7 @@ class RatingsGUI(
 ) : PaginatedMenu(), RatingsGUIModule by module {
 
     private val allRatingsComponent: AllRatingsComponent = DefaultAllRatingsComponent(
-        dbApi = module.dbApi,
+        repository = allRatingsRepository,
         dispatchers = module.dispatchers
     )
     private val loadingIndicator = LoadingIndicator(menu = this, translation = translation)

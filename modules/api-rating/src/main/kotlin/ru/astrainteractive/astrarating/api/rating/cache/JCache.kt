@@ -2,7 +2,9 @@ package ru.astrainteractive.astrarating.api.rating.cache
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.kotlin.com.google.common.cache.Cache
 import org.jetbrains.kotlin.com.google.common.cache.CacheBuilder
 import java.util.concurrent.TimeUnit
@@ -32,9 +34,19 @@ class JCache<K : Any, V : Any>(
         }
     }
 
-    private fun refresh(key: K) = coroutineScope.launch(limitedDispatcher) {
+    private suspend fun refreshAndGet(key: K) = withContext(limitedDispatcher) {
         val updated = update.invoke(this, key)
-        cache.put(key, Data(updated))
+        val data = Data(updated)
+        cache.put(key, data)
+        data.data
+    }
+
+    private fun refresh(key: K) = coroutineScope.launch(limitedDispatcher) {
+        refreshAndGet(key)
+    }
+
+    suspend fun get(key: K): V {
+        return getIfPresent(key) ?: refreshAndGet(key)
     }
 
     fun getIfPresent(key: K): V? {
