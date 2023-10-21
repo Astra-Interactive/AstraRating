@@ -1,4 +1,4 @@
-package ru.astrainteractive.astrarating.integration.papi.coloring.Coloring
+package ru.astrainteractive.astrarating.integration.papi.coloring.coloring
 
 import ru.astrainteractive.astrarating.integration.papi.coloring.Coloring
 import ru.astrainteractive.astrarating.integration.papi.coloring.ColoringUtils
