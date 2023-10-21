@@ -2,7 +2,6 @@ package ru.astrainteractive.astrarating.api.rating.api
 
 import ru.astrainteractive.astrarating.dto.RatedUserDTO
 import ru.astrainteractive.astrarating.dto.RatingType
-import ru.astrainteractive.astrarating.dto.UserAndRating
 import ru.astrainteractive.astrarating.dto.UserDTO
 import ru.astrainteractive.astrarating.dto.UserRatingDTO
 import ru.astrainteractive.astrarating.model.UserModel
@@ -52,7 +51,7 @@ interface RatingDBApi {
      * Fetch user rating values
      * @param playerName - name of the player
      */
-    suspend fun fetchUserRatings(playerName: String): Result<List<UserAndRating>>
+    suspend fun fetchUserRatings(playerName: String): Result<List<UserRatingDTO>>
 
     /**
      * Fetch users overall ratings

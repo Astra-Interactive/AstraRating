@@ -146,15 +146,17 @@ class PlayerRatingsGUI(
                 continue
             }
             val userAndRating = list[index]
-            val color = if (userAndRating.rating.rating > 0) translation.positiveColor else translation.negativeColor
+            val color = if (userAndRating.rating > 0) translation.positiveColor else translation.negativeColor
             InventorySlot.Builder {
                 this.index = i
-                itemStack = PlayerHeadUtil.getHead(userAndRating.userCreatedReport.normalName).apply {
+                itemStack = PlayerHeadUtil.getHead(userAndRating.userCreatedReport?.normalName ?: "-").apply {
                     editMeta {
-                        it.setDisplayName(translation.playerNameColor + userAndRating.userCreatedReport.normalName)
+                        it.setDisplayName(
+                            translation.playerNameColor + (userAndRating.userCreatedReport?.normalName ?: "-")
+                        )
                         it.lore = mutableListOf<String>().apply {
                             subListFromString(
-                                "${translation.message} $color${userAndRating.rating.message}",
+                                "${translation.message} $color${userAndRating.message}",
                                 config.trimMessageAfter,
                                 config.cutWords
                             ).forEachIndexed { _, messagePart ->
@@ -164,7 +166,7 @@ class PlayerRatingsGUI(
                             if (config.gui.showFirstConnection) {
                                 val firstConnection = translation.firstConnection
                                 val time = TimeUtility.formatToString(
-                                    time = userAndRating.reportedPlayer.offlinePlayer.firstPlayed,
+                                    time = userAndRating.reportedUser.offlinePlayer.firstPlayed,
                                     format = config.gui.format
                                 )
                                 add("$firstConnection $time")
@@ -172,7 +174,7 @@ class PlayerRatingsGUI(
                             if (config.gui.showLastConnection) {
                                 val lastConnection = translation.lastConnection
                                 val time = TimeUtility.formatToString(
-                                    time = userAndRating.reportedPlayer.offlinePlayer.lastPlayed,
+                                    time = userAndRating.reportedUser.offlinePlayer.lastPlayed,
                                     format = config.gui.format
                                 )
                                 add("$lastConnection $time")

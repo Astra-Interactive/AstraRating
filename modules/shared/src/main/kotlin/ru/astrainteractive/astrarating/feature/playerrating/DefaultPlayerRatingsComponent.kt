@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.astrainteractive.astralibs.async.AsyncComponent
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
-import ru.astrainteractive.astrarating.dto.UserAndRating
+import ru.astrainteractive.astrarating.dto.UserRatingDTO
 import ru.astrainteractive.astrarating.model.PlayerModel
 import ru.astrainteractive.astrarating.model.UserRatingsSort
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
@@ -25,12 +25,12 @@ class DefaultPlayerRatingsComponent(
             val newSort = model.value.sort.next(UserRatingsSort.values())
             val previousUserRatings = model.value.userRatings
             val newUserRatings = when (newSort) {
-                UserRatingsSort.DATE_ASC -> previousUserRatings.sortedBy { it.rating.time }
-                UserRatingsSort.DATE_DESC -> previousUserRatings.sortedByDescending { it.rating.time }
-                UserRatingsSort.PLAYER_ASC -> previousUserRatings.sortedBy { it.userCreatedReport.id }
-                UserRatingsSort.PLAYER_DESC -> previousUserRatings.sortedByDescending { it.userCreatedReport.id }
-                UserRatingsSort.RATING_ASC -> previousUserRatings.sortedBy { it.rating.rating }
-                UserRatingsSort.RATING_DESC -> previousUserRatings.sortedBy { it.rating.rating }
+                UserRatingsSort.DATE_ASC -> previousUserRatings.sortedBy { it.time }
+                UserRatingsSort.DATE_DESC -> previousUserRatings.sortedByDescending { it.time }
+                UserRatingsSort.PLAYER_ASC -> previousUserRatings.sortedBy { it.userCreatedReport?.minecraftName }
+                UserRatingsSort.PLAYER_DESC -> previousUserRatings.sortedByDescending { it.userCreatedReport?.minecraftName }
+                UserRatingsSort.RATING_ASC -> previousUserRatings.sortedBy { it.rating }
+                UserRatingsSort.RATING_DESC -> previousUserRatings.sortedBy { it.rating }
             }
             model.update {
                 it.copy(
@@ -41,10 +41,10 @@ class DefaultPlayerRatingsComponent(
         }
     }
 
-    override fun onDeleteClicked(item: UserAndRating) {
+    override fun onDeleteClicked(item: UserRatingDTO) {
         componentScope.launch(dispatchers.IO) {
             model.update { it.copy(isLoading = true) }
-            dbApi.deleteUserRating(item.rating)
+            dbApi.deleteUserRating(item)
             model.update { it.copy(isLoading = false) }
             reload()
         }

@@ -16,7 +16,6 @@ import ru.astrainteractive.astrarating.db.rating.mapping.UserMapper
 import ru.astrainteractive.astrarating.db.rating.mapping.UserRatingMapper
 import ru.astrainteractive.astrarating.dto.RatedUserDTO
 import ru.astrainteractive.astrarating.dto.RatingType
-import ru.astrainteractive.astrarating.dto.UserAndRating
 import ru.astrainteractive.astrarating.dto.UserDTO
 import ru.astrainteractive.astrarating.dto.UserRatingDTO
 import ru.astrainteractive.astrarating.model.UserModel
@@ -25,8 +24,10 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.Date
 
-class RatingDBApiImpl(private val database: Database, private val pluginFolder: File) :
-    RatingDBApi {
+class RatingDBApiImpl(
+    private val database: Database,
+    private val pluginFolder: File
+) : RatingDBApi {
     private fun <T> Result<T>.logStackTrace(): Result<T> {
         return this.onFailure {
             val logsFolder = File(pluginFolder, "logs")
@@ -56,13 +57,13 @@ class RatingDBApiImpl(private val database: Database, private val pluginFolder: 
     override suspend fun insertUser(user: UserModel) = kotlin.runCatching {
         transaction(database) {
             UserTable.insertAndGetId {
-                it[UserTable.lastUpdated] = System.currentTimeMillis()
-                it[UserTable.minecraftUUID] = user.minecraftUUID.toString()
-                it[UserTable.minecraftName] = user.minecraftName.uppercase()
-                it[UserTable.discordID] = null
+                it[lastUpdated] = System.currentTimeMillis()
+                it[minecraftUUID] = user.minecraftUUID.toString()
+                it[minecraftName] = user.minecraftName.uppercase()
+                it[discordID] = null
             }.value
         }
-    }
+    }.logStackTrace()
 
     override suspend fun insertUserRating(
         reporter: UserDTO?,
@@ -73,12 +74,12 @@ class RatingDBApiImpl(private val database: Database, private val pluginFolder: 
     ) = kotlin.runCatching {
         transaction(database) {
             UserRatingTable.insertAndGetId {
-                it[UserRatingTable.userCreatedReport] = reporter?.id
-                it[UserRatingTable.reportedUser] = reported.id
-                it[UserRatingTable.rating] = ratingValue
+                it[userCreatedReport] = reporter?.id
+                it[reportedUser] = reported.id
+                it[rating] = ratingValue
                 it[UserRatingTable.message] = message
-                it[UserRatingTable.time] = System.currentTimeMillis()
-                it[UserRatingTable.ratingTypeIndex] = type.ordinal
+                it[time] = System.currentTimeMillis()
+                it[ratingTypeIndex] = type.ordinal
             }.value
         }
     }.logStackTrace()
@@ -96,14 +97,7 @@ class RatingDBApiImpl(private val database: Database, private val pluginFolder: 
         transaction(database) {
             UserRatingDAO.find {
                 UserRatingTable.reportedUser.eq(reportedUser.id)
-            }.mapNotNull {
-                val userCreatedReport = it.userCreatedReport?.let(UserMapper::toDTO) ?: return@mapNotNull null
-                UserAndRating(
-                    reportedPlayer = it.reportedUser.let(UserMapper::toDTO),
-                    userCreatedReport = userCreatedReport,
-                    rating = UserRatingMapper.toDTO(it)
-                )
-            }
+            }.map(UserRatingMapper::toDTO)
         }
     }.logStackTrace()
 

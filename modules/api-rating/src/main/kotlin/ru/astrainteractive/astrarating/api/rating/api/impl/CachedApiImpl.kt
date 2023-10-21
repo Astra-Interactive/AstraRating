@@ -18,7 +18,7 @@ class CachedApiImpl(
         coroutineScope = scope,
         update = { playerData ->
             val rating = databaseApi.fetchUserRatings(playerData.name).getOrNull()?.sumOf {
-                it.rating.rating
+                it.rating
             } ?: 0
             RatingData(rating)
         }
