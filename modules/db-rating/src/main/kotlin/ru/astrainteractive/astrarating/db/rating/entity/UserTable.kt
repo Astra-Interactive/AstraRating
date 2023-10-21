@@ -1,23 +1,23 @@
 package ru.astrainteractive.astrarating.db.rating.entity
 
-import ru.astrainteractive.astralibs.orm.database.Column
-import ru.astrainteractive.astralibs.orm.database.Constructable
-import ru.astrainteractive.astralibs.orm.database.Entity
-import ru.astrainteractive.astralibs.orm.database.Table
+import org.jetbrains.exposed.dao.LongEntity
+import org.jetbrains.exposed.dao.LongEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.dao.id.LongIdTable
 
-object UserTable : Table<Int>("users") {
-    override val id: Column<Int> = integer("user_id").primaryKey().autoIncrement()
-    val minecraftUUID = varchar("minecraft_uuid", 64).unique()
-    val minecraftName = varchar("minecraft_name", 64).unique()
-    val discordID = varchar("discord_id", 64).unique().nullable()
-    val lastUpdated = bigint("last_updated")
+object UserTable : LongIdTable("users", "user_id") {
+    val minecraftUUID = varchar("minecraft_uuid", 64).uniqueIndex()
+    val minecraftName = varchar("minecraft_name", 64).uniqueIndex()
+    val discordID = varchar("discord_id", 64).uniqueIndex().nullable()
+    val lastUpdated = long("last_updated")
 }
 
-class UserEntity : Entity<Int>(UserTable) {
-    val id by UserTable.id
+class UserDAO(id: EntityID<Long>) : LongEntity(id) {
     val minecraftUUID by UserTable.minecraftUUID
     val minecraftName by UserTable.minecraftName
     var discordID by UserTable.discordID
     var lastUpdated by UserTable.lastUpdated
-    companion object : Constructable<UserEntity>(::UserEntity)
+    val rating by UserRatingDAO referrersOn UserRatingTable.reportedUser
+
+    companion object : LongEntityClass<UserDAO>(UserTable)
 }

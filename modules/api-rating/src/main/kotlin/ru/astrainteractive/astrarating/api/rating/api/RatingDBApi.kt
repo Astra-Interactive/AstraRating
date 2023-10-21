@@ -23,7 +23,7 @@ interface RatingDBApi {
      * Insert new user model into database
      * @param user - user model
      */
-    suspend fun insertUser(user: UserModel): Result<Int>
+    suspend fun insertUser(user: UserModel): Result<Long>
 
     /**
      * Insert user rating value into database
@@ -39,7 +39,7 @@ interface RatingDBApi {
         message: String,
         type: RatingType,
         ratingValue: Int
-    ): Result<Int>
+    ): Result<Long>
 
     /**
      * Delete user rating entry
@@ -62,7 +62,7 @@ interface RatingDBApi {
      * Count how much player rated during past 24h
      * @param playerName name of the player
      */
-    suspend fun countPlayerTotalDayRated(playerName: String): Result<Int>
+    suspend fun countPlayerTotalDayRated(playerName: String): Result<Long>
 
     /**
      * Count how much player [playerName] reated on [ratedPlayerName] during 24h
@@ -72,5 +72,5 @@ interface RatingDBApi {
     suspend fun countPlayerOnPlayerDayRated(
         playerName: String,
         ratedPlayerName: String
-    ): Result<Int>
+    ): Result<Long>
 }

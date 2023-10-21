@@ -14,7 +14,8 @@ import ru.astrainteractive.astrarating.AstraRating
 import ru.astrainteractive.astrarating.api.rating.api.impl.RatingDBApiImpl
 import ru.astrainteractive.astrarating.api.rating.usecase.InsertUserUseCase
 import ru.astrainteractive.astrarating.command.di.CommandsModule
-import ru.astrainteractive.astrarating.db.rating.di.factory.DBFactory
+import ru.astrainteractive.astrarating.db.rating.di.factory.RatingDatabaseFactory
+import ru.astrainteractive.astrarating.db.rating.model.DBConnection
 import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.astrarating.event.EventManager
 import ru.astrainteractive.astrarating.event.di.EventModule
@@ -29,6 +30,7 @@ import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.Reloadable
 import ru.astrainteractive.klibs.kdi.Single
 import ru.astrainteractive.klibs.kdi.getValue
+import java.io.File
 
 class RootModuleImpl : RootModule {
     // Core
@@ -88,7 +90,21 @@ class RootModuleImpl : RootModule {
     }
     override val database = Single {
         val plugin by plugin
-        DBFactory(plugin.dataFolder, config.value.databaseConnection).create()
+        RatingDatabaseFactory(
+            dbConnection = when (val mysql = config.value.databaseConnection.mysql) {
+                null -> {
+                    DBConnection.SQLite("${plugin.dataFolder}${File.separator}data.db")
+                }
+
+                else -> {
+                    DBConnection.MySql(
+                        url = "jdbc:mysql://${mysql.host}:${mysql.port}/${mysql.database}",
+                        user = mysql.username,
+                        password = mysql.password
+                    )
+                }
+            }
+        ).create()
     }
 
     override val dbApi = Single {

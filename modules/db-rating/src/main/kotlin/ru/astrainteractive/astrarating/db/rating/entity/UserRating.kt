@@ -1,27 +1,26 @@
 package ru.astrainteractive.astrarating.db.rating.entity
 
-import ru.astrainteractive.astralibs.orm.database.Column
-import ru.astrainteractive.astralibs.orm.database.Constructable
-import ru.astrainteractive.astralibs.orm.database.Entity
-import ru.astrainteractive.astralibs.orm.database.Table
+import org.jetbrains.exposed.dao.LongEntity
+import org.jetbrains.exposed.dao.LongEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.dao.id.LongIdTable
 
-object UserRatingTable : Table<Int>("users_ratings") {
-    override val id: Column<Int> = integer("user_rating_id").primaryKey().autoIncrement()
-    val userCreatedReport = integer("user_created_report").nullable()
-    val reportedUser = integer("reported_user")
+object UserRatingTable : LongIdTable("users_ratings", "user_rating_id") {
+    val userCreatedReport = reference("user_created_report", UserTable).nullable()
+    val reportedUser = reference("reported_user", UserTable)
     val rating = integer("rating")
     val ratingTypeIndex = integer("rating_type_index")
-    val message = text("message", 4096)
-    val time = bigint("time")
+    val message = text("message")
+    val time = long("time")
 }
 
-class UserRatingEntity : Entity<Int>(UserRatingTable) {
-    val id by UserRatingTable.id
-    val userCreatedReport: Int? by UserRatingTable.userCreatedReport
-    val reportedUser by UserRatingTable.reportedUser
+class UserRatingDAO(id: EntityID<Long>) : LongEntity(id) {
+    companion object : LongEntityClass<UserRatingDAO>(UserRatingTable)
+
+    val userCreatedReport by UserDAO optionalReferencedOn UserRatingTable.userCreatedReport
+    val reportedUser by UserDAO referencedOn UserRatingTable.reportedUser
     val rating by UserRatingTable.rating
     val ratingTypeIndex by UserRatingTable.ratingTypeIndex
     val message by UserRatingTable.message
     val time by UserRatingTable.time
-    companion object : Constructable<UserRatingEntity>(::UserRatingEntity)
 }

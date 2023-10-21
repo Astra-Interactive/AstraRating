@@ -1,11 +1,11 @@
 package ru.astrainteractive.astrarating.di
 
 import org.bstats.bukkit.Metrics
+import org.jetbrains.exposed.sql.Database
 import ru.astrainteractive.astralibs.async.AsyncComponent
 import ru.astrainteractive.astralibs.async.BukkitDispatchers
 import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.astralibs.filemanager.SpigotFileManager
-import ru.astrainteractive.astralibs.orm.Database
 import ru.astrainteractive.astrarating.AstraRating
 import ru.astrainteractive.astrarating.api.rating.api.CachedApi
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi

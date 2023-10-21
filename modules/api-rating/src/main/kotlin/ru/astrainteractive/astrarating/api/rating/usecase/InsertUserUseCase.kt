@@ -13,10 +13,10 @@ import java.util.UUID
 class InsertUserUseCase(
     private val databaseApi: RatingDBApi,
     val discordIDProvider: (UUID) -> String?
-) : UseCase.Parametrized<UserModel, Int?> {
+) : UseCase.Parametrized<UserModel, Long?> {
     private val discordUsers = mutableMapOf<String, String>()
 
-    override suspend operator fun invoke(input: UserModel): Int? {
+    override suspend operator fun invoke(input: UserModel): Long? {
         val uuid = input.minecraftUUID.toString()
         val discordID = discordUsers[uuid] ?: discordIDProvider(input.minecraftUUID)?.let {
             discordUsers[uuid] = it

@@ -1,9 +1,9 @@
 package ru.astrainteractive.astrarating.dto
 
 data class UserRatingDTO(
-    val id: Int,
-    val userCreatedReport: Int?,
-    val reportedUser: Int,
+    val id: Long,
+    val userCreatedReport: UserDTO?,
+    val reportedUser: UserDTO,
     val rating: Int,
     val message: String,
     val ratingType: RatingType,

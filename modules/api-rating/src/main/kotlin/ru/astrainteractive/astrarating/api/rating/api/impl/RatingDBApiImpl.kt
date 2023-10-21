@@ -1,14 +1,15 @@
 package ru.astrainteractive.astrarating.api.rating.api.impl
 
-import ru.astrainteractive.astralibs.orm.Database
-import ru.astrainteractive.astralibs.orm.firstOrNull
-import ru.astrainteractive.astralibs.orm.mapNotNull
-import ru.astrainteractive.astralibs.orm.query.CountQuery
-import ru.astrainteractive.astralibs.orm.query.SelectQuery
-import ru.astrainteractive.astralibs.orm.with
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
-import ru.astrainteractive.astrarating.db.rating.entity.UserEntity
-import ru.astrainteractive.astrarating.db.rating.entity.UserRatingEntity
+import ru.astrainteractive.astrarating.db.rating.entity.UserDAO
+import ru.astrainteractive.astrarating.db.rating.entity.UserRatingDAO
 import ru.astrainteractive.astrarating.db.rating.entity.UserRatingTable
 import ru.astrainteractive.astrarating.db.rating.entity.UserTable
 import ru.astrainteractive.astrarating.db.rating.mapping.UserMapper
@@ -36,32 +37,31 @@ class RatingDBApiImpl(private val database: Database, private val pluginFolder: 
         }
     }
 
-    private val String.sqlString: String
-        get() = "\"$this\""
-
     override suspend fun selectUser(playerName: String): Result<UserDTO> = kotlin.runCatching {
-        UserTable.find(database, constructor = UserEntity) {
-            UserTable.minecraftName.eq(playerName.uppercase())
-        }.map(UserMapper::toDTO).first()
+        transaction(database) {
+            UserDAO.find {
+                UserTable.minecraftName.eq(playerName.uppercase())
+            }.first().let(UserMapper::toDTO)
+        }
     }.logStackTrace()
 
     override suspend fun updateUser(user: UserDTO) = kotlin.runCatching {
-        val userEntity = UserTable.find(database, constructor = UserEntity) {
-            UserTable.id.eq(user.id)
-        }.firstOrNull()
-        userEntity?.lastUpdated = System.currentTimeMillis()
-        user.discordID?.let { userEntity?.discordID = it }
-        userEntity?.let { UserTable.update(database, entity = it) }
+        transaction(database) {
+            val userDao = UserDAO.findById(user.id) ?: error("User not found!")
+            userDao.lastUpdated = System.currentTimeMillis()
+        }
     }.logStackTrace()
 
     override suspend fun insertUser(user: UserModel) = kotlin.runCatching {
-        UserTable.insert(database) {
-            this[UserTable.lastUpdated] = System.currentTimeMillis()
-            this[UserTable.minecraftUUID] = user.minecraftUUID.toString()
-            this[UserTable.minecraftName] = user.minecraftName.uppercase()
-            this[UserTable.discordID] = null
+        transaction(database) {
+            UserTable.insertAndGetId {
+                it[UserTable.lastUpdated] = System.currentTimeMillis()
+                it[UserTable.minecraftUUID] = user.minecraftUUID.toString()
+                it[UserTable.minecraftName] = user.minecraftName.uppercase()
+                it[UserTable.discordID] = null
+            }.value
         }
-    }.logStackTrace()
+    }
 
     override suspend fun insertUserRating(
         reporter: UserDTO?,
@@ -70,97 +70,74 @@ class RatingDBApiImpl(private val database: Database, private val pluginFolder: 
         type: RatingType,
         ratingValue: Int
     ) = kotlin.runCatching {
-        UserRatingTable.insert(database) {
-            this[UserRatingTable.userCreatedReport] = reporter?.id
-            this[UserRatingTable.reportedUser] = reported.id
-            this[UserRatingTable.rating] = ratingValue
-            this[UserRatingTable.message] = message
-            this[UserRatingTable.time] = System.currentTimeMillis()
-            this[UserRatingTable.ratingTypeIndex] = type.ordinal
+        transaction(database) {
+            UserRatingTable.insertAndGetId {
+                it[UserRatingTable.userCreatedReport] = reporter?.id
+                it[UserRatingTable.reportedUser] = reported.id
+                it[UserRatingTable.rating] = ratingValue
+                it[UserRatingTable.message] = message
+                it[UserRatingTable.time] = System.currentTimeMillis()
+                it[UserRatingTable.ratingTypeIndex] = type.ordinal
+            }.value
         }
     }.logStackTrace()
 
     override suspend fun deleteUserRating(it: UserRatingDTO) = kotlin.runCatching {
-        UserRatingTable.delete<UserRatingEntity>(database) {
-            UserRatingTable.id.eq(it.id)
+        transaction(database) {
+            UserRatingTable.deleteWhere { _ ->
+                UserRatingTable.id.eq(it.id)
+            }
         }
     }.logStackTrace()
 
     override suspend fun fetchUserRatings(playerName: String) = kotlin.runCatching {
-        val query = """
-            SELECT * FROM ${UserRatingTable.tableName} A 
-            JOIN ${UserTable.tableName} B on A.${UserRatingTable.userCreatedReport.name}=B.${UserTable.id.name} WHERE A.${UserRatingTable.reportedUser.name}=
-            (SELECT ${UserTable.id.name} FROM ${UserTable.tableName} WHERE ${UserTable.minecraftName.name}=${playerName.sqlString?.uppercase()} LIMIT 1)
-        """.trimIndent()
-        val reportedUser = UserTable.find(database, constructor = UserEntity) {
-            UserTable.minecraftName.eq(playerName.uppercase())
-        }.firstOrNull()?.let(UserMapper::toDTO)
-        checkNotNull(reportedUser) { "Reported user not found" }
-        val statement = database.connection?.createStatement()
-        val rs = statement?.executeQuery(query)
-        val result = rs?.mapNotNull {
-            UserAndRating(
-                reportedUser,
-                UserTable.wrap(it, UserEntity).let(UserMapper::toDTO),
-                UserRatingTable.wrap(it, UserRatingEntity).let(UserRatingMapper::toDTO),
-            )
+        val reportedUser = selectUser(playerName).getOrThrow()
+        transaction(database) {
+            UserRatingDAO.find {
+                UserRatingTable.reportedUser.eq(reportedUser.id)
+            }.mapNotNull {
+                val userCreatedReport = it.userCreatedReport?.let(UserMapper::toDTO) ?: return@mapNotNull null
+                UserAndRating(
+                    reportedPlayer = it.reportedUser.let(UserMapper::toDTO),
+                    userCreatedReport = userCreatedReport,
+                    rating = UserRatingMapper.toDTO(it)
+                )
+            }
         }
-        statement?.close()
-        result ?: emptyList()
     }.logStackTrace()
 
     override suspend fun fetchUsersTotalRating() = kotlin.runCatching {
-        val query = """
-            SELECT *, SUM(A.${UserRatingTable.rating.name}) rating__ FROM ${UserRatingTable.tableName} A 
-            JOIN ${UserTable.tableName} B on A.${UserRatingTable.reportedUser.name}=B.${UserTable.id.name} GROUP BY ${UserTable.minecraftName.name}
-        """.trimIndent()
-        val statement = database.connection?.createStatement()
-        val rs = statement?.executeQuery(query)
-        val result = rs?.mapNotNull {
-            val rating = it.getInt("rating__")
-            UserAndRating(
-                UserTable.wrap(it, UserEntity).let(UserMapper::toDTO),
-                UserDTO(-1, "", "", "", System.currentTimeMillis()),
-                UserRatingTable.wrap(it, UserRatingEntity).let(UserRatingMapper::toDTO).copy(rating = rating),
-            )
+        transaction(database) {
+            UserRatingDAO.all().mapNotNull {
+                val userCreatedReport = it.userCreatedReport?.let(UserMapper::toDTO) ?: return@mapNotNull null
+                UserAndRating(
+                    reportedPlayer = it.reportedUser.let(UserMapper::toDTO),
+                    userCreatedReport = userCreatedReport,
+                    rating = UserRatingMapper.toDTO(it)
+                )
+            }
         }
-        statement?.close()
-        result ?: emptyList()
     }.logStackTrace()
 
     override suspend fun countPlayerTotalDayRated(playerName: String) = kotlin.runCatching {
-        val query = CountQuery(UserRatingTable) {
-            UserRatingTable.userCreatedReport.eq {
-                SelectQuery(UserTable, UserTable.id) {
-                    UserTable.minecraftName.eq(playerName.uppercase()).and {
-                        UserRatingTable.time.more(System.currentTimeMillis() - 24 * 60 * 60 * 1000)
-                    }
+        transaction(database) {
+            UserTable.select {
+                UserTable.minecraftName.eq(playerName.uppercase()).and {
+                    UserRatingTable.time.greater(System.currentTimeMillis() - 24 * 60 * 60 * 1000)
                 }
-            }
-        }.generate()
-        database.connection?.createStatement()?.with {
-            executeQuery(query)?.firstOrNull {
-                it.getInt("total")
-            } ?: 0
-        } ?: 0
+            }.count()
+        }
     }.logStackTrace()
 
     override suspend fun countPlayerOnPlayerDayRated(playerName: String, ratedPlayerName: String) = kotlin.runCatching {
-        val query = CountQuery(UserRatingTable) {
-            UserRatingTable.userCreatedReport.eq {
-                SelectQuery(UserTable, UserTable.id) {
-                    UserTable.minecraftName.eq(playerName.uppercase())
-                }
-            }.andQuery {
-                SelectQuery(UserTable, UserTable.id) {
-                    UserTable.minecraftName.eq(ratedPlayerName.uppercase())
-                }
-            }.and(UserRatingTable.time.more(System.currentTimeMillis() - 24 * 60 * 60 * 1000))
-        }.generate()
-        database.connection?.createStatement()?.with {
-            executeQuery(query)?.firstOrNull {
-                it.getInt("total")
-            } ?: 0
-        } ?: 0
+        val playerCreatedReport = selectUser(playerName).getOrThrow()
+        val ratedPlayer = selectUser(ratedPlayerName).getOrThrow()
+        transaction(database) {
+            UserRatingTable.select {
+                UserRatingTable.userCreatedReport
+                    .eq(playerCreatedReport.id)
+                    .and { UserRatingTable.reportedUser.eq(ratedPlayer.id) }
+            }.count()
+        }
     }.logStackTrace()
 }
