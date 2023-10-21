@@ -110,6 +110,8 @@ class RatingsGUI(
     override fun onCreated() {
         allRatingsComponent.model.collectOn(Dispatchers.IO) {
             if (it.isLoading) {
+                inventory.clear()
+                setManageButtons(clickListener)
                 loadingIndicator.display()
             } else {
                 loadingIndicator.stop()

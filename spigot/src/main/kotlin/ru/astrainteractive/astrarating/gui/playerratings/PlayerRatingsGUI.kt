@@ -127,6 +127,8 @@ class PlayerRatingsGUI(
     override fun onCreated() {
         playerRatingsComponent.model.collectOn(dispatchers.BukkitMain) {
             if (it.isLoading) {
+                inventory.clear()
+                setManageButtons(clickListener)
                 loadingIndicator.display()
             } else {
                 loadingIndicator.stop()
