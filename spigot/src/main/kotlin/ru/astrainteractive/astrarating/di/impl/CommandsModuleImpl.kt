@@ -5,7 +5,6 @@ import ru.astrainteractive.astrarating.AstraRating
 import ru.astrainteractive.astrarating.command.di.CommandsModule
 import ru.astrainteractive.astrarating.command.rating.RatingCommandController
 import ru.astrainteractive.astrarating.di.RootModule
-import ru.astrainteractive.astrarating.gui.ratings.RatingsGUI
 import ru.astrainteractive.klibs.kdi.Factory
 import ru.astrainteractive.klibs.kdi.Single
 import ru.astrainteractive.klibs.kdi.getValue
@@ -20,7 +19,7 @@ class CommandsModuleImpl(private val rootModule: RootModule) : CommandsModule {
     override val dbApi = rootModule.apiRatingModule.ratingDBApi
     override val insertUseCase = rootModule.apiRatingModule.insertUserUseCase
     override fun ratingsGUIFactory(player: Player) = Factory {
-        RatingsGUI(player, rootModule.guiModule)
+        rootModule.guiModule.playerRatingsGuiFactory(player).create()
     }
 
     override val ratingCommandController by Single {

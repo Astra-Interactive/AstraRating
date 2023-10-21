@@ -14,12 +14,10 @@ import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
 import ru.astrainteractive.astralibs.menu.menu.InventorySlot
 import ru.astrainteractive.astralibs.menu.menu.MenuSize
 import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
-import ru.astrainteractive.astrarating.feature.playerrating.DefaultPlayerRatingsComponent
 import ru.astrainteractive.astrarating.feature.playerrating.PlayerRatingsComponent
 import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
 import ru.astrainteractive.astrarating.gui.playerratings.di.PlayerRatingGuiModule
 import ru.astrainteractive.astrarating.gui.util.PlayerHeadUtil
-import ru.astrainteractive.astrarating.model.PlayerModel
 import ru.astrainteractive.astrarating.plugin.AstraPermission
 import ru.astrainteractive.astrarating.util.TimeUtility
 import ru.astrainteractive.astrarating.util.desc
@@ -31,21 +29,13 @@ import ru.astrainteractive.astrarating.util.toItemStack
 class PlayerRatingsGUI(
     selectedPlayer: OfflinePlayer,
     player: Player,
-    private val module: PlayerRatingGuiModule
+    private val module: PlayerRatingGuiModule,
+    private val playerRatingsComponent: PlayerRatingsComponent
 ) : PaginatedMenu(), PlayerRatingGuiModule by module {
 
     private val loadingIndicator = LoadingIndicator(menu = this, translation = translation)
     private val clickListener = MenuClickListener()
     override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
-
-    private val playerRatingsComponent: PlayerRatingsComponent = DefaultPlayerRatingsComponent(
-        playerModel = PlayerModel(
-            uuid = selectedPlayer.uniqueId,
-            name = selectedPlayer.name ?: selectedPlayer.uniqueId.toString()
-        ),
-        dbApi = module.dbApi,
-        dispatchers = module.dispatchers
-    )
 
     override var menuTitle: String = translation.playerRatingTitle.replace("%player%", selectedPlayer.name ?: "")
     override val menuSize: MenuSize = MenuSize.XL

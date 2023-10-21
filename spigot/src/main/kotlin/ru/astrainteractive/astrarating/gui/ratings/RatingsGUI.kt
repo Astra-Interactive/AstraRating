@@ -15,7 +15,6 @@ import ru.astrainteractive.astralibs.menu.menu.InventorySlot
 import ru.astrainteractive.astralibs.menu.menu.MenuSize
 import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
 import ru.astrainteractive.astrarating.feature.allrating.AllRatingsComponent
-import ru.astrainteractive.astrarating.feature.allrating.DefaultAllRatingsComponent
 import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
 import ru.astrainteractive.astrarating.gui.ratings.di.RatingsGUIModule
 import ru.astrainteractive.astrarating.gui.util.PlayerHeadUtil
@@ -29,12 +28,8 @@ import java.util.*
 class RatingsGUI(
     player: Player,
     private val module: RatingsGUIModule,
+    private val allRatingsComponent: AllRatingsComponent
 ) : PaginatedMenu(), RatingsGUIModule by module {
-
-    private val allRatingsComponent: AllRatingsComponent = DefaultAllRatingsComponent(
-        repository = allRatingsRepository,
-        dispatchers = module.dispatchers
-    )
     private val loadingIndicator = LoadingIndicator(menu = this, translation = translation)
 
     private val clickListener = MenuClickListener()

@@ -7,8 +7,7 @@ import ru.astrainteractive.astrarating.db.rating.di.DBRatingModule
 import ru.astrainteractive.astrarating.db.rating.model.DBConnection
 import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.astrarating.di.ServicesModule
-import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsRepository
-import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsRepositoryImpl
+import ru.astrainteractive.astrarating.feature.di.SharedModule
 import ru.astrainteractive.astrarating.gui.di.GuiModule
 import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
 import ru.astrainteractive.klibs.kdi.Provider
@@ -71,14 +70,11 @@ class RootModuleImpl : RootModule {
         }.getOrNull()
     }
 
-    // Domain
-    override val allRatingsRepository: Single<AllRatingsRepository> = Single {
-        val scope by servicesModule.scope
-        val dispatchers by servicesModule.dispatchers
-        AllRatingsRepositoryImpl(
-            dbApi = apiRatingModule.ratingDBApi,
-            coroutineScope = scope,
-            dispatchers = dispatchers
+    override val sharedModule: SharedModule by Single {
+        SharedModule.Default(
+            apiRatingModule = apiRatingModule,
+            dispatchers = servicesModule.dispatchers.value,
+            coroutineScope = servicesModule.scope.value
         )
     }
 }
