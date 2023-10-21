@@ -44,9 +44,7 @@ class PlayerRatingsGUI(
 
     private val slotContext = object : SlotContext {
         override val translation: PluginTranslation = module.translation
-        override val config: EmpireConfig by Provider {
-            config
-        }
+        override val config: EmpireConfig = module.config
     }
 
     private val navigationSlots = NavigationSlots(

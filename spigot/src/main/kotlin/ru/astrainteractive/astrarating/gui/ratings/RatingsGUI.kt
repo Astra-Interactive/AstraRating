@@ -42,9 +42,7 @@ class RatingsGUI(
 
     private val slotContext = object : SlotContext {
         override val translation: PluginTranslation = module.translation
-        override val config: EmpireConfig by Provider {
-            config
-        }
+        override val config: EmpireConfig = module.config
     }
 
     private val navigationSlots = NavigationSlots(
@@ -136,20 +134,20 @@ class RatingsGUI(
                             if (config.gui.showFirstConnection) {
                                 add(
                                     "${translation.firstConnection} ${
-                                    TimeUtility.formatToString(
-                                        time = userAndRating.userDTO.offlinePlayer.firstPlayed,
-                                        format = config.gui.format
-                                    )
+                                        TimeUtility.formatToString(
+                                            time = userAndRating.userDTO.offlinePlayer.firstPlayed,
+                                            format = config.gui.format
+                                        )
                                     }"
                                 )
                             }
                             if (config.gui.showLastConnection) {
                                 add(
                                     "${translation.lastConnection} ${
-                                    TimeUtility.formatToString(
-                                        time = userAndRating.userDTO.offlinePlayer.lastPlayed,
-                                        format = config.gui.format
-                                    )
+                                        TimeUtility.formatToString(
+                                            time = userAndRating.userDTO.offlinePlayer.lastPlayed,
+                                            format = config.gui.format
+                                        )
                                     }"
                                 )
                             }
