@@ -12,7 +12,7 @@ import ru.astrainteractive.astrarating.db.rating.entity.UserTable
 import ru.astrainteractive.astrarating.db.rating.model.DBConnection
 import ru.astrainteractive.klibs.kdi.Factory
 
-internal class RatingDatabaseFactory(
+class RatingDatabaseFactory(
     private val dbConnection: DBConnection
 ) : Factory<Database> {
     override fun create(): Database {

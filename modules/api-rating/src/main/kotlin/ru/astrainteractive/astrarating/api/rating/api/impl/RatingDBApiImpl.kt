@@ -103,7 +103,7 @@ internal class RatingDBApiImpl(
 
     override suspend fun fetchUsersTotalRating() = kotlin.runCatching {
         transaction(database) {
-            UserDAO.all().map {
+            UserDAO.all().filter { !it.rating.empty() }.map {
                 val reportedPlayer = it.let(UserMapper::toDTO)
                 RatedUserDTO(
                     userDTO = reportedPlayer,

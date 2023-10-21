@@ -1,11 +1,14 @@
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
-import ru.astrainteractive.astralibs.orm.Database
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
-import ru.astrainteractive.astrarating.api.rating.api.impl.RatingDBApiImpl
-import ru.astrainteractive.astrarating.db.rating.entity.UserRatingTable
-import ru.astrainteractive.astrarating.db.rating.entity.UserTable
+import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
+import ru.astrainteractive.astrarating.db.rating.di.factory.RatingDatabaseFactory
+import ru.astrainteractive.astrarating.db.rating.model.DBConnection
 import ru.astrainteractive.astrarating.dto.RatingType
 import ru.astrainteractive.astrarating.model.UserModel
+import ru.astrainteractive.klibs.kdi.Provider
+import ru.astrainteractive.klibs.kdi.Reloadable
+import ru.astrainteractive.klibs.kdi.getValue
 import java.io.File
 import java.util.UUID
 import kotlin.test.AfterTest
@@ -14,11 +17,21 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-class AuctionsTests : ORMTest() {
-    private lateinit var api: RatingDBApi
-    private val dbName = "dbv2_auction.db"
+class AuctionsTests {
 
-    override val builder: () -> Database = Resource::getDatabase
+    private val dbName = "./dbv2_auction.db"
+
+    private val database = Reloadable {
+        RatingDatabaseFactory(DBConnection.SQLite(dbName)).create()
+    }
+
+    private val api: RatingDBApi by Provider {
+        ApiRatingModule.Default(
+            database = database.value,
+            coroutineScope = GlobalScope,
+            pluginFolder = File("./")
+        ).ratingDBApi
+    }
 
     val randomUser: UserModel
         get() = UserModel(
@@ -28,27 +41,20 @@ class AuctionsTests : ORMTest() {
         )
 
     @AfterTest
-    override fun destroy(): Unit = runBlocking {
-        val database = assertConnected()
-        UserTable.drop(database)
-        UserRatingTable.drop(database)
-        super.destroy()
+    fun destroy(): Unit = runBlocking {
+        database.value.connector.invoke().close()
     }
 
     @BeforeTest
-    override fun setup(): Unit = runBlocking {
-        super.setup()
-        val database = assertConnected()
-        File(dbName).delete()
-        database.openConnection()
-        UserTable.create(database)
-        UserRatingTable.create(database)
-        api = RatingDBApiImpl(database, File("."))
+    fun setup(): Unit = runBlocking {
+        File("./$dbName.db").delete()
+        database.value.connector.invoke().close()
+        database.reload()
+        database.value
     }
 
     @Test
     fun `Insert and select`(): Unit = runBlocking {
-        val database = assertConnected()
         val user = randomUser
         // Insert and select user
         val id = api.insertUser(user).getOrThrow()
@@ -108,7 +114,7 @@ class AuctionsTests : ORMTest() {
             assertNotNull(ratings)
             val rating = assertNotNull(ratings.firstOrNull())
 
-            assertEquals(2, rating.rating.rating)
+            assertEquals(2, rating.rating)
         }
     }
 }

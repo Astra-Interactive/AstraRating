@@ -4,7 +4,7 @@ import org.jetbrains.exposed.sql.Database
 import ru.astrainteractive.astrarating.db.rating.model.DBConnection
 import ru.astrainteractive.klibs.kdi.Factory
 
-internal class DatabaseFactory(
+class DatabaseFactory(
     private val dbConnection: DBConnection
 ) : Factory<Database> {
     override fun create(): Database {
