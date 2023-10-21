@@ -33,11 +33,13 @@ class DefaultAllRatingsComponent(
 
     init {
         componentScope.launch(dispatchers.IO) {
+            model.update { it.copy(isLoading = true) }
             val userRatings = dbApi.fetchUsersTotalRating().getOrDefault(emptyList())
             model.update {
                 it.copy(userRatings = userRatings)
             }
             onSortClicked()
+            model.update { it.copy(isLoading = false) }
         }
     }
 }

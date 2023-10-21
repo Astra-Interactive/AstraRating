@@ -78,6 +78,7 @@ class PluginTranslation(
     val sort: String = translationValue("menu.sort.sort", "#1B76CAСортировка")
     val rating: String = translationValue("menu.rating", "#1B76CAРейтинг")
     val message: String = translationValue("menu.message", "#1B76CAСообщение:")
+    val loading: String = translationValue("menu.loading", "#1B76CAЗагрузка...")
 
     // Events
     private val killedPlayer = translationValue("events.kill_player", "#9c0303Убил игрока %killed_player%")

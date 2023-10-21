@@ -16,6 +16,7 @@ import ru.astrainteractive.astralibs.menu.menu.MenuSize
 import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
 import ru.astrainteractive.astrarating.feature.allrating.AllRatingsComponent
 import ru.astrainteractive.astrarating.feature.allrating.DefaultAllRatingsComponent
+import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
 import ru.astrainteractive.astrarating.gui.ratings.di.RatingsGUIModule
 import ru.astrainteractive.astrarating.gui.util.PlayerHeadUtil
 import ru.astrainteractive.astrarating.util.TimeUtility
@@ -34,6 +35,7 @@ class RatingsGUI(
         dbApi = module.dbApi,
         dispatchers = module.dispatchers
     )
+    private val loadingIndicator = LoadingIndicator(menu = this, translation = translation)
 
     private val clickListener = MenuClickListener()
 
@@ -106,7 +108,14 @@ class RatingsGUI(
     }
 
     override fun onCreated() {
-        allRatingsComponent.model.collectOn(Dispatchers.IO) { setMenuItems() }
+        allRatingsComponent.model.collectOn(Dispatchers.IO) {
+            if (it.isLoading) {
+                loadingIndicator.display()
+            } else {
+                loadingIndicator.stop()
+                setMenuItems()
+            }
+        }
     }
 
     fun setMenuItems(model: AllRatingsComponent.Model = allRatingsComponent.model.value) {

@@ -13,6 +13,7 @@ interface PlayerRatingsComponent {
     data class Model(
         val playerModel: PlayerModel,
         val userRatings: List<UserAndRating> = emptyList(),
-        val sort: UserRatingsSort = UserRatingsSort.values().first()
+        val sort: UserRatingsSort = UserRatingsSort.values().first(),
+        val isLoading: Boolean = false
     )
 }

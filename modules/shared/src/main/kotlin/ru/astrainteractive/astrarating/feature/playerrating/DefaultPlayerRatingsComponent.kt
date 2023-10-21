@@ -43,18 +43,23 @@ class DefaultPlayerRatingsComponent(
 
     override fun onDeleteClicked(item: UserAndRating) {
         componentScope.launch(dispatchers.IO) {
+            model.update { it.copy(isLoading = true) }
             dbApi.deleteUserRating(item.rating)
+            model.update { it.copy(isLoading = false) }
+            reload()
         }
     }
 
     private fun reload() {
         componentScope.launch(dispatchers.IO) {
+            model.update { it.copy(isLoading = true) }
             val playerModel = model.value.playerModel
             val userRatings = dbApi.fetchUserRatings(playerModel.name).getOrDefault(emptyList())
             model.update {
                 it.copy(userRatings = userRatings)
             }
             onSortClicked()
+            model.update { it.copy(isLoading = false) }
         }
     }
 

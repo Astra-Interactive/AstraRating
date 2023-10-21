@@ -11,6 +11,7 @@ interface AllRatingsComponent {
 
     data class Model(
         val userRatings: List<UserAndRating> = emptyList(),
-        val sort: UsersRatingsSort = UsersRatingsSort.ASC
+        val sort: UsersRatingsSort = UsersRatingsSort.ASC,
+        val isLoading: Boolean = false
     )
 }

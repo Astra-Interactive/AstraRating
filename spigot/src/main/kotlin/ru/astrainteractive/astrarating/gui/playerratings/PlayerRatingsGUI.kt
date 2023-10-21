@@ -16,6 +16,7 @@ import ru.astrainteractive.astralibs.menu.menu.MenuSize
 import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
 import ru.astrainteractive.astrarating.feature.playerrating.DefaultPlayerRatingsComponent
 import ru.astrainteractive.astrarating.feature.playerrating.PlayerRatingsComponent
+import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
 import ru.astrainteractive.astrarating.gui.playerratings.di.PlayerRatingGuiModule
 import ru.astrainteractive.astrarating.gui.util.PlayerHeadUtil
 import ru.astrainteractive.astrarating.model.PlayerModel
@@ -33,6 +34,7 @@ class PlayerRatingsGUI(
     private val module: PlayerRatingGuiModule
 ) : PaginatedMenu(), PlayerRatingGuiModule by module {
 
+    private val loadingIndicator = LoadingIndicator(menu = this, translation = translation)
     private val clickListener = MenuClickListener()
     override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
 
@@ -124,7 +126,12 @@ class PlayerRatingsGUI(
 
     override fun onCreated() {
         playerRatingsComponent.model.collectOn(dispatchers.BukkitMain) {
-            setMenuItems()
+            if (it.isLoading) {
+                loadingIndicator.display()
+            } else {
+                loadingIndicator.stop()
+                setMenuItems()
+            }
         }
     }
 
