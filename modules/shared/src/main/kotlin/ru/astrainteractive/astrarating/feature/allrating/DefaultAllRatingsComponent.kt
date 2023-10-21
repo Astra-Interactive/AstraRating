@@ -19,9 +19,9 @@ class DefaultAllRatingsComponent(
         val nextSort = model.value.sort.next(UsersRatingsSort.values())
         val userRatings = model.value.userRatings
         val sortedUserRatings = if (nextSort == UsersRatingsSort.ASC) {
-            userRatings.sortedBy { it.rating.rating }
+            userRatings.sortedBy { it.rating }
         } else {
-            userRatings.sortedByDescending { it.rating.rating }
+            userRatings.sortedByDescending { it.rating }
         }
         model.update {
             it.copy(

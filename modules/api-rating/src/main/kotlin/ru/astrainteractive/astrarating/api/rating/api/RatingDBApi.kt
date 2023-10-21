@@ -1,5 +1,6 @@
 package ru.astrainteractive.astrarating.api.rating.api
 
+import ru.astrainteractive.astrarating.dto.RatedUserDTO
 import ru.astrainteractive.astrarating.dto.RatingType
 import ru.astrainteractive.astrarating.dto.UserAndRating
 import ru.astrainteractive.astrarating.dto.UserDTO
@@ -56,7 +57,7 @@ interface RatingDBApi {
     /**
      * Fetch users overall ratings
      */
-    suspend fun fetchUsersTotalRating(): Result<List<UserAndRating>>
+    suspend fun fetchUsersTotalRating(): Result<List<RatedUserDTO>>
 
     /**
      * Count how much player rated during past 24h

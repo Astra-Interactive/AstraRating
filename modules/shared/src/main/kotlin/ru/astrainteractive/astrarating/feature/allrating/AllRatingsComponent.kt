@@ -1,7 +1,7 @@
 package ru.astrainteractive.astrarating.feature.allrating
 
 import kotlinx.coroutines.flow.StateFlow
-import ru.astrainteractive.astrarating.dto.UserAndRating
+import ru.astrainteractive.astrarating.dto.RatedUserDTO
 import ru.astrainteractive.astrarating.model.UsersRatingsSort
 
 interface AllRatingsComponent {
@@ -10,7 +10,7 @@ interface AllRatingsComponent {
     fun close()
 
     data class Model(
-        val userRatings: List<UserAndRating> = emptyList(),
+        val userRatings: List<RatedUserDTO> = emptyList(),
         val sort: UsersRatingsSort = UsersRatingsSort.ASC,
         val isLoading: Boolean = false
     )

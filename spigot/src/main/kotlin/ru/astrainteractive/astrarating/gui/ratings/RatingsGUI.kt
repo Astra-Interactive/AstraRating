@@ -129,18 +129,18 @@ class RatingsGUI(
                 continue
             }
             val userAndRating = model.userRatings[index]
-            val color = if (userAndRating.rating.rating > 0) translation.positiveColor else translation.negativeColor
+            val color = if (userAndRating.rating > 0) translation.positiveColor else translation.negativeColor
             InventorySlot.Builder {
                 this.index = i
-                itemStack = PlayerHeadUtil.getHead(userAndRating.reportedPlayer.normalName).apply {
+                itemStack = PlayerHeadUtil.getHead(userAndRating.userDTO.normalName).apply {
                     editMeta {
-                        it.setDisplayName(translation.playerNameColor + userAndRating.reportedPlayer.normalName)
+                        it.setDisplayName(translation.playerNameColor + userAndRating.userDTO.normalName)
                         it.lore = mutableListOf<String>().apply {
                             if (config.gui.showFirstConnection) {
                                 add(
                                     "${translation.firstConnection} ${
                                     TimeUtility.formatToString(
-                                        time = userAndRating.reportedPlayer.offlinePlayer.firstPlayed,
+                                        time = userAndRating.userDTO.offlinePlayer.firstPlayed,
                                         format = config.gui.format
                                     )
                                     }"
@@ -150,20 +150,20 @@ class RatingsGUI(
                                 add(
                                     "${translation.lastConnection} ${
                                     TimeUtility.formatToString(
-                                        time = userAndRating.reportedPlayer.offlinePlayer.lastPlayed,
+                                        time = userAndRating.userDTO.offlinePlayer.lastPlayed,
                                         format = config.gui.format
                                     )
                                     }"
                                 )
                             }
-                            add("${translation.rating}: ${color}${userAndRating.rating.rating}")
+                            add("${translation.rating}: ${color}${userAndRating.rating}")
                         }
                     }
                 }
                 click = Click {
                     componentScope.launch(dispatchers.BukkitAsync) {
                         val inventory = module.allRatingsGuiFactory(
-                            Bukkit.getOfflinePlayer(UUID.fromString(userAndRating.reportedPlayer.minecraftUUID)),
+                            Bukkit.getOfflinePlayer(UUID.fromString(userAndRating.userDTO.minecraftUUID)),
                             playerHolder.player,
                         ).create()
                         withContext(dispatchers.BukkitMain) {

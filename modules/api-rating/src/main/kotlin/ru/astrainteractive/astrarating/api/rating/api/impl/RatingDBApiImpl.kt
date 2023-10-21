@@ -14,6 +14,7 @@ import ru.astrainteractive.astrarating.db.rating.entity.UserRatingTable
 import ru.astrainteractive.astrarating.db.rating.entity.UserTable
 import ru.astrainteractive.astrarating.db.rating.mapping.UserMapper
 import ru.astrainteractive.astrarating.db.rating.mapping.UserRatingMapper
+import ru.astrainteractive.astrarating.dto.RatedUserDTO
 import ru.astrainteractive.astrarating.dto.RatingType
 import ru.astrainteractive.astrarating.dto.UserAndRating
 import ru.astrainteractive.astrarating.dto.UserDTO
@@ -108,12 +109,11 @@ class RatingDBApiImpl(private val database: Database, private val pluginFolder: 
 
     override suspend fun fetchUsersTotalRating() = kotlin.runCatching {
         transaction(database) {
-            UserRatingDAO.all().mapNotNull {
-                val userCreatedReport = it.userCreatedReport?.let(UserMapper::toDTO) ?: return@mapNotNull null
-                UserAndRating(
-                    reportedPlayer = it.reportedUser.let(UserMapper::toDTO),
-                    userCreatedReport = userCreatedReport,
-                    rating = UserRatingMapper.toDTO(it)
+            UserDAO.all().map {
+                val reportedPlayer = it.let(UserMapper::toDTO)
+                RatedUserDTO(
+                    userDTO = reportedPlayer,
+                    rating = it.rating.sumOf { it.rating }
                 )
             }
         }
