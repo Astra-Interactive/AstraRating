@@ -1,4 +1,4 @@
-package ru.astrainteractive.astrarating.util
+package ru.astrainteractive.astrarating.gui.util
 
 import ru.astrainteractive.astrarating.plugin.PluginTranslation
 

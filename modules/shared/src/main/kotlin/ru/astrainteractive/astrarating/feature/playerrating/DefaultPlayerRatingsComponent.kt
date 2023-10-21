@@ -25,12 +25,29 @@ class DefaultPlayerRatingsComponent(
             val newSort = model.value.sort.next(UserRatingsSort.values())
             val previousUserRatings = model.value.userRatings
             val newUserRatings = when (newSort) {
-                UserRatingsSort.DATE_ASC -> previousUserRatings.sortedBy { it.time }
-                UserRatingsSort.DATE_DESC -> previousUserRatings.sortedByDescending { it.time }
-                UserRatingsSort.PLAYER_ASC -> previousUserRatings.sortedBy { it.userCreatedReport?.minecraftName }
-                UserRatingsSort.PLAYER_DESC -> previousUserRatings.sortedByDescending { it.userCreatedReport?.minecraftName }
-                UserRatingsSort.RATING_ASC -> previousUserRatings.sortedBy { it.rating }
-                UserRatingsSort.RATING_DESC -> previousUserRatings.sortedBy { it.rating }
+                UserRatingsSort.DATE_ASC -> previousUserRatings.sortedBy {
+                    it.time
+                }
+
+                UserRatingsSort.DATE_DESC -> previousUserRatings.sortedByDescending {
+                    it.time
+                }
+
+                UserRatingsSort.PLAYER_ASC -> previousUserRatings.sortedBy {
+                    it.userCreatedReport?.minecraftName
+                }
+
+                UserRatingsSort.PLAYER_DESC -> previousUserRatings.sortedByDescending {
+                    it.userCreatedReport?.minecraftName
+                }
+
+                UserRatingsSort.RATING_ASC -> previousUserRatings.sortedBy {
+                    it.rating
+                }
+
+                UserRatingsSort.RATING_DESC -> previousUserRatings.sortedBy {
+                    it.rating
+                }
             }
             model.update {
                 it.copy(

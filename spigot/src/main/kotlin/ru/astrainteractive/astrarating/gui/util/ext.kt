@@ -1,6 +1,6 @@
 @file:Suppress("Filename")
 
-package ru.astrainteractive.astrarating.util
+package ru.astrainteractive.astrarating.gui.util
 
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack

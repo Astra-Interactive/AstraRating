@@ -17,12 +17,17 @@ import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
 import ru.astrainteractive.astrarating.feature.allrating.AllRatingsComponent
 import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
 import ru.astrainteractive.astrarating.gui.ratings.di.RatingsGUIModule
+import ru.astrainteractive.astrarating.gui.slot.NavigationSlots
+import ru.astrainteractive.astrarating.gui.slot.SlotContext
+import ru.astrainteractive.astrarating.gui.slot.SortSlots
 import ru.astrainteractive.astrarating.gui.util.PlayerHeadUtil
-import ru.astrainteractive.astrarating.util.TimeUtility
-import ru.astrainteractive.astrarating.util.desc
-import ru.astrainteractive.astrarating.util.normalName
-import ru.astrainteractive.astrarating.util.offlinePlayer
-import ru.astrainteractive.astrarating.util.toItemStack
+import ru.astrainteractive.astrarating.gui.util.TimeUtility
+import ru.astrainteractive.astrarating.gui.util.normalName
+import ru.astrainteractive.astrarating.gui.util.offlinePlayer
+import ru.astrainteractive.astrarating.model.EmpireConfig
+import ru.astrainteractive.astrarating.plugin.PluginTranslation
+import ru.astrainteractive.klibs.kdi.Provider
+import ru.astrainteractive.klibs.kdi.getValue
 import java.util.*
 
 class RatingsGUI(
@@ -30,62 +35,57 @@ class RatingsGUI(
     private val module: RatingsGUIModule,
     private val allRatingsComponent: AllRatingsComponent
 ) : PaginatedMenu(), RatingsGUIModule by module {
+
     private val loadingIndicator = LoadingIndicator(menu = this, translation = translation)
 
     private val clickListener = MenuClickListener()
 
+    private val slotContext = object : SlotContext {
+        override val translation: PluginTranslation = module.translation
+        override val config: EmpireConfig by Provider {
+            config
+        }
+    }
+
+    private val navigationSlots = NavigationSlots(
+        slotContext = slotContext,
+        menu = this
+    )
+
+    private val sortSlots = SortSlots(
+        slotContext = slotContext,
+        menu = this
+    )
+
     override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
 
     override var menuTitle: String = translation.ratingsTitle
+
     override val menuSize: MenuSize = MenuSize.XL
 
-    override val backPageButton = InventorySlot.Builder {
-        index = 49
-        itemStack = config.gui.buttons.back.toItemStack().apply {
-            editMeta {
-                it.setDisplayName(translation.menuClose)
-            }
-        }
-        click = Click { inventory.close() }
+    override val backPageButton by Provider {
+        navigationSlots.backPageSlot { inventory.close() }
     }
-    override val nextPageButton = InventorySlot.Builder {
-        index = 53
-        itemStack = config.gui.buttons.next.toItemStack().apply {
-            editMeta {
-                it.setDisplayName(translation.menuNextPage)
-            }
-        }
-        click = Click { showPage(page + 1) }
+
+    override val nextPageButton by Provider {
+        navigationSlots.nextPageSlot
     }
-    override val prevPageButton = InventorySlot.Builder {
-        index = 45
-        itemStack = config.gui.buttons.prev.toItemStack().apply {
-            editMeta {
-                it.setDisplayName(translation.menuPrevPage)
-            }
-        }
-        click = Click { showPage(page - 1) }
+
+    override val prevPageButton by Provider {
+        navigationSlots.prevPageSlot
     }
-    private val sortButton: InventorySlot
-        get() = InventorySlot.Builder {
-            index = 50
-            itemStack = config.gui.buttons.sort.toItemStack().apply {
-                editMeta {
-                    it.setDisplayName(
-                        "${translation.sort}: ${
-                        allRatingsComponent.model.value.sort.desc.toString(
-                            translation
-                        )
-                        }"
-                    )
-                }
-            }
-            click = Click {
-                allRatingsComponent.onSortClicked()
-            }
-        }
+
+    private val sortButton: InventorySlot by Provider {
+        sortSlots.ratingsSortSlot(
+            sort = allRatingsComponent.model.value.sort,
+            onClick = allRatingsComponent::onSortClicked
+        )
+    }
+
     override var maxItemsPerPage: Int = 45
+
     override var page: Int = 0
+
     override val maxItemsAmount: Int
         get() = allRatingsComponent.model.value.userRatings.size
 
@@ -115,7 +115,7 @@ class RatingsGUI(
         }
     }
 
-    fun setMenuItems(model: AllRatingsComponent.Model = allRatingsComponent.model.value) {
+    private fun setMenuItems(model: AllRatingsComponent.Model = allRatingsComponent.model.value) {
         inventory.clear()
         setManageButtons(clickListener)
         sortButton.also(clickListener::remember).setInventoryButton()
@@ -126,9 +126,9 @@ class RatingsGUI(
                 continue
             }
             val userAndRating = model.userRatings[index]
-            val color = if (userAndRating.rating > 0) translation.positiveColor else translation.negativeColor
             InventorySlot.Builder {
                 this.index = i
+                val color = if (userAndRating.rating > 0) translation.positiveColor else translation.negativeColor
                 itemStack = PlayerHeadUtil.getHead(userAndRating.userDTO.normalName).apply {
                     editMeta {
                         it.setDisplayName(translation.playerNameColor + userAndRating.userDTO.normalName)

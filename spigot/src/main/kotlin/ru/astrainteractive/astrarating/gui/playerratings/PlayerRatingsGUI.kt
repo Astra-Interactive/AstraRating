@@ -17,14 +17,19 @@ import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
 import ru.astrainteractive.astrarating.feature.playerrating.PlayerRatingsComponent
 import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
 import ru.astrainteractive.astrarating.gui.playerratings.di.PlayerRatingGuiModule
+import ru.astrainteractive.astrarating.gui.slot.NavigationSlots
+import ru.astrainteractive.astrarating.gui.slot.SlotContext
+import ru.astrainteractive.astrarating.gui.slot.SortSlots
 import ru.astrainteractive.astrarating.gui.util.PlayerHeadUtil
+import ru.astrainteractive.astrarating.gui.util.TimeUtility
+import ru.astrainteractive.astrarating.gui.util.normalName
+import ru.astrainteractive.astrarating.gui.util.offlinePlayer
+import ru.astrainteractive.astrarating.gui.util.subListFromString
+import ru.astrainteractive.astrarating.model.EmpireConfig
 import ru.astrainteractive.astrarating.plugin.AstraPermission
-import ru.astrainteractive.astrarating.util.TimeUtility
-import ru.astrainteractive.astrarating.util.desc
-import ru.astrainteractive.astrarating.util.normalName
-import ru.astrainteractive.astrarating.util.offlinePlayer
-import ru.astrainteractive.astrarating.util.subListFromString
-import ru.astrainteractive.astrarating.util.toItemStack
+import ru.astrainteractive.astrarating.plugin.PluginTranslation
+import ru.astrainteractive.klibs.kdi.Provider
+import ru.astrainteractive.klibs.kdi.getValue
 
 class PlayerRatingsGUI(
     selectedPlayer: OfflinePlayer,
@@ -34,20 +39,34 @@ class PlayerRatingsGUI(
 ) : PaginatedMenu(), PlayerRatingGuiModule by module {
 
     private val loadingIndicator = LoadingIndicator(menu = this, translation = translation)
+
     private val clickListener = MenuClickListener()
+
+    private val slotContext = object : SlotContext {
+        override val translation: PluginTranslation = module.translation
+        override val config: EmpireConfig by Provider {
+            config
+        }
+    }
+
+    private val navigationSlots = NavigationSlots(
+        slotContext = slotContext,
+        menu = this
+    )
+
+    private val sortSlots = SortSlots(
+        slotContext = slotContext,
+        menu = this
+    )
+
     override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
 
     override var menuTitle: String = translation.playerRatingTitle.replace("%player%", selectedPlayer.name ?: "")
+
     override val menuSize: MenuSize = MenuSize.XL
 
-    override val backPageButton = InventorySlot.Builder {
-        index = 49
-        itemStack = config.gui.buttons.back.toItemStack().apply {
-            editMeta {
-                it.setDisplayName(translation.menuClose)
-            }
-        }
-        click = Click {
+    override val backPageButton by Provider {
+        navigationSlots.backPageSlot {
             componentScope.launch(dispatchers.BukkitAsync) {
                 val inventory = module.playerRatingsGuiFactory(playerHolder.player).create()
                 withContext(dispatchers.BukkitMain) {
@@ -56,54 +75,35 @@ class PlayerRatingsGUI(
             }
         }
     }
-    override val nextPageButton = InventorySlot.Builder {
-        index = 53
-        itemStack = config.gui.buttons.next.toItemStack().apply {
-            editMeta {
-                it.setDisplayName(translation.menuNextPage)
-            }
-        }
-    }
-    override val prevPageButton = InventorySlot.Builder {
-        index = 45
-        itemStack = config.gui.buttons.prev.toItemStack().apply {
-            editMeta {
-                it.setDisplayName(translation.menuPrevPage)
-            }
-        }
+
+    override val nextPageButton by Provider {
+        navigationSlots.nextPageSlot
     }
 
-    private val sortButton: InventorySlot
-        get() = InventorySlot.Builder {
-            index = 50
-            itemStack = config.gui.buttons.sort.toItemStack().apply {
-                editMeta {
-                    it.setDisplayName(
-                        "${translation.sortRating}: ${
-                        playerRatingsComponent.model.value.sort.desc.toString(
-                            translation
-                        )
-                        }"
-                    )
-                }
-            }
-            click = Click {
+    override val prevPageButton by Provider {
+        navigationSlots.prevPageSlot
+    }
+
+    private val sortButton by Provider {
+        sortSlots.playerRatingsSortSlot(
+            sort = playerRatingsComponent.model.value.sort,
+            click = {
                 playerRatingsComponent.onSortClicked()
                 setMenuItems()
             }
-        }
+        )
+    }
+
     override var maxItemsPerPage: Int = 45
+
     override var page: Int = 0
+
     override val maxItemsAmount: Int
         get() = playerRatingsComponent.model.value.userRatings.size
 
     override fun onInventoryClicked(e: InventoryClickEvent) {
         e.isCancelled = true
         clickListener.onClick(e)
-        when (e.slot) {
-            else -> {
-            }
-        }
     }
 
     override fun onInventoryClose(it: InventoryCloseEvent) {
@@ -127,6 +127,7 @@ class PlayerRatingsGUI(
         }
     }
 
+    @Suppress("CyclomaticComplexMethod")
     private fun setMenuItems(model: PlayerRatingsComponent.Model = playerRatingsComponent.model.value) {
         inventory.clear()
         setManageButtons(clickListener)
