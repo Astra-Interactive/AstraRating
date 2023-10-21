@@ -15,6 +15,8 @@ internal class InsertUserUseCaseImpl(
     private val databaseApi: RatingDBApi,
 ) : InsertUserUseCase {
     override suspend operator fun invoke(input: UserModel): Long? {
+        val existedUserId = databaseApi.selectUser(input.minecraftName).getOrNull()?.id
+        if (existedUserId != null) return existedUserId
         return databaseApi.insertUser(input).getOrNull()
     }
 }

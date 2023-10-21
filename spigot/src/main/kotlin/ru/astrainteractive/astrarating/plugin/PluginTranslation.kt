@@ -38,6 +38,7 @@ class PluginTranslation(
     val wrongMessageLen: String =
         translationValue("general.wrong_message_len", "#ca271bДлина причина рейтинга должна быть в диапазоне [5;30]")
     val likedUser: String = translationValue("general.liked_user", "#1B76CAВы повысили рейтинг игрока %player%")
+    val pleaseWait = translationValue("general.please_wait", "#1B76CAПожалуйста, подождите...")
     val dislikedUser: String = translationValue("general.disliked_user", "#ca271bВы понизили рейтинг игрока %player%")
     val alreadyMaxDayVotes: String =
         translationValue("general.max_day_voted", "#ca271bВы уже проголосовали максимальное количество раз за день")

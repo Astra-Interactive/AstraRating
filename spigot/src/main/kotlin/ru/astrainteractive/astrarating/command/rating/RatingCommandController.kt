@@ -54,6 +54,8 @@ class RatingCommandController(
 //                throw ValidationException.NotEnoughOnDiscord(ratingCreator)
 //        }
 
+        ratingCreator.sendMessage(translation.pleaseWait)
+
         val todayVotedAmount = dbApi.countPlayerTotalDayRated(ratingCreator.name).getOrNull() ?: 0
         val votedOnPlayerAmount =
             dbApi.countPlayerOnPlayerDayRated(ratingCreator.name, ratedPlayer.name ?: "NULL").getOrNull() ?: 0

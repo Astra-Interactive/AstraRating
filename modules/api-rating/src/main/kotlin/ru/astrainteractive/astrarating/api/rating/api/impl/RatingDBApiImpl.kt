@@ -114,9 +114,10 @@ internal class RatingDBApiImpl(
     }.logStackTrace()
 
     override suspend fun countPlayerTotalDayRated(playerName: String) = kotlin.runCatching {
+        val user = selectUser(playerName).getOrThrow()
         transaction(database) {
-            UserTable.select {
-                UserTable.minecraftName.eq(playerName.uppercase()).and {
+            UserRatingTable.select {
+                UserRatingTable.userCreatedReport.eq(user.id).and {
                     UserRatingTable.time.greater(System.currentTimeMillis() - 24 * 60 * 60 * 1000)
                 }
             }.count()
