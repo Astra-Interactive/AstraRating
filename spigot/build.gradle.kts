@@ -1,9 +1,11 @@
+
 import ru.astrainteractive.gradleplugin.setupSpigotProcessor
-import ru.astrainteractive.gradleplugin.setupSpigotShadow
+import ru.astrainteractive.gradleplugin.util.ProjectProperties.projectInfo
 
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
+    id("com.github.johnrengelman.shadow")
 }
 
 dependencies {
@@ -11,12 +13,13 @@ dependencies {
     implementation(libs.bundles.kotlin)
     // AstraLibs
     implementation(libs.minecraft.astralibs.ktxcore)
-    implementation(libs.minecraft.astralibs.orm)
     implementation(libs.minecraft.astralibs.spigot.gui)
     implementation(libs.minecraft.astralibs.spigot.core)
     // klibs
     implementation(libs.klibs.kdi)
     implementation(libs.klibs.mikro)
+    // Exposed
+    implementation(libs.exposed.core)
     // Test
     testImplementation(libs.bundles.testing.kotlin)
     testImplementation(libs.tests.kotlin.test)
@@ -28,9 +31,33 @@ dependencies {
     compileOnly(libs.minecraft.vaultapi)
     implementation(libs.minecraft.bstats)
     // Local
-    implementation(projects.domain)
-    implementation(projects.dto)
+    implementation(projects.modules.dbRating)
+    implementation(projects.modules.apiRating)
+    implementation(projects.modules.dto)
+    implementation(projects.modules.integrationPapi)
+    implementation(projects.modules.shared)
 }
-val localFolder = File("D:\\Minecraft Servers\\Servers\\esmp-configuration\\smp\\plugins")
-if (localFolder.exists()) setupSpigotShadow(localFolder) else setupSpigotShadow()
+val localFolder = File("D:\\Minecraft Servers\\Servers\\esmp-configuration\\anarchy\\plugins")
+    .takeIf { it.exists() }
+    ?: File("./jars")
+
 setupSpigotProcessor()
+
+tasks.shadowJar {
+    relocate("org.bstats", projectInfo.group)
+    isReproducibleFileOrder = true
+    mergeServiceFiles()
+    dependsOn(configurations)
+    archiveClassifier.set(null as String?)
+    from(sourceSets.main.get().output)
+    from(project.configurations.runtimeClasspath)
+    minimize {
+        exclude(dependency("org.jetbrains.exposed:exposed-jdbc:${libs.versions.exposed.get()}"))
+        exclude(dependency("org.jetbrains.exposed:exposed-dao:${libs.versions.exposed.get()}"))
+    }
+    archiveVersion.set(projectInfo.versionString)
+    archiveBaseName.set(projectInfo.name)
+    destinationDirectory.set(localFolder)
+    localFolder.apply { if (!exists()) parentFile.mkdirs() }
+    localFolder.also(destinationDirectory::set)
+}

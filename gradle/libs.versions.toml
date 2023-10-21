@@ -46,7 +46,7 @@ gradle-shadow = "7.1.2"
 gradle-buildconfig = "3.1.0"
 
 # Exposed
-exposed = "0.38.1"
+exposed = "0.44.0"
 
 [libraries]
 
@@ -89,7 +89,7 @@ minecraft-mockbukkit = { module = "com.github.MockBukkit:MockBukkit", version.re
 
 # klibs
 klibs-kdi = { module = "ru.astrainteractive.klibs:kdi", version.strictly = "1.1.0" }
-klibs-mikro = { module = "ru.astrainteractive.klibs:mikro-core", version.strictly = "1.0.0" }
+klibs-mikro = { module = "ru.astrainteractive.klibs:mikro-core", version.strictly = "1.1.1" }
 
 # AstraLibs
 minecraft-astralibs-ktxcore = { module = "ru.astrainteractive.astralibs:ktx-core", version.ref = "minecraft-astralibs" }
