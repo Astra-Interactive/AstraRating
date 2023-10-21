@@ -18,7 +18,7 @@ class AstraRating : JavaPlugin() {
     private val rootModule = RootModuleImpl()
 
     init {
-        rootModule.plugin.initialize(this)
+        rootModule.servicesModule.plugin.initialize(this)
     }
 
     /**
@@ -26,11 +26,11 @@ class AstraRating : JavaPlugin() {
      */
     override fun onEnable() {
         reloadPlugin()
-        rootModule.database
-        rootModule.bstats.create()
-        rootModule.papiExpansion.value?.onEnable()
+        rootModule.dbRatingModule.database
+        rootModule.servicesModule.bstats.create()
+        rootModule.papiModule?.ratingPAPIComponent?.onEnable()
         GlobalInventoryClickEvent.onEnable(this)
-        rootModule.eventManager.create()
+        rootModule.servicesModule.eventManager.create()
         CommandManager(rootModule.commandsModule)
     }
 
@@ -38,18 +38,18 @@ class AstraRating : JavaPlugin() {
      * This method called when server is shutting down or when PlugMan disable plugin.
      */
     override fun onDisable() {
-        runBlocking { rootModule.database.value.connector.invoke().close() }
+        runBlocking { rootModule.dbRatingModule.database.connector.invoke().close() }
         HandlerList.unregisterAll(this)
         GlobalEventListener.onDisable()
-        rootModule.papiExpansion.value?.onDisable()
+        rootModule.papiModule?.ratingPAPIComponent?.onDisable()
     }
 
     /**
      * As it says, function for plugin reload
      */
     fun reloadPlugin() {
-        rootModule.configFileManager.value.reload()
-        rootModule.config.reload()
-        rootModule.translation.reload()
+        rootModule.servicesModule.configFileManager.value.reload()
+        rootModule.servicesModule.config.reload()
+        rootModule.servicesModule.translation.reload()
     }
 }

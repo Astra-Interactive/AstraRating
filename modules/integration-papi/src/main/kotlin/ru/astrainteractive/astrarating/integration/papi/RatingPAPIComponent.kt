@@ -1,9 +1,9 @@
 package ru.astrainteractive.astrarating.integration.papi
 
-import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
+import ru.astrainteractive.astrarating.integration.papi.di.PapiDependencies
 
-class RatingPAPIComponent(module: PapiModule) {
-    private val expansion = RatingPAPIExpansion(module)
+class RatingPAPIComponent(dependencies: PapiDependencies) {
+    private val expansion = RatingPAPIExpansion(dependencies)
     fun onEnable() {
         if (expansion.isRegistered) {
             expansion.unregister()

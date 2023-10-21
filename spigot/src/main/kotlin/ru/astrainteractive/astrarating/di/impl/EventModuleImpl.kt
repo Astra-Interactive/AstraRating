@@ -6,11 +6,11 @@ import ru.astrainteractive.klibs.kdi.getValue
 
 class EventModuleImpl(rootModule: RootModule) : EventModule {
 
-    override val configDependency by rootModule.config
-    override val apiDependency by rootModule.dbApi
-    override val translationDependency by rootModule.translation
-    override val scope by rootModule.scope
-    override val eventListener by rootModule.eventListener
-    override val plugin by rootModule.plugin
-    override val dispatchers by rootModule.dispatchers
+    override val configDependency by rootModule.servicesModule.config
+    override val apiDependency = rootModule.apiRatingModule.ratingDBApi
+    override val translationDependency by rootModule.servicesModule.translation
+    override val scope by rootModule.servicesModule.scope
+    override val eventListener by rootModule.servicesModule.eventListener
+    override val plugin by rootModule.servicesModule.plugin
+    override val dispatchers by rootModule.servicesModule.dispatchers
 }

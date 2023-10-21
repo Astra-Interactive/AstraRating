@@ -12,13 +12,13 @@ import ru.astrainteractive.klibs.kdi.getValue
 
 class CommandsModuleImpl(private val rootModule: RootModule) : CommandsModule {
 
-    override val plugin: AstraRating by rootModule.plugin
-    override val dispatchers by rootModule.dispatchers
-    override val scope by rootModule.scope
-    override val translation by rootModule.translation
-    override val config by rootModule.config
-    override val dbApi by rootModule.dbApi
-    override val insertUseCase by rootModule.insertUserUseCase
+    override val plugin: AstraRating by rootModule.servicesModule.plugin
+    override val dispatchers by rootModule.servicesModule.dispatchers
+    override val scope by rootModule.servicesModule.scope
+    override val translation by rootModule.servicesModule.translation
+    override val config by rootModule.servicesModule.config
+    override val dbApi = rootModule.apiRatingModule.ratingDBApi
+    override val insertUseCase = rootModule.apiRatingModule.insertUserUseCase
     override fun ratingsGUIFactory(player: Player) = Factory {
         RatingsGUI(player, rootModule.guiModule)
     }

@@ -7,7 +7,7 @@ import ru.astrainteractive.astrarating.api.rating.cache.JCache
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
-class CachedApiImpl(
+internal class CachedApiImpl(
     private val databaseApi: RatingDBApi,
     scope: CoroutineScope
 ) : CachedApi {

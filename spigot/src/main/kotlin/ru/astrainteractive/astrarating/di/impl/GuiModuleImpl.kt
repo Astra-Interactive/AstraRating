@@ -12,10 +12,10 @@ import ru.astrainteractive.klibs.kdi.getValue
 
 class GuiModuleImpl(rootModule: RootModule) : GuiModule {
 
-    override val dbApi by rootModule.dbApi
-    override val dispatchers by rootModule.dispatchers
-    override val translation by rootModule.translation
-    override val config by rootModule.config
+    override val dbApi = rootModule.apiRatingModule.ratingDBApi
+    override val dispatchers by rootModule.servicesModule.dispatchers
+    override val translation by rootModule.servicesModule.translation
+    override val config by rootModule.servicesModule.config
     override val allRatingsRepository: AllRatingsRepository by rootModule.allRatingsRepository
 
     override fun playerRatingsGuiFactory(

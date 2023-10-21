@@ -13,7 +13,6 @@ object UserMapper : Mapper<UserDAO, UserDTO> {
         id = it.id.value,
         minecraftUUID = it.minecraftUUID,
         minecraftName = it.minecraftName,
-        discordID = null,
         lastUpdated = it.lastUpdated
     )
 }

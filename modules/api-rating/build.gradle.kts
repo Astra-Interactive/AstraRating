@@ -8,6 +8,7 @@ dependencies {
     implementation(libs.bundles.kotlin)
     // klibs
     implementation(libs.klibs.mikro)
+    implementation(libs.klibs.kdi)
     // Exposed
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)

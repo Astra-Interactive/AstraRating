@@ -6,14 +6,14 @@ import ru.astrainteractive.astralibs.util.hex
 import ru.astrainteractive.astrarating.api.rating.cache.JCache
 import ru.astrainteractive.astrarating.integration.papi.coloring.ColoringMapper
 import ru.astrainteractive.astrarating.integration.papi.coloring.ColoringUtils
-import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
+import ru.astrainteractive.astrarating.integration.papi.di.PapiDependencies
 import ru.astrainteractive.astrarating.integration.papi.placeholder.api.RatingPlaceholder
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
 internal class ColorPlaceholder(
-    module: PapiModule
-) : RatingPlaceholder, PapiModule by module {
+    dependencies: PapiDependencies
+) : RatingPlaceholder, PapiDependencies by dependencies {
 
     private val jcache = JCache<UUID, String>(
         expiresAfterAccess = 30.seconds,

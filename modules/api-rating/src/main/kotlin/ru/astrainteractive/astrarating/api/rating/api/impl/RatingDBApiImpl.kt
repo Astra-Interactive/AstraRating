@@ -24,7 +24,7 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.Date
 
-class RatingDBApiImpl(
+internal class RatingDBApiImpl(
     private val database: Database,
     private val pluginFolder: File
 ) : RatingDBApi {
