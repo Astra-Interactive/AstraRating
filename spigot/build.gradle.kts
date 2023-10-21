@@ -39,7 +39,7 @@ dependencies {
 }
 val localFolder = File("D:\\Minecraft Servers\\Servers\\esmp-configuration\\anarchy\\plugins")
     .takeIf { it.exists() }
-    ?: File("./jars")
+    ?: File(rootDir, "jars")
 
 setupSpigotProcessor()
 
@@ -57,7 +57,6 @@ tasks.shadowJar {
     }
     archiveVersion.set(projectInfo.versionString)
     archiveBaseName.set(projectInfo.name)
-    destinationDirectory.set(localFolder)
     localFolder.apply { if (!exists()) parentFile.mkdirs() }
     localFolder.also(destinationDirectory::set)
 }
