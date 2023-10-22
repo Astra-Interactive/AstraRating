@@ -1,4 +1,5 @@
 
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import ru.astrainteractive.gradleplugin.setupSpigotProcessor
 import ru.astrainteractive.gradleplugin.util.ProjectProperties.projectInfo
 
@@ -59,4 +60,10 @@ tasks.shadowJar {
     archiveBaseName.set(projectInfo.name)
     localFolder.apply { if (!exists()) parentFile.mkdirs() }
     localFolder.also(destinationDirectory::set)
+}
+
+tasks.withType<KotlinCompile>().configureEach {
+    kotlinOptions {
+        freeCompilerArgs = freeCompilerArgs + "-Xcontext-receivers"
+    }
 }

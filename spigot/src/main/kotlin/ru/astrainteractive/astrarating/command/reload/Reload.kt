@@ -1,8 +1,9 @@
 package ru.astrainteractive.astrarating.command.reload
 
 import CommandManager
+import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.command.registerCommand
-import ru.astrainteractive.astrarating.plugin.AstraPermission
+import ru.astrainteractive.astrarating.plugin.RatingPermission
 
 /**
  * Reload command handler
@@ -14,11 +15,22 @@ import ru.astrainteractive.astrarating.plugin.AstraPermission
  * Here you should also check for permission
  */
 fun CommandManager.reload() = plugin.registerCommand("aratingreload") {
-    if (!AstraPermission.Reload.hasPermission(sender)) {
-        sender.sendMessage(translation.noPermission)
+    (sender as? Player)?.let { player ->
+        val canReload = permissionManager.hasPermission(player.uniqueId, RatingPermission.Reload)
+        if (canReload) return@let
+        translation.noPermission
+            .let(translationContext::toComponent)
+            .run(sender::sendMessage)
         return@registerCommand
     }
-    sender.sendMessage(translation.reload)
+
+    translation.reload
+        .let(translationContext::toComponent)
+        .run(sender::sendMessage)
+
     plugin.reloadPlugin()
-    sender.sendMessage(translation.reloadComplete)
+
+    translation.reloadComplete
+        .let(translationContext::toComponent)
+        .run(sender::sendMessage)
 }

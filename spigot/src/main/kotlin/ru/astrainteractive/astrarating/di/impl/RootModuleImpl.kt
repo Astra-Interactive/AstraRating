@@ -2,7 +2,7 @@ package ru.astrainteractive.astrarating.di.impl
 
 import org.bukkit.Bukkit
 import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
-import ru.astrainteractive.astrarating.command.di.CommandsModule
+import ru.astrainteractive.astrarating.command.di.CommandsDependencies
 import ru.astrainteractive.astrarating.db.rating.di.DBRatingModule
 import ru.astrainteractive.astrarating.db.rating.model.DBConnection
 import ru.astrainteractive.astrarating.di.RootModule
@@ -22,8 +22,8 @@ class RootModuleImpl : RootModule {
     }
 
     // Modules
-    override val commandsModule: CommandsModule by Provider {
-        CommandsModuleImpl(this)
+    override val commandsDependencies: CommandsDependencies by Provider {
+        CommandsDependenciesImpl(this)
     }
     override val guiModule: GuiModule by Provider {
         GuiModuleImpl(this)

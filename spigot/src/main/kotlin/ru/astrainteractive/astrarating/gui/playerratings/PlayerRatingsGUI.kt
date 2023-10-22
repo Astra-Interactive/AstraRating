@@ -2,6 +2,7 @@ package ru.astrainteractive.astrarating.gui.playerratings
 
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.kyori.adventure.text.Component
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -26,8 +27,8 @@ import ru.astrainteractive.astrarating.gui.util.normalName
 import ru.astrainteractive.astrarating.gui.util.offlinePlayer
 import ru.astrainteractive.astrarating.gui.util.subListFromString
 import ru.astrainteractive.astrarating.model.EmpireConfig
-import ru.astrainteractive.astrarating.plugin.AstraPermission
-import ru.astrainteractive.astrarating.plugin.PluginTranslation
+import ru.astrainteractive.astrarating.model.PluginTranslation
+import ru.astrainteractive.astrarating.plugin.RatingPermission
 import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.getValue
 
@@ -38,7 +39,11 @@ class PlayerRatingsGUI(
     private val playerRatingsComponent: PlayerRatingsComponent
 ) : PaginatedMenu(), PlayerRatingGuiModule by module {
 
-    private val loadingIndicator = LoadingIndicator(menu = this, translation = translation)
+    private val loadingIndicator = LoadingIndicator(
+        menu = this,
+        translation = translation,
+        translationContext = translationContext
+    )
 
     private val clickListener = MenuClickListener()
 
@@ -49,17 +54,21 @@ class PlayerRatingsGUI(
 
     private val navigationSlots = NavigationSlots(
         slotContext = slotContext,
-        menu = this
+        menu = this,
+        translationContext = translationContext
     )
 
     private val sortSlots = SortSlots(
         slotContext = slotContext,
-        menu = this
+        menu = this,
+        translationContext = translationContext
     )
 
     override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
 
-    override var menuTitle: String = translation.playerRatingTitle.replace("%player%", selectedPlayer.name ?: "")
+    override var menuTitle: Component = translationContext.toComponent(
+        translation.playerRatingTitle.replace("%player%", selectedPlayer.name ?: "")
+    )
 
     override val menuSize: MenuSize = MenuSize.XL
 
@@ -129,7 +138,7 @@ class PlayerRatingsGUI(
     private fun setMenuItems(model: PlayerRatingsComponent.Model = playerRatingsComponent.model.value) {
         inventory.clear()
         setManageButtons(clickListener)
-        sortButton.also(clickListener::remember).setInventoryButton()
+        sortButton.also(clickListener::remember).setInventorySlot()
         val list = model.userRatings
         for (i in 0 until maxItemsPerPage) {
             val index = maxItemsPerPage * page + i
@@ -142,16 +151,19 @@ class PlayerRatingsGUI(
                 this.index = i
                 itemStack = PlayerHeadUtil.getHead(userAndRating.userCreatedReport?.normalName ?: "-").apply {
                     editMeta {
-                        it.setDisplayName(
-                            translation.playerNameColor + (userAndRating.userCreatedReport?.normalName ?: "-")
+                        it.displayName(
+                            translationContext.toComponent(
+                                translation.playerNameColor + (userAndRating.userCreatedReport?.normalName ?: "-")
+                            )
                         )
-                        it.lore = mutableListOf<String>().apply {
+                        buildList<Component> {
                             subListFromString(
                                 "${translation.message} $color${userAndRating.message}",
                                 config.trimMessageAfter,
                                 config.cutWords
                             ).forEachIndexed { _, messagePart ->
-                                add("$color$messagePart")
+                                val component = translationContext.toComponent("$color$messagePart")
+                                add(component)
                             }
 
                             if (config.gui.showFirstConnection) {
@@ -160,7 +172,8 @@ class PlayerRatingsGUI(
                                     time = userAndRating.reportedUser.offlinePlayer.firstPlayed,
                                     format = config.gui.format
                                 )
-                                add("$firstConnection $time")
+                                val component = translationContext.toComponent("$firstConnection $time")
+                                add(component)
                             }
                             if (config.gui.showLastConnection) {
                                 val lastConnection = translation.lastConnection
@@ -168,23 +181,32 @@ class PlayerRatingsGUI(
                                     time = userAndRating.reportedUser.offlinePlayer.lastPlayed,
                                     format = config.gui.format
                                 )
-                                add("$lastConnection $time")
+                                val component = translationContext.toComponent("$lastConnection $time")
+                                add(component)
                             }
-                            if (AstraPermission.DeleteReport.hasPermission(playerHolder.player) &&
-                                config.gui.showDeleteReport
-                            ) {
-                                add(translation.clickToDeleteReport)
+                            val canDelete = permissionManager.hasPermission(
+                                playerHolder.player.uniqueId,
+                                RatingPermission.DeleteReport
+                            )
+
+                            if (canDelete && config.gui.showDeleteReport) {
+                                val component = translationContext.toComponent(translation.clickToDeleteReport)
+                                add(component)
                             }
-                        }
+                        }.run(it::lore)
                     }
                 }
                 click = Click { e ->
-                    if (!AstraPermission.DeleteReport.hasPermission(playerHolder.player)) return@Click
+                    val canDelete = permissionManager.hasPermission(
+                        playerHolder.player.uniqueId,
+                        RatingPermission.DeleteReport
+                    )
+                    if (!canDelete) return@Click
                     if (e.click != ClickType.LEFT) return@Click
                     val item = model.userRatings.getOrNull(maxItemsPerPage * page + e.slot) ?: return@Click
                     playerRatingsComponent.onDeleteClicked(item)
                 }
-            }.also(clickListener::remember).setInventoryButton()
+            }.also(clickListener::remember).setInventorySlot()
         }
     }
 }

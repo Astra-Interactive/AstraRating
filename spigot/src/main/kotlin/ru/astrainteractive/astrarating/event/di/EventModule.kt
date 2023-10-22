@@ -4,9 +4,10 @@ import kotlinx.coroutines.CoroutineScope
 import org.bukkit.plugin.java.JavaPlugin
 import ru.astrainteractive.astralibs.async.BukkitDispatchers
 import ru.astrainteractive.astralibs.event.EventListener
+import ru.astrainteractive.astralibs.serialization.KyoriComponentSerializer
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
 import ru.astrainteractive.astrarating.model.EmpireConfig
-import ru.astrainteractive.astrarating.plugin.PluginTranslation
+import ru.astrainteractive.astrarating.model.PluginTranslation
 
 interface EventModule {
     val configDependency: EmpireConfig
@@ -16,4 +17,5 @@ interface EventModule {
     val eventListener: EventListener
     val plugin: JavaPlugin
     val dispatchers: BukkitDispatchers
+    val translationContext: KyoriComponentSerializer
 }

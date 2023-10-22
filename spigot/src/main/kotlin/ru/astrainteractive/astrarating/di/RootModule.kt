@@ -1,7 +1,7 @@
 package ru.astrainteractive.astrarating.di
 
 import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
-import ru.astrainteractive.astrarating.command.di.CommandsModule
+import ru.astrainteractive.astrarating.command.di.CommandsDependencies
 import ru.astrainteractive.astrarating.db.rating.di.DBRatingModule
 import ru.astrainteractive.astrarating.feature.di.SharedModule
 import ru.astrainteractive.astrarating.gui.di.GuiModule
@@ -17,7 +17,7 @@ interface RootModule : Module {
 
     val apiRatingModule: ApiRatingModule
 
-    val commandsModule: CommandsModule
+    val commandsDependencies: CommandsDependencies
 
     val guiModule: GuiModule
 

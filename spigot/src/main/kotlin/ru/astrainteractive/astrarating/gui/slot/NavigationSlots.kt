@@ -3,6 +3,7 @@ package ru.astrainteractive.astrarating.gui.slot
 import ru.astrainteractive.astralibs.menu.clicker.Click
 import ru.astrainteractive.astralibs.menu.menu.InventorySlot
 import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
+import ru.astrainteractive.astralibs.serialization.KyoriComponentSerializer
 import ru.astrainteractive.astrarating.dto.RatedUserDTO
 import ru.astrainteractive.astrarating.gui.util.PlayerHeadUtil
 import ru.astrainteractive.astrarating.gui.util.TimeUtility
@@ -14,13 +15,15 @@ import ru.astrainteractive.klibs.kdi.getValue
 
 class NavigationSlots(
     slotContext: SlotContext,
-    private val menu: PaginatedMenu
+    private val menu: PaginatedMenu,
+    private val translationContext: KyoriComponentSerializer
 ) : SlotContext by slotContext {
     fun backPageSlot(click: Click) = InventorySlot.Builder {
         index = 49
         itemStack = config.gui.buttons.back.toItemStack().apply {
             editMeta {
-                it.setDisplayName(translation.menuClose)
+                val component = translationContext.toComponent(translation.menuClose)
+                it.displayName(component)
             }
         }
         this.click = click
@@ -31,7 +34,8 @@ class NavigationSlots(
             index = 53
             itemStack = config.gui.buttons.next.toItemStack().apply {
                 editMeta {
-                    it.setDisplayName(translation.menuNextPage)
+                    val component = translationContext.toComponent(translation.menuNextPage)
+                    it.displayName(component)
                 }
             }
             click = Click { menu.showPage(menu.page + 1) }
@@ -42,7 +46,8 @@ class NavigationSlots(
             index = 45
             itemStack = config.gui.buttons.prev.toItemStack().apply {
                 editMeta {
-                    it.setDisplayName(translation.menuPrevPage)
+                    val component = translationContext.toComponent(translation.menuPrevPage)
+                    it.displayName(component)
                 }
             }
             click = Click { menu.showPage(menu.page - 1) }
@@ -58,10 +63,13 @@ class NavigationSlots(
         val color = if (userAndRating.rating > 0) translation.positiveColor else translation.negativeColor
         itemStack = PlayerHeadUtil.getHead(userAndRating.userDTO.normalName).apply {
             editMeta {
-                it.setDisplayName(translation.playerNameColor + userAndRating.userDTO.normalName)
-                it.lore = mutableListOf<String>().apply {
+                val component = translationContext.toComponent(
+                    translation.playerNameColor + userAndRating.userDTO.normalName
+                )
+                it.displayName(component)
+                buildList {
                     if (config.gui.showFirstConnection) {
-                        add(
+                        val component = translationContext.toComponent(
                             "${translation.firstConnection} ${
                             TimeUtility.formatToString(
                                 time = userAndRating.userDTO.offlinePlayer.firstPlayed,
@@ -69,9 +77,10 @@ class NavigationSlots(
                             )
                             }"
                         )
+                        add(component)
                     }
                     if (config.gui.showLastConnection) {
-                        add(
+                        val component = translationContext.toComponent(
                             "${translation.lastConnection} ${
                             TimeUtility.formatToString(
                                 time = userAndRating.userDTO.offlinePlayer.lastPlayed,
@@ -79,8 +88,9 @@ class NavigationSlots(
                             )
                             }"
                         )
+                        add(component)
                     }
-                    add("${translation.rating}: ${color}${userAndRating.rating}")
+                    translationContext.toComponent("${translation.rating}: ${color}${userAndRating.rating}").run(::add)
                 }
             }
         }

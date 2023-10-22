@@ -6,16 +6,16 @@ import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.util.uuid
-import ru.astrainteractive.astrarating.command.di.CommandsModule
+import ru.astrainteractive.astrarating.command.di.CommandsDependencies
+import ru.astrainteractive.astrarating.command.rating.exception.ValidationException
 import ru.astrainteractive.astrarating.dto.RatingType
 import ru.astrainteractive.astrarating.dto.UserDTO
-import ru.astrainteractive.astrarating.exception.ValidationException
 import ru.astrainteractive.astrarating.model.UserModel
-import ru.astrainteractive.astrarating.plugin.AstraPermission
+import ru.astrainteractive.astrarating.plugin.RatingPermission
 
 class RatingCommandController(
-    module: CommandsModule
-) : CommandsModule by module {
+    module: CommandsDependencies
+) : CommandsDependencies by module {
 
     @Throws(ValidationException::class)
     @Suppress("CyclomaticComplexMethod")
@@ -26,9 +26,9 @@ class RatingCommandController(
         rating: Int,
         typeDTO: RatingType
     ): Result<*> = kotlin.runCatching {
-        if (!AstraPermission.Vote.hasPermission(ratingCreator)) throw ValidationException.NoPermission(ratingCreator)
-
         if (ratingCreator !is Player) throw ValidationException.OnlyPlayerCommand(ratingCreator)
+        val hasVotePermission = permissionManager.hasPermission(ratingCreator.uniqueId, RatingPermission.Vote)
+        if (!hasVotePermission) throw ValidationException.NoPermission(ratingCreator)
 
         if (ratedPlayer == null || ratedPlayer.firstPlayed == 0L) {
             throw ValidationException.PlayerNotExists(ratingCreator)
@@ -40,9 +40,14 @@ class RatingCommandController(
             throw ValidationException.NotEnoughOnServer(ratingCreator)
         }
 
-        val maxVotesPerDay = AstraPermission.MaxRatePerDay.maxPermissionSize(ratingCreator) ?: config.maxRatingPerDay
-        val maxVotePerPlayer =
-            AstraPermission.SinglePlayerPerDay.maxPermissionSize(ratingCreator) ?: config.maxRatingPerPlayer
+        val maxVotesPerDay = permissionManager.maxPermissionSize(
+            ratingCreator.uniqueId,
+            RatingPermission.MaxRatePerDay
+        ) ?: config.maxRatingPerDay
+        val maxVotePerPlayer = permissionManager.maxPermissionSize(
+            ratingCreator.uniqueId,
+            RatingPermission.SinglePlayerPerDay
+        ) ?: config.maxRatingPerPlayer
 
 //        if (config.needDiscordLinked) {
 //            val discordMember = getLinkedDiscordID(ratingCreator)
@@ -53,8 +58,9 @@ class RatingCommandController(
 //            if (System.currentTimeMillis() - wasInDiscordSince < config.minTimeOnDiscord)
 //                throw ValidationException.NotEnoughOnDiscord(ratingCreator)
 //        }
-
-        ratingCreator.sendMessage(translation.pleaseWait)
+        translationContext.toComponent(translation.pleaseWait).let { message ->
+            ratingCreator.sendMessage(message)
+        }
 
         val todayVotedAmount = dbApi.countPlayerTotalDayRated(ratingCreator.name).getOrNull() ?: 0
         val votedOnPlayerAmount =
@@ -93,9 +99,15 @@ class RatingCommandController(
         )
 
         if (rating > 0) {
-            ratingCreator.sendMessage(translation.likedUser.replace("%player%", ratedPlayer.name ?: "-"))
+            val message = translationContext.toComponent(
+                translation.likedUser.replace("%player%", ratedPlayer.name ?: "-")
+            )
+            ratingCreator.sendMessage(message)
         } else {
-            ratingCreator.sendMessage(translation.dislikedUser.replace("%player%", ratedPlayer.name ?: "-"))
+            val message = translationContext.toComponent(
+                translation.dislikedUser.replace("%player%", ratedPlayer.name ?: "-")
+            )
+            ratingCreator.sendMessage(message)
         }
     }
 

@@ -1,4 +1,4 @@
-package ru.astrainteractive.astrarating.exception
+package ru.astrainteractive.astrarating.command.rating.exception
 
 import org.bukkit.command.CommandSender
 

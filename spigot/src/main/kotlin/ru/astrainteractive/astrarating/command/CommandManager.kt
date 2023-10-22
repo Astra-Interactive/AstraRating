@@ -1,5 +1,4 @@
-
-import ru.astrainteractive.astrarating.command.di.CommandsModule
+import ru.astrainteractive.astrarating.command.di.CommandsDependencies
 import ru.astrainteractive.astrarating.command.rating.ratingCommand
 import ru.astrainteractive.astrarating.command.reload.reload
 import ru.astrainteractive.astrarating.command.tabCompleter
@@ -10,8 +9,8 @@ import ru.astrainteractive.astrarating.command.tabCompleter
  * @see Reload
  */
 class CommandManager(
-    module: CommandsModule
-) : CommandsModule by module {
+    dependencies: CommandsDependencies
+) : CommandsDependencies by dependencies {
     /**
      * Here you should declare commands for your plugin
      *
