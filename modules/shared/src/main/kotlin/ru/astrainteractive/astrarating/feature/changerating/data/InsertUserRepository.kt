@@ -9,7 +9,7 @@ interface InsertUserRepository {
     suspend fun insertUser(userModel: UserModel): Result<Long>
 }
 
-class InsertUserRepositoryImpl(private val dbApi: RatingDBApi) : InsertUserRepository {
+internal class InsertUserRepositoryImpl(private val dbApi: RatingDBApi) : InsertUserRepository {
     override suspend fun selectUser(name: String): Result<UserDTO> {
         return dbApi.selectUser(name)
     }

@@ -14,7 +14,7 @@ interface InsertRatingRepository {
     ): Result<Long>
 }
 
-class InsertRatingRepositoryImpl(private val dbApi: RatingDBApi) : InsertRatingRepository {
+internal class InsertRatingRepositoryImpl(private val dbApi: RatingDBApi) : InsertRatingRepository {
     override suspend fun insertUserRating(
         reporter: UserDTO?,
         reported: UserDTO,

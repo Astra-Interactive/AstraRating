@@ -6,7 +6,7 @@ interface CanVoteTodayRepository {
     suspend fun countPlayerTotalDayRated(name: String): Long
 }
 
-class CanVoteTodayRepositoryImpl(private val dbApi: RatingDBApi) : CanVoteTodayRepository {
+internal class CanVoteTodayRepositoryImpl(private val dbApi: RatingDBApi) : CanVoteTodayRepository {
     override suspend fun countPlayerTotalDayRated(name: String): Long {
         return dbApi.countPlayerTotalDayRated(name).getOrNull() ?: 0
     }
