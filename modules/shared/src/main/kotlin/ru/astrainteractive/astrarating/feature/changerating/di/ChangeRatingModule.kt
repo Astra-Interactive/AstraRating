@@ -30,6 +30,7 @@ import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.Valid
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.ValidateMessageUseCaseImpl
 import ru.astrainteractive.astrarating.model.EmpireConfig
 import ru.astrainteractive.klibs.kdi.Provider
+import ru.astrainteractive.klibs.kdi.Reloadable
 import ru.astrainteractive.klibs.kdi.getValue
 
 interface ChangeRatingModule {
@@ -51,7 +52,7 @@ interface ChangeRatingModule {
     class Default(
         private val dbApi: RatingDBApi,
         private val permissionManager: PermissionManager,
-        private val empireConfig: EmpireConfig
+        private val empireConfig: Reloadable<EmpireConfig>
     ) : ChangeRatingModule {
         override val canVoteOnPlayerRepository: CanVoteOnPlayerRepository by Provider {
             CanVoteOnPlayerRepositoryImpl(dbApi)
@@ -79,14 +80,14 @@ interface ChangeRatingModule {
         override val canVoteOnPlayerUseCase: CanVoteOnPlayerUseCase by Provider {
             CanVoteOnPlayerUseCaseImpl(
                 permissionManager = permissionManager,
-                maxRatingPerPlayer = empireConfig.maxRatingPerPlayer,
+                maxRatingPerPlayer = empireConfig.value.maxRatingPerPlayer,
                 canVoteOnPlayerRepository = canVoteOnPlayerRepository
             )
         }
         override val canVoteTodayUseCase: CanVoteTodayUseCase by Provider {
             CanVoteTodayUseCaseImpl(
                 permissionManager = permissionManager,
-                maxRatingPerDay = empireConfig.maxRatingPerDay,
+                maxRatingPerDay = empireConfig.value.maxRatingPerDay,
                 canVoteTodayRepository = canVoteTodayRepository
             )
         }
@@ -112,8 +113,8 @@ interface ChangeRatingModule {
         }
         override val validateMessageUseCase: ValidateMessageUseCase by Provider {
             ValidateMessageUseCaseImpl(
-                minMessageLength = empireConfig.minMessageLength,
-                maxMessageLength = empireConfig.maxMessageLength
+                minMessageLength = empireConfig.value.minMessageLength,
+                maxMessageLength = empireConfig.value.maxMessageLength
             )
         }
     }

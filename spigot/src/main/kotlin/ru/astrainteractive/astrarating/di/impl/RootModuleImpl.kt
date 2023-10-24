@@ -74,7 +74,9 @@ class RootModuleImpl : RootModule {
         SharedModule.Default(
             apiRatingModule = apiRatingModule,
             dispatchers = servicesModule.dispatchers.value,
-            coroutineScope = servicesModule.scope.value
+            coroutineScope = servicesModule.scope.value,
+            permissionManager = servicesModule.permissionManager.value,
+            empireConfig = servicesModule.config
         )
     }
 }

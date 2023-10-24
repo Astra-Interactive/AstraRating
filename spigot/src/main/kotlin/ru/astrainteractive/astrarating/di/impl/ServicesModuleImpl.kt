@@ -6,6 +6,8 @@ import ru.astrainteractive.astralibs.async.DefaultBukkitDispatchers
 import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.astralibs.filemanager.DefaultSpigotFileManager
 import ru.astrainteractive.astralibs.menu.event.DefaultInventoryClickEvent
+import ru.astrainteractive.astralibs.permission.BukkitPermissionManager
+import ru.astrainteractive.astralibs.permission.PermissionManager
 import ru.astrainteractive.astralibs.serialization.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.serialization.YamlSerializer
 import ru.astrainteractive.astrarating.AstraRating
@@ -60,5 +62,8 @@ class ServicesModuleImpl(rootModule: RootModule) : ServicesModule {
     override val eventManager = Factory {
         val eventModule = EventModuleImpl(rootModule)
         EventManager(eventModule)
+    }
+    override val permissionManager: Single<PermissionManager> = Single {
+        BukkitPermissionManager()
     }
 }

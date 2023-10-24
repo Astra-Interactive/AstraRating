@@ -5,6 +5,7 @@ import ru.astrainteractive.astralibs.async.AsyncComponent
 import ru.astrainteractive.astralibs.async.BukkitDispatchers
 import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.astralibs.menu.event.DefaultInventoryClickEvent
+import ru.astrainteractive.astralibs.permission.PermissionManager
 import ru.astrainteractive.astralibs.serialization.KyoriComponentSerializer
 import ru.astrainteractive.astrarating.AstraRating
 import ru.astrainteractive.astrarating.event.EventManager
@@ -29,4 +30,5 @@ interface ServicesModule {
     val config: Reloadable<EmpireConfig>
     val translation: Reloadable<PluginTranslation>
     val eventManager: Factory<EventManager>
+    val permissionManager: Single<PermissionManager>
 }
