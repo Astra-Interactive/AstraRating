@@ -8,6 +8,8 @@ import ru.astrainteractive.astrarating.feature.allrating.DefaultAllRatingsCompon
 import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsRepository
 import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsRepositoryImpl
 import ru.astrainteractive.astrarating.feature.changerating.di.ChangeRatingModule
+import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUseCase
+import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUseCaseImpl
 import ru.astrainteractive.astrarating.feature.playerrating.presentation.DefaultPlayerRatingsComponent
 import ru.astrainteractive.astrarating.feature.playerrating.presentation.PlayerRatingsComponent
 import ru.astrainteractive.astrarating.model.EmpireConfig
@@ -47,13 +49,15 @@ interface SharedModule {
                 dispatchers = dispatchers
             )
         }
+        private val sortRatingUseCase: SortRatingUseCase = SortRatingUseCaseImpl()
 
         override fun playerRatingsComponentFactory(playerModel: PlayerModel): Factory<PlayerRatingsComponent> {
             return Factory {
                 DefaultPlayerRatingsComponent(
                     playerModel = playerModel,
                     dbApi = apiRatingModule.ratingDBApi,
-                    dispatchers = dispatchers
+                    dispatchers = dispatchers,
+                    sortRatingUseCase = sortRatingUseCase
                 )
             }
         }
