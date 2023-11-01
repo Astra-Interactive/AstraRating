@@ -8,8 +8,8 @@ import ru.astrainteractive.astrarating.feature.allrating.DefaultAllRatingsCompon
 import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsRepository
 import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsRepositoryImpl
 import ru.astrainteractive.astrarating.feature.changerating.di.ChangeRatingModule
-import ru.astrainteractive.astrarating.feature.playerrating.DefaultPlayerRatingsComponent
-import ru.astrainteractive.astrarating.feature.playerrating.PlayerRatingsComponent
+import ru.astrainteractive.astrarating.feature.playerrating.presentation.DefaultPlayerRatingsComponent
+import ru.astrainteractive.astrarating.feature.playerrating.presentation.PlayerRatingsComponent
 import ru.astrainteractive.astrarating.model.EmpireConfig
 import ru.astrainteractive.astrarating.model.PlayerModel
 import ru.astrainteractive.klibs.kdi.Factory

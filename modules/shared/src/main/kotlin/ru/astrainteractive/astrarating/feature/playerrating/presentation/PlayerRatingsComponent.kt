@@ -1,4 +1,4 @@
-package ru.astrainteractive.astrarating.feature.playerrating
+package ru.astrainteractive.astrarating.feature.playerrating.presentation
 
 import kotlinx.coroutines.flow.StateFlow
 import ru.astrainteractive.astrarating.dto.UserRatingDTO
