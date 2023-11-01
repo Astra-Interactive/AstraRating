@@ -1,10 +1,10 @@
 package ru.astrainteractive.astrarating.feature.playerrating.domain
 
 import ru.astrainteractive.astrarating.dto.UserRatingDTO
-import ru.astrainteractive.klibs.mikro.core.domain.UseCase
 import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUseCase.Input
 import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUseCase.Output
 import ru.astrainteractive.astrarating.model.UserRatingsSort
+import ru.astrainteractive.klibs.mikro.core.domain.UseCase
 
 interface SortRatingUseCase : UseCase.Parametrized<Input, Output> {
     class Input(val ratings: List<UserRatingDTO>, val sort: UserRatingsSort)
