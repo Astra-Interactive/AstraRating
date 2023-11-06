@@ -64,7 +64,7 @@ class NavigationSlots(
         itemStack = PlayerHeadUtil.getHead(userAndRating.userDTO.normalName).apply {
             editMeta {
                 val component = translationContext.toComponent(
-                    translation.playerNameColor + userAndRating.userDTO.normalName
+                    translation.playerNameColor.raw + userAndRating.userDTO.normalName
                 )
                 it.displayName(component)
                 buildList {

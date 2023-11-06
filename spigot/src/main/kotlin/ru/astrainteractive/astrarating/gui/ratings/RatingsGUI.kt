@@ -1,6 +1,7 @@
 package ru.astrainteractive.astrarating.gui.ratings
 
-import kotlinx.coroutines.Dispatchers
+import java.util.UUID
+import kotlinx.coroutines.runBlocking
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -28,7 +29,6 @@ import ru.astrainteractive.astrarating.model.EmpireConfig
 import ru.astrainteractive.astrarating.model.PluginTranslation
 import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.getValue
-import java.util.*
 
 class RatingsGUI(
     player: Player,
@@ -109,13 +109,13 @@ class RatingsGUI(
     }
 
     override fun onCreated() {
-        allRatingsComponent.model.collectOn(Dispatchers.IO) {
+        allRatingsComponent.model.collectOn(dispatchers.BukkitMain) {
             if (it.isLoading) {
                 inventory.clear()
                 setManageButtons(clickListener)
-                loadingIndicator.display()
+                runBlocking { loadingIndicator.display() }
             } else {
-                loadingIndicator.stop()
+                runBlocking { loadingIndicator.stop() }
                 setMenuItems()
             }
         }
@@ -140,7 +140,7 @@ class RatingsGUI(
                     editMeta {
                         it.displayName(
                             translationContext.toComponent(
-                                translation.playerNameColor + userAndRating.userDTO.normalName
+                                translation.playerNameColor.raw + userAndRating.userDTO.normalName
                             )
                         )
                         buildList {

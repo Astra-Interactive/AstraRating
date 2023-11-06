@@ -1,5 +1,6 @@
 package ru.astrainteractive.astrarating.gui.playerratings
 
+import kotlinx.coroutines.runBlocking
 import net.kyori.adventure.text.Component
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
@@ -13,6 +14,7 @@ import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
 import ru.astrainteractive.astralibs.menu.menu.InventorySlot
 import ru.astrainteractive.astralibs.menu.menu.MenuSize
 import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
+import ru.astrainteractive.astralibs.string.replace
 import ru.astrainteractive.astrarating.feature.playerrating.presentation.PlayerRatingsComponent
 import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
 import ru.astrainteractive.astrarating.gui.playerratings.di.PlayerRatingGuiModule
@@ -122,9 +124,9 @@ class PlayerRatingsGUI(
             if (it.isLoading) {
                 inventory.clear()
                 setManageButtons(clickListener)
-                loadingIndicator.display()
+                runBlocking { loadingIndicator.display() }
             } else {
-                loadingIndicator.stop()
+                runBlocking { loadingIndicator.stop() }
                 setMenuItems()
             }
         }
@@ -149,21 +151,21 @@ class PlayerRatingsGUI(
                     editMeta {
                         it.displayName(
                             translationContext.toComponent(
-                                translation.playerNameColor + (userAndRating.userCreatedReport?.normalName ?: "-")
+                                translation.playerNameColor.raw + (userAndRating.userCreatedReport?.normalName ?: "-")
                             )
                         )
                         buildList<Component> {
                             subListFromString(
-                                "${translation.message} $color${userAndRating.message}",
+                                "${translation.message.raw} ${color.raw}${userAndRating.message}",
                                 config.trimMessageAfter,
                                 config.cutWords
                             ).forEachIndexed { _, messagePart ->
-                                val component = translationContext.toComponent("$color$messagePart")
+                                val component = translationContext.toComponent("${color.raw}$messagePart")
                                 add(component)
                             }
 
                             if (config.gui.showFirstConnection) {
-                                val firstConnection = translation.firstConnection
+                                val firstConnection = translation.firstConnection.raw
                                 val time = TimeUtility.formatToString(
                                     time = userAndRating.reportedUser.offlinePlayer.firstPlayed,
                                     format = config.gui.format
@@ -172,7 +174,7 @@ class PlayerRatingsGUI(
                                 add(component)
                             }
                             if (config.gui.showLastConnection) {
-                                val lastConnection = translation.lastConnection
+                                val lastConnection = translation.lastConnection.raw
                                 val time = TimeUtility.formatToString(
                                     time = userAndRating.reportedUser.offlinePlayer.lastPlayed,
                                     format = config.gui.format

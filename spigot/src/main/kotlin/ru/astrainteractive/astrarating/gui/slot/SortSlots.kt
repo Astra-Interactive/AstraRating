@@ -20,7 +20,7 @@ class SortSlots(
         itemStack = config.gui.buttons.sort.toItemStack().apply {
             editMeta {
                 translationContext
-                    .toComponent("${translation.sort}: ${sort.desc.toString(translation)}")
+                    .toComponent("${translation.sort.raw}: ${sort.desc.toString(translation).raw}")
                     .run(it::displayName)
             }
         }
@@ -32,7 +32,7 @@ class SortSlots(
         itemStack = config.gui.buttons.sort.toItemStack().apply {
             editMeta {
                 translationContext
-                    .toComponent("${translation.sortRating}: ${sort.desc.toString(translation)}")
+                    .toComponent("${translation.sortRating.raw}: ${sort.desc.toString(translation).raw}")
                     .run(it::displayName)
             }
         }

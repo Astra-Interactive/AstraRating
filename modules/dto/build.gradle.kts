@@ -7,4 +7,5 @@ plugins {
 dependencies {
     // Kotlin
     implementation(libs.bundles.kotlin)
+    implementation(libs.minecraft.astralibs.ktxcore)
 }

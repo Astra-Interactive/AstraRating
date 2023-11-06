@@ -1,6 +1,7 @@
 package ru.astrainteractive.astrarating.gui.loading
 
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -43,12 +44,12 @@ class LoadingIndicator(
         if (offset >= items.size) offset = 0
     }
 
-    fun stop() {
-        job?.cancel()
+    suspend fun stop() {
+        job?.cancelAndJoin()
         job = null
     }
 
-    fun display() {
+    suspend fun display() {
         stop()
         job = menu.launch {
             while (isActive) {

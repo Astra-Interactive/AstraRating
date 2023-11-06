@@ -33,7 +33,7 @@ class KillEventListener(
             apiDependency.insertUserRating(
                 reporter = null,
                 reported = playerDTO,
-                message = translationDependency.killedPlayer(killedPlayer.name),
+                message = translationDependency.killedPlayer(killedPlayer.name).raw,
                 type = RatingType.PLAYER_KILL,
                 ratingValue = configDependency.events.killPlayer.changeBy
             )
