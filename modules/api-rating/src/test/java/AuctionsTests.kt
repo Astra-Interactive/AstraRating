@@ -1,3 +1,4 @@
+
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
@@ -47,7 +48,7 @@ class AuctionsTests {
 
     @BeforeTest
     fun setup(): Unit = runBlocking {
-        File("./$dbName.db").delete()
+        File("./$dbName").delete()
         database.value.connector.invoke().close()
         database.reload()
         database.value

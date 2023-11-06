@@ -9,6 +9,7 @@ import ru.astrainteractive.astrarating.db.rating.model.DBConnection
 import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.astrarating.di.ServicesModule
 import ru.astrainteractive.astrarating.feature.di.SharedModule
+import ru.astrainteractive.astrarating.gui.di.GuiDependencies
 import ru.astrainteractive.astrarating.gui.di.GuiDependenciesImpl
 import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
 import ru.astrainteractive.klibs.kdi.Provider
