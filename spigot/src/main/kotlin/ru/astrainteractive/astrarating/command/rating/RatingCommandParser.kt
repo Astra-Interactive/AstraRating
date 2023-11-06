@@ -16,7 +16,7 @@ class RatingCommandParser(override val alias: String) : CommandParser<RatingComm
             val ratedPlayer: OfflinePlayer
         ) : Result
 
-        class Rating(val executor: CommandSender) : Result
+        class Rating(val executor: Player) : Result
         class Reload(val executor: CommandSender) : Result
         data object NotPlayer : Result
     }
@@ -56,8 +56,12 @@ class RatingCommandParser(override val alias: String) : CommandParser<RatingComm
                 )
             }
 
-            "rating" -> Result.Rating(sender)
-            "reload" -> Result.Rating(sender)
+            "rating" -> {
+                if (sender !is Player) return Result.NotPlayer
+                Result.Rating(sender)
+            }
+
+            "reload" -> Result.Reload(sender)
             else -> Result.WrongUsage
         }
     }

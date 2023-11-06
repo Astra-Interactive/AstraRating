@@ -26,7 +26,8 @@ class CommandManager(
             translation = dependencies.translation,
             coroutineScope = dependencies.scope,
             dispatchers = dependencies.dispatchers,
-            translationContext = dependencies.translationContext
+            translationContext = dependencies.translationContext,
+            guiRouter = dependencies.router
         ).register(plugin)
 
         ReloadCommand(

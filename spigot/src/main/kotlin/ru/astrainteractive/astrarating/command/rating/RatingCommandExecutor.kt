@@ -12,6 +12,7 @@ import ru.astrainteractive.astralibs.command.api.CommandExecutor
 import ru.astrainteractive.astralibs.string.BukkitTranslationContext
 import ru.astrainteractive.astrarating.dto.RatingType
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCase
+import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.model.PlayerModel
 import ru.astrainteractive.astrarating.model.PluginTranslation
 
@@ -20,7 +21,8 @@ class RatingCommandExecutor(
     private val translation: PluginTranslation,
     private val coroutineScope: CoroutineScope,
     private val dispatchers: BukkitDispatchers,
-    translationContext: BukkitTranslationContext
+    translationContext: BukkitTranslationContext,
+    private val router: GuiRouter
 ) : CommandExecutor<RatingCommandExecutor.Input>,
     BukkitTranslationContext by translationContext {
 
@@ -33,7 +35,7 @@ class RatingCommandExecutor(
         ) : Input
 
         class Reload(val executor: CommandSender) : Input
-        class OpenRatingGui(val executor: CommandSender) : Input
+        class OpenRatingGui(val player: Player) : Input
     }
 
     private fun OfflinePlayer.toPlayerModel(): PlayerModel? {
@@ -122,7 +124,8 @@ class RatingCommandExecutor(
             }
 
             is Input.OpenRatingGui -> {
-                TODO()
+                val route = GuiRouter.Route.AllRatings(input.player)
+                router.navigate(route)
             }
 
             is Input.Reload -> {

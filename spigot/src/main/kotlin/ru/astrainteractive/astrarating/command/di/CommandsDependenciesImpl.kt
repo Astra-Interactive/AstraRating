@@ -6,6 +6,7 @@ import ru.astrainteractive.astralibs.string.BukkitTranslationContext
 import ru.astrainteractive.astrarating.AstraRating
 import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCase
+import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.getValue
 
@@ -22,4 +23,6 @@ class CommandsDependenciesImpl(private val rootModule: RootModule) : CommandsDep
 
     override val permissionManager: PermissionManager = BukkitPermissionManager()
     override val translationContext: BukkitTranslationContext by rootModule.servicesModule.translationContext
+
+    override val router: GuiRouter by rootModule.servicesModule.guiRouter
 }

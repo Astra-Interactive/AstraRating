@@ -16,6 +16,8 @@ import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.astrarating.di.ServicesModule
 import ru.astrainteractive.astrarating.event.EventManager
 import ru.astrainteractive.astrarating.event.di.EventModuleImpl
+import ru.astrainteractive.astrarating.gui.router.GuiRouter
+import ru.astrainteractive.astrarating.gui.router.GuiRouterImpl
 import ru.astrainteractive.astrarating.model.EmpireConfig
 import ru.astrainteractive.astrarating.model.PluginTranslation
 import ru.astrainteractive.klibs.kdi.Factory
@@ -71,5 +73,13 @@ class ServicesModuleImpl(rootModule: RootModule) : ServicesModule {
     }
     override val translationContext: Provider<BukkitTranslationContext> = Provider {
         BukkitTranslationContext.Default { componentSerializer.value }
+    }
+    override val guiRouter: Provider<GuiRouter> = Provider {
+        GuiRouterImpl(
+            scope = scope.value,
+            dispatchers = dispatchers.value,
+            rootModule = rootModule,
+            guiModule = rootModule.guiModule
+        )
     }
 }

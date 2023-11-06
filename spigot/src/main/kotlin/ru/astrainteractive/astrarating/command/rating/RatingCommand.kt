@@ -6,6 +6,7 @@ import ru.astrainteractive.astralibs.async.BukkitDispatchers
 import ru.astrainteractive.astralibs.command.api.Command
 import ru.astrainteractive.astralibs.string.BukkitTranslationContext
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCase
+import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.model.PluginTranslation
 
 class RatingCommand(
@@ -13,14 +14,16 @@ class RatingCommand(
     private val translation: PluginTranslation,
     private val coroutineScope: CoroutineScope,
     private val dispatchers: BukkitDispatchers,
-    translationContext: BukkitTranslationContext
+    translationContext: BukkitTranslationContext,
+    private val guiRouter: GuiRouter
 ) : Command, BukkitTranslationContext by translationContext {
     private val executor = RatingCommandExecutor(
         addRatingUseCase = addRatingUseCase,
         translation = translation,
         coroutineScope = coroutineScope,
         dispatchers = dispatchers,
-        translationContext = translationContext
+        translationContext = translationContext,
+        router = guiRouter
     )
     private val parser = RatingCommandParser("arating")
 

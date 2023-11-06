@@ -1,8 +1,6 @@
 package ru.astrainteractive.astrarating.gui.ratings
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -18,6 +16,7 @@ import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
 import ru.astrainteractive.astrarating.feature.allrating.AllRatingsComponent
 import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
 import ru.astrainteractive.astrarating.gui.ratings.di.RatingsGUIModule
+import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.gui.slot.NavigationSlots
 import ru.astrainteractive.astrarating.gui.slot.SlotContext
 import ru.astrainteractive.astrarating.gui.slot.SortSlots
@@ -35,6 +34,7 @@ class RatingsGUI(
     player: Player,
     private val module: RatingsGUIModule,
     private val allRatingsComponent: AllRatingsComponent,
+    private val router: GuiRouter
 ) : PaginatedMenu(),
     RatingsGUIModule by module {
 
@@ -173,15 +173,11 @@ class RatingsGUI(
                     }
                 }
                 click = Click {
-                    componentScope.launch(dispatchers.BukkitAsync) {
-                        val inventory = module.allRatingsGuiFactory(
-                            Bukkit.getOfflinePlayer(UUID.fromString(userAndRating.userDTO.minecraftUUID)),
-                            playerHolder.player,
-                        ).create()
-                        withContext(dispatchers.BukkitMain) {
-                            inventory.open()
-                        }
-                    }
+                    val route = GuiRouter.Route.PlayerRating(
+                        executor = playerHolder.player,
+                        selectedPlayer = Bukkit.getOfflinePlayer(UUID.fromString(userAndRating.userDTO.minecraftUUID))
+                    )
+                    router.navigate(route)
                 }
             }.also(clickListener::remember).setInventorySlot()
         }
