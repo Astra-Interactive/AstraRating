@@ -97,9 +97,9 @@ class RatingCommandExecutor(
 
                 AddRatingUseCase.Output.Success -> {
                     if (input.value > 0) {
-                        input.executor.sendMessage(translation.likedUser(input.rated.name?:"-"))
+                        input.executor.sendMessage(translation.likedUser(input.rated.name ?: "-"))
                     } else {
-                        input.executor.sendMessage(translation.dislikedUser(input.rated.name?:"-"))
+                        input.executor.sendMessage(translation.dislikedUser(input.rated.name ?: "-"))
                     }
                 }
             }

@@ -1,6 +1,5 @@
 package ru.astrainteractive.astrarating.gui.ratings
 
-import java.util.UUID
 import kotlinx.coroutines.runBlocking
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
@@ -29,6 +28,7 @@ import ru.astrainteractive.astrarating.model.EmpireConfig
 import ru.astrainteractive.astrarating.model.PluginTranslation
 import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.getValue
+import java.util.UUID
 
 class RatingsGUI(
     player: Player,
