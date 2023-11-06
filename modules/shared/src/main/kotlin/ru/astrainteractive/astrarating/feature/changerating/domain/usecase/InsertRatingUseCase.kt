@@ -11,7 +11,7 @@ import ru.astrainteractive.klibs.mikro.core.domain.UseCase
  *
  * Each player has limited amount of votes per day
  */
-interface InsertRatingUseCase : UseCase.Parametrized<Input, Unit> {
+interface InsertRatingUseCase : UseCase.Suspended<Input, Unit> {
     class Input(
         val ratingCreator: PlayerModel,
         val ratedPlayer: PlayerModel,

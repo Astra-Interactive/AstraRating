@@ -9,7 +9,7 @@ import ru.astrainteractive.klibs.mikro.core.domain.UseCase
 /**
  * This UseCase will try to add rating from player to another player
  */
-interface AddRatingUseCase : UseCase.Parametrized<Input, Output> {
+interface AddRatingUseCase : UseCase.Suspended<Input, Output> {
     class Input(
         val creator: PlayerModel,
         val message: String,
@@ -30,6 +30,7 @@ interface AddRatingUseCase : UseCase.Parametrized<Input, Output> {
     }
 }
 
+@Suppress("LongParameterList")
 internal class AddRatingUseCaseImpl(
     private val canVoteOnPlayerUseCase: CanVoteOnPlayerUseCase,
     private val canVoteTodayUseCase: CanVoteTodayUseCase,

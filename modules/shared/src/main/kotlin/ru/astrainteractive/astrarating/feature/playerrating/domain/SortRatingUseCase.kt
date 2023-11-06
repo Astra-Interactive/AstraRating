@@ -6,7 +6,7 @@ import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUse
 import ru.astrainteractive.astrarating.model.UserRatingsSort
 import ru.astrainteractive.klibs.mikro.core.domain.UseCase
 
-interface SortRatingUseCase : UseCase.Parametrized<Input, Output> {
+interface SortRatingUseCase : UseCase.Suspended<Input, Output> {
     class Input(val ratings: List<UserRatingDTO>, val sort: UserRatingsSort)
     class Output(val ratings: List<UserRatingDTO>)
 }

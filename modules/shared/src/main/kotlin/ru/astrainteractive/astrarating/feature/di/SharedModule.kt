@@ -39,7 +39,8 @@ interface SharedModule {
             ChangeRatingModule.Default(
                 dbApi = apiRatingModule.ratingDBApi,
                 permissionManager = permissionManager,
-                empireConfig = empireConfig
+                empireConfig = empireConfig,
+                dispatchers = dispatchers
             )
         }
         override val allRatingsRepository by Single {

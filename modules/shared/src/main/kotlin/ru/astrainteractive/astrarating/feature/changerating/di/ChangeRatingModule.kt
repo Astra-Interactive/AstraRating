@@ -32,6 +32,7 @@ import ru.astrainteractive.astrarating.model.EmpireConfig
 import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.Reloadable
 import ru.astrainteractive.klibs.kdi.getValue
+import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 interface ChangeRatingModule {
     val canVoteOnPlayerRepository: CanVoteOnPlayerRepository
@@ -52,19 +53,20 @@ interface ChangeRatingModule {
     class Default(
         private val dbApi: RatingDBApi,
         private val permissionManager: PermissionManager,
-        private val empireConfig: Reloadable<EmpireConfig>
+        private val empireConfig: Reloadable<EmpireConfig>,
+        private val dispatchers: KotlinDispatchers
     ) : ChangeRatingModule {
         override val canVoteOnPlayerRepository: CanVoteOnPlayerRepository by Provider {
-            CanVoteOnPlayerRepositoryImpl(dbApi)
+            CanVoteOnPlayerRepositoryImpl(dbApi, dispatchers)
         }
         override val canVoteTodayRepository: CanVoteTodayRepository by Provider {
-            CanVoteTodayRepositoryImpl(dbApi)
+            CanVoteTodayRepositoryImpl(dbApi, dispatchers)
         }
         override val insertRatingRepository: InsertRatingRepository by Provider {
-            InsertRatingRepositoryImpl(dbApi)
+            InsertRatingRepositoryImpl(dbApi, dispatchers)
         }
         override val insertUserRepository: InsertUserRepository by Provider {
-            InsertUserRepositoryImpl(dbApi)
+            InsertUserRepositoryImpl(dbApi, dispatchers)
         }
         override val addRatingUseCase: AddRatingUseCase by Provider {
             AddRatingUseCaseImpl(

@@ -1,45 +1,72 @@
 package ru.astrainteractive.astrarating.command.rating
 
-import CommandManager
-import kotlinx.coroutines.launch
-import org.bukkit.Bukkit
-import ru.astrainteractive.astralibs.command.registerCommand
-import ru.astrainteractive.astralibs.command.types.OnlinePlayerArgument
-import ru.astrainteractive.astralibs.command.types.PrimitiveArgumentType
-import ru.astrainteractive.astrarating.dto.RatingType
-import ru.astrainteractive.klibs.kdi.getValue
+import kotlinx.coroutines.CoroutineScope
+import org.bukkit.plugin.java.JavaPlugin
+import ru.astrainteractive.astralibs.async.BukkitDispatchers
+import ru.astrainteractive.astralibs.command.api.Command
+import ru.astrainteractive.astralibs.string.BukkitTranslationContext
+import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCase
+import ru.astrainteractive.astrarating.model.PluginTranslation
 
-/**
- * /arating reload
- * /arating like/dislike <player> <message>
- * /arating rating <player>
- */
-fun CommandManager.ratingCommand() = plugin.registerCommand("arating") {
-    val argument = argument(0, PrimitiveArgumentType.String)
-        .onFailure {
-            val message = translationContext.toComponent(translation.wrongUsage)
-            sender.sendMessage(message)
-            return@registerCommand
-        }.resultOrNull() ?: return@registerCommand
+class RatingCommand(
+    private val addRatingUseCase: AddRatingUseCase,
+    private val translation: PluginTranslation,
+    private val coroutineScope: CoroutineScope,
+    private val dispatchers: BukkitDispatchers,
+    translationContext: BukkitTranslationContext
+) : Command, BukkitTranslationContext by translationContext {
+    private val executor = RatingCommandExecutor(
+        addRatingUseCase = addRatingUseCase,
+        translation = translation,
+        coroutineScope = coroutineScope,
+        dispatchers = dispatchers,
+        translationContext = translationContext
+    )
+    private val parser = RatingCommandParser("arating")
 
-    when (argument) {
-        "like", "dislike" -> {
-            val ratedPlayer = argument(1, OnlinePlayerArgument).resultOrNull()
-            val message = args.toList().subList(2, args.size).joinToString(" ")
-            val amount = if (argument == "like") 1 else -1
+    override fun register(plugin: JavaPlugin) {
+        Command.registerDefault(
+            plugin = plugin,
+            resultHandler = { commandSender, result ->
+                when (result) {
+                    RatingCommandParser.Result.NotPlayer -> {
+                        commandSender.sendMessage(translation.onlyPlayerCommand)
+                    }
 
-            scope.launch(dispatchers.BukkitAsync) {
-                ratingCommandController.addRating(
-                    ratingCreator = sender,
-                    rating = amount,
-                    message = message,
-                    ratedPlayer = ratedPlayer,
-                    typeDTO = RatingType.USER_RATING
-                ).onFailure(validationExceptionHandler::handle)
+                    RatingCommandParser.Result.WrongUsage -> {
+                        commandSender.sendMessage(translation.wrongUsage)
+                    }
+
+                    is RatingCommandParser.Result.Reload,
+                    is RatingCommandParser.Result.Rating,
+                    is RatingCommandParser.Result.ChangeRating -> Unit
+                }
+            },
+            commandParser = parser,
+            commandExecutor = executor,
+            transform = {
+                when (it) {
+                    is RatingCommandParser.Result.Rating -> {
+                        RatingCommandExecutor.Input.OpenRatingGui(it.executor)
+                    }
+
+                    is RatingCommandParser.Result.Reload -> {
+                        RatingCommandExecutor.Input.Reload(it.executor)
+                    }
+
+                    is RatingCommandParser.Result.ChangeRating -> {
+                        RatingCommandExecutor.Input.ChangeRating(
+                            value = it.value,
+                            message = it.message,
+                            executor = it.executor,
+                            rated = it.ratedPlayer
+                        )
+                    }
+
+                    RatingCommandParser.Result.WrongUsage -> null
+                    RatingCommandParser.Result.NotPlayer -> null
+                }
             }
-        }
-
-        "rating" -> ratingCommandController.rating(sender)
-        "reload" -> Bukkit.dispatchCommand(sender, "aratingreload")
+        )
     }
 }

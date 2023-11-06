@@ -3,12 +3,14 @@ package ru.astrainteractive.astrarating.di.impl
 import org.bukkit.Bukkit
 import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
 import ru.astrainteractive.astrarating.command.di.CommandsDependencies
+import ru.astrainteractive.astrarating.command.di.CommandsDependenciesImpl
 import ru.astrainteractive.astrarating.db.rating.di.DBRatingModule
 import ru.astrainteractive.astrarating.db.rating.model.DBConnection
 import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.astrarating.di.ServicesModule
 import ru.astrainteractive.astrarating.feature.di.SharedModule
 import ru.astrainteractive.astrarating.gui.di.GuiModule
+import ru.astrainteractive.astrarating.gui.di.GuiModuleImpl
 import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
 import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.Single

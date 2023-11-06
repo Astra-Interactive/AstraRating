@@ -1,4 +1,4 @@
-@file:Suppress("MaximumLineLength", "MaxLineLength")
+@file:Suppress("MaximumLineLength", "MaxLineLength", "LongParameterList")
 
 package ru.astrainteractive.astrarating.model
 
@@ -13,6 +13,8 @@ class PluginTranslation(
     val dbFail: String = "#ca271bНет подключения к базе данных",
     @SerialName("database.error")
     val dbError: String = "#ca271bПроизошла ошибка в базе данных",
+    @SerialName("general.unknown_error")
+    val unknownError: String = "#ca271bНеизвестная ошибка",
     @SerialName("general.prefix")
     val prefix: String = "#1B76CA[EmpireItems]",
     @SerialName("general.wrong_usage")

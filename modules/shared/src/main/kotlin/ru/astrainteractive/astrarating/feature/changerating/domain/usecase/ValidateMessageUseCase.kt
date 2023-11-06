@@ -8,7 +8,7 @@ import ru.astrainteractive.klibs.mikro.core.domain.UseCase
  *
  * It should be in range of min/max range
  */
-interface ValidateMessageUseCase : UseCase.Parametrized<Input, Boolean> {
+interface ValidateMessageUseCase : UseCase.Suspended<Input, Boolean> {
     @JvmInline
     value class Input(val message: String)
 

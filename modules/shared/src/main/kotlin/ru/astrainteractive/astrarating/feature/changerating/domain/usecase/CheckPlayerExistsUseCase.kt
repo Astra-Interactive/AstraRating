@@ -7,7 +7,7 @@ import ru.astrainteractive.klibs.mikro.core.domain.UseCase
 /**
  * Checks if [Input.playerModel] exists
  */
-interface CheckPlayerExistsUseCase : UseCase.Parametrized<Input, Boolean> {
+interface CheckPlayerExistsUseCase : UseCase.Suspended<Input, Boolean> {
     @JvmInline
     value class Input(val playerModel: PlayerModel?)
 

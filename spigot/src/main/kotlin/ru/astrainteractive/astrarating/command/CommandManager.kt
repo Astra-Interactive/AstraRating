@@ -1,6 +1,6 @@
 import ru.astrainteractive.astrarating.command.di.CommandsDependencies
-import ru.astrainteractive.astrarating.command.rating.ratingCommand
-import ru.astrainteractive.astrarating.command.reload.reload
+import ru.astrainteractive.astrarating.command.rating.RatingCommand
+import ru.astrainteractive.astrarating.command.reload.ReloadCommand
 import ru.astrainteractive.astrarating.command.tabCompleter
 
 /**
@@ -20,7 +20,19 @@ class CommandManager(
      */
     init {
         tabCompleter()
-        reload()
-        ratingCommand()
+
+        RatingCommand(
+            addRatingUseCase = dependencies.addRatingUseCase,
+            translation = dependencies.translation,
+            coroutineScope = dependencies.scope,
+            dispatchers = dependencies.dispatchers,
+            translationContext = dependencies.translationContext
+        ).register(plugin)
+
+        ReloadCommand(
+            permissionManager = dependencies.permissionManager,
+            translation = dependencies.translation,
+            translationContext = dependencies.translationContext
+        ).register(plugin)
     }
 }

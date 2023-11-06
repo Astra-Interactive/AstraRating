@@ -7,7 +7,7 @@ import ru.astrainteractive.klibs.mikro.core.domain.UseCase
 /**
  * Checks whether [Input.playerModel] has been enough time on server
  */
-interface CheckEnoughTimeUseCase : UseCase.Parametrized<Input, Boolean> {
+interface CheckEnoughTimeUseCase : UseCase.Suspended<Input, Boolean> {
     @JvmInline
     value class Input(val playerModel: PlayerModel)
 

@@ -13,7 +13,7 @@ import ru.astrainteractive.klibs.mikro.core.domain.UseCase
  * @param player owner of auction
  * @return boolean - true if succesfully removed
  */
-interface InsertUserUseCase : UseCase.Parametrized<Input, Output> {
+interface InsertUserUseCase : UseCase.Suspended<Input, Output> {
     @JvmInline
     value class Input(val playerModel: PlayerModel)
 

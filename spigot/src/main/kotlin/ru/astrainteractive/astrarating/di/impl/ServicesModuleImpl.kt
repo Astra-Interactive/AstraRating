@@ -10,14 +10,17 @@ import ru.astrainteractive.astralibs.permission.BukkitPermissionManager
 import ru.astrainteractive.astralibs.permission.PermissionManager
 import ru.astrainteractive.astralibs.serialization.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.serialization.YamlSerializer
+import ru.astrainteractive.astralibs.string.BukkitTranslationContext
 import ru.astrainteractive.astrarating.AstraRating
 import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.astrarating.di.ServicesModule
 import ru.astrainteractive.astrarating.event.EventManager
+import ru.astrainteractive.astrarating.event.di.EventModuleImpl
 import ru.astrainteractive.astrarating.model.EmpireConfig
 import ru.astrainteractive.astrarating.model.PluginTranslation
 import ru.astrainteractive.klibs.kdi.Factory
 import ru.astrainteractive.klibs.kdi.Lateinit
+import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.Reloadable
 import ru.astrainteractive.klibs.kdi.Single
 import ru.astrainteractive.klibs.kdi.getValue
@@ -65,5 +68,8 @@ class ServicesModuleImpl(rootModule: RootModule) : ServicesModule {
     }
     override val permissionManager: Single<PermissionManager> = Single {
         BukkitPermissionManager()
+    }
+    override val translationContext: Provider<BukkitTranslationContext> = Provider {
+        BukkitTranslationContext.Default { componentSerializer.value }
     }
 }

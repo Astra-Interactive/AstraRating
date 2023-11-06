@@ -121,6 +121,7 @@ class RatingsGUI(
         }
     }
 
+    @Suppress("LongMethod")
     private fun setMenuItems(model: AllRatingsComponent.Model = allRatingsComponent.model.value) {
         inventory.clear()
         setManageButtons(clickListener)

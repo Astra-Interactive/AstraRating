@@ -134,7 +134,7 @@ class PlayerRatingsGUI(
         }
     }
 
-    @Suppress("CyclomaticComplexMethod")
+    @Suppress("CyclomaticComplexMethod", "LongMethod")
     private fun setMenuItems(model: PlayerRatingsComponent.Model = playerRatingsComponent.model.value) {
         inventory.clear()
         setManageButtons(clickListener)

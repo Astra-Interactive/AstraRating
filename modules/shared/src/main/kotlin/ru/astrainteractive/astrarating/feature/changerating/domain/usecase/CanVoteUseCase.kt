@@ -9,7 +9,7 @@ import ru.astrainteractive.klibs.mikro.core.domain.UseCase
 /**
  * Checks whether [Input.playerModel] has permission to vote or not
  */
-interface CanVoteUseCase : UseCase.Parametrized<Input, Boolean> {
+interface CanVoteUseCase : UseCase.Suspended<Input, Boolean> {
     @JvmInline
     value class Input(val playerModel: PlayerModel)
 

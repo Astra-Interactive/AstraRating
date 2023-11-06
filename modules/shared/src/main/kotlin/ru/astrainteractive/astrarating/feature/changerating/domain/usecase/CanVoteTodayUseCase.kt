@@ -12,7 +12,7 @@ import ru.astrainteractive.klibs.mikro.core.domain.UseCase
  *
  * Each player has limited amount of votes per day
  */
-interface CanVoteTodayUseCase : UseCase.Parametrized<Input, Boolean> {
+interface CanVoteTodayUseCase : UseCase.Suspended<Input, Boolean> {
     class Input(val playerModel: PlayerModel)
 
     suspend operator fun invoke(playerModel: PlayerModel) = invoke(Input(playerModel))

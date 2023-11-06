@@ -12,7 +12,7 @@ import ru.astrainteractive.klibs.mikro.core.domain.UseCase
  *
  * Player has limited votes on each player
  */
-interface CanVoteOnPlayerUseCase : UseCase.Parametrized<Input, Boolean> {
+interface CanVoteOnPlayerUseCase : UseCase.Suspended<Input, Boolean> {
     class Input(val creator: PlayerModel, val rated: PlayerModel?)
 
     suspend operator fun invoke(
