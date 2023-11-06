@@ -1,5 +1,6 @@
 package ru.astrainteractive.astrarating.feature.changerating.domain.usecase
 
+import ru.astrainteractive.astrarating.feature.changerating.data.PlatformBridge
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.CheckEnoughTimeUseCase.Input
 import ru.astrainteractive.astrarating.model.PlayerModel
 import ru.astrainteractive.klibs.mikro.core.domain.UseCase
@@ -14,8 +15,10 @@ interface CheckEnoughTimeUseCase : UseCase.Suspended<Input, Boolean> {
     suspend operator fun invoke(playerModel: PlayerModel) = invoke(Input(playerModel))
 }
 
-internal class CheckEnoughTimeUseCaseImpl : CheckEnoughTimeUseCase {
+internal class CheckEnoughTimeUseCaseImpl(
+    private val platformBridge: PlatformBridge
+) : CheckEnoughTimeUseCase {
     override suspend fun invoke(input: Input): Boolean {
-        return TODO() // System.currentTimeMillis() - ratingCreator.firstPlayed < config.minTimeOnServer
+        return platformBridge.hasEnoughTime(input.playerModel)
     }
 }

@@ -35,7 +35,7 @@ internal class CanVoteOnPlayerUseCaseImpl(
         ) ?: maxRatingPerPlayer
         val votedOnPlayerAmount = canVoteOnPlayerRepository.countPlayerOnPlayerDayRated(
             creator.name,
-            rated?.name ?: "NULL"
+            rated?.name ?: error("Rated player doesn't have a name!")
         )
         return votedOnPlayerAmount <= maxVotePerPlayer
     }

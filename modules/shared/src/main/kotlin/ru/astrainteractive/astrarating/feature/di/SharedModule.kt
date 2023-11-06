@@ -7,6 +7,7 @@ import ru.astrainteractive.astrarating.feature.allrating.AllRatingsComponent
 import ru.astrainteractive.astrarating.feature.allrating.DefaultAllRatingsComponent
 import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsRepository
 import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsRepositoryImpl
+import ru.astrainteractive.astrarating.feature.changerating.data.PlatformBridge
 import ru.astrainteractive.astrarating.feature.changerating.di.ChangeRatingModule
 import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUseCase
 import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUseCaseImpl
@@ -15,6 +16,7 @@ import ru.astrainteractive.astrarating.feature.playerrating.presentation.PlayerR
 import ru.astrainteractive.astrarating.model.EmpireConfig
 import ru.astrainteractive.astrarating.model.PlayerModel
 import ru.astrainteractive.klibs.kdi.Factory
+import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.Reloadable
 import ru.astrainteractive.klibs.kdi.Single
 import ru.astrainteractive.klibs.kdi.getValue
@@ -33,14 +35,16 @@ interface SharedModule {
         private val dispatchers: KotlinDispatchers,
         private val coroutineScope: CoroutineScope,
         private val permissionManager: PermissionManager,
-        private val empireConfig: Reloadable<EmpireConfig>
+        private val empireConfig: Reloadable<EmpireConfig>,
+        private val platformBridge: Provider<PlatformBridge>
     ) : SharedModule {
         override val changeRatingModule: ChangeRatingModule by Single {
             ChangeRatingModule.Default(
                 dbApi = apiRatingModule.ratingDBApi,
                 permissionManager = permissionManager,
                 empireConfig = empireConfig,
-                dispatchers = dispatchers
+                dispatchers = dispatchers,
+                platformBridge = platformBridge
             )
         }
         override val allRatingsRepository by Single {

@@ -78,7 +78,8 @@ class RootModuleImpl : RootModule {
             dispatchers = servicesModule.dispatchers.value,
             coroutineScope = servicesModule.scope.value,
             permissionManager = servicesModule.permissionManager.value,
-            empireConfig = servicesModule.config
+            empireConfig = servicesModule.config,
+            platformBridge = servicesModule.platformBridge
         )
     }
 }

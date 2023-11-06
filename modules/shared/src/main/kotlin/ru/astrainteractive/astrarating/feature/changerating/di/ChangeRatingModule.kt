@@ -10,6 +10,7 @@ import ru.astrainteractive.astrarating.feature.changerating.data.InsertRatingRep
 import ru.astrainteractive.astrarating.feature.changerating.data.InsertRatingRepositoryImpl
 import ru.astrainteractive.astrarating.feature.changerating.data.InsertUserRepository
 import ru.astrainteractive.astrarating.feature.changerating.data.InsertUserRepositoryImpl
+import ru.astrainteractive.astrarating.feature.changerating.data.PlatformBridge
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCase
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCaseImpl
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.CanVoteOnPlayerUseCase
@@ -54,7 +55,8 @@ interface ChangeRatingModule {
         private val dbApi: RatingDBApi,
         private val permissionManager: PermissionManager,
         private val empireConfig: Reloadable<EmpireConfig>,
-        private val dispatchers: KotlinDispatchers
+        private val dispatchers: KotlinDispatchers,
+        private val platformBridge: Provider<PlatformBridge>
     ) : ChangeRatingModule {
         override val canVoteOnPlayerRepository: CanVoteOnPlayerRepository by Provider {
             CanVoteOnPlayerRepositoryImpl(dbApi, dispatchers)
@@ -99,10 +101,10 @@ interface ChangeRatingModule {
             )
         }
         override val checkEnoughTimeUseCase: CheckEnoughTimeUseCase by Provider {
-            CheckEnoughTimeUseCaseImpl()
+            CheckEnoughTimeUseCaseImpl(platformBridge.provide())
         }
         override val checkPlayerExistsUseCase: CheckPlayerExistsUseCase by Provider {
-            CheckPlayerExistsUseCaseImpl()
+            CheckPlayerExistsUseCaseImpl(platformBridge.provide())
         }
         override val insertRatingUseCase: InsertRatingUseCase by Provider {
             InsertRatingUseCaseImpl(

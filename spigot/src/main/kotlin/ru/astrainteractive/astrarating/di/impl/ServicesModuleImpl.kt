@@ -16,6 +16,8 @@ import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.astrarating.di.ServicesModule
 import ru.astrainteractive.astrarating.event.EventManager
 import ru.astrainteractive.astrarating.event.di.EventModuleImpl
+import ru.astrainteractive.astrarating.feature.changerating.data.BukkitPlatformBridge
+import ru.astrainteractive.astrarating.feature.changerating.data.PlatformBridge
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.gui.router.GuiRouterImpl
 import ru.astrainteractive.astrarating.model.EmpireConfig
@@ -80,6 +82,12 @@ class ServicesModuleImpl(rootModule: RootModule) : ServicesModule {
             dispatchers = dispatchers.value,
             rootModule = rootModule,
             guiModule = rootModule.guiModule
+        )
+    }
+
+    override val platformBridge: Provider<PlatformBridge> = Provider {
+        BukkitPlatformBridge(
+            minTimeOnServer = { config.value.minTimeOnServer }
         )
     }
 }
