@@ -1,7 +1,6 @@
-
-import ru.astrainteractive.astrarating.command.di.CommandsModule
-import ru.astrainteractive.astrarating.command.rating.ratingCommand
-import ru.astrainteractive.astrarating.command.reload.reload
+import ru.astrainteractive.astrarating.command.di.CommandsDependencies
+import ru.astrainteractive.astrarating.command.rating.RatingCommand
+import ru.astrainteractive.astrarating.command.reload.ReloadCommand
 import ru.astrainteractive.astrarating.command.tabCompleter
 
 /**
@@ -10,8 +9,8 @@ import ru.astrainteractive.astrarating.command.tabCompleter
  * @see Reload
  */
 class CommandManager(
-    module: CommandsModule
-) : CommandsModule by module {
+    dependencies: CommandsDependencies
+) : CommandsDependencies by dependencies {
     /**
      * Here you should declare commands for your plugin
      *
@@ -21,7 +20,20 @@ class CommandManager(
      */
     init {
         tabCompleter()
-        reload()
-        ratingCommand()
+
+        RatingCommand(
+            addRatingUseCase = dependencies.addRatingUseCase,
+            translation = dependencies.translation,
+            coroutineScope = dependencies.scope,
+            dispatchers = dependencies.dispatchers,
+            translationContext = dependencies.translationContext,
+            guiRouter = dependencies.router
+        ).register(plugin)
+
+        ReloadCommand(
+            permissionManager = dependencies.permissionManager,
+            translation = dependencies.translation,
+            translationContext = dependencies.translationContext
+        ).register(plugin)
     }
 }

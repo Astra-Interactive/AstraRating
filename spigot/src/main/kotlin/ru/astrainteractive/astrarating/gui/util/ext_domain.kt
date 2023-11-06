@@ -5,9 +5,9 @@ package ru.astrainteractive.astrarating.gui.util
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import ru.astrainteractive.astrarating.dto.UserDTO
+import ru.astrainteractive.astrarating.model.PluginTranslation
 import ru.astrainteractive.astrarating.model.UserRatingsSort
 import ru.astrainteractive.astrarating.model.UsersRatingsSort
-import ru.astrainteractive.astrarating.plugin.PluginTranslation
 import java.util.UUID
 
 val UserDTO.offlinePlayer: OfflinePlayer

@@ -1,17 +1,20 @@
 package ru.astrainteractive.astrarating.gui.loading
 
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import ru.astrainteractive.astralibs.menu.menu.Menu
-import ru.astrainteractive.astrarating.plugin.PluginTranslation
+import ru.astrainteractive.astralibs.serialization.KyoriComponentSerializer
+import ru.astrainteractive.astrarating.model.PluginTranslation
 
 class LoadingIndicator(
     private val menu: Menu,
-    private val translation: PluginTranslation
+    private val translation: PluginTranslation,
+    private val translationContext: KyoriComponentSerializer
 ) {
     private var job: Job? = null
     private val items = listOf(
@@ -32,7 +35,8 @@ class LoadingIndicator(
             val material = items[(i + offset) % items.size]
             val itemStack = ItemStack(material)
             itemStack.editMeta {
-                it.setDisplayName(translation.loading)
+                val message = translationContext.toComponent(translation.loading)
+                it.displayName(message)
             }
             menu.inventory.setItem(i, itemStack)
         }
@@ -40,12 +44,12 @@ class LoadingIndicator(
         if (offset >= items.size) offset = 0
     }
 
-    fun stop() {
-        job?.cancel()
+    suspend fun stop() {
+        job?.cancelAndJoin()
         job = null
     }
 
-    fun display() {
+    suspend fun display() {
         stop()
         job = menu.launch {
             while (isActive) {

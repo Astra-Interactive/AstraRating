@@ -5,12 +5,12 @@ import org.bukkit.event.entity.PlayerDeathEvent
 import ru.astrainteractive.astralibs.event.DSLEvent
 import ru.astrainteractive.astrarating.dto.RatingType
 import ru.astrainteractive.astrarating.dto.UserDTO
-import ru.astrainteractive.astrarating.event.di.EventModule
+import ru.astrainteractive.astrarating.event.di.EventDependencies
 import ru.astrainteractive.astrarating.model.UserModel
 
 class KillEventListener(
-    module: EventModule
-) : EventModule by module {
+    module: EventDependencies
+) : EventDependencies by module {
 
     val onPlayerKilledPlayer = DSLEvent<PlayerDeathEvent>(eventListener, plugin) {
         if (!configDependency.events.killPlayer.enabled) return@DSLEvent
@@ -33,7 +33,7 @@ class KillEventListener(
             apiDependency.insertUserRating(
                 reporter = null,
                 reported = playerDTO,
-                message = translationDependency.killedPlayer(killedPlayer.name),
+                message = translationDependency.killedPlayer(killedPlayer.name).raw,
                 type = RatingType.PLAYER_KILL,
                 ratingValue = configDependency.events.killPlayer.changeBy
             )

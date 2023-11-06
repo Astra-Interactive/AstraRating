@@ -1,9 +1,9 @@
 package ru.astrainteractive.astrarating.event
 
-import ru.astrainteractive.astrarating.event.di.EventModule
+import ru.astrainteractive.astrarating.event.di.EventDependencies
 
 class EventManager(
-    module: EventModule
+    module: EventDependencies
 ) {
     init {
         KillEventListener(module)

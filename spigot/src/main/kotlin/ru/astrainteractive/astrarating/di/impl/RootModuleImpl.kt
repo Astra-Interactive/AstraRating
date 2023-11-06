@@ -2,13 +2,15 @@ package ru.astrainteractive.astrarating.di.impl
 
 import org.bukkit.Bukkit
 import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
-import ru.astrainteractive.astrarating.command.di.CommandsModule
+import ru.astrainteractive.astrarating.command.di.CommandsDependencies
+import ru.astrainteractive.astrarating.command.di.CommandsDependenciesImpl
 import ru.astrainteractive.astrarating.db.rating.di.DBRatingModule
 import ru.astrainteractive.astrarating.db.rating.model.DBConnection
 import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.astrarating.di.ServicesModule
 import ru.astrainteractive.astrarating.feature.di.SharedModule
-import ru.astrainteractive.astrarating.gui.di.GuiModule
+import ru.astrainteractive.astrarating.gui.di.GuiDependencies
+import ru.astrainteractive.astrarating.gui.di.GuiDependenciesImpl
 import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
 import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.Single
@@ -22,11 +24,11 @@ class RootModuleImpl : RootModule {
     }
 
     // Modules
-    override val commandsModule: CommandsModule by Provider {
-        CommandsModuleImpl(this)
+    override val commandsDependencies: CommandsDependencies by Provider {
+        CommandsDependenciesImpl(this)
     }
-    override val guiModule: GuiModule by Provider {
-        GuiModuleImpl(this)
+    override val guiDependencies: GuiDependencies by Provider {
+        GuiDependenciesImpl(this)
     }
 
     override val dbRatingModule: DBRatingModule by Single {
@@ -74,7 +76,10 @@ class RootModuleImpl : RootModule {
         SharedModule.Default(
             apiRatingModule = apiRatingModule,
             dispatchers = servicesModule.dispatchers.value,
-            coroutineScope = servicesModule.scope.value
+            coroutineScope = servicesModule.scope.value,
+            permissionManager = servicesModule.permissionManager.value,
+            empireConfig = servicesModule.config,
+            platformBridge = servicesModule.platformBridge
         )
     }
 }

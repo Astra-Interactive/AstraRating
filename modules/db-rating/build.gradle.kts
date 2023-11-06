@@ -1,14 +1,15 @@
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
+    alias(klibs.plugins.klibs.gradle.java.core)
 }
 
 dependencies {
     // Kotlin
     implementation(libs.bundles.kotlin)
     // klibs
-    implementation(libs.klibs.kdi)
-    implementation(libs.klibs.mikro)
+    implementation(klibs.klibs.kdi)
+    implementation(klibs.klibs.mikro.core)
     // Exposed
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)

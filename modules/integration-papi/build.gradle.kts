@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
+    alias(klibs.plugins.klibs.gradle.java.core)
 }
 
 dependencies {
@@ -9,8 +10,8 @@ dependencies {
     // AstraLibs
     implementation(libs.minecraft.astralibs.spigot.core)
     // klibs
-    implementation(libs.klibs.mikro)
-    implementation(libs.klibs.kdi)
+    implementation(klibs.klibs.mikro.core)
+    implementation(klibs.klibs.kdi)
     // Test
     testImplementation(libs.bundles.testing.kotlin)
     testImplementation(libs.tests.kotlin.test)

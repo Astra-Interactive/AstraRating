@@ -1,4 +1,5 @@
 
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import ru.astrainteractive.gradleplugin.setupSpigotProcessor
 import ru.astrainteractive.gradleplugin.util.ProjectProperties.projectInfo
 
@@ -6,6 +7,7 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
     id("com.github.johnrengelman.shadow")
+    alias(klibs.plugins.klibs.gradle.java.core)
 }
 
 dependencies {
@@ -16,8 +18,8 @@ dependencies {
     implementation(libs.minecraft.astralibs.spigot.gui)
     implementation(libs.minecraft.astralibs.spigot.core)
     // klibs
-    implementation(libs.klibs.kdi)
-    implementation(libs.klibs.mikro)
+    implementation(klibs.klibs.kdi)
+    implementation(klibs.klibs.mikro.core)
     // Exposed
     implementation(libs.exposed.core)
     // Test
@@ -59,4 +61,10 @@ tasks.shadowJar {
     archiveBaseName.set(projectInfo.name)
     localFolder.apply { if (!exists()) parentFile.mkdirs() }
     localFolder.also(destinationDirectory::set)
+}
+
+tasks.withType<KotlinCompile>().configureEach {
+    kotlinOptions {
+        freeCompilerArgs = freeCompilerArgs + "-Xcontext-receivers"
+    }
 }

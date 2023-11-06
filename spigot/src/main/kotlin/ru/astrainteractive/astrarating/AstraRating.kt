@@ -7,8 +7,6 @@ import kotlinx.coroutines.runBlocking
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.kotlin.tooling.core.UnsafeApi
-import ru.astrainteractive.astralibs.event.GlobalEventListener
-import ru.astrainteractive.astralibs.menu.event.GlobalInventoryClickEvent
 import ru.astrainteractive.astrarating.di.impl.RootModuleImpl
 
 /**
@@ -29,9 +27,10 @@ class AstraRating : JavaPlugin() {
         rootModule.dbRatingModule.database
         rootModule.servicesModule.bstats.create()
         rootModule.papiModule?.ratingPAPIComponent?.onEnable()
-        GlobalInventoryClickEvent.onEnable(this)
+        rootModule.servicesModule.eventListener.value.onEnable(this)
+        rootModule.servicesModule.inventoryClickEvent.value.onEnable(this)
         rootModule.servicesModule.eventManager.create()
-        CommandManager(rootModule.commandsModule)
+        CommandManager(rootModule.commandsDependencies)
     }
 
     /**
@@ -40,7 +39,8 @@ class AstraRating : JavaPlugin() {
     override fun onDisable() {
         runBlocking { rootModule.dbRatingModule.database.connector.invoke().close() }
         HandlerList.unregisterAll(this)
-        GlobalEventListener.onDisable()
+        rootModule.servicesModule.eventListener.value.onDisable()
+        rootModule.servicesModule.inventoryClickEvent.value.onDisable()
         rootModule.papiModule?.ratingPAPIComponent?.onDisable()
     }
 
@@ -48,7 +48,6 @@ class AstraRating : JavaPlugin() {
      * As it says, function for plugin reload
      */
     fun reloadPlugin() {
-        rootModule.servicesModule.configFileManager.value.reload()
         rootModule.servicesModule.config.reload()
         rootModule.servicesModule.translation.reload()
     }
