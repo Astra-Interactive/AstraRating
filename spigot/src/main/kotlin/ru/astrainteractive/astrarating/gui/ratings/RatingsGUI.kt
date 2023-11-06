@@ -15,7 +15,7 @@ import ru.astrainteractive.astralibs.menu.menu.MenuSize
 import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
 import ru.astrainteractive.astrarating.feature.allrating.AllRatingsComponent
 import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
-import ru.astrainteractive.astrarating.gui.ratings.di.RatingsGUIModule
+import ru.astrainteractive.astrarating.gui.ratings.di.RatingsGUIDependencies
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.gui.slot.NavigationSlots
 import ru.astrainteractive.astrarating.gui.slot.SlotContext
@@ -32,11 +32,11 @@ import java.util.UUID
 
 class RatingsGUI(
     player: Player,
-    private val module: RatingsGUIModule,
+    private val module: RatingsGUIDependencies,
     private val allRatingsComponent: AllRatingsComponent,
     private val router: GuiRouter
 ) : PaginatedMenu(),
-    RatingsGUIModule by module {
+    RatingsGUIDependencies by module {
 
     private val loadingIndicator = LoadingIndicator(
         menu = this,

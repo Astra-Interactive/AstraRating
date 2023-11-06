@@ -9,8 +9,7 @@ import ru.astrainteractive.astrarating.db.rating.model.DBConnection
 import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.astrarating.di.ServicesModule
 import ru.astrainteractive.astrarating.feature.di.SharedModule
-import ru.astrainteractive.astrarating.gui.di.GuiModule
-import ru.astrainteractive.astrarating.gui.di.GuiModuleImpl
+import ru.astrainteractive.astrarating.gui.di.GuiDependenciesImpl
 import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
 import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.Single
@@ -27,8 +26,8 @@ class RootModuleImpl : RootModule {
     override val commandsDependencies: CommandsDependencies by Provider {
         CommandsDependenciesImpl(this)
     }
-    override val guiModule: GuiModule by Provider {
-        GuiModuleImpl(this)
+    override val guiDependencies: GuiDependencies by Provider {
+        GuiDependenciesImpl(this)
     }
 
     override val dbRatingModule: DBRatingModule by Single {

@@ -4,7 +4,7 @@ import ru.astrainteractive.astralibs.serialization.KyoriComponentSerializer
 import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.klibs.kdi.getValue
 
-class EventModuleImpl(rootModule: RootModule) : EventModule {
+class EventDependenciesImpl(rootModule: RootModule) : EventDependencies {
 
     override val configDependency by rootModule.servicesModule.config
     override val apiDependency = rootModule.apiRatingModule.ratingDBApi

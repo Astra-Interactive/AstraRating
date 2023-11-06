@@ -4,7 +4,7 @@ import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
 import ru.astrainteractive.astrarating.command.di.CommandsDependencies
 import ru.astrainteractive.astrarating.db.rating.di.DBRatingModule
 import ru.astrainteractive.astrarating.feature.di.SharedModule
-import ru.astrainteractive.astrarating.gui.di.GuiModule
+import ru.astrainteractive.astrarating.gui.di.GuiDependencies
 import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
 import ru.astrainteractive.klibs.kdi.Module
 
@@ -19,7 +19,7 @@ interface RootModule : Module {
 
     val commandsDependencies: CommandsDependencies
 
-    val guiModule: GuiModule
+    val guiDependencies: GuiDependencies
 
     val papiModule: PapiModule?
 

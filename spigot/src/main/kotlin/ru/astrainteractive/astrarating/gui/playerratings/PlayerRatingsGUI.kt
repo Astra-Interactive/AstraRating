@@ -17,7 +17,7 @@ import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
 import ru.astrainteractive.astralibs.string.replace
 import ru.astrainteractive.astrarating.feature.playerrating.presentation.PlayerRatingsComponent
 import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
-import ru.astrainteractive.astrarating.gui.playerratings.di.PlayerRatingGuiModule
+import ru.astrainteractive.astrarating.gui.playerratings.di.PlayerRatingGuiDependencies
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.gui.slot.NavigationSlots
 import ru.astrainteractive.astrarating.gui.slot.SlotContext
@@ -36,10 +36,10 @@ import ru.astrainteractive.klibs.kdi.getValue
 class PlayerRatingsGUI(
     selectedPlayer: OfflinePlayer,
     player: Player,
-    private val module: PlayerRatingGuiModule,
+    private val module: PlayerRatingGuiDependencies,
     private val playerRatingsComponent: PlayerRatingsComponent,
     private val router: GuiRouter
-) : PaginatedMenu(), PlayerRatingGuiModule by module {
+) : PaginatedMenu(), PlayerRatingGuiDependencies by module {
 
     private val loadingIndicator = LoadingIndicator(
         menu = this,

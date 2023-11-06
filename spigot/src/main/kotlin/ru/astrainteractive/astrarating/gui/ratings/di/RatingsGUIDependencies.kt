@@ -7,7 +7,7 @@ import ru.astrainteractive.astrarating.model.EmpireConfig
 import ru.astrainteractive.astrarating.model.PluginTranslation
 import ru.astrainteractive.klibs.kdi.Module
 
-interface RatingsGUIModule : Module {
+interface RatingsGUIDependencies : Module {
     val dbApi: RatingDBApi
     val dispatchers: BukkitDispatchers
     val translation: PluginTranslation

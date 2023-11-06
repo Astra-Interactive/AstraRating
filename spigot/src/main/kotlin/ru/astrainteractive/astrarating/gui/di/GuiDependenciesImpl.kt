@@ -6,7 +6,7 @@ import ru.astrainteractive.astralibs.serialization.KyoriComponentSerializer
 import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.klibs.kdi.getValue
 
-class GuiModuleImpl(private val rootModule: RootModule) : GuiModule {
+class GuiDependenciesImpl(private val rootModule: RootModule) : GuiDependencies {
 
     override val dbApi = rootModule.apiRatingModule.ratingDBApi
     override val dispatchers by rootModule.servicesModule.dispatchers

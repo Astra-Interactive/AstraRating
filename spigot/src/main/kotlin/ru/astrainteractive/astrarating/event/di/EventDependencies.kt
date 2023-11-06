@@ -9,7 +9,7 @@ import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
 import ru.astrainteractive.astrarating.model.EmpireConfig
 import ru.astrainteractive.astrarating.model.PluginTranslation
 
-interface EventModule {
+interface EventDependencies {
     val configDependency: EmpireConfig
     val apiDependency: RatingDBApi
     val translationDependency: PluginTranslation

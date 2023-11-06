@@ -15,7 +15,7 @@ import ru.astrainteractive.astrarating.AstraRating
 import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.astrarating.di.ServicesModule
 import ru.astrainteractive.astrarating.event.EventManager
-import ru.astrainteractive.astrarating.event.di.EventModuleImpl
+import ru.astrainteractive.astrarating.event.di.EventDependenciesImpl
 import ru.astrainteractive.astrarating.feature.changerating.data.BukkitPlatformBridge
 import ru.astrainteractive.astrarating.feature.changerating.data.PlatformBridge
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
@@ -67,7 +67,7 @@ class ServicesModuleImpl(rootModule: RootModule) : ServicesModule {
         YamlSerializer().toClassOrDefault(file, ::PluginTranslation)
     }
     override val eventManager = Factory {
-        val eventModule = EventModuleImpl(rootModule)
+        val eventModule = EventDependenciesImpl(rootModule)
         EventManager(eventModule)
     }
     override val permissionManager: Single<PermissionManager> = Single {
@@ -81,7 +81,7 @@ class ServicesModuleImpl(rootModule: RootModule) : ServicesModule {
             scope = scope.value,
             dispatchers = dispatchers.value,
             rootModule = rootModule,
-            guiModule = rootModule.guiModule
+            guiDependencies = rootModule.guiDependencies
         )
     }
 
