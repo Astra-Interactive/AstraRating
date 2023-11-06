@@ -9,11 +9,11 @@ class BukkitPlatformBridge(
 ) : PlatformBridge {
     override fun isPlayerExists(playerModel: PlayerModel?): Boolean {
         val player = playerModel?.uuid?.let(Bukkit::getOfflinePlayer)
-        return player == null || player.firstPlayed == 0L
+        return player != null && player.firstPlayed > 0L
     }
 
     override fun hasEnoughTime(playerModel: PlayerModel): Boolean {
         val player = playerModel.uuid.let(Bukkit::getOfflinePlayer)
-        return System.currentTimeMillis() - player.firstPlayed < minTimeOnServer.provide()
+        return System.currentTimeMillis() - player.firstPlayed > minTimeOnServer.provide()
     }
 }
