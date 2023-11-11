@@ -1,6 +1,5 @@
 package ru.astrainteractive.astrarating.feature.changerating.domain.usecase
 
-import ru.astrainteractive.astralibs.permission.PermissionManager
 import ru.astrainteractive.astrarating.feature.changerating.data.CanVoteOnPlayerRepository
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.CanVoteOnPlayerUseCase.Input
 import ru.astrainteractive.astrarating.model.PlayerModel
@@ -22,15 +21,13 @@ interface CanVoteOnPlayerUseCase : UseCase.Suspended<Input, Boolean> {
 }
 
 internal class CanVoteOnPlayerUseCaseImpl(
-    private val permissionManager: PermissionManager,
     private val maxRatingPerPlayer: Int,
     private val canVoteOnPlayerRepository: CanVoteOnPlayerRepository
 ) : CanVoteOnPlayerUseCase {
     override suspend fun invoke(input: Input): Boolean {
         val creator = input.creator
         val rated = input.rated
-        val maxVotePerPlayer = permissionManager.maxPermissionSize(
-            creator.uuid,
+        val maxVotePerPlayer = creator.permissible?.maxPermissionSize(
             RatingPermission.SinglePlayerPerDay
         ) ?: maxRatingPerPlayer
         val votedOnPlayerAmount = canVoteOnPlayerRepository.countPlayerOnPlayerDayRated(

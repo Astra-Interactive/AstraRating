@@ -1,4 +1,3 @@
-
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import ru.astrainteractive.gradleplugin.setupSpigotProcessor
 import ru.astrainteractive.gradleplugin.util.ProjectProperties.projectInfo
@@ -8,6 +7,7 @@ plugins {
     kotlin("plugin.serialization")
     id("com.github.johnrengelman.shadow")
     alias(klibs.plugins.klibs.gradle.java.core)
+    id("ru.astrainteractive.gradleplugin.minecraft.multiplatform")
 }
 
 dependencies {
@@ -38,6 +38,11 @@ dependencies {
     implementation(projects.modules.dto)
     implementation(projects.modules.integrationPapi)
     implementation(projects.modules.shared)
+}
+minecraftMultiplatform {
+    dependencies {
+        implementation(projects.modules.shared.bukkitMain)
+    }
 }
 val localFolder = File("D:\\Minecraft Servers\\Servers\\esmp-configuration\\anarchy\\plugins")
     .takeIf { it.exists() }

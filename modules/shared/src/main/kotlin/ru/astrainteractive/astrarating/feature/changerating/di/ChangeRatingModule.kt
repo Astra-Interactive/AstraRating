@@ -1,6 +1,5 @@
 package ru.astrainteractive.astrarating.feature.changerating.di
 
-import ru.astrainteractive.astralibs.permission.PermissionManager
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
 import ru.astrainteractive.astrarating.feature.changerating.data.CanVoteOnPlayerRepository
 import ru.astrainteractive.astrarating.feature.changerating.data.CanVoteOnPlayerRepositoryImpl
@@ -53,7 +52,6 @@ interface ChangeRatingModule {
 
     class Default(
         private val dbApi: RatingDBApi,
-        private val permissionManager: PermissionManager,
         private val empireConfig: Reloadable<EmpireConfig>,
         private val dispatchers: KotlinDispatchers,
         private val platformBridge: Provider<PlatformBridge>
@@ -83,22 +81,18 @@ interface ChangeRatingModule {
         }
         override val canVoteOnPlayerUseCase: CanVoteOnPlayerUseCase by Provider {
             CanVoteOnPlayerUseCaseImpl(
-                permissionManager = permissionManager,
                 maxRatingPerPlayer = empireConfig.value.maxRatingPerPlayer,
                 canVoteOnPlayerRepository = canVoteOnPlayerRepository
             )
         }
         override val canVoteTodayUseCase: CanVoteTodayUseCase by Provider {
             CanVoteTodayUseCaseImpl(
-                permissionManager = permissionManager,
                 maxRatingPerDay = empireConfig.value.maxRatingPerDay,
                 canVoteTodayRepository = canVoteTodayRepository
             )
         }
         override val canVoteUseCase: CanVoteUseCase by Provider {
-            CanVoteUseCaseImpl(
-                permissionManager = permissionManager
-            )
+            CanVoteUseCaseImpl()
         }
         override val checkEnoughTimeUseCase: CheckEnoughTimeUseCase by Provider {
             CheckEnoughTimeUseCaseImpl(platformBridge.provide())

@@ -4,11 +4,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
-import org.bukkit.command.CommandSender
 import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.async.BukkitDispatchers
 import ru.astrainteractive.astralibs.command.api.CommandExecutor
+import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissible
 import ru.astrainteractive.astralibs.string.BukkitTranslationContext
 import ru.astrainteractive.astrarating.dto.RatingType
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCase
@@ -23,36 +23,26 @@ class RatingCommandExecutor(
     private val dispatchers: BukkitDispatchers,
     translationContext: BukkitTranslationContext,
     private val router: GuiRouter
-) : CommandExecutor<RatingCommandExecutor.Input>,
+) : CommandExecutor<RatingCommand.Input>,
     BukkitTranslationContext by translationContext {
-
-    sealed interface Input {
-        class ChangeRating(
-            val value: Int,
-            val message: String,
-            val executor: Player,
-            val rated: OfflinePlayer
-        ) : Input
-
-        class Reload(val executor: CommandSender) : Input
-        class OpenRatingGui(val player: Player) : Input
-    }
 
     private fun OfflinePlayer.toPlayerModel(): PlayerModel? {
         return PlayerModel(
             uuid = this.uniqueId,
-            name = name ?: return null
+            name = name ?: return null,
+            permissible = null
         )
     }
 
     private fun Player.toPlayerModel(): PlayerModel {
         return PlayerModel(
             uuid = this.uniqueId,
-            name = name
+            name = name,
+            permissible = this.toPermissible()
         )
     }
 
-    private fun changeRating(input: Input.ChangeRating) = coroutineScope.launch(dispatchers.IO) {
+    private fun changeRating(input: RatingCommand.Input.ChangeRating) = coroutineScope.launch(dispatchers.IO) {
         val useCaseInput = AddRatingUseCase.Input(
             creator = input.executor.toPlayerModel(),
             ratedPlayerModel = input.rated.toPlayerModel(),
@@ -106,7 +96,7 @@ class RatingCommandExecutor(
         }
     }
 
-    private fun reload(input: Input.Reload) {
+    private fun reload(input: RatingCommand.Input.Reload) {
         when (input.executor) {
             is Player -> input.executor.performCommand("aratingreload")
             is ConsoleCommandSender -> {
@@ -117,18 +107,18 @@ class RatingCommandExecutor(
         }
     }
 
-    override fun execute(input: Input) {
+    override fun execute(input: RatingCommand.Input) {
         when (input) {
-            is Input.ChangeRating -> {
+            is RatingCommand.Input.ChangeRating -> {
                 changeRating(input)
             }
 
-            is Input.OpenRatingGui -> {
+            is RatingCommand.Input.OpenRatingGui -> {
                 val route = GuiRouter.Route.AllRatings(input.player)
                 router.navigate(route)
             }
 
-            is Input.Reload -> {
+            is RatingCommand.Input.Reload -> {
                 reload(input)
             }
         }

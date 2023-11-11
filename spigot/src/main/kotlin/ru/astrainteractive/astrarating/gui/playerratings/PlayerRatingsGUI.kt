@@ -14,6 +14,7 @@ import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
 import ru.astrainteractive.astralibs.menu.menu.InventorySlot
 import ru.astrainteractive.astralibs.menu.menu.MenuSize
 import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
+import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissible
 import ru.astrainteractive.astralibs.string.replace
 import ru.astrainteractive.astrarating.feature.playerrating.presentation.PlayerRatingsComponent
 import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
@@ -182,8 +183,7 @@ class PlayerRatingsGUI(
                                 val component = translationContext.toComponent("$lastConnection $time")
                                 add(component)
                             }
-                            val canDelete = permissionManager.hasPermission(
-                                playerHolder.player.uniqueId,
+                            val canDelete = playerHolder.player.toPermissible().hasPermission(
                                 RatingPermission.DeleteReport
                             )
 
@@ -195,8 +195,7 @@ class PlayerRatingsGUI(
                     }
                 }
                 click = Click { e ->
-                    val canDelete = permissionManager.hasPermission(
-                        playerHolder.player.uniqueId,
+                    val canDelete = playerHolder.player.toPermissible().hasPermission(
                         RatingPermission.DeleteReport
                     )
                     if (!canDelete) return@Click

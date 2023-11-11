@@ -2,7 +2,6 @@
 
 package ru.astrainteractive.astrarating
 
-import CommandManager
 import kotlinx.coroutines.runBlocking
 import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
@@ -29,8 +28,8 @@ class AstraRating : JavaPlugin() {
         rootModule.papiModule?.ratingPAPIComponent?.onEnable()
         rootModule.servicesModule.eventListener.value.onEnable(this)
         rootModule.servicesModule.inventoryClickEvent.value.onEnable(this)
-        rootModule.servicesModule.eventManager.create()
-        CommandManager(rootModule.commandsDependencies)
+        rootModule.eventModule.eventManager
+        rootModule.commandsModule.commandManager
     }
 
     /**

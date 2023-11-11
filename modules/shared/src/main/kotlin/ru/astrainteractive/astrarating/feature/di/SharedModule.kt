@@ -1,7 +1,6 @@
 package ru.astrainteractive.astrarating.feature.di
 
 import kotlinx.coroutines.CoroutineScope
-import ru.astrainteractive.astralibs.permission.PermissionManager
 import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
 import ru.astrainteractive.astrarating.feature.allrating.AllRatingsComponent
 import ru.astrainteractive.astrarating.feature.allrating.DefaultAllRatingsComponent
@@ -34,14 +33,12 @@ interface SharedModule {
         private val apiRatingModule: ApiRatingModule,
         private val dispatchers: KotlinDispatchers,
         private val coroutineScope: CoroutineScope,
-        private val permissionManager: PermissionManager,
         private val empireConfig: Reloadable<EmpireConfig>,
         private val platformBridge: Provider<PlatformBridge>
     ) : SharedModule {
         override val changeRatingModule: ChangeRatingModule by Single {
             ChangeRatingModule.Default(
                 dbApi = apiRatingModule.ratingDBApi,
-                permissionManager = permissionManager,
                 empireConfig = empireConfig,
                 dispatchers = dispatchers,
                 platformBridge = platformBridge

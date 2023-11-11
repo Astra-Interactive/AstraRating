@@ -5,13 +5,10 @@ import ru.astrainteractive.astralibs.async.AsyncComponent
 import ru.astrainteractive.astralibs.async.BukkitDispatchers
 import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.astralibs.menu.event.DefaultInventoryClickEvent
-import ru.astrainteractive.astralibs.permission.PermissionManager
 import ru.astrainteractive.astralibs.serialization.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.string.BukkitTranslationContext
 import ru.astrainteractive.astrarating.AstraRating
-import ru.astrainteractive.astrarating.event.EventManager
 import ru.astrainteractive.astrarating.feature.changerating.data.PlatformBridge
-import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.model.EmpireConfig
 import ru.astrainteractive.astrarating.model.PluginTranslation
 import ru.astrainteractive.klibs.kdi.Factory
@@ -33,10 +30,7 @@ interface ServicesModule {
     val scope: Single<AsyncComponent>
     val config: Reloadable<EmpireConfig>
     val translation: Reloadable<PluginTranslation>
-    val eventManager: Factory<EventManager>
-    val permissionManager: Single<PermissionManager>
     val translationContext: Provider<BukkitTranslationContext>
-    val guiRouter: Provider<GuiRouter>
 
     val platformBridge: Provider<PlatformBridge>
 }
