@@ -6,20 +6,13 @@ import ru.astrainteractive.astralibs.async.DefaultBukkitDispatchers
 import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.astralibs.filemanager.DefaultSpigotFileManager
 import ru.astrainteractive.astralibs.menu.event.DefaultInventoryClickEvent
-import ru.astrainteractive.astralibs.permission.BukkitPermissionManager
-import ru.astrainteractive.astralibs.permission.PermissionManager
 import ru.astrainteractive.astralibs.serialization.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.serialization.YamlSerializer
 import ru.astrainteractive.astralibs.string.BukkitTranslationContext
 import ru.astrainteractive.astrarating.AstraRating
-import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.astrarating.di.ServicesModule
-import ru.astrainteractive.astrarating.event.EventManager
-import ru.astrainteractive.astrarating.event.di.EventDependenciesImpl
 import ru.astrainteractive.astrarating.feature.changerating.data.BukkitPlatformBridge
 import ru.astrainteractive.astrarating.feature.changerating.data.PlatformBridge
-import ru.astrainteractive.astrarating.gui.router.GuiRouter
-import ru.astrainteractive.astrarating.gui.router.GuiRouterImpl
 import ru.astrainteractive.astrarating.model.EmpireConfig
 import ru.astrainteractive.astrarating.model.PluginTranslation
 import ru.astrainteractive.klibs.kdi.Factory
@@ -29,7 +22,7 @@ import ru.astrainteractive.klibs.kdi.Reloadable
 import ru.astrainteractive.klibs.kdi.Single
 import ru.astrainteractive.klibs.kdi.getValue
 
-class ServicesModuleImpl(rootModule: RootModule) : ServicesModule {
+class ServicesModuleImpl : ServicesModule {
     // Core
     override val plugin = Lateinit<AstraRating>()
     override val inventoryClickEvent: Single<DefaultInventoryClickEvent> = Single {
@@ -66,23 +59,8 @@ class ServicesModuleImpl(rootModule: RootModule) : ServicesModule {
         val file = DefaultSpigotFileManager(plugin, "translations.yml").configFile
         YamlSerializer().toClassOrDefault(file, ::PluginTranslation)
     }
-    override val eventManager = Factory {
-        val eventModule = EventDependenciesImpl(rootModule)
-        EventManager(eventModule)
-    }
-    override val permissionManager: Single<PermissionManager> = Single {
-        BukkitPermissionManager()
-    }
     override val translationContext: Provider<BukkitTranslationContext> = Provider {
         BukkitTranslationContext.Default { componentSerializer.value }
-    }
-    override val guiRouter: Provider<GuiRouter> = Provider {
-        GuiRouterImpl(
-            scope = scope.value,
-            dispatchers = dispatchers.value,
-            rootModule = rootModule,
-            guiDependencies = rootModule.guiDependencies
-        )
     }
 
     override val platformBridge: Provider<PlatformBridge> = Provider {

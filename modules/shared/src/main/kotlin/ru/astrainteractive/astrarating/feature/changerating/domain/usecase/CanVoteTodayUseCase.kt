@@ -1,6 +1,5 @@
 package ru.astrainteractive.astrarating.feature.changerating.domain.usecase
 
-import ru.astrainteractive.astralibs.permission.PermissionManager
 import ru.astrainteractive.astrarating.feature.changerating.data.CanVoteTodayRepository
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.CanVoteTodayUseCase.Input
 import ru.astrainteractive.astrarating.model.PlayerModel
@@ -19,14 +18,12 @@ interface CanVoteTodayUseCase : UseCase.Suspended<Input, Boolean> {
 }
 
 internal class CanVoteTodayUseCaseImpl(
-    private val permissionManager: PermissionManager,
     private val maxRatingPerDay: Int,
     private val canVoteTodayRepository: CanVoteTodayRepository
 ) : CanVoteTodayUseCase {
     override suspend fun invoke(input: Input): Boolean {
         val playerModel = input.playerModel
-        val maxVotesPerDay = permissionManager.maxPermissionSize(
-            playerModel.uuid,
+        val maxVotesPerDay = playerModel.permissible?.maxPermissionSize(
             RatingPermission.MaxRatePerDay
         ) ?: maxRatingPerDay
         val todayVotedAmount = canVoteTodayRepository.countPlayerTotalDayRated(playerModel.name)

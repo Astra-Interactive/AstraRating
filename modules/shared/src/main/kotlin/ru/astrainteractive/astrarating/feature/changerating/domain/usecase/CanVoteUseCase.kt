@@ -1,6 +1,5 @@
 package ru.astrainteractive.astrarating.feature.changerating.domain.usecase
 
-import ru.astrainteractive.astralibs.permission.PermissionManager
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.CanVoteUseCase.Input
 import ru.astrainteractive.astrarating.model.PlayerModel
 import ru.astrainteractive.astrarating.plugin.RatingPermission
@@ -16,10 +15,8 @@ interface CanVoteUseCase : UseCase.Suspended<Input, Boolean> {
     suspend operator fun invoke(playerModel: PlayerModel) = invoke(Input(playerModel))
 }
 
-internal class CanVoteUseCaseImpl(
-    private val permissionManager: PermissionManager
-) : CanVoteUseCase {
+internal class CanVoteUseCaseImpl : CanVoteUseCase {
     override suspend fun invoke(input: Input): Boolean {
-        return permissionManager.hasPermission(input.playerModel.uuid, RatingPermission.Vote)
+        return input.playerModel.permissible?.hasPermission(RatingPermission.Vote) ?: false
     }
 }

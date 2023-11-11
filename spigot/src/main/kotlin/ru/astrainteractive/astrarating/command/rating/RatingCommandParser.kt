@@ -1,44 +1,30 @@
 package ru.astrainteractive.astrarating.command.rating
 
 import org.bukkit.Bukkit
-import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.command.api.CommandParser
 
-class RatingCommandParser(override val alias: String) : CommandParser<RatingCommandParser.Result> {
-    sealed interface Result {
-        data object WrongUsage : Result
-        class ChangeRating(
-            val value: Int,
-            val message: String,
-            val executor: Player,
-            val ratedPlayer: OfflinePlayer
-        ) : Result
-
-        class Rating(val executor: Player) : Result
-        class Reload(val executor: CommandSender) : Result
-        data object NotPlayer : Result
-    }
+class RatingCommandParser : CommandParser<RatingCommand.Result> {
 
     private fun parseChangeRating(
         label: String,
         args: Array<out String>,
         sender: CommandSender
-    ): Result {
+    ): RatingCommand.Result {
         val amount = when (label) {
             "like", "+" -> 1
             "dislike", "-" -> -1
-            else -> return Result.WrongUsage
+            else -> return RatingCommand.Result.WrongUsage
         }
 
-        val commandExecutor = (sender as? Player) ?: return Result.NotPlayer
+        val commandExecutor = (sender as? Player) ?: return RatingCommand.Result.NotPlayer
 
         val ratedPlayer = args.getOrNull(1)
-            ?.let(Bukkit::getOfflinePlayer) ?: return Result.WrongUsage
+            ?.let(Bukkit::getOfflinePlayer) ?: return RatingCommand.Result.WrongUsage
 
         val message = args.toList().subList(2, args.size).joinToString(" ")
-        return Result.ChangeRating(
+        return RatingCommand.Result.ChangeRating(
             value = amount,
             message = message,
             executor = commandExecutor,
@@ -46,7 +32,7 @@ class RatingCommandParser(override val alias: String) : CommandParser<RatingComm
         )
     }
 
-    override fun parse(args: Array<out String>, sender: CommandSender): Result {
+    override fun parse(args: Array<out String>, sender: CommandSender): RatingCommand.Result {
         return when (val label = args.getOrNull(0)) {
             "like", "+", "dislike", "-" -> {
                 parseChangeRating(
@@ -57,12 +43,12 @@ class RatingCommandParser(override val alias: String) : CommandParser<RatingComm
             }
 
             "rating" -> {
-                if (sender !is Player) return Result.NotPlayer
-                Result.Rating(sender)
+                if (sender !is Player) return RatingCommand.Result.NotPlayer
+                RatingCommand.Result.Rating(sender)
             }
 
-            "reload" -> Result.Reload(sender)
-            else -> Result.WrongUsage
+            "reload" -> RatingCommand.Result.Reload(sender)
+            else -> RatingCommand.Result.WrongUsage
         }
     }
 }
