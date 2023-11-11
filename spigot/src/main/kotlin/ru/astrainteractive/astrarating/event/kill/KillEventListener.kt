@@ -1,4 +1,4 @@
-package ru.astrainteractive.astrarating.event
+package ru.astrainteractive.astrarating.event.kill
 
 import kotlinx.coroutines.launch
 import org.bukkit.event.entity.PlayerDeathEvent
