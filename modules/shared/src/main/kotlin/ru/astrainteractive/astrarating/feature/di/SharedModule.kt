@@ -13,7 +13,6 @@ import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUse
 import ru.astrainteractive.astrarating.feature.playerrating.presentation.DefaultPlayerRatingsComponent
 import ru.astrainteractive.astrarating.feature.playerrating.presentation.PlayerRatingsComponent
 import ru.astrainteractive.astrarating.model.EmpireConfig
-import ru.astrainteractive.astrarating.model.PlayerModel
 import ru.astrainteractive.klibs.kdi.Factory
 import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.Reloadable
@@ -26,7 +25,7 @@ interface SharedModule {
 
     val allRatingsRepository: AllRatingsRepository
 
-    fun playerRatingsComponentFactory(playerModel: PlayerModel): Factory<PlayerRatingsComponent>
+    fun playerRatingsComponentFactory(playerName: String): Factory<PlayerRatingsComponent>
     fun allRatingsComponentFactory(): Factory<AllRatingsComponent>
 
     class Default(
@@ -53,10 +52,10 @@ interface SharedModule {
         }
         private val sortRatingUseCase: SortRatingUseCase = SortRatingUseCaseImpl()
 
-        override fun playerRatingsComponentFactory(playerModel: PlayerModel): Factory<PlayerRatingsComponent> {
+        override fun playerRatingsComponentFactory(playerName: String): Factory<PlayerRatingsComponent> {
             return Factory {
                 DefaultPlayerRatingsComponent(
-                    playerModel = playerModel,
+                    playerName = playerName,
                     dbApi = apiRatingModule.ratingDBApi,
                     dispatchers = dispatchers,
                     sortRatingUseCase = sortRatingUseCase

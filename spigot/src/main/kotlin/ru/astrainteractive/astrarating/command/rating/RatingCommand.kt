@@ -16,6 +16,7 @@ interface RatingCommand : Command<RatingCommand.Result, RatingCommand.Input> {
 
         class Reload(val executor: CommandSender) : Input
         class OpenRatingGui(val player: Player) : Input
+        class OpenPlayerRatingGui(val player: Player, val selectedPlayerName: String) : Input
     }
 
     sealed interface Result {
@@ -27,6 +28,7 @@ interface RatingCommand : Command<RatingCommand.Result, RatingCommand.Input> {
             val ratedPlayer: OfflinePlayer
         ) : Result
 
+        class OpenPlayerRatingGui(val player: Player, val selectedPlayerName: String) : Result
         class Rating(val executor: Player) : Result
         class Reload(val executor: CommandSender) : Result
         data object NotPlayer : Result

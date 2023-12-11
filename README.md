@@ -23,6 +23,7 @@ More plugins from [AstraInteractive](https://github.com/Astra-Interactive)
 | `/aratingreload`                             | Reload plugin                                             | astra_rating.reload                       |
 | `/arating reload`                            | Reload plugin                                             | astra_rating.reload                       |
 | `/arating rating`                            | Open rating GUI                                           | -                                         |
+| `/arating rating <player_name>`              | Open rating GUI of player                                 | -                                         |
 | `/arating <like/dislike> <player> <message>` | Raise/Downgrade player rating                             | astra_rating.vote                         |
 | `-`                                          | Delete player vote in GUI                                 | delete_report.vote                        |
 | `-`                                          | Allows player to vote M times per day for the same player | astra_rating.single_player_rate_per_day.M |

@@ -1,6 +1,5 @@
 package ru.astrainteractive.astrarating.gui.router
 
-import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 
 interface GuiRouter {
@@ -8,7 +7,7 @@ interface GuiRouter {
         class AllRatings(val executor: Player) : Route
         class PlayerRating(
             val executor: Player,
-            val selectedPlayer: OfflinePlayer
+            val selectedPlayerName: String
         ) : Route
     }
 

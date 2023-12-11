@@ -45,6 +45,7 @@ class RatingCommandFactory(
                         commandSender.sendMessage(translation.wrongUsage)
                     }
 
+                    is RatingCommand.Result.OpenPlayerRatingGui,
                     is RatingCommand.Result.Reload,
                     is RatingCommand.Result.Rating,
                     is RatingCommand.Result.ChangeRating -> Unit
@@ -71,6 +72,12 @@ class RatingCommandFactory(
 
                     RatingCommand.Result.WrongUsage -> null
                     RatingCommand.Result.NotPlayer -> null
+                    is RatingCommand.Result.OpenPlayerRatingGui -> {
+                        RatingCommand.Input.OpenPlayerRatingGui(
+                            it.player,
+                            it.selectedPlayerName
+                        )
+                    }
                 }
             }
         )

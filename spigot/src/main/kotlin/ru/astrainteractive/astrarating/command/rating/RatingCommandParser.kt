@@ -44,7 +44,9 @@ class RatingCommandParser : CommandParser<RatingCommand.Result> {
 
             "rating" -> {
                 if (sender !is Player) return RatingCommand.Result.NotPlayer
-                RatingCommand.Result.Rating(sender)
+                args.getOrNull(1)?.takeIf(String::isNotBlank)?.let { requestedPlayer ->
+                    RatingCommand.Result.OpenPlayerRatingGui(sender, requestedPlayer.uppercase())
+                } ?: RatingCommand.Result.Rating(sender)
             }
 
             "reload" -> RatingCommand.Result.Reload(sender)

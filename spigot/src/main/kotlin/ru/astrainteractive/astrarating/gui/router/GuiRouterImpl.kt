@@ -2,13 +2,10 @@ package ru.astrainteractive.astrarating.gui.router
 
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.bukkit.Bukkit
-import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissible
 import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.astrarating.gui.di.GuiDependencies
 import ru.astrainteractive.astrarating.gui.playerratings.PlayerRatingsGUI
 import ru.astrainteractive.astrarating.gui.ratings.RatingsGUI
-import ru.astrainteractive.astrarating.model.PlayerModel
 import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.getValue
 
@@ -31,15 +28,11 @@ class GuiRouterImpl(
                 )
 
                 is GuiRouter.Route.PlayerRating -> PlayerRatingsGUI(
-                    selectedPlayer = route.selectedPlayer,
+                    selectedPlayerName = route.selectedPlayerName,
                     player = route.executor,
                     module = guiDependencies,
                     playerRatingsComponent = rootModule.sharedModule.playerRatingsComponentFactory(
-                        playerModel = PlayerModel(
-                            uuid = route.selectedPlayer.uniqueId,
-                            name = route.selectedPlayer.name ?: route.selectedPlayer.uniqueId.toString(),
-                            permissible = Bukkit.getPlayer(route.selectedPlayer.uniqueId)?.toPermissible()
-                        )
+                        playerName = route.selectedPlayerName
                     ).create(),
                     router = this@GuiRouterImpl
                 )

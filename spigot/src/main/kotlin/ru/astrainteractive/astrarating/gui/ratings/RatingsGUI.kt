@@ -2,7 +2,6 @@ package ru.astrainteractive.astrarating.gui.ratings
 
 import kotlinx.coroutines.runBlocking
 import net.kyori.adventure.text.Component
-import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
@@ -28,7 +27,6 @@ import ru.astrainteractive.astrarating.model.EmpireConfig
 import ru.astrainteractive.astrarating.model.PluginTranslation
 import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.getValue
-import java.util.UUID
 
 class RatingsGUI(
     player: Player,
@@ -175,7 +173,7 @@ class RatingsGUI(
                 click = Click {
                     val route = GuiRouter.Route.PlayerRating(
                         executor = playerHolder.player,
-                        selectedPlayer = Bukkit.getOfflinePlayer(UUID.fromString(userAndRating.userDTO.minecraftUUID))
+                        selectedPlayerName = userAndRating.userDTO.minecraftName
                     )
                     router.navigate(route)
                 }

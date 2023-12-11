@@ -2,7 +2,6 @@ package ru.astrainteractive.astrarating.gui.playerratings
 
 import kotlinx.coroutines.runBlocking
 import net.kyori.adventure.text.Component
-import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -35,7 +34,7 @@ import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.getValue
 
 class PlayerRatingsGUI(
-    selectedPlayer: OfflinePlayer,
+    selectedPlayerName: String,
     player: Player,
     private val module: PlayerRatingGuiDependencies,
     private val playerRatingsComponent: PlayerRatingsComponent,
@@ -70,7 +69,7 @@ class PlayerRatingsGUI(
     override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
 
     override var menuTitle: Component = translationContext.toComponent(
-        translation.playerRatingTitle.replace("%player%", selectedPlayer.name ?: "")
+        translation.playerRatingTitle.replace("%player%", selectedPlayerName)
     )
 
     override val menuSize: MenuSize = MenuSize.XL

@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 import ru.astrainteractive.gradleplugin.setupSpigotProcessor
 import ru.astrainteractive.gradleplugin.util.ProjectProperties.projectInfo
 
@@ -44,7 +44,7 @@ minecraftMultiplatform {
         implementation(projects.modules.shared.bukkitMain)
     }
 }
-val localFolder = File("D:\\Minecraft Servers\\Servers\\esmp-configuration\\anarchy\\plugins")
+val localFolder = File("D:\\Minecraft Servers\\Servers\\esmp-configuration\\smp\\plugins")
     .takeIf { it.exists() }
     ?: File(rootDir, "jars")
 
@@ -66,10 +66,4 @@ tasks.shadowJar {
     archiveBaseName.set(projectInfo.name)
     localFolder.apply { if (!exists()) parentFile.mkdirs() }
     localFolder.also(destinationDirectory::set)
-}
-
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-        freeCompilerArgs = freeCompilerArgs + "-Xcontext-receivers"
-    }
 }

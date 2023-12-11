@@ -118,6 +118,11 @@ class RatingCommandExecutor(
                 router.navigate(route)
             }
 
+            is RatingCommand.Input.OpenPlayerRatingGui -> {
+                val route = GuiRouter.Route.PlayerRating(input.player, input.selectedPlayerName)
+                router.navigate(route)
+            }
+
             is RatingCommand.Input.Reload -> {
                 reload(input)
             }
