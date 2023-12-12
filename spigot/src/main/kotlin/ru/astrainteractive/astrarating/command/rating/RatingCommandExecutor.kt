@@ -23,7 +23,7 @@ class RatingCommandExecutor(
     private val dispatchers: BukkitDispatchers,
     translationContext: BukkitTranslationContext,
     private val router: GuiRouter
-) : CommandExecutor<RatingCommand.Input>,
+) : CommandExecutor<RatingCommand.Result>,
     BukkitTranslationContext by translationContext {
 
     private fun OfflinePlayer.toPlayerModel(): PlayerModel? {
@@ -42,10 +42,10 @@ class RatingCommandExecutor(
         )
     }
 
-    private fun changeRating(input: RatingCommand.Input.ChangeRating) = coroutineScope.launch(dispatchers.IO) {
+    private fun changeRating(input: RatingCommand.Result.ChangeRating) = coroutineScope.launch(dispatchers.IO) {
         val useCaseInput = AddRatingUseCase.Input(
             creator = input.executor.toPlayerModel(),
-            ratedPlayerModel = input.rated.toPlayerModel(),
+            ratedPlayerModel = input.ratedPlayer.toPlayerModel(),
             message = input.message,
             rating = input.value,
             type = RatingType.USER_RATING
@@ -87,16 +87,16 @@ class RatingCommandExecutor(
 
                 AddRatingUseCase.Output.Success -> {
                     if (input.value > 0) {
-                        input.executor.sendMessage(translation.likedUser(input.rated.name ?: "-"))
+                        input.executor.sendMessage(translation.likedUser(input.ratedPlayer.name ?: "-"))
                     } else {
-                        input.executor.sendMessage(translation.dislikedUser(input.rated.name ?: "-"))
+                        input.executor.sendMessage(translation.dislikedUser(input.ratedPlayer.name ?: "-"))
                     }
                 }
             }
         }
     }
 
-    private fun reload(input: RatingCommand.Input.Reload) {
+    private fun reload(input: RatingCommand.Result.Reload) {
         when (input.executor) {
             is Player -> input.executor.performCommand("aratingreload")
             is ConsoleCommandSender -> {
@@ -107,25 +107,28 @@ class RatingCommandExecutor(
         }
     }
 
-    override fun execute(input: RatingCommand.Input) {
+    override fun execute(input: RatingCommand.Result) {
         when (input) {
-            is RatingCommand.Input.ChangeRating -> {
+            is RatingCommand.Result.ChangeRating -> {
                 changeRating(input)
             }
 
-            is RatingCommand.Input.OpenRatingGui -> {
-                val route = GuiRouter.Route.AllRatings(input.player)
+            is RatingCommand.Result.OpenRatingsGui -> {
+                val route = GuiRouter.Route.AllRatings(input.executor)
                 router.navigate(route)
             }
 
-            is RatingCommand.Input.OpenPlayerRatingGui -> {
+            is RatingCommand.Result.OpenPlayerRatingGui -> {
                 val route = GuiRouter.Route.PlayerRating(input.player, input.selectedPlayerName)
                 router.navigate(route)
             }
 
-            is RatingCommand.Input.Reload -> {
+            is RatingCommand.Result.Reload -> {
                 reload(input)
             }
+
+            RatingCommand.Result.NotPlayer,
+            RatingCommand.Result.WrongUsage -> Unit
         }
     }
 }

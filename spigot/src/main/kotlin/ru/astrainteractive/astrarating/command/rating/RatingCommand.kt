@@ -5,20 +5,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.command.api.Command
 
-interface RatingCommand : Command<RatingCommand.Result, RatingCommand.Input> {
-    sealed interface Input {
-        class ChangeRating(
-            val value: Int,
-            val message: String,
-            val executor: Player,
-            val rated: OfflinePlayer
-        ) : Input
-
-        class Reload(val executor: CommandSender) : Input
-        class OpenRatingGui(val player: Player) : Input
-        class OpenPlayerRatingGui(val player: Player, val selectedPlayerName: String) : Input
-    }
-
+interface RatingCommand : Command<RatingCommand.Result, RatingCommand.Result> {
     sealed interface Result {
         data object WrongUsage : Result
         class ChangeRating(
@@ -29,7 +16,7 @@ interface RatingCommand : Command<RatingCommand.Result, RatingCommand.Input> {
         ) : Result
 
         class OpenPlayerRatingGui(val player: Player, val selectedPlayerName: String) : Result
-        class Rating(val executor: Player) : Result
+        class OpenRatingsGui(val executor: Player) : Result
         class Reload(val executor: CommandSender) : Result
         data object NotPlayer : Result
     }

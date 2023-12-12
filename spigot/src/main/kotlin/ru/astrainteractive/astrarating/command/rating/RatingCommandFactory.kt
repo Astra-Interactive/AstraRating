@@ -24,7 +24,7 @@ class RatingCommandFactory(
 
     private inner class RatingCommandImpl :
         RatingCommand,
-        Command<RatingCommand.Result, RatingCommand.Input> by DefaultCommandFactory.create(
+        Command<RatingCommand.Result, RatingCommand.Result> by DefaultCommandFactory.create(
             alias = "arating",
             commandExecutor = RatingCommandExecutor(
                 addRatingUseCase = addRatingUseCase,
@@ -47,33 +47,33 @@ class RatingCommandFactory(
 
                     is RatingCommand.Result.OpenPlayerRatingGui,
                     is RatingCommand.Result.Reload,
-                    is RatingCommand.Result.Rating,
+                    is RatingCommand.Result.OpenRatingsGui,
                     is RatingCommand.Result.ChangeRating -> Unit
                 }
             },
             mapper = {
                 when (it) {
-                    is RatingCommand.Result.Rating -> {
-                        RatingCommand.Input.OpenRatingGui(it.executor)
+                    is RatingCommand.Result.OpenRatingsGui -> {
+                        RatingCommand.Result.OpenRatingsGui(it.executor)
                     }
 
                     is RatingCommand.Result.Reload -> {
-                        RatingCommand.Input.Reload(it.executor)
+                        RatingCommand.Result.Reload(it.executor)
                     }
 
                     is RatingCommand.Result.ChangeRating -> {
-                        RatingCommand.Input.ChangeRating(
+                        RatingCommand.Result.ChangeRating(
                             value = it.value,
                             message = it.message,
                             executor = it.executor,
-                            rated = it.ratedPlayer
+                            ratedPlayer = it.ratedPlayer
                         )
                     }
 
                     RatingCommand.Result.WrongUsage -> null
                     RatingCommand.Result.NotPlayer -> null
                     is RatingCommand.Result.OpenPlayerRatingGui -> {
-                        RatingCommand.Input.OpenPlayerRatingGui(
+                        RatingCommand.Result.OpenPlayerRatingGui(
                             it.player,
                             it.selectedPlayerName
                         )
