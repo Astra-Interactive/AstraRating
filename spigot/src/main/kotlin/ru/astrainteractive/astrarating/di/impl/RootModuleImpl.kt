@@ -5,7 +5,6 @@ import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
 import ru.astrainteractive.astrarating.command.di.CommandsModule
 import ru.astrainteractive.astrarating.core.di.CoreModule
 import ru.astrainteractive.astrarating.db.rating.di.DBRatingModule
-import ru.astrainteractive.astrarating.db.rating.model.DBConnection
 import ru.astrainteractive.astrarating.di.BukkitModule
 import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.astrarating.event.di.EventModule
@@ -16,7 +15,6 @@ import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
 import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.Single
 import ru.astrainteractive.klibs.kdi.getValue
-import java.io.File
 
 class RootModuleImpl : RootModule {
 
@@ -32,24 +30,12 @@ class RootModuleImpl : RootModule {
     }
 
     override val dbRatingModule: DBRatingModule by Single {
-        val plugin by bukkitModule.plugin
-        val config by coreModule.config
         DBRatingModule.Default(
-            connection = when (val mysql = config.databaseConnection.mysql) {
-                null -> {
-                    DBConnection.SQLite("${plugin.dataFolder}${File.separator}data.db")
-                }
-
-                else -> {
-                    DBConnection.MySql(
-                        url = "jdbc:mysql://${mysql.host}:${mysql.port}/${mysql.database}",
-                        user = mysql.username,
-                        password = mysql.password
-                    )
-                }
-            }
+            coreModule = coreModule,
+            dataFolder = bukkitModule.plugin.value.dataFolder,
         )
     }
+
     override val apiRatingModule: ApiRatingModule by Provider {
         val plugin by bukkitModule.plugin
         val scope by coreModule.scope
@@ -91,6 +77,7 @@ class RootModuleImpl : RootModule {
     override val eventModule: EventModule by lazy {
         EventModule.Default(this)
     }
+
     override val commandsModule: CommandsModule by lazy {
         CommandsModule.Default(this)
     }

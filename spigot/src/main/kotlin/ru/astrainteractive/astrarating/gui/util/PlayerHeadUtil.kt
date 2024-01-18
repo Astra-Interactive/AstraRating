@@ -7,7 +7,6 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.SkullMeta
 
 object PlayerHeadUtil {
-    fun getHead(playerName: String) = getHead(Bukkit.getOfflinePlayer(playerName))
     fun getHead(player: OfflinePlayer): ItemStack {
         val item = ItemStack(Material.PLAYER_HEAD)
         val meta: SkullMeta = item.itemMeta as SkullMeta
@@ -15,4 +14,5 @@ object PlayerHeadUtil {
         item.itemMeta = meta
         return item
     }
+    fun getHead(playerName: String) = getHead(Bukkit.getOfflinePlayer(playerName))
 }
