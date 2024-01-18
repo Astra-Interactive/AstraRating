@@ -1,9 +1,9 @@
 package ru.astrainteractive.astrarating.feature.changerating.domain.usecase
 
+import ru.astrainteractive.astrarating.core.RatingPermission
 import ru.astrainteractive.astrarating.feature.changerating.data.CanVoteTodayRepository
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.CanVoteTodayUseCase.Input
 import ru.astrainteractive.astrarating.model.PlayerModel
-import ru.astrainteractive.astrarating.plugin.RatingPermission
 import ru.astrainteractive.klibs.mikro.core.domain.UseCase
 
 /**

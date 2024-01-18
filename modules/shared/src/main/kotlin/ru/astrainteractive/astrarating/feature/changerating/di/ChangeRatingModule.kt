@@ -1,6 +1,7 @@
 package ru.astrainteractive.astrarating.feature.changerating.di
 
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
+import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.feature.changerating.data.CanVoteOnPlayerRepository
 import ru.astrainteractive.astrarating.feature.changerating.data.CanVoteOnPlayerRepositoryImpl
 import ru.astrainteractive.astrarating.feature.changerating.data.CanVoteTodayRepository
@@ -28,7 +29,6 @@ import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.Inser
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.InsertUserUseCaseImpl
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.ValidateMessageUseCase
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.ValidateMessageUseCaseImpl
-import ru.astrainteractive.astrarating.model.EmpireConfig
 import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.Reloadable
 import ru.astrainteractive.klibs.kdi.getValue

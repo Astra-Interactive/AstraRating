@@ -5,10 +5,10 @@ import org.bukkit.plugin.java.JavaPlugin
 import ru.astrainteractive.astralibs.async.BukkitDispatchers
 import ru.astrainteractive.astralibs.command.api.Command
 import ru.astrainteractive.astralibs.command.api.DefaultCommandFactory
-import ru.astrainteractive.astralibs.string.BukkitTranslationContext
+import ru.astrainteractive.astralibs.serialization.KyoriComponentSerializer
+import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCase
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
-import ru.astrainteractive.astrarating.model.PluginTranslation
 import ru.astrainteractive.klibs.kdi.Factory
 
 @Suppress("LongParameterList")
@@ -18,7 +18,7 @@ class RatingCommandFactory(
     private val translation: PluginTranslation,
     private val coroutineScope: CoroutineScope,
     private val dispatchers: BukkitDispatchers,
-    private val translationContext: BukkitTranslationContext,
+    private val kyoriComponentSerializer: KyoriComponentSerializer,
     private val guiRouter: GuiRouter
 ) : Factory<RatingCommand> {
 
@@ -31,18 +31,18 @@ class RatingCommandFactory(
                 translation = translation,
                 coroutineScope = coroutineScope,
                 dispatchers = dispatchers,
-                translationContext = translationContext,
+                kyoriComponentSerializer = kyoriComponentSerializer,
                 router = guiRouter
             ),
             commandParser = RatingCommandParser(),
             resultHandler = { commandSender, result ->
                 when (result) {
-                    RatingCommand.Result.NotPlayer -> with(translationContext) {
-                        commandSender.sendMessage(translation.onlyPlayerCommand)
+                    RatingCommand.Result.NotPlayer -> with(kyoriComponentSerializer) {
+                        commandSender.sendMessage(translation.onlyPlayerCommand.let(::toComponent))
                     }
 
-                    RatingCommand.Result.WrongUsage -> with(translationContext) {
-                        commandSender.sendMessage(translation.wrongUsage)
+                    RatingCommand.Result.WrongUsage -> with(kyoriComponentSerializer) {
+                        commandSender.sendMessage(translation.wrongUsage.let(::toComponent))
                     }
 
                     is RatingCommand.Result.OpenPlayerRatingGui,

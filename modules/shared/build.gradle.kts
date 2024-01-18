@@ -21,5 +21,6 @@ dependencies {
     testImplementation(libs.tests.kotlin.test)
     // Local
     implementation(projects.modules.apiRating)
-    implementation(projects.modules.dto)
+    implementation(projects.modules.dbRating)
+    implementation(projects.modules.core)
 }

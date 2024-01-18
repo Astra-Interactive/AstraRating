@@ -1,10 +1,11 @@
 package ru.astrainteractive.astrarating.feature.allrating
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import ru.astrainteractive.astrarating.dto.RatedUserDTO
 import ru.astrainteractive.astrarating.model.UsersRatingsSort
 
-interface AllRatingsComponent {
+interface AllRatingsComponent : CoroutineScope {
     val model: StateFlow<Model>
     fun onSortClicked()
     fun close()

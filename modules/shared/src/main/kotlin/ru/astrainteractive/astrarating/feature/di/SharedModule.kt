@@ -2,6 +2,7 @@ package ru.astrainteractive.astrarating.feature.di
 
 import kotlinx.coroutines.CoroutineScope
 import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
+import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.feature.allrating.AllRatingsComponent
 import ru.astrainteractive.astrarating.feature.allrating.DefaultAllRatingsComponent
 import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsRepository
@@ -12,7 +13,6 @@ import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUse
 import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUseCaseImpl
 import ru.astrainteractive.astrarating.feature.playerrating.presentation.DefaultPlayerRatingsComponent
 import ru.astrainteractive.astrarating.feature.playerrating.presentation.PlayerRatingsComponent
-import ru.astrainteractive.astrarating.model.EmpireConfig
 import ru.astrainteractive.klibs.kdi.Factory
 import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.Reloadable

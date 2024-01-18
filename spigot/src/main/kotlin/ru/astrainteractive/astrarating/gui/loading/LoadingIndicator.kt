@@ -9,7 +9,7 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import ru.astrainteractive.astralibs.menu.menu.Menu
 import ru.astrainteractive.astralibs.serialization.KyoriComponentSerializer
-import ru.astrainteractive.astrarating.model.PluginTranslation
+import ru.astrainteractive.astrarating.core.PluginTranslation
 
 class LoadingIndicator(
     private val menu: Menu,
@@ -51,7 +51,7 @@ class LoadingIndicator(
 
     suspend fun display() {
         stop()
-        job = menu.launch {
+        job = menu.menuScope.launch {
             while (isActive) {
                 render()
                 delay(100L)

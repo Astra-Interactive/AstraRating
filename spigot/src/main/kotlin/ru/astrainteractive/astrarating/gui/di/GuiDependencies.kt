@@ -10,9 +10,9 @@ interface GuiDependencies : PlayerRatingGuiDependencies, RatingsGUIDependencies 
     class Default(rootModule: RootModule) : GuiDependencies {
 
         override val dbApi = rootModule.apiRatingModule.ratingDBApi
-        override val dispatchers by rootModule.servicesModule.dispatchers
-        override val translation by rootModule.servicesModule.translation
-        override val config by rootModule.servicesModule.config
-        override val translationContext: KyoriComponentSerializer by rootModule.servicesModule.componentSerializer
+        override val dispatchers by rootModule.bukkitModule.dispatchers
+        override val translation by rootModule.bukkitModule.translation
+        override val config by rootModule.bukkitModule.config
+        override val translationContext: KyoriComponentSerializer by rootModule.bukkitModule.kyoriComponentSerializer
     }
 }

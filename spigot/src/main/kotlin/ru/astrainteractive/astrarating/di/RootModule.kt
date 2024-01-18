@@ -12,7 +12,7 @@ import ru.astrainteractive.klibs.kdi.Module
 interface RootModule : Module {
 
     // Modules
-    val servicesModule: ServicesModule
+    val bukkitModule: BukkitModule
 
     val dbRatingModule: DBRatingModule
 

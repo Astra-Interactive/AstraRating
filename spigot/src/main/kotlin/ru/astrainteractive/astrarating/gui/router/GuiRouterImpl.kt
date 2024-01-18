@@ -12,8 +12,8 @@ import ru.astrainteractive.klibs.kdi.getValue
 class GuiRouterImpl(
     private val rootModule: RootModule,
 ) : GuiRouter {
-    private val scope by rootModule.servicesModule.scope
-    private val dispatchers by rootModule.servicesModule.dispatchers
+    private val scope by rootModule.bukkitModule.scope
+    private val dispatchers by rootModule.bukkitModule.dispatchers
     private val guiDependencies by Provider {
         GuiDependencies.Default(rootModule)
     }

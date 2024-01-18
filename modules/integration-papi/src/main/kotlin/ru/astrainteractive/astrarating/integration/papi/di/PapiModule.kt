@@ -1,15 +1,15 @@
 package ru.astrainteractive.astrarating.integration.papi.di
 
 import kotlinx.coroutines.CoroutineScope
+import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astrarating.api.rating.api.CachedApi
-import ru.astrainteractive.astrarating.integration.papi.RatingPAPIComponent
-import ru.astrainteractive.astrarating.model.EmpireConfig
+import ru.astrainteractive.astrarating.core.EmpireConfig
+import ru.astrainteractive.astrarating.integration.papi.RatingPAPILifecycle
 import ru.astrainteractive.klibs.kdi.Dependency
-import ru.astrainteractive.klibs.kdi.Single
 import ru.astrainteractive.klibs.kdi.getValue
 
 interface PapiModule {
-    val ratingPAPIComponent: RatingPAPIComponent
+    val ratingPAPILifecycle: Lifecycle
 
     class Default(
         cachedApi: CachedApi,
@@ -21,8 +21,8 @@ interface PapiModule {
             override val config by config
             override val scope: CoroutineScope = scope
         }
-        override val ratingPAPIComponent: RatingPAPIComponent by Single {
-            RatingPAPIComponent(papiDependencies)
+        override val ratingPAPILifecycle: Lifecycle by lazy {
+            RatingPAPILifecycle(papiDependencies)
         }
     }
 }

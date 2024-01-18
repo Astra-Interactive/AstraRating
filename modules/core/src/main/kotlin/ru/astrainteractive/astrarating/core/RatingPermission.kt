@@ -1,4 +1,4 @@
-package ru.astrainteractive.astrarating.plugin
+package ru.astrainteractive.astrarating.core
 
 import ru.astrainteractive.astralibs.permission.Permission
 

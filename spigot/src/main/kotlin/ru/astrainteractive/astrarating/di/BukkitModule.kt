@@ -6,22 +6,21 @@ import ru.astrainteractive.astralibs.async.BukkitDispatchers
 import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.astralibs.menu.event.DefaultInventoryClickEvent
 import ru.astrainteractive.astralibs.serialization.KyoriComponentSerializer
-import ru.astrainteractive.astralibs.string.BukkitTranslationContext
 import ru.astrainteractive.astrarating.AstraRating
+import ru.astrainteractive.astrarating.core.EmpireConfig
+import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.feature.changerating.data.PlatformBridge
-import ru.astrainteractive.astrarating.model.EmpireConfig
-import ru.astrainteractive.astrarating.model.PluginTranslation
 import ru.astrainteractive.klibs.kdi.Factory
 import ru.astrainteractive.klibs.kdi.Lateinit
 import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.Reloadable
 import ru.astrainteractive.klibs.kdi.Single
 
-interface ServicesModule {
+interface BukkitModule {
     // Core
     val plugin: Lateinit<AstraRating>
     val inventoryClickEvent: Single<DefaultInventoryClickEvent>
-    val componentSerializer: Single<KyoriComponentSerializer>
+    val kyoriComponentSerializer: Reloadable<KyoriComponentSerializer>
 
     // Services
     val bstats: Factory<Metrics>
@@ -30,7 +29,6 @@ interface ServicesModule {
     val scope: Single<AsyncComponent>
     val config: Reloadable<EmpireConfig>
     val translation: Reloadable<PluginTranslation>
-    val translationContext: Provider<BukkitTranslationContext>
 
     val platformBridge: Provider<PlatformBridge>
 }
