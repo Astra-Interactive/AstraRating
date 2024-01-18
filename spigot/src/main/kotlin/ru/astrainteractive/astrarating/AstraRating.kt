@@ -1,8 +1,7 @@
 package ru.astrainteractive.astrarating
 
-import kotlinx.coroutines.runBlocking
-import org.bukkit.event.HandlerList
 import org.bukkit.plugin.java.JavaPlugin
+import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astrarating.di.impl.RootModuleImpl
 
 /**
@@ -10,6 +9,14 @@ import ru.astrainteractive.astrarating.di.impl.RootModuleImpl
  */
 class AstraRating : JavaPlugin() {
     private val rootModule = RootModuleImpl()
+    private val lifecycles: List<Lifecycle>
+        get() = listOf(
+            rootModule.coreModule.lifecycle,
+            rootModule.bukkitModule.lifecycle,
+            rootModule.dbRatingModule.lifecycle,
+            rootModule.commandsModule.lifecycle,
+            rootModule.eventModule.lifecycle,
+        )
 
     init {
         rootModule.bukkitModule.plugin.initialize(this)
@@ -19,32 +26,20 @@ class AstraRating : JavaPlugin() {
      * This method called when server starts or PlugMan load plugin.
      */
     override fun onEnable() {
-        reloadPlugin()
-        rootModule.dbRatingModule.database
-        rootModule.bukkitModule.bstats.create()
-        rootModule.papiModule?.ratingPAPILifecycle?.onEnable()
-        rootModule.bukkitModule.eventListener.value.onEnable(this)
-        rootModule.bukkitModule.inventoryClickEvent.value.onEnable(this)
-        rootModule.eventModule.eventManager
-        rootModule.commandsModule.commandManager
+        lifecycles.forEach(Lifecycle::onEnable)
     }
 
     /**
      * This method called when server is shutting down or when PlugMan disable plugin.
      */
     override fun onDisable() {
-        runBlocking { rootModule.dbRatingModule.database.connector.invoke().close() }
-        HandlerList.unregisterAll(this)
-        rootModule.bukkitModule.eventListener.value.onDisable()
-        rootModule.bukkitModule.inventoryClickEvent.value.onDisable()
-        rootModule.papiModule?.ratingPAPILifecycle?.onDisable()
+        lifecycles.forEach(Lifecycle::onDisable)
     }
 
     /**
      * As it says, function for plugin reload
      */
     fun reloadPlugin() {
-        rootModule.bukkitModule.config.reload()
-        rootModule.bukkitModule.translation.reload()
+        lifecycles.forEach(Lifecycle::onReload)
     }
 }

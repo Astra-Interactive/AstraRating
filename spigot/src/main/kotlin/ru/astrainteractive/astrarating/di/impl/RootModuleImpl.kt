@@ -1,13 +1,15 @@
 package ru.astrainteractive.astrarating.di.impl
 
-import org.bukkit.Bukkit
+import ru.astrainteractive.astralibs.async.DefaultBukkitDispatchers
 import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
 import ru.astrainteractive.astrarating.command.di.CommandsModule
+import ru.astrainteractive.astrarating.core.di.CoreModule
 import ru.astrainteractive.astrarating.db.rating.di.DBRatingModule
 import ru.astrainteractive.astrarating.db.rating.model.DBConnection
 import ru.astrainteractive.astrarating.di.BukkitModule
 import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.astrarating.event.di.EventModule
+import ru.astrainteractive.astrarating.feature.changerating.data.BukkitPlatformBridge
 import ru.astrainteractive.astrarating.feature.di.SharedModule
 import ru.astrainteractive.astrarating.gui.di.GuiModule
 import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
@@ -19,14 +21,19 @@ import java.io.File
 class RootModuleImpl : RootModule {
 
     override val bukkitModule: BukkitModule by Single {
-        BukkitModuleImpl()
+        BukkitModule.Default()
     }
 
-    // Modules
+    override val coreModule: CoreModule by lazy {
+        CoreModule.Default(
+            dataFolder = bukkitModule.plugin.value.dataFolder,
+            dispatchers = DefaultBukkitDispatchers(bukkitModule.plugin.value)
+        )
+    }
 
     override val dbRatingModule: DBRatingModule by Single {
         val plugin by bukkitModule.plugin
-        val config by bukkitModule.config
+        val config by coreModule.config
         DBRatingModule.Default(
             connection = when (val mysql = config.databaseConnection.mysql) {
                 null -> {
@@ -45,7 +52,7 @@ class RootModuleImpl : RootModule {
     }
     override val apiRatingModule: ApiRatingModule by Provider {
         val plugin by bukkitModule.plugin
-        val scope by bukkitModule.scope
+        val scope by coreModule.scope
         ApiRatingModule.Default(
             database = dbRatingModule.database,
             coroutineScope = scope,
@@ -54,24 +61,26 @@ class RootModuleImpl : RootModule {
     }
 
     override val papiModule: PapiModule? by Single {
-        runCatching {
-            PapiModule.Default(
-                cachedApi = apiRatingModule.cachedApi,
-                config = bukkitModule.config,
-                scope = bukkitModule.scope.value
-            )
-        }.onFailure {
-            Bukkit.getLogger().severe("[AstraRating] You don't have PAPI installed. Placeholders will not be avaliable")
-        }.getOrNull()
+        PapiModule.Default(
+            cachedApi = apiRatingModule.cachedApi,
+            config = coreModule.config,
+            scope = coreModule.scope.value
+        )
     }
 
     override val sharedModule: SharedModule by Single {
         SharedModule.Default(
             apiRatingModule = apiRatingModule,
-            dispatchers = bukkitModule.dispatchers.value,
-            coroutineScope = bukkitModule.scope.value,
-            empireConfig = bukkitModule.config,
-            platformBridge = bukkitModule.platformBridge
+            dispatchers = coreModule.dispatchers,
+            coroutineScope = coreModule.scope.value,
+            empireConfig = coreModule.config,
+            platformBridge = {
+                BukkitPlatformBridge(
+                    minTimeOnServer = {
+                        coreModule.config.value.minTimeOnServer
+                    }
+                )
+            }
         )
     }
 

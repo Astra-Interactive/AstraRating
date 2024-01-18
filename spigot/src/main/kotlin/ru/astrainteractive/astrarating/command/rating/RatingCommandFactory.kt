@@ -2,7 +2,6 @@ package ru.astrainteractive.astrarating.command.rating
 
 import kotlinx.coroutines.CoroutineScope
 import org.bukkit.plugin.java.JavaPlugin
-import ru.astrainteractive.astralibs.async.BukkitDispatchers
 import ru.astrainteractive.astralibs.command.api.Command
 import ru.astrainteractive.astralibs.command.api.DefaultCommandFactory
 import ru.astrainteractive.astralibs.serialization.KyoriComponentSerializer
@@ -10,6 +9,7 @@ import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCase
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.klibs.kdi.Factory
+import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 @Suppress("LongParameterList")
 class RatingCommandFactory(
@@ -17,7 +17,7 @@ class RatingCommandFactory(
     private val addRatingUseCase: AddRatingUseCase,
     private val translation: PluginTranslation,
     private val coroutineScope: CoroutineScope,
-    private val dispatchers: BukkitDispatchers,
+    private val dispatchers: KotlinDispatchers,
     private val kyoriComponentSerializer: KyoriComponentSerializer,
     private val guiRouter: GuiRouter
 ) : Factory<RatingCommand> {

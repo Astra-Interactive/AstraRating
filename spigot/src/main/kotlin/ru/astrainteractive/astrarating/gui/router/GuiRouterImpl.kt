@@ -12,13 +12,13 @@ import ru.astrainteractive.klibs.kdi.getValue
 class GuiRouterImpl(
     private val rootModule: RootModule,
 ) : GuiRouter {
-    private val scope by rootModule.bukkitModule.scope
-    private val dispatchers by rootModule.bukkitModule.dispatchers
+    private val scope by rootModule.coreModule.scope
+    private val dispatchers = rootModule.coreModule.dispatchers
     private val guiDependencies by Provider {
         GuiDependencies.Default(rootModule)
     }
     override fun navigate(route: GuiRouter.Route) {
-        scope.launch(dispatchers.BukkitAsync) {
+        scope.launch(dispatchers.IO) {
             val gui = when (route) {
                 is GuiRouter.Route.AllRatings -> RatingsGUI(
                     player = route.executor,
@@ -37,7 +37,7 @@ class GuiRouterImpl(
                     router = this@GuiRouterImpl
                 )
             }
-            withContext(dispatchers.BukkitMain) {
+            withContext(dispatchers.Main) {
                 gui.open()
             }
         }

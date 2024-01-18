@@ -16,7 +16,7 @@ import java.io.File
 
 interface CoreModule {
     val lifecycle: Lifecycle
-    val config: Dependency<EmpireConfig>
+    val config: Reloadable<EmpireConfig>
     val translation: Dependency<PluginTranslation>
     val scope: Dependency<AsyncComponent>
     val dispatchers: KotlinDispatchers

@@ -6,7 +6,6 @@ import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.entity.Player
-import ru.astrainteractive.astralibs.async.BukkitDispatchers
 import ru.astrainteractive.astralibs.command.api.CommandExecutor
 import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissible
 import ru.astrainteractive.astralibs.serialization.KyoriComponentSerializer
@@ -15,12 +14,13 @@ import ru.astrainteractive.astrarating.dto.RatingType
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCase
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.model.PlayerModel
+import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 class RatingCommandExecutor(
     private val addRatingUseCase: AddRatingUseCase,
     private val translation: PluginTranslation,
     private val coroutineScope: CoroutineScope,
-    private val dispatchers: BukkitDispatchers,
+    private val dispatchers: KotlinDispatchers,
     kyoriComponentSerializer: KyoriComponentSerializer,
     private val router: GuiRouter
 ) : CommandExecutor<RatingCommand.Result>,
