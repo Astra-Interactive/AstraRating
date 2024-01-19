@@ -45,6 +45,6 @@ include("spigot")
 // modules
 include("modules:db-rating")
 include("modules:api-rating")
-include("modules:dto")
 include("modules:integration-papi")
 include("modules:shared")
+include("modules:core")

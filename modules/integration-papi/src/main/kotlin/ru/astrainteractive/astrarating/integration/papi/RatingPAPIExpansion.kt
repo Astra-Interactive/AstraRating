@@ -1,7 +1,7 @@
 package ru.astrainteractive.astrarating.integration.papi
 
 import org.bukkit.OfflinePlayer
-import ru.astrainteractive.astralibs.util.KPlaceholderExpansion
+import ru.astrainteractive.astralibs.expansion.KPlaceholderExpansion
 import ru.astrainteractive.astrarating.integration.papi.di.PapiDependencies
 import ru.astrainteractive.astrarating.integration.papi.placeholder.ColorPlaceholder
 import ru.astrainteractive.astrarating.integration.papi.placeholder.RatingAmountPlaceholder

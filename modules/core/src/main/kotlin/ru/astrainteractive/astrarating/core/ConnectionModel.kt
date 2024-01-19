@@ -1,4 +1,4 @@
-package ru.astrainteractive.astrarating.model
+package ru.astrainteractive.astrarating.core
 
 import kotlinx.serialization.Serializable
 

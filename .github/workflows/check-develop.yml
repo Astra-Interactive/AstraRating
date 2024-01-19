@@ -1,5 +1,8 @@
 name: Check Develop
 on:
+  pull_request:
+    branches:
+      - *
   push:
     branches:
       - develop

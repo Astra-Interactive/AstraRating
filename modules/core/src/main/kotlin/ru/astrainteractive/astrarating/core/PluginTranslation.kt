@@ -1,11 +1,11 @@
 @file:Suppress("MaximumLineLength", "MaxLineLength", "LongParameterList")
 
-package ru.astrainteractive.astrarating.model
+package ru.astrainteractive.astrarating.core
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import ru.astrainteractive.astralibs.string.StringDesc
-import ru.astrainteractive.astralibs.string.replace
+import ru.astrainteractive.astralibs.string.StringDescExt.replace
 
 @Serializable
 class PluginTranslation(

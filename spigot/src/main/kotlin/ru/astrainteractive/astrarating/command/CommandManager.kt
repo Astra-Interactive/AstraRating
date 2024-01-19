@@ -27,14 +27,14 @@ class CommandManager(
             translation = dependencies.translation,
             coroutineScope = dependencies.scope,
             dispatchers = dependencies.dispatchers,
-            translationContext = dependencies.translationContext,
+            kyoriComponentSerializer = dependencies.kyoriComponentSerializer,
             guiRouter = dependencies.router
         ).create()
 
         ReloadCommandFactory(
             plugin = plugin,
             translation = dependencies.translation,
-            translationContext = dependencies.translationContext
+            kyoriComponentSerializer = dependencies.kyoriComponentSerializer
         ).create()
     }
 }

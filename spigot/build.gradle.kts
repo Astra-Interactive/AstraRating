@@ -35,9 +35,9 @@ dependencies {
     // Local
     implementation(projects.modules.dbRating)
     implementation(projects.modules.apiRating)
-    implementation(projects.modules.dto)
     implementation(projects.modules.integrationPapi)
     implementation(projects.modules.shared)
+    implementation(projects.modules.core)
 }
 minecraftMultiplatform {
     dependencies {

@@ -8,6 +8,7 @@ dependencies {
     // Kotlin
     implementation(libs.bundles.kotlin)
     // AstraLibs
+    implementation(libs.minecraft.astralibs.ktxcore)
     implementation(libs.minecraft.astralibs.spigot.core)
     // klibs
     implementation(klibs.klibs.mikro.core)
@@ -20,5 +21,5 @@ dependencies {
     compileOnly(libs.minecraft.papi)
     // Local
     implementation(projects.modules.apiRating)
-    implementation(projects.modules.dto)
+    implementation(projects.modules.core)
 }

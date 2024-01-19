@@ -4,7 +4,7 @@ package ru.astrainteractive.astrarating.gui.util
 
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
-import ru.astrainteractive.astrarating.model.EmpireConfig
+import ru.astrainteractive.astrarating.core.EmpireConfig
 import kotlin.math.max
 
 fun subListFromString(text: String, threshold: Int, cutWords: Boolean): List<String> {

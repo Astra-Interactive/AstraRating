@@ -2,7 +2,6 @@ package ru.astrainteractive.astrarating.integration.papi.placeholder
 
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
-import ru.astrainteractive.astralibs.util.hex
 import ru.astrainteractive.astrarating.api.rating.cache.JCache
 import ru.astrainteractive.astrarating.integration.papi.coloring.ColoringMapper
 import ru.astrainteractive.astrarating.integration.papi.coloring.ColoringUtils
@@ -33,6 +32,6 @@ internal class ColorPlaceholder(
     override val key: String = "color"
 
     override fun asPlaceholder(param: OfflinePlayer): String {
-        return jcache.getIfPresent(param.uniqueId)?.hex() ?: ""
+        return jcache.getIfPresent(param.uniqueId).orEmpty() // todo
     }
 }

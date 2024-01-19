@@ -1,20 +1,28 @@
 package ru.astrainteractive.astrarating.gui.playerratings
 
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
-import ru.astrainteractive.astralibs.menu.clicker.Click
-import ru.astrainteractive.astralibs.menu.clicker.MenuClickListener
 import ru.astrainteractive.astralibs.menu.holder.DefaultPlayerHolder
 import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
 import ru.astrainteractive.astralibs.menu.menu.InventorySlot
 import ru.astrainteractive.astralibs.menu.menu.MenuSize
 import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
+import ru.astrainteractive.astralibs.menu.menu.editMeta
+import ru.astrainteractive.astralibs.menu.menu.setIndex
+import ru.astrainteractive.astralibs.menu.menu.setItemStack
+import ru.astrainteractive.astralibs.menu.menu.setOnClickListener
 import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissible
-import ru.astrainteractive.astralibs.string.replace
+import ru.astrainteractive.astralibs.string.StringDescExt.replace
+import ru.astrainteractive.astrarating.core.EmpireConfig
+import ru.astrainteractive.astrarating.core.PluginTranslation
+import ru.astrainteractive.astrarating.core.RatingPermission
 import ru.astrainteractive.astrarating.feature.playerrating.presentation.PlayerRatingsComponent
 import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
 import ru.astrainteractive.astrarating.gui.playerratings.di.PlayerRatingGuiDependencies
@@ -27,15 +35,10 @@ import ru.astrainteractive.astrarating.gui.util.TimeUtility
 import ru.astrainteractive.astrarating.gui.util.normalName
 import ru.astrainteractive.astrarating.gui.util.offlinePlayer
 import ru.astrainteractive.astrarating.gui.util.subListFromString
-import ru.astrainteractive.astrarating.model.EmpireConfig
-import ru.astrainteractive.astrarating.model.PluginTranslation
-import ru.astrainteractive.astrarating.plugin.RatingPermission
-import ru.astrainteractive.klibs.kdi.Provider
-import ru.astrainteractive.klibs.kdi.getValue
 
 class PlayerRatingsGUI(
     selectedPlayerName: String,
-    player: Player,
+    private val player: Player,
     private val module: PlayerRatingGuiDependencies,
     private val playerRatingsComponent: PlayerRatingsComponent,
     private val router: GuiRouter
@@ -46,8 +49,6 @@ class PlayerRatingsGUI(
         translation = translation,
         translationContext = translationContext
     )
-
-    private val clickListener = MenuClickListener()
 
     private val slotContext = object : SlotContext {
         override val translation: PluginTranslation = module.translation
@@ -74,30 +75,26 @@ class PlayerRatingsGUI(
 
     override val menuSize: MenuSize = MenuSize.XL
 
-    override val backPageButton by Provider {
-        navigationSlots.backPageSlot {
+    override val backPageButton: InventorySlot
+        get() = navigationSlots.backPageSlot {
             val route = GuiRouter.Route.AllRatings(player)
             router.navigate(route)
         }
-    }
 
-    override val nextPageButton by Provider {
-        navigationSlots.nextPageSlot
-    }
+    override val nextPageButton: InventorySlot
+        get() = navigationSlots.nextPageSlot
 
-    override val prevPageButton by Provider {
-        navigationSlots.prevPageSlot
-    }
+    override val prevPageButton: InventorySlot
+        get() = navigationSlots.prevPageSlot
 
-    private val sortButton by Provider {
-        sortSlots.playerRatingsSortSlot(
+    private val sortButton: InventorySlot
+        get() = sortSlots.playerRatingsSortSlot(
             sort = playerRatingsComponent.model.value.sort,
             click = {
                 playerRatingsComponent.onSortClicked()
                 setMenuItems()
             }
         )
-    }
 
     override var maxItemsPerPage: Int = 45
 
@@ -107,8 +104,8 @@ class PlayerRatingsGUI(
         get() = playerRatingsComponent.model.value.userRatings.size
 
     override fun onInventoryClicked(e: InventoryClickEvent) {
+        super.onInventoryClicked(e)
         e.isCancelled = true
-        clickListener.onClick(e)
     }
 
     override fun onInventoryClose(it: InventoryCloseEvent) {
@@ -120,23 +117,26 @@ class PlayerRatingsGUI(
     }
 
     override fun onCreated() {
-        playerRatingsComponent.model.collectOn(dispatchers.BukkitMain) {
-            if (it.isLoading) {
-                inventory.clear()
-                setManageButtons(clickListener)
-                runBlocking { loadingIndicator.display() }
-            } else {
-                runBlocking { loadingIndicator.stop() }
-                setMenuItems()
+        playerRatingsComponent.model
+            .onEach {
+                if (it.isLoading) {
+                    inventory.clear()
+                    setManageButtons()
+                    runBlocking { loadingIndicator.display() }
+                } else {
+                    runBlocking { loadingIndicator.stop() }
+                    setMenuItems()
+                }
             }
-        }
+            .flowOn(dispatchers.Main)
+            .launchIn(menuScope)
     }
 
     @Suppress("CyclomaticComplexMethod", "LongMethod")
     private fun setMenuItems(model: PlayerRatingsComponent.Model = playerRatingsComponent.model.value) {
         inventory.clear()
-        setManageButtons(clickListener)
-        sortButton.also(clickListener::remember).setInventorySlot()
+        setManageButtons()
+        sortButton.setInventorySlot()
         val list = model.userRatings
         for (i in 0 until maxItemsPerPage) {
             val index = maxItemsPerPage * page + i
@@ -145,64 +145,67 @@ class PlayerRatingsGUI(
             }
             val userAndRating = list[index]
             val color = if (userAndRating.rating > 0) translation.positiveColor else translation.negativeColor
-            InventorySlot.Builder {
-                this.index = i
-                itemStack = PlayerHeadUtil.getHead(userAndRating.userCreatedReport?.normalName ?: "-").apply {
-                    editMeta {
-                        it.displayName(
-                            translationContext.toComponent(
-                                translation.playerNameColor.raw + (userAndRating.userCreatedReport?.normalName ?: "-")
-                            )
+            InventorySlot.Builder()
+                .setIndex(i)
+                .setItemStack(PlayerHeadUtil.getHead(userAndRating.userCreatedReport?.normalName ?: "-"))
+                .editMeta {
+                    displayName(
+                        translationContext.toComponent(
+                            translation.playerNameColor.raw + (
+                                userAndRating.userCreatedReport?.normalName
+                                    ?: "-"
+                                )
                         )
-                        buildList<Component> {
-                            subListFromString(
-                                "${translation.message.raw} ${color.raw}${userAndRating.message}",
-                                config.trimMessageAfter,
-                                config.cutWords
-                            ).forEachIndexed { _, messagePart ->
-                                val component = translationContext.toComponent("${color.raw}$messagePart")
-                                add(component)
-                            }
+                    )
+                    buildList<Component> {
+                        subListFromString(
+                            "${translation.message.raw} ${color.raw}${userAndRating.message}",
+                            config.trimMessageAfter,
+                            config.cutWords
+                        ).forEachIndexed { _, messagePart ->
+                            val component = translationContext.toComponent("${color.raw}$messagePart")
+                            add(component)
+                        }
 
-                            if (config.gui.showFirstConnection) {
-                                val firstConnection = translation.firstConnection.raw
-                                val time = TimeUtility.formatToString(
-                                    time = userAndRating.reportedUser.offlinePlayer.firstPlayed,
-                                    format = config.gui.format
-                                )
-                                val component = translationContext.toComponent("$firstConnection $time")
-                                add(component)
-                            }
-                            if (config.gui.showLastConnection) {
-                                val lastConnection = translation.lastConnection.raw
-                                val time = TimeUtility.formatToString(
-                                    time = userAndRating.reportedUser.offlinePlayer.lastPlayed,
-                                    format = config.gui.format
-                                )
-                                val component = translationContext.toComponent("$lastConnection $time")
-                                add(component)
-                            }
-                            val canDelete = playerHolder.player.toPermissible().hasPermission(
-                                RatingPermission.DeleteReport
+                        if (config.gui.showFirstConnection) {
+                            val firstConnection = translation.firstConnection.raw
+                            val time = TimeUtility.formatToString(
+                                time = userAndRating.reportedUser.offlinePlayer.firstPlayed,
+                                format = config.gui.format
                             )
+                            val component = translationContext.toComponent("$firstConnection $time")
+                            add(component)
+                        }
+                        if (config.gui.showLastConnection) {
+                            val lastConnection = translation.lastConnection.raw
+                            val time = TimeUtility.formatToString(
+                                time = userAndRating.reportedUser.offlinePlayer.lastPlayed,
+                                format = config.gui.format
+                            )
+                            val component = translationContext.toComponent("$lastConnection $time")
+                            add(component)
+                        }
+                        val canDelete = playerHolder.player.toPermissible().hasPermission(
+                            RatingPermission.DeleteReport
+                        )
 
-                            if (canDelete && config.gui.showDeleteReport) {
-                                val component = translationContext.toComponent(translation.clickToDeleteReport)
-                                add(component)
-                            }
-                        }.run(it::lore)
-                    }
+                        if (canDelete && config.gui.showDeleteReport) {
+                            val component = translationContext.toComponent(translation.clickToDeleteReport)
+                            add(component)
+                        }
+                    }.run(::lore)
                 }
-                click = Click { e ->
+                .setOnClickListener { e ->
                     val canDelete = playerHolder.player.toPermissible().hasPermission(
                         RatingPermission.DeleteReport
                     )
-                    if (!canDelete) return@Click
-                    if (e.click != ClickType.LEFT) return@Click
-                    val item = model.userRatings.getOrNull(maxItemsPerPage * page + e.slot) ?: return@Click
+                    if (!canDelete) return@setOnClickListener
+                    if (e.click != ClickType.LEFT) return@setOnClickListener
+                    val item = model.userRatings.getOrNull(maxItemsPerPage * page + e.slot) ?: return@setOnClickListener
                     playerRatingsComponent.onDeleteClicked(item)
                 }
-            }.also(clickListener::remember).setInventorySlot()
+                .build()
+                .setInventorySlot()
         }
     }
 }

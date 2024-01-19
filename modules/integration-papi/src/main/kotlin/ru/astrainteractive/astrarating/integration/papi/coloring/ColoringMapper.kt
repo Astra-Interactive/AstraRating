@@ -1,6 +1,6 @@
 package ru.astrainteractive.astrarating.integration.papi.coloring
 
-import ru.astrainteractive.astrarating.model.EmpireConfig
+import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.klibs.mikro.core.domain.Mapper
 
 internal object ColoringMapper : Mapper<EmpireConfig.Coloring, Coloring> {
