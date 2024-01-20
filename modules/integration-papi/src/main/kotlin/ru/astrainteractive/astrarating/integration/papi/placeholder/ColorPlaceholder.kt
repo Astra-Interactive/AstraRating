@@ -2,7 +2,7 @@ package ru.astrainteractive.astrarating.integration.papi.placeholder
 
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
-import ru.astrainteractive.astrarating.api.rating.cache.JCache
+import ru.astrainteractive.astrarating.core.cache.JCache
 import ru.astrainteractive.astrarating.integration.papi.coloring.ColoringMapper
 import ru.astrainteractive.astrarating.integration.papi.coloring.ColoringUtils
 import ru.astrainteractive.astrarating.integration.papi.di.PapiDependencies

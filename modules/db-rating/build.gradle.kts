@@ -11,7 +11,7 @@ dependencies {
     implementation(klibs.klibs.kdi)
     implementation(klibs.klibs.mikro.core)
     // AstraLibs
-    implementation(libs.minecraft.astralibs.ktxcore)
+    implementation(libs.minecraft.astralibs.core)
     // Exposed
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)
