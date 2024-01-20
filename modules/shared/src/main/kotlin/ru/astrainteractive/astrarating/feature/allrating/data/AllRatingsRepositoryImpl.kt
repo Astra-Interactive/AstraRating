@@ -3,7 +3,7 @@ package ru.astrainteractive.astrarating.feature.allrating.data
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
-import ru.astrainteractive.astrarating.api.rating.cache.JCache
+import ru.astrainteractive.astrarating.core.cache.JCache
 import ru.astrainteractive.astrarating.dto.RatedUserDTO
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import kotlin.time.Duration.Companion.seconds

@@ -1,5 +1,6 @@
 package ru.astrainteractive.astrarating.gui.playerratings
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -43,6 +44,8 @@ class PlayerRatingsGUI(
     private val playerRatingsComponent: PlayerRatingsComponent,
     private val router: GuiRouter
 ) : PaginatedMenu(), PlayerRatingGuiDependencies by module {
+    override val childComponents: List<CoroutineScope>
+        get() = listOf(playerRatingsComponent)
 
     private val loadingIndicator = LoadingIndicator(
         menu = this,
@@ -109,6 +112,7 @@ class PlayerRatingsGUI(
     }
 
     override fun onInventoryClose(it: InventoryCloseEvent) {
+        super.onInventoryClose(it)
         playerRatingsComponent.close()
     }
 

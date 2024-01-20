@@ -1,8 +1,7 @@
-package ru.astrainteractive.astrarating.api.rating.cache
+package ru.astrainteractive.astrarating.core.cache
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.kotlin.com.google.common.cache.Cache

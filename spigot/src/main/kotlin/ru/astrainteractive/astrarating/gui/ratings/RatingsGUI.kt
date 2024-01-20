@@ -42,7 +42,8 @@ class RatingsGUI(
 ) : PaginatedMenu(),
     RatingsGUIDependencies by module {
 
-    override val childComponents: List<CoroutineScope> = listOf(allRatingsComponent)
+    override val childComponents: List<CoroutineScope>
+        get() = listOf(allRatingsComponent)
 
     private val loadingIndicator = LoadingIndicator(
         menu = this,
@@ -105,6 +106,7 @@ class RatingsGUI(
     }
 
     override fun onInventoryClose(it: InventoryCloseEvent) {
+        super.onInventoryClose(it)
         allRatingsComponent.close()
     }
 
