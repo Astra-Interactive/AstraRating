@@ -104,7 +104,7 @@ class PlayerRatingsGUI(
     override var pageContext: PageContext = PageContext(
         page = 0,
         maxItemsPerPage = 45,
-        maxItems = playerRatingsComponent.model.value.userRatings.size // todo
+        maxItems = playerRatingsComponent.model.value.userRatings.size
     )
 
     override fun onInventoryClicked(e: InventoryClickEvent) {
