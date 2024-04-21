@@ -1,6 +1,6 @@
 package ru.astrainteractive.astrarating.gui.di
 
-import ru.astrainteractive.astralibs.serialization.KyoriComponentSerializer
+import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.astrarating.gui.playerratings.di.PlayerRatingGuiDependencies
 import ru.astrainteractive.astrarating.gui.ratings.di.RatingsGUIDependencies

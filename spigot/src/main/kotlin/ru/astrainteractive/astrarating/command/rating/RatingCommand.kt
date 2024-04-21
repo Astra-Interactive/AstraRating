@@ -3,9 +3,9 @@ package ru.astrainteractive.astrarating.command.rating
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import ru.astrainteractive.astralibs.command.api.Command
+import ru.astrainteractive.astralibs.command.api.command.BukkitCommand
 
-interface RatingCommand : Command<RatingCommand.Result, RatingCommand.Result> {
+interface RatingCommand : BukkitCommand {
     sealed interface Result {
         data object WrongUsage : Result
         class ChangeRating(

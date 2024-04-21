@@ -3,6 +3,7 @@ package ru.astrainteractive.astrarating.gui.ratings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import net.kyori.adventure.text.Component
@@ -11,13 +12,14 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import ru.astrainteractive.astralibs.menu.holder.DefaultPlayerHolder
 import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
-import ru.astrainteractive.astralibs.menu.menu.InventorySlot
-import ru.astrainteractive.astralibs.menu.menu.MenuSize
-import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
-import ru.astrainteractive.astralibs.menu.menu.editMeta
-import ru.astrainteractive.astralibs.menu.menu.setIndex
-import ru.astrainteractive.astralibs.menu.menu.setItemStack
-import ru.astrainteractive.astralibs.menu.menu.setOnClickListener
+import ru.astrainteractive.astralibs.menu.inventory.PaginatedInventoryMenu
+import ru.astrainteractive.astralibs.menu.inventory.model.InventorySize
+import ru.astrainteractive.astralibs.menu.inventory.model.PageContext
+import ru.astrainteractive.astralibs.menu.slot.InventorySlot
+import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.editMeta
+import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setIndex
+import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setItemStack
+import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setOnClickListener
 import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.feature.allrating.AllRatingsComponent
@@ -39,7 +41,7 @@ class RatingsGUI(
     private val module: RatingsGUIDependencies,
     private val allRatingsComponent: AllRatingsComponent,
     private val router: GuiRouter
-) : PaginatedMenu(),
+) : PaginatedInventoryMenu(),
     RatingsGUIDependencies by module {
 
     override val childComponents: List<CoroutineScope>
@@ -70,11 +72,11 @@ class RatingsGUI(
 
     override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
 
-    override var menuTitle: Component = translationContext.toComponent(translation.ratingsTitle)
+    override var title: Component = translationContext.toComponent(translation.ratingsTitle)
 
-    override val menuSize: MenuSize = MenuSize.XL
+    override val inventorySize: InventorySize = InventorySize.XL
 
-    override val backPageButton by Provider {
+    private val backPageButton by Provider {
         navigationSlots.backPageSlot { inventory.close() }
     }
 
@@ -93,28 +95,35 @@ class RatingsGUI(
         )
     }
 
-    override var maxItemsPerPage: Int = 45
-
-    override var page: Int = 0
-
-    override val maxItemsAmount: Int
-        get() = allRatingsComponent.model.value.userRatings.size
+    override var pageContext: PageContext = PageContext(
+        maxItemsPerPage = 45,
+        page = 0,
+        maxItems = allRatingsComponent.model.value.userRatings.size
+    )
 
     override fun onInventoryClicked(e: InventoryClickEvent) {
         super.onInventoryClicked(e)
         e.isCancelled = true
     }
 
-    override fun onInventoryClose(it: InventoryCloseEvent) {
-        super.onInventoryClose(it)
+    override fun onInventoryClosed(it: InventoryCloseEvent) {
+        super.onInventoryClosed(it)
         allRatingsComponent.close()
     }
 
-    override fun onPageChanged() {
-        setMenuItems()
+    private fun setManageButtons() {
+        prevPageButton.setInventorySlot()
+        nextPageButton.setInventorySlot()
+        backPageButton.setInventorySlot()
     }
 
-    override fun onCreated() {
+    override fun onInventoryCreated() {
+        allRatingsComponent.model
+            .map { it.userRatings.size }
+            .onEach { pageContext = pageContext.copy(maxItems = it) }
+            .flowOn(dispatchers.Main)
+            .launchIn(menuScope)
+
         allRatingsComponent.model
             .onEach {
                 if (it.isLoading) {
@@ -136,8 +145,8 @@ class RatingsGUI(
         setManageButtons()
         sortButton.setInventorySlot()
 
-        for (i in 0 until maxItemsPerPage) {
-            val index = maxItemsPerPage * page + i
+        for (i in 0 until pageContext.maxItemsPerPage) {
+            val index = pageContext.maxItemsPerPage * pageContext.page + i
             if (index >= model.userRatings.size) {
                 continue
             }

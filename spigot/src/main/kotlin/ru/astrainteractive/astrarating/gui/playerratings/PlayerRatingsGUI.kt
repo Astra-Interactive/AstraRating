@@ -3,6 +3,7 @@ package ru.astrainteractive.astrarating.gui.playerratings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import net.kyori.adventure.text.Component
@@ -12,13 +13,14 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import ru.astrainteractive.astralibs.menu.holder.DefaultPlayerHolder
 import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
-import ru.astrainteractive.astralibs.menu.menu.InventorySlot
-import ru.astrainteractive.astralibs.menu.menu.MenuSize
-import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
-import ru.astrainteractive.astralibs.menu.menu.editMeta
-import ru.astrainteractive.astralibs.menu.menu.setIndex
-import ru.astrainteractive.astralibs.menu.menu.setItemStack
-import ru.astrainteractive.astralibs.menu.menu.setOnClickListener
+import ru.astrainteractive.astralibs.menu.inventory.PaginatedInventoryMenu
+import ru.astrainteractive.astralibs.menu.inventory.model.InventorySize
+import ru.astrainteractive.astralibs.menu.inventory.model.PageContext
+import ru.astrainteractive.astralibs.menu.slot.InventorySlot
+import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.editMeta
+import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setIndex
+import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setItemStack
+import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setOnClickListener
 import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissible
 import ru.astrainteractive.astralibs.string.StringDescExt.replace
 import ru.astrainteractive.astrarating.core.EmpireConfig
@@ -43,7 +45,7 @@ class PlayerRatingsGUI(
     private val module: PlayerRatingGuiDependencies,
     private val playerRatingsComponent: PlayerRatingsComponent,
     private val router: GuiRouter
-) : PaginatedMenu(), PlayerRatingGuiDependencies by module {
+) : PaginatedInventoryMenu(), PlayerRatingGuiDependencies by module {
     override val childComponents: List<CoroutineScope>
         get() = listOf(playerRatingsComponent)
 
@@ -72,13 +74,13 @@ class PlayerRatingsGUI(
 
     override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
 
-    override var menuTitle: Component = translationContext.toComponent(
+    override var title: Component = translationContext.toComponent(
         translation.playerRatingTitle.replace("%player%", selectedPlayerName)
     )
 
-    override val menuSize: MenuSize = MenuSize.XL
+    override val inventorySize: InventorySize = InventorySize.XL
 
-    override val backPageButton: InventorySlot
+    private val backPageButton: InventorySlot
         get() = navigationSlots.backPageSlot {
             val route = GuiRouter.Route.AllRatings(player)
             router.navigate(route)
@@ -99,28 +101,35 @@ class PlayerRatingsGUI(
             }
         )
 
-    override var maxItemsPerPage: Int = 45
-
-    override var page: Int = 0
-
-    override val maxItemsAmount: Int
-        get() = playerRatingsComponent.model.value.userRatings.size
+    override var pageContext: PageContext = PageContext(
+        page = 0,
+        maxItemsPerPage = 45,
+        maxItems = playerRatingsComponent.model.value.userRatings.size // todo
+    )
 
     override fun onInventoryClicked(e: InventoryClickEvent) {
         super.onInventoryClicked(e)
         e.isCancelled = true
     }
 
-    override fun onInventoryClose(it: InventoryCloseEvent) {
-        super.onInventoryClose(it)
+    override fun onInventoryClosed(it: InventoryCloseEvent) {
         playerRatingsComponent.close()
+        super.onInventoryClosed(it)
     }
 
-    override fun onPageChanged() {
-        setMenuItems()
+    private fun setManageButtons() {
+        prevPageButton.setInventorySlot()
+        nextPageButton.setInventorySlot()
+        backPageButton.setInventorySlot()
     }
 
-    override fun onCreated() {
+    override fun onInventoryCreated() {
+        playerRatingsComponent.model
+            .map { it.userRatings.size }
+            .onEach { pageContext = pageContext.copy(maxItems = it) }
+            .flowOn(dispatchers.Main)
+            .launchIn(menuScope)
+
         playerRatingsComponent.model
             .onEach {
                 if (it.isLoading) {
@@ -142,8 +151,8 @@ class PlayerRatingsGUI(
         setManageButtons()
         sortButton.setInventorySlot()
         val list = model.userRatings
-        for (i in 0 until maxItemsPerPage) {
-            val index = maxItemsPerPage * page + i
+        for (i in 0 until pageContext.maxItemsPerPage) {
+            val index = pageContext.maxItemsPerPage * pageContext.page + i
             if (index >= list.size) {
                 continue
             }
@@ -205,7 +214,8 @@ class PlayerRatingsGUI(
                     )
                     if (!canDelete) return@setOnClickListener
                     if (e.click != ClickType.LEFT) return@setOnClickListener
-                    val item = model.userRatings.getOrNull(maxItemsPerPage * page + e.slot) ?: return@setOnClickListener
+                    val item = model.userRatings.getOrNull(pageContext.maxItemsPerPage * pageContext.page + e.slot)
+                        ?: return@setOnClickListener
                     playerRatingsComponent.onDeleteClicked(item)
                 }
                 .build()

@@ -24,7 +24,7 @@ internal class RatingPAPIExpansion(
      * erating_rating
      */
     override fun onRequest(player: OfflinePlayer, params: String): String {
-        val placeholder = placeholders.firstOrNull { it.key == params } ?: return ""
-        return placeholder.asPlaceholder(player)
+        val placeholder = placeholders.firstOrNull { it.key == params }
+        return placeholder?.asPlaceholder(player).orEmpty()
     }
 }

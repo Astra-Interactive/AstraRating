@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
-    alias(klibs.plugins.klibs.gradle.java.core)
+    alias(libs.plugins.klibs.gradle.java.core)
 }
 
 dependencies {
@@ -11,8 +11,8 @@ dependencies {
     implementation(libs.minecraft.astralibs.core)
     implementation(libs.minecraft.astralibs.core.bukkit)
     // klibs
-    implementation(klibs.klibs.mikro.core)
-    implementation(klibs.klibs.kdi)
+    implementation(libs.klibs.mikro.core)
+    implementation(libs.klibs.kdi)
     // Test
     testImplementation(libs.bundles.testing.kotlin)
     testImplementation(libs.tests.kotlin.test)

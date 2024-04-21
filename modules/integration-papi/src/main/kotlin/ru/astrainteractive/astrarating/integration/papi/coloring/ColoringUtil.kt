@@ -1,6 +1,6 @@
 package ru.astrainteractive.astrarating.integration.papi.coloring
 
-internal object ColoringUtils {
+internal object ColoringUtil {
     fun getColoringByRating(colorings: Collection<Coloring>, rating: Int): Coloring {
         check(colorings.isNotEmpty()) { "coloring is empty" }
         val sorted = colorings.filter {

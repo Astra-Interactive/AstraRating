@@ -1,7 +1,7 @@
 package ru.astrainteractive.astrarating.command.di
 
 import kotlinx.coroutines.CoroutineScope
-import ru.astrainteractive.astralibs.serialization.KyoriComponentSerializer
+import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astrarating.AstraRating
 import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.core.PluginTranslation

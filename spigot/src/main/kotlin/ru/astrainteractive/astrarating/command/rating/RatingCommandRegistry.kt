@@ -2,17 +2,17 @@ package ru.astrainteractive.astrarating.command.rating
 
 import kotlinx.coroutines.CoroutineScope
 import org.bukkit.plugin.java.JavaPlugin
-import ru.astrainteractive.astralibs.command.api.Command
-import ru.astrainteractive.astralibs.command.api.DefaultCommandFactory
-import ru.astrainteractive.astralibs.serialization.KyoriComponentSerializer
+import ru.astrainteractive.astralibs.command.api.commandfactory.BukkitCommandFactory
+import ru.astrainteractive.astralibs.command.api.registry.BukkitCommandRegistry
+import ru.astrainteractive.astralibs.command.api.registry.BukkitCommandRegistryContext.Companion.toCommandRegistryContext
+import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCase
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
-import ru.astrainteractive.klibs.kdi.Factory
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 @Suppress("LongParameterList")
-class RatingCommandFactory(
+class RatingCommandRegistry(
     private val plugin: JavaPlugin,
     private val addRatingUseCase: AddRatingUseCase,
     private val translation: PluginTranslation,
@@ -20,11 +20,10 @@ class RatingCommandFactory(
     private val dispatchers: KotlinDispatchers,
     private val kyoriComponentSerializer: KyoriComponentSerializer,
     private val guiRouter: GuiRouter
-) : Factory<RatingCommand> {
+) {
 
-    private inner class RatingCommandImpl :
-        RatingCommand,
-        Command<RatingCommand.Result, RatingCommand.Result> by DefaultCommandFactory.create(
+    fun register() {
+        val command = BukkitCommandFactory.create(
             alias = "arating",
             commandExecutor = RatingCommandExecutor(
                 addRatingUseCase = addRatingUseCase,
@@ -35,14 +34,14 @@ class RatingCommandFactory(
                 router = guiRouter
             ),
             commandParser = RatingCommandParser(),
-            resultHandler = { commandSender, result ->
+            commandSideEffect = { context, result ->
                 when (result) {
                     RatingCommand.Result.NotPlayer -> with(kyoriComponentSerializer) {
-                        commandSender.sendMessage(translation.onlyPlayerCommand.let(::toComponent))
+                        context.sender.sendMessage(translation.onlyPlayerCommand.let(::toComponent))
                     }
 
                     RatingCommand.Result.WrongUsage -> with(kyoriComponentSerializer) {
-                        commandSender.sendMessage(translation.wrongUsage.let(::toComponent))
+                        context.sender.sendMessage(translation.wrongUsage.let(::toComponent))
                     }
 
                     is RatingCommand.Result.OpenPlayerRatingGui,
@@ -81,10 +80,6 @@ class RatingCommandFactory(
                 }
             }
         )
-
-    override fun create(): RatingCommand {
-        return RatingCommandImpl().also {
-            it.register(plugin)
-        }
+        BukkitCommandRegistry.register(command, plugin.toCommandRegistryContext())
     }
 }

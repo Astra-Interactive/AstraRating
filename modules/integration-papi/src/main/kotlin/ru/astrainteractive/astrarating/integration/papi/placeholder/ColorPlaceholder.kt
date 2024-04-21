@@ -4,7 +4,7 @@ import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import ru.astrainteractive.astrarating.core.cache.JCache
 import ru.astrainteractive.astrarating.integration.papi.coloring.ColoringMapper
-import ru.astrainteractive.astrarating.integration.papi.coloring.ColoringUtils
+import ru.astrainteractive.astrarating.integration.papi.coloring.ColoringUtil
 import ru.astrainteractive.astrarating.integration.papi.di.PapiDependencies
 import ru.astrainteractive.astrarating.integration.papi.placeholder.api.RatingPlaceholder
 import java.util.UUID
@@ -24,7 +24,7 @@ internal class ColorPlaceholder(
             name ?: return@JCache ""
             val rating = cachedApi.getPlayerRating(name, uuid)
             val coloring = config.coloring.map(ColoringMapper::toDTO)
-            val color = ColoringUtils.getColoringByRating(coloring, rating).color
+            val color = ColoringUtil.getColoringByRating(coloring, rating).color
             color
         }
     )
@@ -32,6 +32,6 @@ internal class ColorPlaceholder(
     override val key: String = "color"
 
     override fun asPlaceholder(param: OfflinePlayer): String {
-        return jcache.getIfPresent(param.uniqueId).orEmpty() // todo
+        return jcache.getIfPresent(param.uniqueId).orEmpty()
     }
 }

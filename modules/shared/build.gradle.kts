@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
-    alias(klibs.plugins.klibs.gradle.java.core)
+    alias(libs.plugins.klibs.gradle.java.core)
     id("ru.astrainteractive.gradleplugin.minecraft.multiplatform")
 }
 minecraftMultiplatform {
@@ -13,7 +13,8 @@ dependencies {
     // AstraLibs
     implementation(libs.minecraft.astralibs.core)
     // klibs
-    implementation(klibs.klibs.mikro.core)
+    implementation(libs.klibs.kdi)
+    implementation(libs.klibs.mikro.core)
     // Bukkit
     "bukkitMainCompileOnly"(libs.minecraft.paper.api)
     // Test
