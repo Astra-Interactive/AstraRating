@@ -2,7 +2,6 @@ package ru.astrainteractive.astrarating.gui.slot
 
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.menu.clicker.Click
-import ru.astrainteractive.astralibs.menu.inventory.PaginatedInventoryMenu
 import ru.astrainteractive.astralibs.menu.slot.InventorySlot
 import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.editMeta
 import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setIndex
@@ -15,7 +14,6 @@ import ru.astrainteractive.astrarating.model.UsersRatingsSort
 
 class SortSlots(
     slotContext: SlotContext,
-    private val menu: PaginatedInventoryMenu,
     private val translationContext: KyoriComponentSerializer
 ) : SlotContext by slotContext {
 

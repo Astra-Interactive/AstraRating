@@ -1,11 +1,11 @@
 
 import ru.astrainteractive.gradleplugin.property.extension.ModelPropertyValueExt.requireProjectInfo
 import ru.astrainteractive.gradleplugin.setupSpigotProcessor
+import ru.astrainteractive.gradleplugin.setupSpigotShadow
 
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
-    id("com.github.johnrengelman.shadow")
     alias(libs.plugins.klibs.gradle.java.core)
     id("ru.astrainteractive.gradleplugin.minecraft.multiplatform")
 }
@@ -52,7 +52,7 @@ val localFolder = File("D:\\Minecraft Servers\\Servers\\esmp-configuration\\smp\
 
 setupSpigotProcessor()
 
-tasks.shadowJar {
+setupSpigotShadow {
     relocate("org.bstats", requireProjectInfo.group)
     isReproducibleFileOrder = true
     mergeServiceFiles()

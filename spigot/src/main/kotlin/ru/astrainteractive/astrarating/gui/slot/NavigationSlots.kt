@@ -71,10 +71,10 @@ class NavigationSlots(
                 if (config.gui.showFirstConnection) {
                     val component = translationContext.toComponent(
                         "${translation.firstConnection} ${
-                        TimeUtility.formatToString(
-                            time = userAndRating.userDTO.offlinePlayer.firstPlayed,
-                            format = config.gui.format
-                        )
+                            TimeUtility.formatToString(
+                                time = userAndRating.userDTO.offlinePlayer.firstPlayed,
+                                format = config.gui.format
+                            )
                         }"
                     )
                     add(component)
@@ -82,10 +82,10 @@ class NavigationSlots(
                 if (config.gui.showLastConnection) {
                     val component = translationContext.toComponent(
                         "${translation.lastConnection} ${
-                        TimeUtility.formatToString(
-                            time = userAndRating.userDTO.offlinePlayer.lastPlayed,
-                            format = config.gui.format
-                        )
+                            TimeUtility.formatToString(
+                                time = userAndRating.userDTO.offlinePlayer.lastPlayed,
+                                format = config.gui.format
+                            )
                         }"
                     )
                     add(component)

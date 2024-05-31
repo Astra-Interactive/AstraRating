@@ -68,7 +68,6 @@ class PlayerRatingsGUI(
 
     private val sortSlots = SortSlots(
         slotContext = slotContext,
-        menu = this,
         translationContext = translationContext
     )
 
