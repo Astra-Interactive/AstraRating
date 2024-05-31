@@ -8,12 +8,11 @@ import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCase
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
-import ru.astrainteractive.klibs.kdi.Module
 import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
-interface CommandsDependencies : Module {
+interface CommandsDependencies {
     val plugin: AstraRating
     val addRatingUseCase: AddRatingUseCase
     val dispatchers: KotlinDispatchers
