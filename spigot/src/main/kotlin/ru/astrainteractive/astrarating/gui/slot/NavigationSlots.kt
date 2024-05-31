@@ -1,13 +1,15 @@
 package ru.astrainteractive.astrarating.gui.slot
 
+import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.menu.clicker.Click
-import ru.astrainteractive.astralibs.menu.menu.InventorySlot
-import ru.astrainteractive.astralibs.menu.menu.PaginatedMenu
-import ru.astrainteractive.astralibs.menu.menu.editMeta
-import ru.astrainteractive.astralibs.menu.menu.setIndex
-import ru.astrainteractive.astralibs.menu.menu.setItemStack
-import ru.astrainteractive.astralibs.menu.menu.setOnClickListener
-import ru.astrainteractive.astralibs.serialization.KyoriComponentSerializer
+import ru.astrainteractive.astralibs.menu.inventory.PaginatedInventoryMenu
+import ru.astrainteractive.astralibs.menu.inventory.util.PaginatedInventoryMenuExt.showNextPage
+import ru.astrainteractive.astralibs.menu.inventory.util.PaginatedInventoryMenuExt.showPrevPage
+import ru.astrainteractive.astralibs.menu.slot.InventorySlot
+import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.editMeta
+import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setIndex
+import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setItemStack
+import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setOnClickListener
 import ru.astrainteractive.astrarating.dto.RatedUserDTO
 import ru.astrainteractive.astrarating.gui.util.PlayerHeadUtil
 import ru.astrainteractive.astrarating.gui.util.TimeUtility
@@ -17,7 +19,7 @@ import ru.astrainteractive.astrarating.gui.util.toItemStack
 
 class NavigationSlots(
     slotContext: SlotContext,
-    private val menu: PaginatedMenu,
+    private val menu: PaginatedInventoryMenu,
     private val translationContext: KyoriComponentSerializer
 ) : SlotContext by slotContext {
     fun backPageSlot(click: Click) = InventorySlot.Builder()
@@ -38,7 +40,7 @@ class NavigationSlots(
                 val component = translationContext.toComponent(translation.menuNextPage)
                 displayName(component)
             }
-            .setOnClickListener { menu.showPage(menu.page + 1) }
+            .setOnClickListener { menu.showNextPage() }
             .build()
 
     val prevPageSlot: InventorySlot
@@ -49,7 +51,7 @@ class NavigationSlots(
                 val component = translationContext.toComponent(translation.menuPrevPage)
                 displayName(component)
             }
-            .setOnClickListener { menu.showPage(menu.page - 1) }
+            .setOnClickListener { menu.showPrevPage() }
             .build()
 
     fun ratingsPlayerSlot(
@@ -69,10 +71,10 @@ class NavigationSlots(
                 if (config.gui.showFirstConnection) {
                     val component = translationContext.toComponent(
                         "${translation.firstConnection} ${
-                        TimeUtility.formatToString(
-                            time = userAndRating.userDTO.offlinePlayer.firstPlayed,
-                            format = config.gui.format
-                        )
+                            TimeUtility.formatToString(
+                                time = userAndRating.userDTO.offlinePlayer.firstPlayed,
+                                format = config.gui.format
+                            )
                         }"
                     )
                     add(component)
@@ -80,10 +82,10 @@ class NavigationSlots(
                 if (config.gui.showLastConnection) {
                     val component = translationContext.toComponent(
                         "${translation.lastConnection} ${
-                        TimeUtility.formatToString(
-                            time = userAndRating.userDTO.offlinePlayer.lastPlayed,
-                            format = config.gui.format
-                        )
+                            TimeUtility.formatToString(
+                                time = userAndRating.userDTO.offlinePlayer.lastPlayed,
+                                format = config.gui.format
+                            )
                         }"
                     )
                     add(component)

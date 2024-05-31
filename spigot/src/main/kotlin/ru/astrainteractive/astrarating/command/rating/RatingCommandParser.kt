@@ -3,9 +3,10 @@ package ru.astrainteractive.astrarating.command.rating
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import ru.astrainteractive.astralibs.command.api.CommandParser
+import ru.astrainteractive.astralibs.command.api.context.BukkitCommandContext
+import ru.astrainteractive.astralibs.command.api.parser.BukkitCommandParser
 
-class RatingCommandParser : CommandParser<RatingCommand.Result> {
+class RatingCommandParser : BukkitCommandParser<RatingCommand.Result> {
 
     private fun parseChangeRating(
         label: String,
@@ -32,19 +33,20 @@ class RatingCommandParser : CommandParser<RatingCommand.Result> {
         )
     }
 
-    override fun parse(args: Array<out String>, sender: CommandSender): RatingCommand.Result {
-        return when (val label = args.getOrNull(0)) {
+    override fun parse(commandContext: BukkitCommandContext): RatingCommand.Result {
+        val sender = commandContext.sender
+        return when (val label = commandContext.args.getOrNull(0)) {
             "like", "+", "dislike", "-" -> {
                 parseChangeRating(
                     label = label,
-                    args = args,
-                    sender = sender
+                    args = commandContext.args,
+                    sender = commandContext.sender
                 )
             }
 
             "rating" -> {
                 if (sender !is Player) return RatingCommand.Result.NotPlayer
-                args.getOrNull(1)?.takeIf(String::isNotBlank)?.let { requestedPlayer ->
+                commandContext.args.getOrNull(1)?.takeIf(String::isNotBlank)?.let { requestedPlayer ->
                     RatingCommand.Result.OpenPlayerRatingGui(sender, requestedPlayer.uppercase())
                 } ?: RatingCommand.Result.OpenRatingsGui(sender)
             }

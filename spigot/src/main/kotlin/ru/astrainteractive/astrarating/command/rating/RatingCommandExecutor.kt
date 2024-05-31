@@ -6,9 +6,9 @@ import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.entity.Player
-import ru.astrainteractive.astralibs.command.api.CommandExecutor
+import ru.astrainteractive.astralibs.command.api.executor.CommandExecutor
+import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissible
-import ru.astrainteractive.astralibs.serialization.KyoriComponentSerializer
 import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.dto.RatingType
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCase

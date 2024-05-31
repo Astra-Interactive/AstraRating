@@ -1,7 +1,7 @@
 package ru.astrainteractive.astrarating.integration.papi.coloring.coloring
 
 import ru.astrainteractive.astrarating.integration.papi.coloring.Coloring
-import ru.astrainteractive.astrarating.integration.papi.coloring.ColoringUtils
+import ru.astrainteractive.astrarating.integration.papi.coloring.ColoringUtil
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -18,37 +18,37 @@ class ColoringTest {
             Coloring.More(5, defaultColor).also(::add)
             Coloring.More(10, defaultColor).also(::add)
         }
-        ColoringUtils.getColoringByRating(colorings, -11).also {
+        ColoringUtil.getColoringByRating(colorings, -11).also {
             assertEquals(-10, it.value)
         }
-        ColoringUtils.getColoringByRating(colorings, -10).also {
+        ColoringUtil.getColoringByRating(colorings, -10).also {
             assertEquals(-5, it.value)
         }
-        ColoringUtils.getColoringByRating(colorings, -9).also {
+        ColoringUtil.getColoringByRating(colorings, -9).also {
             assertEquals(-5, it.value)
         }
-        ColoringUtils.getColoringByRating(colorings, -5).also {
+        ColoringUtil.getColoringByRating(colorings, -5).also {
             assertEquals(0, it.value)
         }
-        ColoringUtils.getColoringByRating(colorings, -4).also {
+        ColoringUtil.getColoringByRating(colorings, -4).also {
             assertEquals(0, it.value)
         }
-        ColoringUtils.getColoringByRating(colorings, 0).also {
+        ColoringUtil.getColoringByRating(colorings, 0).also {
             assertEquals(0, it.value)
         }
-        ColoringUtils.getColoringByRating(colorings, 1).also {
+        ColoringUtil.getColoringByRating(colorings, 1).also {
             assertEquals(0, it.value)
         }
-        ColoringUtils.getColoringByRating(colorings, 5).also {
+        ColoringUtil.getColoringByRating(colorings, 5).also {
             assertEquals(0, it.value)
         }
-        ColoringUtils.getColoringByRating(colorings, 6).also {
+        ColoringUtil.getColoringByRating(colorings, 6).also {
             assertEquals(5, it.value)
         }
-        ColoringUtils.getColoringByRating(colorings, 10).also {
+        ColoringUtil.getColoringByRating(colorings, 10).also {
             assertEquals(5, it.value)
         }
-        ColoringUtils.getColoringByRating(colorings, 11).also {
+        ColoringUtil.getColoringByRating(colorings, 11).also {
             assertEquals(10, it.value)
         }
     }

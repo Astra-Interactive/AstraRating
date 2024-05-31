@@ -7,8 +7,8 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
-import ru.astrainteractive.astralibs.menu.menu.Menu
-import ru.astrainteractive.astralibs.serialization.KyoriComponentSerializer
+import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
+import ru.astrainteractive.astralibs.menu.core.Menu
 import ru.astrainteractive.astrarating.core.PluginTranslation
 
 class LoadingIndicator(

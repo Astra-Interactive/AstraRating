@@ -1,12 +1,12 @@
 
+import ru.astrainteractive.gradleplugin.property.extension.ModelPropertyValueExt.requireProjectInfo
 import ru.astrainteractive.gradleplugin.setupSpigotProcessor
-import ru.astrainteractive.gradleplugin.util.ProjectProperties.projectInfo
+import ru.astrainteractive.gradleplugin.setupSpigotShadow
 
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
-    id("com.github.johnrengelman.shadow")
-    alias(klibs.plugins.klibs.gradle.java.core)
+    alias(libs.plugins.klibs.gradle.java.core)
     id("ru.astrainteractive.gradleplugin.minecraft.multiplatform")
 }
 
@@ -17,9 +17,11 @@ dependencies {
     implementation(libs.minecraft.astralibs.core)
     implementation(libs.minecraft.astralibs.menu.bukkit)
     implementation(libs.minecraft.astralibs.core.bukkit)
+    implementation(libs.minecraft.astralibs.command)
+    implementation(libs.minecraft.astralibs.command.bukkit)
     // klibs
-    implementation(klibs.klibs.kdi)
-    implementation(klibs.klibs.mikro.core)
+    implementation(libs.klibs.kdi)
+    implementation(libs.klibs.mikro.core)
     // Exposed
     implementation(libs.exposed.core)
     // Test
@@ -50,8 +52,8 @@ val localFolder = File("D:\\Minecraft Servers\\Servers\\esmp-configuration\\smp\
 
 setupSpigotProcessor()
 
-tasks.shadowJar {
-    relocate("org.bstats", projectInfo.group)
+setupSpigotShadow {
+    relocate("org.bstats", requireProjectInfo.group)
     isReproducibleFileOrder = true
     mergeServiceFiles()
     dependsOn(configurations)
@@ -62,8 +64,8 @@ tasks.shadowJar {
         exclude(dependency("org.jetbrains.exposed:exposed-jdbc:${libs.versions.exposed.get()}"))
         exclude(dependency("org.jetbrains.exposed:exposed-dao:${libs.versions.exposed.get()}"))
     }
-    archiveVersion.set(projectInfo.versionString)
-    archiveBaseName.set(projectInfo.name)
+    archiveVersion.set(requireProjectInfo.versionString)
+    archiveBaseName.set(requireProjectInfo.name)
     localFolder.apply { if (!exists()) parentFile.mkdirs() }
     localFolder.also(destinationDirectory::set)
 }
