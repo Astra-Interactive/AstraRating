@@ -8,9 +8,8 @@ import ru.astrainteractive.astrarating.event.di.EventModule
 import ru.astrainteractive.astrarating.feature.di.SharedModule
 import ru.astrainteractive.astrarating.gui.di.GuiModule
 import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
-import ru.astrainteractive.klibs.kdi.Module
 
-interface RootModule : Module {
+interface RootModule {
 
     val bukkitModule: BukkitModule
 
