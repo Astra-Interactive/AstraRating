@@ -1,12 +1,10 @@
 package ru.astrainteractive.astrarating.core.cache
 
+import io.github.reactivecircus.cache4k.Cache
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jetbrains.kotlin.com.google.common.cache.Cache
-import org.jetbrains.kotlin.com.google.common.cache.CacheBuilder
-import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -18,14 +16,14 @@ class JCache<K : Any, V : Any>(
     private val update: suspend CoroutineScope.(K) -> V
 ) {
     private val limitedDispatcher = Dispatchers.IO.limitedParallelism(1)
-    private val cache: Cache<K, Data<V>> = CacheBuilder
-        .newBuilder()
-        .maximumSize(maximumSize)
-        .expireAfterAccess(expiresAfterAccess.inWholeSeconds, TimeUnit.SECONDS)
+    private val cache: Cache<K, Data<V>> = Cache.Builder<K, Data<V>>()
+        .maximumCacheSize(maximumSize)
+        .expireAfterAccess(expiresAfterAccess)
         .build()
 
     private class Data<T : Any>(val data: T) {
         val cachedAt: Long = System.currentTimeMillis()
+        val a: Any = 1
 
         fun needUpdate(duration: Duration): Boolean {
             val timePassed = System.currentTimeMillis().minus(cachedAt).milliseconds
@@ -49,7 +47,7 @@ class JCache<K : Any, V : Any>(
     }
 
     fun getIfPresent(key: K): V? {
-        val cacheData = cache.getIfPresent(key)
+        val cacheData = cache.get(key)
         if (cacheData == null || cacheData.needUpdate(updateAfterAccess)) refresh(key)
         return cacheData?.data
     }
