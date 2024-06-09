@@ -9,7 +9,7 @@ import ru.astrainteractive.klibs.kdi.Dependency
 import ru.astrainteractive.klibs.kdi.getValue
 
 interface PapiModule {
-    val ratingPAPILifecycle: Lifecycle
+    val lifecycle: Lifecycle
 
     class Default(
         cachedApi: CachedApi,
@@ -21,7 +21,7 @@ interface PapiModule {
             override val config by config
             override val scope: CoroutineScope = scope
         }
-        override val ratingPAPILifecycle: Lifecycle by lazy {
+        override val lifecycle: Lifecycle by lazy {
             RatingPAPILifecycle(papiDependencies)
         }
     }

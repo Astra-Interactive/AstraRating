@@ -10,7 +10,11 @@ internal class RatingPAPILifecycle(dependencies: PapiDependencies) : Lifecycle {
         get() = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null
 
     override fun onEnable() {
-        if (!isPapiExists) return
+        if (!isPapiExists) {
+            Bukkit.getLogger().warning("Could not find PlaceholderAPI. Placeholders disabled")
+            return
+        }
+        Bukkit.getLogger().warning("Found PlaceholderAPI. Placeholders are now enabled")
         if (expansion.isRegistered) {
             expansion.unregister()
         }

@@ -10,12 +10,13 @@ import ru.astrainteractive.astrarating.di.impl.RootModuleImpl
 class AstraRating : JavaPlugin() {
     private val rootModule = RootModuleImpl()
     private val lifecycles: List<Lifecycle>
-        get() = listOf(
+        get() = listOfNotNull(
             rootModule.coreModule.lifecycle,
             rootModule.bukkitModule.lifecycle,
             rootModule.dbRatingModule.lifecycle,
             rootModule.commandsModule.lifecycle,
             rootModule.eventModule.lifecycle,
+            rootModule.papiModule?.lifecycle
         )
 
     init {
