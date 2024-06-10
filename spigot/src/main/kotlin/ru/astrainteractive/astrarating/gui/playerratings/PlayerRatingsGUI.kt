@@ -3,9 +3,7 @@ package ru.astrainteractive.astrarating.gui.playerratings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.runBlocking
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -16,6 +14,9 @@ import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
 import ru.astrainteractive.astralibs.menu.inventory.PaginatedInventoryMenu
 import ru.astrainteractive.astralibs.menu.inventory.model.InventorySize
 import ru.astrainteractive.astralibs.menu.inventory.model.PageContext
+import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.getIndex
+import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isFirstPage
+import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isLastPage
 import ru.astrainteractive.astralibs.menu.slot.InventorySlot
 import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.editMeta
 import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setIndex
@@ -94,10 +95,7 @@ class PlayerRatingsGUI(
     private val sortButton: InventorySlot
         get() = sortSlots.playerRatingsSortSlot(
             sort = playerRatingsComponent.model.value.sort,
-            click = {
-                playerRatingsComponent.onSortClicked()
-                setMenuItems()
-            }
+            click = { playerRatingsComponent.onSortClicked() }
         )
 
     override var pageContext: PageContext = PageContext(
@@ -117,27 +115,22 @@ class PlayerRatingsGUI(
     }
 
     private fun setManageButtons() {
-        prevPageButton.setInventorySlot()
-        nextPageButton.setInventorySlot()
+        if (!pageContext.isFirstPage) prevPageButton.setInventorySlot()
+        if (!pageContext.isLastPage) nextPageButton.setInventorySlot()
         backPageButton.setInventorySlot()
     }
 
     override fun onInventoryCreated() {
         playerRatingsComponent.model
-            .map { it.userRatings.size }
-            .onEach { pageContext = pageContext.copy(maxItems = it) }
-            .flowOn(dispatchers.Main)
-            .launchIn(menuScope)
-
-        playerRatingsComponent.model
             .onEach {
+                pageContext = pageContext.copy(maxItems = it.userRatings.size)
                 if (it.isLoading) {
                     inventory.clear()
                     setManageButtons()
-                    runBlocking { loadingIndicator.display() }
+                    loadingIndicator.display()
                 } else {
-                    runBlocking { loadingIndicator.stop() }
-                    setMenuItems()
+                    loadingIndicator.stop()
+                    render()
                 }
             }
             .flowOn(dispatchers.Main)
@@ -145,17 +138,15 @@ class PlayerRatingsGUI(
     }
 
     @Suppress("CyclomaticComplexMethod", "LongMethod")
-    private fun setMenuItems(model: PlayerRatingsComponent.Model = playerRatingsComponent.model.value) {
+    override fun render() {
+        val model: PlayerRatingsComponent.Model = playerRatingsComponent.model.value
         inventory.clear()
         setManageButtons()
         sortButton.setInventorySlot()
         val list = model.userRatings
         for (i in 0 until pageContext.maxItemsPerPage) {
-            val index = pageContext.maxItemsPerPage * pageContext.page + i
-            if (index >= list.size) {
-                continue
-            }
-            val userAndRating = list[index]
+            val index = pageContext.getIndex(i)
+            val userAndRating = list.getOrNull(index) ?: continue
             val color = if (userAndRating.rating > 0) translation.positiveColor else translation.negativeColor
             InventorySlot.Builder()
                 .setIndex(i)
