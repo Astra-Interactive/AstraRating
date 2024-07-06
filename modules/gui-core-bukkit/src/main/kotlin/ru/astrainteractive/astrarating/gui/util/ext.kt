@@ -2,10 +2,10 @@
 
 package ru.astrainteractive.astrarating.gui.util
 
-import kotlin.math.max
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import ru.astrainteractive.astrarating.core.EmpireConfig
+import kotlin.math.max
 
 internal fun subListFromString(text: String, threshold: Int, cutWords: Boolean): List<String> {
     val res = if (cutWords) {

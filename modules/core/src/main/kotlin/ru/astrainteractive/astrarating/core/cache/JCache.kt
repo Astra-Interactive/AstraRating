@@ -1,12 +1,12 @@
 package ru.astrainteractive.astrarating.core.cache
 
 import io.github.reactivecircus.cache4k.Cache
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 class JCache<K : Any, V : Any>(
     expiresAfterAccess: Duration,

@@ -6,7 +6,9 @@ import org.bukkit.Bukkit
 /**
  * Tab completer for your plugin which is called when player typing commands
  */
-internal fun CommandManager.tabCompleter() = plugin.getCommand("arating")?.setTabCompleter { sender, command, label, args ->
+internal fun CommandManager.tabCompleter() = plugin.getCommand(
+    "arating"
+)?.setTabCompleter { sender, command, label, args ->
     when {
         args.size == 1 -> listOf("reload", "like", "dislike", "rating")
         args.size == 2 && (
