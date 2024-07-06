@@ -101,7 +101,7 @@ internal class PlayerRatingsGUI(
             click = { playerRatingsComponent.onSortClicked() }
         )
 
-    private val killEventSlot: InventorySlot
+    private val killEventSlot: InventorySlot?
         get() = InventorySlot.Builder()
             .setIndex(46)
             .setMaterial(Material.NETHERITE_SWORD)
@@ -116,6 +116,7 @@ internal class PlayerRatingsGUI(
                 ).let(translationContext::toComponent)
             )
             .build()
+            .takeIf { playerRatingsComponent.model.value.killCounts > 0 }
 
     override var pageContext: PageContext = PageContext(
         page = 0,
@@ -162,7 +163,7 @@ internal class PlayerRatingsGUI(
         inventory.clear()
         setManageButtons()
         sortButton.setInventorySlot()
-        killEventSlot.setInventorySlot()
+        killEventSlot?.setInventorySlot()
         val list = model.userRatings
         for (i in 0 until pageContext.maxItemsPerPage) {
             val index = pageContext.getIndex(i)
@@ -175,9 +176,9 @@ internal class PlayerRatingsGUI(
                     displayName(
                         translationContext.toComponent(
                             translation.playerNameColor.raw + (
-                                userAndRating.userCreatedReport?.normalName
-                                    ?: "-"
-                                )
+                                    userAndRating.userCreatedReport?.normalName
+                                        ?: "-"
+                                    )
                         )
                     )
                     buildList<Component> {
