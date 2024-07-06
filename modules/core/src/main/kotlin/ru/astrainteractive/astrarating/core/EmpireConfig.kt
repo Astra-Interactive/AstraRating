@@ -28,7 +28,8 @@ data class EmpireConfig(
     val databaseConnection: ConnectionModel = ConnectionModel(),
     @SerialName("coloring")
     val coloring: List<Coloring> = emptyList(),
-    val events: Events = Events()
+    val events: Events = Events(),
+    val debug: Boolean = false
 ) {
     @Serializable
     data class Coloring(
@@ -46,7 +47,7 @@ data class EmpireConfig(
         @Serializable
         data class Event(
             @SerialName("change_by")
-            val changeBy: Int = 0,
+            val changeBy: Int = -1,
             val enabled: Boolean = false
         )
     }

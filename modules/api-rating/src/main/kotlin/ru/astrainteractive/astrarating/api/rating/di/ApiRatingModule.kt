@@ -8,7 +8,6 @@ import ru.astrainteractive.astrarating.api.rating.api.impl.CachedApiImpl
 import ru.astrainteractive.astrarating.api.rating.api.impl.RatingDBApiImpl
 import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.getValue
-import java.io.File
 
 interface ApiRatingModule {
     val ratingDBApi: RatingDBApi
@@ -17,13 +16,13 @@ interface ApiRatingModule {
     class Default(
         database: Database,
         coroutineScope: CoroutineScope,
-        pluginFolder: File
+        isDebugProvider: Provider<Boolean>
     ) : ApiRatingModule {
 
         override val ratingDBApi: RatingDBApi by Provider {
             RatingDBApiImpl(
                 database = database,
-                pluginFolder = pluginFolder
+                isDebugProvider = isDebugProvider
             )
         }
         override val cachedApi: CachedApi by Provider {

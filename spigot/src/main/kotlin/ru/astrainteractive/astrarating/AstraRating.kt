@@ -1,13 +1,12 @@
 package ru.astrainteractive.astrarating
 
-import org.bukkit.plugin.java.JavaPlugin
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astrarating.di.impl.RootModuleImpl
 
 /**
  * Initial class for your plugin
  */
-class AstraRating : JavaPlugin() {
+class AstraRating : LifecyclePlugin() {
     private val rootModule = RootModuleImpl()
     private val lifecycles: List<Lifecycle>
         get() = listOfNotNull(

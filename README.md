@@ -2,14 +2,8 @@
 
 ## No-Lag and free!
 
-Advantages:
-
-- [x] Advanced sorting
-- [x] Highly customizable
-- [x] Fast and open source
-- [x] Advanced permissions
-- [x] Convenient GUI
-- [x] Fully translatable
+> [!CAUTION]
+> Java 21 and Paper 1.21 only supported! Use other versions on your own risk!
 
 More plugins from [AstraInteractive](https://github.com/Astra-Interactive)
 
@@ -83,12 +77,14 @@ coloring:
 
 ### Adding events
 
-Section will be created by default if you installing plugin first time
+Section will be created by default if you're installing plugin first time.
+
+When enabled, the plugin will decrease player rating when killed a player with positive rating
 
 ```yaml
 events:
   kill_player:
-    change_by: -2
+    change_by: -1
     enabled: false
 ```
 

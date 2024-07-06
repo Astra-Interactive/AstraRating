@@ -6,20 +6,20 @@ import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.Inser
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.InsertUserUseCase.Output
 import ru.astrainteractive.astrarating.model.PlayerModel
 import ru.astrainteractive.astrarating.model.UserModel
-import ru.astrainteractive.klibs.mikro.core.domain.UseCase
 
 /**
  * @param _auction auction to remove
  * @param player owner of auction
  * @return boolean - true if succesfully removed
  */
-interface InsertUserUseCase : UseCase.Suspended<Input, Output> {
+interface InsertUserUseCase {
     @JvmInline
     value class Input(val playerModel: PlayerModel)
 
     @JvmInline
     value class Output(val playerDTO: UserDTO)
 
+    suspend operator fun invoke(input: Input): Output
     suspend operator fun invoke(playerModel: PlayerModel) = invoke(Input(playerModel))
 }
 

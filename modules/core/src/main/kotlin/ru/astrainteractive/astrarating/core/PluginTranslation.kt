@@ -107,10 +107,20 @@ class PluginTranslation(
     val message: StringDesc.Raw = StringDesc.Raw("&#1B76CAСообщение:"),
     @SerialName("menu.loading")
     val loading: StringDesc.Raw = StringDesc.Raw("&#1B76CAЗагрузка..."),
+    @SerialName("events.title")
+    val eventsTitle: StringDesc.Raw = StringDesc.Raw("&#1B76CAОстальное"),
+    @SerialName("events.kill.amount")
+    private val eventKillAmount: StringDesc.Raw = StringDesc.Raw("&#9c0303Количество убийств: %kills%"),
     @SerialName("events.kill_player")
-    private val killedPlayer: StringDesc.Raw = StringDesc.Raw("&#9c0303Убил игрока %killed_player%")
+    private val killedPlayer: StringDesc.Raw = StringDesc.Raw("&#9c0303Убил игрока %killed_player%"),
+    @SerialName("events.you_killed_player")
+    private val youKilledPlayer: StringDesc.Raw = StringDesc.Raw(
+        "&#9c0303Вы убили игрока %killed_player%, ваш рейтинг был понижен"
+    )
 ) {
     fun killedPlayer(playerName: String) = killedPlayer.replace("%killed_player%", playerName)
+    fun youKilledPlayer(playerName: String) = youKilledPlayer.replace("%killed_player%", playerName)
     fun likedUser(playerName: String) = likedUser.replace("%player%", playerName)
     fun dislikedUser(playerName: String) = dislikedUser.replace("%player%", playerName)
+    fun eventKillAmount(count: Int) = eventKillAmount.replace("%kills%", count.toString())
 }

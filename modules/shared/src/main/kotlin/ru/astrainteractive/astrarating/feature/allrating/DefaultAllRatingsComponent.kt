@@ -9,7 +9,7 @@ import ru.astrainteractive.astrarating.model.UsersRatingsSort
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.util.next
 
-class DefaultAllRatingsComponent(
+internal class DefaultAllRatingsComponent(
     private val repository: AllRatingsRepository,
     dispatchers: KotlinDispatchers
 ) : AllRatingsComponent, AsyncComponent() {

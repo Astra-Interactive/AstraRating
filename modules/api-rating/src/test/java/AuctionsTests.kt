@@ -30,7 +30,7 @@ class AuctionsTests {
         ApiRatingModule.Default(
             database = database.value,
             coroutineScope = GlobalScope,
-            pluginFolder = File("./")
+            isDebugProvider = { false }
         ).ratingDBApi
     }
 

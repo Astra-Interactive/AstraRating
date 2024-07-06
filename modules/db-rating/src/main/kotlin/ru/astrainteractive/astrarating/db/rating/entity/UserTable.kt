@@ -15,7 +15,6 @@ object UserTable : LongIdTable("users", "user_id") {
 class UserDAO(id: EntityID<Long>) : LongEntity(id) {
     val minecraftUUID by UserTable.minecraftUUID
     val minecraftName by UserTable.minecraftName
-    var discordID by UserTable.discordID
     var lastUpdated by UserTable.lastUpdated
     val rating by UserRatingDAO referrersOn UserRatingTable.reportedUser
 

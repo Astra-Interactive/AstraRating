@@ -6,7 +6,7 @@ import ru.astrainteractive.astrarating.dto.UserDTO
 import ru.astrainteractive.astrarating.model.UserModel
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
-interface InsertUserRepository {
+internal interface InsertUserRepository {
     suspend fun selectUser(name: String): Result<UserDTO>
     suspend fun insertUser(userModel: UserModel): Result<Long>
 }

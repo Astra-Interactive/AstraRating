@@ -40,13 +40,17 @@ dependencies {
     implementation(projects.modules.integrationPapi)
     implementation(projects.modules.shared)
     implementation(projects.modules.core)
+    implementation(projects.modules.coreBukkit)
+    implementation(projects.modules.guiCoreBukkit)
+    implementation(projects.modules.commandBukkit)
+    implementation(projects.modules.eventBukkit)
 }
 minecraftMultiplatform {
     dependencies {
         implementation(projects.modules.shared.bukkitMain)
     }
 }
-val localFolder = File("D:\\Minecraft Servers\\Servers\\conf.smp\\smp\\plugins")
+val localFolder = File("D:\\Minecraft Servers\\Servers\\esmp-configuration\\test\\plugins")
     .takeIf { it.exists() }
     ?: File(rootDir, "jars")
 

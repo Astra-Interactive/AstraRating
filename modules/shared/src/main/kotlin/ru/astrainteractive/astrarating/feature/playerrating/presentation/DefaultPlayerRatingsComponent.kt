@@ -11,7 +11,7 @@ import ru.astrainteractive.astrarating.model.UserRatingsSort
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.util.next
 
-class DefaultPlayerRatingsComponent(
+internal class DefaultPlayerRatingsComponent(
     playerName: String,
     private val dbApi: RatingDBApi,
     private val dispatchers: KotlinDispatchers,
@@ -23,16 +23,16 @@ class DefaultPlayerRatingsComponent(
 
     override fun onSortClicked() {
         componentScope.launch(dispatchers.IO) {
-            val sort = model.value.sort.next(UserRatingsSort.values())
+            val sort = model.value.sort.next(UserRatingsSort.entries.toTypedArray())
             val input = SortRatingUseCase.Input(
-                ratings = model.value.userRatings,
+                ratings = model.value.allRatings,
                 sort = sort
             )
             val result = sortRatingUseCase.invoke(input)
             model.update {
                 it.copy(
                     sort = sort,
-                    userRatings = result.ratings
+                    allRatings = result.ratings
                 )
             }
         }
@@ -55,7 +55,7 @@ class DefaultPlayerRatingsComponent(
                 .onFailure(Throwable::printStackTrace)
                 .getOrDefault(emptyList())
             model.update {
-                it.copy(userRatings = userRatings)
+                it.copy(allRatings = userRatings)
             }
             onSortClicked()
             model.update { it.copy(isLoading = false) }

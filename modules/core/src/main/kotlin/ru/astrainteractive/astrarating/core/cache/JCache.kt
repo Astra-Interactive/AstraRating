@@ -23,7 +23,6 @@ class JCache<K : Any, V : Any>(
 
     private class Data<T : Any>(val data: T) {
         val cachedAt: Long = System.currentTimeMillis()
-        val a: Any = 1
 
         fun needUpdate(duration: Duration): Boolean {
             val timePassed = System.currentTimeMillis().minus(cachedAt).milliseconds

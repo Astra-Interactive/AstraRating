@@ -8,7 +8,6 @@ import ru.astrainteractive.astrarating.db.rating.di.DBRatingModule
 import ru.astrainteractive.astrarating.di.BukkitModule
 import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.astrarating.event.di.EventModule
-import ru.astrainteractive.astrarating.feature.changerating.data.BukkitPlatformBridge
 import ru.astrainteractive.astrarating.feature.di.SharedModule
 import ru.astrainteractive.astrarating.gui.di.GuiModule
 import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
@@ -37,12 +36,11 @@ class RootModuleImpl : RootModule {
     }
 
     override val apiRatingModule: ApiRatingModule by Provider {
-        val plugin by bukkitModule.plugin
         val scope by coreModule.scope
         ApiRatingModule.Default(
             database = dbRatingModule.database,
             coroutineScope = scope,
-            plugin.dataFolder
+            isDebugProvider = { coreModule.config.value.debug }
         )
     }
 
@@ -60,25 +58,32 @@ class RootModuleImpl : RootModule {
             dispatchers = coreModule.dispatchers,
             coroutineScope = coreModule.scope.value,
             empireConfig = coreModule.config,
-            platformBridge = {
-                BukkitPlatformBridge(
-                    minTimeOnServer = {
-                        coreModule.config.value.minTimeOnServer
-                    }
-                )
-            }
         )
     }
 
     override val guiModule: GuiModule by lazy {
-        GuiModule.Default(this)
+        GuiModule.Default(
+            coreModule = coreModule,
+            apiRatingModule = apiRatingModule,
+            translationContext = bukkitModule.kyoriComponentSerializer.value,
+            sharedModule = sharedModule
+        )
     }
 
     override val eventModule: EventModule by lazy {
-        EventModule.Default(this)
+        EventModule.Default(
+            coreModule = coreModule,
+            apiRatingModule = apiRatingModule,
+            bukkitModule = bukkitModule
+        )
     }
 
     override val commandsModule: CommandsModule by lazy {
-        CommandsModule.Default(this)
+        CommandsModule.Default(
+            sharedModule = sharedModule,
+            bukkitModule = bukkitModule,
+            coreModule = coreModule,
+            guiModule = guiModule
+        )
     }
 }
