@@ -43,6 +43,7 @@ dependencies {
     implementation(projects.modules.coreBukkit)
     implementation(projects.modules.guiCoreBukkit)
     implementation(projects.modules.commandBukkit)
+    implementation(projects.modules.eventBukkit)
 }
 minecraftMultiplatform {
     dependencies {

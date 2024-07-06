@@ -78,7 +78,11 @@ class RootModuleImpl : RootModule {
     }
 
     override val eventModule: EventModule by lazy {
-        EventModule.Default(this)
+        EventModule.Default(
+            coreModule = coreModule,
+            apiRatingModule = apiRatingModule,
+            bukkitModule = bukkitModule
+        )
     }
 
     override val commandsModule: CommandsModule by lazy {
