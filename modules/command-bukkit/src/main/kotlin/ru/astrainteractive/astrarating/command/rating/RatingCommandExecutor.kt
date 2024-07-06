@@ -30,7 +30,8 @@ internal class RatingCommandExecutor(
         return PlayerModel(
             uuid = this.uniqueId,
             name = name ?: return null,
-            permissible = null
+            permissible = player?.toPermissible(),
+            firstPlayed = firstPlayed
         )
     }
 
@@ -38,7 +39,8 @@ internal class RatingCommandExecutor(
         return PlayerModel(
             uuid = this.uniqueId,
             name = name,
-            permissible = this.toPermissible()
+            permissible = toPermissible(),
+            firstPlayed = firstPlayed
         )
     }
 

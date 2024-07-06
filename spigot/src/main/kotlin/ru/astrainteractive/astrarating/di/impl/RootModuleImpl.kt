@@ -8,7 +8,6 @@ import ru.astrainteractive.astrarating.db.rating.di.DBRatingModule
 import ru.astrainteractive.astrarating.di.BukkitModule
 import ru.astrainteractive.astrarating.di.RootModule
 import ru.astrainteractive.astrarating.event.di.EventModule
-import ru.astrainteractive.astrarating.feature.changerating.data.BukkitPlatformBridge
 import ru.astrainteractive.astrarating.feature.di.SharedModule
 import ru.astrainteractive.astrarating.gui.di.GuiModule
 import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
@@ -58,13 +57,6 @@ class RootModuleImpl : RootModule {
             dispatchers = coreModule.dispatchers,
             coroutineScope = coreModule.scope.value,
             empireConfig = coreModule.config,
-            platformBridge = {
-                BukkitPlatformBridge(
-                    minTimeOnServer = {
-                        coreModule.config.value.minTimeOnServer
-                    }
-                )
-            }
         )
     }
 

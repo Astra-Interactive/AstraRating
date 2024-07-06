@@ -6,5 +6,6 @@ import java.util.UUID
 data class PlayerModel(
     val uuid: UUID,
     val name: String,
-    val permissible: Permissible?
+    val permissible: Permissible?,
+    val firstPlayed: Long
 )

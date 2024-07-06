@@ -2,12 +2,10 @@ package ru.astrainteractive.astrarating.feature.changerating.domain.check
 
 import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.core.RatingPermission
-import ru.astrainteractive.astrarating.feature.changerating.data.PlatformBridge
 import ru.astrainteractive.astrarating.feature.changerating.data.PlayerOnPlayerCounterRepository
 import ru.astrainteractive.astrarating.feature.changerating.data.PlayerTotalRatingRepository
 
 internal class CheckValidatorImpl(
-    private val platformBridge: PlatformBridge,
     private val playerOnPlayerCounterRepository: PlayerOnPlayerCounterRepository,
     private val playerTotalRatingRepository: PlayerTotalRatingRepository,
     private val config: EmpireConfig
@@ -20,7 +18,7 @@ internal class CheckValidatorImpl(
             creatorName = check.creator.name,
             ratedName = check.rated?.name ?: error("Rated player doesn't have a name!")
         )
-        return votedOnPlayerAmount <= maxVotePerPlayer
+        return votedOnPlayerAmount < maxVotePerPlayer
     }
 
     private suspend fun checkCanVoteToday(check: Check.CanVoteToday): Boolean {
@@ -28,7 +26,7 @@ internal class CheckValidatorImpl(
             ?.maxPermissionSize(RatingPermission.MaxRatePerDay)
             ?: config.maxRatingPerDay
         val todayVotedAmount = playerTotalRatingRepository.countPlayerTotalDayRated(check.playerModel.name)
-        return todayVotedAmount <= maxVotesPerDay
+        return todayVotedAmount < maxVotesPerDay
     }
 
     private fun checkCanVote(check: Check.CanVote): Boolean {
@@ -36,11 +34,11 @@ internal class CheckValidatorImpl(
     }
 
     private fun checkEnoughTime(check: Check.EnoughTime): Boolean {
-        return platformBridge.hasEnoughTime(check.playerModel)
+        return System.currentTimeMillis() - check.playerModel.firstPlayed > config.minTimeOnServer
     }
 
     private fun checkPlayerExists(check: Check.PlayerExists): Boolean {
-        return platformBridge.isPlayerExists(check.playerModel)
+        return check.playerModel.firstPlayed > 0L
     }
 
     private fun checkMessageCorrect(check: Check.MessageCorrect): Boolean {

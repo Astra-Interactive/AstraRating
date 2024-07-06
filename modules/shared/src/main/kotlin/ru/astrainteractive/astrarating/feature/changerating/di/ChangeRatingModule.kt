@@ -4,7 +4,6 @@ import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
 import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.feature.changerating.data.InsertRatingRepositoryImpl
 import ru.astrainteractive.astrarating.feature.changerating.data.InsertUserRepositoryImpl
-import ru.astrainteractive.astrarating.feature.changerating.data.PlatformBridge
 import ru.astrainteractive.astrarating.feature.changerating.data.PlayerOnPlayerCounterRepositoryImpl
 import ru.astrainteractive.astrarating.feature.changerating.data.PlayerTotalRatingRepositoryImpl
 import ru.astrainteractive.astrarating.feature.changerating.domain.check.CheckValidatorImpl
@@ -23,7 +22,6 @@ interface ChangeRatingModule {
         private val dbApi: RatingDBApi,
         private val empireConfig: Reloadable<EmpireConfig>,
         private val dispatchers: KotlinDispatchers,
-        private val platformBridge: Provider<PlatformBridge>
     ) : ChangeRatingModule {
         override val addRatingUseCase: AddRatingUseCase by Provider {
             AddRatingUseCaseImpl(
@@ -35,7 +33,6 @@ interface ChangeRatingModule {
                     )
                 ),
                 checkValidator = CheckValidatorImpl(
-                    platformBridge = platformBridge.provide(),
                     playerTotalRatingRepository = PlayerTotalRatingRepositoryImpl(
                         dbApi = dbApi,
                         dispatchers = dispatchers
