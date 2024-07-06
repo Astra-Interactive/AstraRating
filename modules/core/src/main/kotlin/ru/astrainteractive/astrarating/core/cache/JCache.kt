@@ -1,12 +1,12 @@
 package ru.astrainteractive.astrarating.core.cache
 
 import io.github.reactivecircus.cache4k.Cache
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
 
 class JCache<K : Any, V : Any>(
     expiresAfterAccess: Duration,
@@ -23,7 +23,6 @@ class JCache<K : Any, V : Any>(
 
     private class Data<T : Any>(val data: T) {
         val cachedAt: Long = System.currentTimeMillis()
-        val a: Any = 1
 
         fun needUpdate(duration: Duration): Boolean {
             val timePassed = System.currentTimeMillis().minus(cachedAt).milliseconds

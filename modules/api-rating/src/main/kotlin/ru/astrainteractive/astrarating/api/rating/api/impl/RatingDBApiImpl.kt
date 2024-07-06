@@ -5,7 +5,8 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.or
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
 import ru.astrainteractive.astrarating.db.rating.entity.UserDAO
@@ -19,51 +20,37 @@ import ru.astrainteractive.astrarating.dto.RatingType
 import ru.astrainteractive.astrarating.dto.UserDTO
 import ru.astrainteractive.astrarating.dto.UserRatingDTO
 import ru.astrainteractive.astrarating.model.UserModel
-import java.io.File
-import java.text.SimpleDateFormat
-import java.time.Instant
-import java.util.Date
 
 internal class RatingDBApiImpl(
     private val database: Database,
-    private val pluginFolder: File
 ) : RatingDBApi {
-    private fun <T> Result<T>.logStackTrace(): Result<T> {
-        return this.onFailure {
-            val logsFolder = File(pluginFolder, "logs")
-            if (!logsFolder.exists()) logsFolder.mkdirs()
-            val fileName = SimpleDateFormat("dd.MM.yyyy").format(Date.from(Instant.now()))
-            val logFile = File(logsFolder, "$fileName.log")
-            if (!logFile.exists()) logFile.createNewFile()
-            logFile.appendText(it.stackTraceToString() + "\n")
-        }
-    }
 
     override suspend fun selectUser(playerName: String): Result<UserDTO> = kotlin.runCatching {
         transaction(database) {
             UserDAO.find {
                 UserTable.minecraftName.eq(playerName.uppercase())
+                    .or { UserTable.minecraftName.eq(playerName) }
             }.first().let(UserMapper::toDTO)
         }
-    }.logStackTrace()
+    }.onFailure(Throwable::printStackTrace)
 
     override suspend fun updateUser(user: UserDTO) = kotlin.runCatching {
         transaction(database) {
             val userDao = UserDAO.findById(user.id) ?: error("User not found!")
             userDao.lastUpdated = System.currentTimeMillis()
         }
-    }.logStackTrace()
+    }.onFailure(Throwable::printStackTrace)
 
     override suspend fun insertUser(user: UserModel) = kotlin.runCatching {
         transaction(database) {
             UserTable.insertAndGetId {
                 it[lastUpdated] = System.currentTimeMillis()
                 it[minecraftUUID] = user.minecraftUUID.toString()
-                it[minecraftName] = user.minecraftName.uppercase()
+                it[minecraftName] = user.minecraftName
                 it[discordID] = null
             }.value
         }
-    }.logStackTrace()
+    }.onFailure(Throwable::printStackTrace)
 
     override suspend fun insertUserRating(
         reporter: UserDTO?,
@@ -82,7 +69,7 @@ internal class RatingDBApiImpl(
                 it[ratingTypeIndex] = type.ordinal
             }.value
         }
-    }.logStackTrace()
+    }.onFailure(Throwable::printStackTrace)
 
     override suspend fun deleteUserRating(it: UserRatingDTO) = kotlin.runCatching {
         transaction(database) {
@@ -90,7 +77,7 @@ internal class RatingDBApiImpl(
                 UserRatingTable.id.eq(it.id)
             }
         }
-    }.logStackTrace()
+    }.onFailure(Throwable::printStackTrace)
 
     override suspend fun fetchUserRatings(playerName: String) = kotlin.runCatching {
         val reportedUser = selectUser(playerName).getOrThrow()
@@ -99,7 +86,7 @@ internal class RatingDBApiImpl(
                 UserRatingTable.reportedUser.eq(reportedUser.id)
             }.map(UserRatingMapper::toDTO)
         }
-    }.logStackTrace()
+    }.onFailure(Throwable::printStackTrace)
 
     override suspend fun fetchUsersTotalRating() = kotlin.runCatching {
         transaction(database) {
@@ -111,28 +98,30 @@ internal class RatingDBApiImpl(
                 )
             }
         }
-    }.logStackTrace()
+    }.onFailure(Throwable::printStackTrace)
 
     override suspend fun countPlayerTotalDayRated(playerName: String) = kotlin.runCatching {
         val user = selectUser(playerName).getOrThrow()
         transaction(database) {
-            UserRatingTable.select {
-                UserRatingTable.userCreatedReport.eq(user.id).and {
-                    UserRatingTable.time.greater(System.currentTimeMillis() - 24 * 60 * 60 * 1000)
-                }
-            }.count()
+            UserRatingTable.selectAll()
+                .where {
+                    UserRatingTable.userCreatedReport.eq(user.id).and {
+                        UserRatingTable.time.greater(System.currentTimeMillis() - 24 * 60 * 60 * 1000)
+                    }
+                }.count()
         }
-    }.logStackTrace()
+    }.onFailure(Throwable::printStackTrace)
 
     override suspend fun countPlayerOnPlayerDayRated(playerName: String, ratedPlayerName: String) = kotlin.runCatching {
         val playerCreatedReport = selectUser(playerName).getOrThrow()
         val ratedPlayer = selectUser(ratedPlayerName).getOrThrow()
         transaction(database) {
-            UserRatingTable.select {
-                UserRatingTable.userCreatedReport
-                    .eq(playerCreatedReport.id)
-                    .and { UserRatingTable.reportedUser.eq(ratedPlayer.id) }
-            }.count()
+            UserRatingTable.selectAll()
+                .where {
+                    UserRatingTable.userCreatedReport
+                        .eq(playerCreatedReport.id)
+                        .and { UserRatingTable.reportedUser.eq(ratedPlayer.id) }
+                }.count()
         }
-    }.logStackTrace()
+    }.onFailure(Throwable::printStackTrace)
 }

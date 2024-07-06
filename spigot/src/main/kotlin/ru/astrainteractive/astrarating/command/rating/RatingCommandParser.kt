@@ -47,7 +47,7 @@ class RatingCommandParser : BukkitCommandParser<RatingCommand.Result> {
             "rating" -> {
                 if (sender !is Player) return RatingCommand.Result.NotPlayer
                 commandContext.args.getOrNull(1)?.takeIf(String::isNotBlank)?.let { requestedPlayer ->
-                    RatingCommand.Result.OpenPlayerRatingGui(sender, requestedPlayer.uppercase())
+                    RatingCommand.Result.OpenPlayerRatingGui(sender, requestedPlayer)
                 } ?: RatingCommand.Result.OpenRatingsGui(sender)
             }
 

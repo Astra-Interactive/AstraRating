@@ -37,12 +37,10 @@ class RootModuleImpl : RootModule {
     }
 
     override val apiRatingModule: ApiRatingModule by Provider {
-        val plugin by bukkitModule.plugin
         val scope by coreModule.scope
         ApiRatingModule.Default(
             database = dbRatingModule.database,
             coroutineScope = scope,
-            plugin.dataFolder
         )
     }
 
@@ -71,7 +69,12 @@ class RootModuleImpl : RootModule {
     }
 
     override val guiModule: GuiModule by lazy {
-        GuiModule.Default(this)
+        GuiModule.Default(
+            coreModule = coreModule,
+            apiRatingModule = apiRatingModule,
+            translationContext = bukkitModule.kyoriComponentSerializer.value,
+            sharedModule = sharedModule
+        )
     }
 
     override val eventModule: EventModule by lazy {

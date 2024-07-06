@@ -1,4 +1,11 @@
 
+import java.io.File
+import java.util.UUID
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
@@ -10,13 +17,6 @@ import ru.astrainteractive.astrarating.model.UserModel
 import ru.astrainteractive.klibs.kdi.Provider
 import ru.astrainteractive.klibs.kdi.Reloadable
 import ru.astrainteractive.klibs.kdi.getValue
-import java.io.File
-import java.util.UUID
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 class AuctionsTests {
 
@@ -30,7 +30,6 @@ class AuctionsTests {
         ApiRatingModule.Default(
             database = database.value,
             coroutineScope = GlobalScope,
-            pluginFolder = File("./")
         ).ratingDBApi
     }
 
