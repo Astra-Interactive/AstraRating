@@ -40,6 +40,9 @@ internal class KillEventListener(
                 type = RatingType.PLAYER_KILL,
                 ratingValue = configDependency.events.killPlayer.changeBy
             )
+            translationDependency.youKilledPlayer(killedPlayer.name)
+                .let(translationContext::toComponent)
+                .run(killerPlayer::sendMessage)
         }
     }
 }

@@ -148,7 +148,10 @@ internal class RatingsGUI(
                 .setIndex(i)
                 .setItemStack(PlayerHeadUtil.getHead(userAndRating.userDTO.normalName))
                 .editMeta {
-                    val color = if (userAndRating.rating > 0) translation.positiveColor else translation.negativeColor
+                    val color = when {
+                        userAndRating.rating > 0 -> translation.positiveColor.raw
+                        else -> translation.negativeColor.raw
+                    }
                     displayName(
                         translationContext.toComponent(
                             translation.playerNameColor.raw + userAndRating.userDTO.normalName
@@ -157,7 +160,7 @@ internal class RatingsGUI(
                     buildList {
                         if (config.gui.showFirstConnection) {
                             val component = translationContext.toComponent(
-                                "${translation.firstConnection} ${
+                                "${translation.firstConnection.raw} ${
                                     TimeUtility.formatToString(
                                         time = userAndRating.userDTO.offlinePlayer.firstPlayed,
                                         format = config.gui.format
@@ -168,7 +171,7 @@ internal class RatingsGUI(
                         }
                         if (config.gui.showLastConnection) {
                             val component = translationContext.toComponent(
-                                "${translation.lastConnection} ${
+                                "${translation.lastConnection.raw} ${
                                     TimeUtility.formatToString(
                                         time = userAndRating.userDTO.offlinePlayer.lastPlayed,
                                         format = config.gui.format
@@ -178,9 +181,9 @@ internal class RatingsGUI(
                             add(component)
                         }
                         translationContext
-                            .toComponent("${translation.rating}: ${color}${userAndRating.rating}")
+                            .toComponent("${translation.rating.raw}: ${color}${userAndRating.rating}")
                             .run(::add)
-                    }
+                    }.run(::lore)
                 }
                 .setOnClickListener {
                     val route = GuiRouter.Route.PlayerRating(

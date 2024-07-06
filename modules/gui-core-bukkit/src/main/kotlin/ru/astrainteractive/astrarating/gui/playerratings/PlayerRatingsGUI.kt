@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import net.kyori.adventure.text.Component
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -18,9 +19,11 @@ import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.getIndex
 import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isFirstPage
 import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isLastPage
 import ru.astrainteractive.astralibs.menu.slot.InventorySlot
+import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.addLore
 import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.editMeta
 import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setIndex
 import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setItemStack
+import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setMaterial
 import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setOnClickListener
 import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissible
 import ru.astrainteractive.astralibs.string.StringDescExt.replace
@@ -98,6 +101,22 @@ internal class PlayerRatingsGUI(
             click = { playerRatingsComponent.onSortClicked() }
         )
 
+    private val killEventSlot: InventorySlot
+        get() = InventorySlot.Builder()
+            .setIndex(46)
+            .setMaterial(Material.NETHERITE_SWORD)
+            .editMeta {
+                translationContext
+                    .toComponent(translation.eventsTitle)
+                    .run(::displayName)
+            }
+            .addLore(
+                translation.eventKillAmount(
+                    playerRatingsComponent.model.value.killCounts
+                ).let(translationContext::toComponent)
+            )
+            .build()
+
     override var pageContext: PageContext = PageContext(
         page = 0,
         maxItemsPerPage = 45,
@@ -143,6 +162,7 @@ internal class PlayerRatingsGUI(
         inventory.clear()
         setManageButtons()
         sortButton.setInventorySlot()
+        killEventSlot.setInventorySlot()
         val list = model.userRatings
         for (i in 0 until pageContext.maxItemsPerPage) {
             val index = pageContext.getIndex(i)

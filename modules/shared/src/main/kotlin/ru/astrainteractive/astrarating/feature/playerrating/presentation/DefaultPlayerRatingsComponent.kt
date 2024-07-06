@@ -25,14 +25,14 @@ internal class DefaultPlayerRatingsComponent(
         componentScope.launch(dispatchers.IO) {
             val sort = model.value.sort.next(UserRatingsSort.entries.toTypedArray())
             val input = SortRatingUseCase.Input(
-                ratings = model.value.userRatings,
+                ratings = model.value.allRatings,
                 sort = sort
             )
             val result = sortRatingUseCase.invoke(input)
             model.update {
                 it.copy(
                     sort = sort,
-                    userRatings = result.ratings
+                    allRatings = result.ratings
                 )
             }
         }
@@ -55,7 +55,7 @@ internal class DefaultPlayerRatingsComponent(
                 .onFailure(Throwable::printStackTrace)
                 .getOrDefault(emptyList())
             model.update {
-                it.copy(userRatings = userRatings)
+                it.copy(allRatings = userRatings)
             }
             onSortClicked()
             model.update { it.copy(isLoading = false) }

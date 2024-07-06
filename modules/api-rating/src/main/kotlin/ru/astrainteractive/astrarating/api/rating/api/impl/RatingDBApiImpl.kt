@@ -30,7 +30,7 @@ internal class RatingDBApiImpl(
             UserDAO.find {
                 UserTable.minecraftName.eq(playerName.uppercase())
                     .or { UserTable.minecraftName.eq(playerName) }
-            }.first().let(UserMapper::toDTO)
+            }.firstOrNull()?.let(UserMapper::toDTO) ?: error("Could not find $playerName")
         }
     }.onFailure(Throwable::printStackTrace)
 
