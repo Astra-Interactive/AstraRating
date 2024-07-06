@@ -1,15 +1,17 @@
 package ru.astrainteractive.astrarating.feature.changerating.domain.usecase
 
 import ru.astrainteractive.astrarating.dto.RatingType
+import ru.astrainteractive.astrarating.feature.changerating.data.InsertRatingRepository
+import ru.astrainteractive.astrarating.feature.changerating.domain.check.Check
+import ru.astrainteractive.astrarating.feature.changerating.domain.check.CheckValidator
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCase.Input
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCase.Output
 import ru.astrainteractive.astrarating.model.PlayerModel
-import ru.astrainteractive.klibs.mikro.core.domain.UseCase
 
 /**
  * This UseCase will try to add rating from player to another player
  */
-interface AddRatingUseCase : UseCase.Suspended<Input, Output> {
+interface AddRatingUseCase {
     class Input(
         val creator: PlayerModel,
         val message: String,
@@ -28,52 +30,40 @@ interface AddRatingUseCase : UseCase.Suspended<Input, Output> {
         data object MessageNotCorrect : Output
         data object Success : Output
     }
+
+    suspend fun invoke(input: Input): Output
 }
 
 @Suppress("LongParameterList")
 internal class AddRatingUseCaseImpl(
-    private val canVoteOnPlayerUseCase: CanVoteOnPlayerUseCase,
-    private val canVoteTodayUseCase: CanVoteTodayUseCase,
-    private val canVoteUseCase: CanVoteUseCase,
-    private val checkEnoughTimeUseCase: CheckEnoughTimeUseCase,
-    private val checkPlayerExistsUseCase: CheckPlayerExistsUseCase,
-    private val validateMessageUseCase: ValidateMessageUseCase,
-    private val insertRatingUseCase: InsertRatingUseCase
+    private val checkValidator: CheckValidator,
+    private val insertUserUseCase: InsertUserUseCase,
+    private val insertRatingRepository: InsertRatingRepository
 ) : AddRatingUseCase {
     override suspend fun invoke(input: Input): Output {
         input.ratedPlayerModel ?: return Output.PlayerNotExists
-
-        val canVote = canVoteUseCase.invoke(input.creator)
-        if (!canVote) return Output.NoPermission
-
-        val isPlayerExists = checkPlayerExistsUseCase.invoke(input.ratedPlayerModel)
-        if (!isPlayerExists) return Output.PlayerNotExists
-
-        val isSamePlayer = (input.ratedPlayerModel.uuid == input.creator.uuid)
-        if (isSamePlayer) return Output.SamePlayer
-
-        val isEnoughOnServer = checkEnoughTimeUseCase.invoke(input.creator)
-        if (!isEnoughOnServer) return Output.NotEnoughOnServer
-
-        val canVoteToday = canVoteTodayUseCase.invoke(input.creator)
-        if (!canVoteToday) return Output.AlreadyMaxDayVotes
-
-        val canVoteOnPlayer = canVoteOnPlayerUseCase.invoke(
-            creator = input.creator,
-            rated = input.ratedPlayerModel
+        val checkMap = listOf(
+            Check.CanVote(input.creator) to Output.NoPermission,
+            Check.PlayerExists(input.ratedPlayerModel) to Output.PlayerNotExists,
+            Check.NotSamePlayer(input.ratedPlayerModel, input.creator) to Output.SamePlayer,
+            Check.EnoughTime(input.creator) to Output.NotEnoughOnServer,
+            Check.CanVoteToday(input.creator) to Output.AlreadyMaxDayVotes,
+            Check.CanVoteOnPlayer(input.creator, input.ratedPlayerModel) to Output.AlreadyMaxVotesOnPlayer,
+            Check.MessageCorrect(input.message) to Output.MessageNotCorrect
         )
-        if (!canVoteOnPlayer) return Output.AlreadyMaxVotesOnPlayer
+        val invalidCheck = checkMap.firstOrNull { (check, _) -> !checkValidator.isValid(check) }
+        if (invalidCheck != null) return invalidCheck.second
 
-        val isMessageCorrect = validateMessageUseCase.invoke(input.message)
-        if (!isMessageCorrect) return Output.MessageNotCorrect
+        val ratedPlayerDTO = insertUserUseCase.invoke(input.ratedPlayerModel)
+        val ratingCreatorDTO = insertUserUseCase.invoke(input.creator)
 
-        InsertRatingUseCase.Input(
-            ratingCreator = input.creator,
-            ratedPlayer = input.ratedPlayerModel,
+        insertRatingRepository.insertUserRating(
+            reporter = ratingCreatorDTO.playerDTO,
+            reported = ratedPlayerDTO.playerDTO,
             message = input.message,
             type = input.type,
             ratingValue = input.rating
-        ).let { input -> insertRatingUseCase.invoke(input) }
+        )
 
         return Output.Success
     }

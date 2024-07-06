@@ -4,11 +4,12 @@ import ru.astrainteractive.astrarating.dto.UserRatingDTO
 import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUseCase.Input
 import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUseCase.Output
 import ru.astrainteractive.astrarating.model.UserRatingsSort
-import ru.astrainteractive.klibs.mikro.core.domain.UseCase
 
-interface SortRatingUseCase : UseCase.Suspended<Input, Output> {
+interface SortRatingUseCase {
     class Input(val ratings: List<UserRatingDTO>, val sort: UserRatingsSort)
     class Output(val ratings: List<UserRatingDTO>)
+
+    suspend fun invoke(input: Input): Output
 }
 
 class SortRatingUseCaseImpl : SortRatingUseCase {

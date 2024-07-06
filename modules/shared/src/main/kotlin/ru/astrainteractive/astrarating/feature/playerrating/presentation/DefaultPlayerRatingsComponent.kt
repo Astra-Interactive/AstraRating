@@ -23,7 +23,7 @@ class DefaultPlayerRatingsComponent(
 
     override fun onSortClicked() {
         componentScope.launch(dispatchers.IO) {
-            val sort = model.value.sort.next(UserRatingsSort.values())
+            val sort = model.value.sort.next(UserRatingsSort.entries.toTypedArray())
             val input = SortRatingUseCase.Input(
                 ratings = model.value.userRatings,
                 sort = sort
