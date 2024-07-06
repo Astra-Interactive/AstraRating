@@ -34,7 +34,7 @@ internal class GuiRouterImpl(
                 is GuiRouter.Route.AllRatings -> RatingsGUI(
                     player = route.executor,
                     module = guiDependencies,
-                    allRatingsComponent = sharedModule.allRatingsComponentFactory().create(),
+                    allRatingsComponent = sharedModule.createAllRatingsComponent(),
                     router = this@GuiRouterImpl
                 )
 
@@ -42,9 +42,9 @@ internal class GuiRouterImpl(
                     selectedPlayerName = route.selectedPlayerName,
                     player = route.executor,
                     module = guiDependencies,
-                    playerRatingsComponent = sharedModule.playerRatingsComponentFactory(
+                    playerRatingsComponent = sharedModule.createPlayerRatingsComponent(
                         playerName = route.selectedPlayerName
-                    ).create(),
+                    ),
                     router = this@GuiRouterImpl
                 )
             }

@@ -8,7 +8,7 @@ import ru.astrainteractive.astrarating.dto.RatedUserDTO
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import kotlin.time.Duration.Companion.seconds
 
-class AllRatingsRepositoryImpl(
+internal class AllRatingsRepositoryImpl(
     private val dbApi: RatingDBApi,
     private val coroutineScope: CoroutineScope,
     private val dispatchers: KotlinDispatchers

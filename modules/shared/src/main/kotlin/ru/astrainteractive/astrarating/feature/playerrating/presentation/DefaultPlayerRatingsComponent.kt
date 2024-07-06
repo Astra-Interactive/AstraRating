@@ -11,7 +11,7 @@ import ru.astrainteractive.astrarating.model.UserRatingsSort
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.util.next
 
-class DefaultPlayerRatingsComponent(
+internal class DefaultPlayerRatingsComponent(
     playerName: String,
     private val dbApi: RatingDBApi,
     private val dispatchers: KotlinDispatchers,

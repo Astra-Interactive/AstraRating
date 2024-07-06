@@ -6,7 +6,7 @@ import ru.astrainteractive.astrarating.dto.RatingType
 import ru.astrainteractive.astrarating.dto.UserDTO
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
-interface InsertRatingRepository {
+internal interface InsertRatingRepository {
     suspend fun insertUserRating(
         reporter: UserDTO?,
         reported: UserDTO,

@@ -4,7 +4,7 @@ import kotlinx.coroutines.withContext
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
-fun interface PlayerTotalRatingRepository {
+internal fun interface PlayerTotalRatingRepository {
     suspend fun countPlayerTotalDayRated(name: String): Long
 }
 
