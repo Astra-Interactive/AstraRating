@@ -8,7 +8,7 @@ import ru.astrainteractive.astrarating.command.tabCompleter
  * It's better to create different executors for different commands
  * @see Reload
  */
-class CommandManager(
+internal class CommandManager(
     dependencies: CommandsDependencies
 ) : CommandsDependencies by dependencies {
     /**

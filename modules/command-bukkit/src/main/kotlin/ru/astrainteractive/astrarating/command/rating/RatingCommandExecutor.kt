@@ -16,7 +16,7 @@ import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.model.PlayerModel
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
-class RatingCommandExecutor(
+internal class RatingCommandExecutor(
     private val addRatingUseCase: AddRatingUseCase,
     private val translation: PluginTranslation,
     private val coroutineScope: CoroutineScope,

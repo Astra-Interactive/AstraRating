@@ -82,6 +82,11 @@ class RootModuleImpl : RootModule {
     }
 
     override val commandsModule: CommandsModule by lazy {
-        CommandsModule.Default(this)
+        CommandsModule.Default(
+            sharedModule = sharedModule,
+            bukkitModule = bukkitModule,
+            coreModule = coreModule,
+            guiModule = guiModule
+        )
     }
 }

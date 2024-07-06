@@ -12,7 +12,7 @@ import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 @Suppress("LongParameterList")
-class RatingCommandRegistry(
+internal class RatingCommandRegistry(
     private val plugin: JavaPlugin,
     private val addRatingUseCase: AddRatingUseCase,
     private val translation: PluginTranslation,

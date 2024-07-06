@@ -6,7 +6,7 @@ import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.command.api.context.BukkitCommandContext
 import ru.astrainteractive.astralibs.command.api.parser.BukkitCommandParser
 
-class RatingCommandParser : BukkitCommandParser<RatingCommand.Result> {
+internal class RatingCommandParser : BukkitCommandParser<RatingCommand.Result> {
 
     private fun parseChangeRating(
         label: String,

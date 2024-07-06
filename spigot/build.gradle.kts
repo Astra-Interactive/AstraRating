@@ -40,7 +40,9 @@ dependencies {
     implementation(projects.modules.integrationPapi)
     implementation(projects.modules.shared)
     implementation(projects.modules.core)
+    implementation(projects.modules.coreBukkit)
     implementation(projects.modules.guiCoreBukkit)
+    implementation(projects.modules.commandBukkit)
 }
 minecraftMultiplatform {
     dependencies {

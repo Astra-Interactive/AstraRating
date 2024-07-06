@@ -1,18 +1,17 @@
 package ru.astrainteractive.astrarating.command.reload
 
-import org.bukkit.plugin.java.JavaPlugin
 import ru.astrainteractive.astralibs.command.api.commandfactory.BukkitCommandFactory
 import ru.astrainteractive.astralibs.command.api.parser.BukkitCommandParser
 import ru.astrainteractive.astralibs.command.api.registry.BukkitCommandRegistry
 import ru.astrainteractive.astralibs.command.api.registry.BukkitCommandRegistryContext.Companion.toCommandRegistryContext
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissible
-import ru.astrainteractive.astrarating.AstraRating
+import ru.astrainteractive.astrarating.LifecyclePlugin
 import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.core.RatingPermission
 
-class ReloadCommandRegistry(
-    private val plugin: JavaPlugin,
+internal class ReloadCommandRegistry(
+    private val plugin: LifecyclePlugin,
     private val translation: PluginTranslation,
     private val kyoriComponentSerializer: KyoriComponentSerializer
 ) : KyoriComponentSerializer by kyoriComponentSerializer {
@@ -27,7 +26,7 @@ class ReloadCommandRegistry(
             },
             commandExecutor = {
                 it.sender.sendMessage(translation.reload.let(::toComponent))
-                (plugin as AstraRating).reloadPlugin()
+                plugin.onReload()
                 it.sender.sendMessage(translation.reloadComplete.let(::toComponent))
             },
             commandSideEffect = { context, result ->

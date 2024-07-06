@@ -5,7 +5,7 @@ import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.command.api.command.BukkitCommand
 
-interface RatingCommand : BukkitCommand {
+internal interface RatingCommand : BukkitCommand {
     sealed interface Result {
         data object WrongUsage : Result
         class ChangeRating(

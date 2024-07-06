@@ -5,7 +5,7 @@ import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.menu.event.DefaultInventoryClickEvent
-import ru.astrainteractive.astrarating.AstraRating
+import ru.astrainteractive.astrarating.LifecyclePlugin
 import ru.astrainteractive.klibs.kdi.Factory
 import ru.astrainteractive.klibs.kdi.Lateinit
 import ru.astrainteractive.klibs.kdi.Reloadable
@@ -16,7 +16,7 @@ interface BukkitModule {
     val lifecycle: Lifecycle
 
     // Core
-    val plugin: Lateinit<AstraRating>
+    val plugin: Lateinit<LifecyclePlugin>
     val inventoryClickEvent: Single<DefaultInventoryClickEvent>
     val kyoriComponentSerializer: Reloadable<KyoriComponentSerializer>
 
@@ -25,7 +25,7 @@ interface BukkitModule {
     val eventListener: Single<EventListener>
 
     class Default : BukkitModule {
-        override val plugin = Lateinit<AstraRating>()
+        override val plugin = Lateinit<LifecyclePlugin>()
 
         override val inventoryClickEvent: Single<DefaultInventoryClickEvent> = Single {
             DefaultInventoryClickEvent()
