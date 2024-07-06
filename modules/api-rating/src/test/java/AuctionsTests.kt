@@ -30,6 +30,7 @@ class AuctionsTests {
         ApiRatingModule.Default(
             database = database.value,
             coroutineScope = GlobalScope,
+            isDebugProvider = { false }
         ).ratingDBApi
     }
 

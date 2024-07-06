@@ -16,11 +16,13 @@ interface ApiRatingModule {
     class Default(
         database: Database,
         coroutineScope: CoroutineScope,
+        isDebugProvider: Provider<Boolean>
     ) : ApiRatingModule {
 
         override val ratingDBApi: RatingDBApi by Provider {
             RatingDBApiImpl(
                 database = database,
+                isDebugProvider = isDebugProvider
             )
         }
         override val cachedApi: CachedApi by Provider {

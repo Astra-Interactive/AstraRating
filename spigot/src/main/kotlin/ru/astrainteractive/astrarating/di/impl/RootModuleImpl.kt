@@ -40,6 +40,7 @@ class RootModuleImpl : RootModule {
         ApiRatingModule.Default(
             database = dbRatingModule.database,
             coroutineScope = scope,
+            isDebugProvider = { coreModule.config.value.debug }
         )
     }
 

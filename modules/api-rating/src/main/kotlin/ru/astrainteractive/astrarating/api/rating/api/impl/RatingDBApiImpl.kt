@@ -8,6 +8,8 @@ import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import ru.astrainteractive.astralibs.logging.JUtiltLogger
+import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
 import ru.astrainteractive.astrarating.db.rating.entity.UserDAO
 import ru.astrainteractive.astrarating.db.rating.entity.UserRatingDAO
@@ -20,10 +22,18 @@ import ru.astrainteractive.astrarating.dto.RatingType
 import ru.astrainteractive.astrarating.dto.UserDTO
 import ru.astrainteractive.astrarating.dto.UserRatingDTO
 import ru.astrainteractive.astrarating.model.UserModel
+import ru.astrainteractive.klibs.kdi.Provider
 
 internal class RatingDBApiImpl(
     private val database: Database,
-) : RatingDBApi {
+    private val isDebugProvider: Provider<Boolean>
+) : RatingDBApi, Logger by JUtiltLogger("RatingDBApi") {
+
+    private fun <T> Result<T>.logFailure(): Result<T> {
+        if (!isDebugProvider.provide()) return this
+        onFailure { throwable -> error(throwable) { throwable.message ?: throwable.localizedMessage } }
+        return this
+    }
 
     override suspend fun selectUser(playerName: String): Result<UserDTO> = kotlin.runCatching {
         transaction(database) {
@@ -32,14 +42,14 @@ internal class RatingDBApiImpl(
                     .or { UserTable.minecraftName.eq(playerName) }
             }.firstOrNull()?.let(UserMapper::toDTO) ?: error("Could not find $playerName")
         }
-    }.onFailure(Throwable::printStackTrace)
+    }.logFailure()
 
     override suspend fun updateUser(user: UserDTO) = kotlin.runCatching {
         transaction(database) {
             val userDao = UserDAO.findById(user.id) ?: error("User not found!")
             userDao.lastUpdated = System.currentTimeMillis()
         }
-    }.onFailure(Throwable::printStackTrace)
+    }.logFailure()
 
     override suspend fun insertUser(user: UserModel) = kotlin.runCatching {
         transaction(database) {
@@ -50,7 +60,7 @@ internal class RatingDBApiImpl(
                 it[discordID] = null
             }.value
         }
-    }.onFailure(Throwable::printStackTrace)
+    }.logFailure()
 
     override suspend fun insertUserRating(
         reporter: UserDTO?,
@@ -69,7 +79,7 @@ internal class RatingDBApiImpl(
                 it[ratingTypeIndex] = type.ordinal
             }.value
         }
-    }.onFailure(Throwable::printStackTrace)
+    }.logFailure()
 
     override suspend fun deleteUserRating(it: UserRatingDTO) = kotlin.runCatching {
         transaction(database) {
@@ -77,7 +87,7 @@ internal class RatingDBApiImpl(
                 UserRatingTable.id.eq(it.id)
             }
         }
-    }.onFailure(Throwable::printStackTrace)
+    }.logFailure()
 
     override suspend fun fetchUserRatings(playerName: String) = kotlin.runCatching {
         val reportedUser = selectUser(playerName).getOrThrow()
@@ -86,7 +96,7 @@ internal class RatingDBApiImpl(
                 UserRatingTable.reportedUser.eq(reportedUser.id)
             }.map(UserRatingMapper::toDTO)
         }
-    }.onFailure(Throwable::printStackTrace)
+    }.logFailure()
 
     override suspend fun fetchUsersTotalRating() = kotlin.runCatching {
         transaction(database) {
@@ -98,7 +108,7 @@ internal class RatingDBApiImpl(
                 )
             }
         }
-    }.onFailure(Throwable::printStackTrace)
+    }.logFailure()
 
     override suspend fun countPlayerTotalDayRated(playerName: String) = kotlin.runCatching {
         val user = selectUser(playerName).getOrThrow()
@@ -110,7 +120,7 @@ internal class RatingDBApiImpl(
                     }
                 }.count()
         }
-    }.onFailure(Throwable::printStackTrace)
+    }.logFailure()
 
     override suspend fun countPlayerOnPlayerDayRated(playerName: String, ratedPlayerName: String) = kotlin.runCatching {
         val playerCreatedReport = selectUser(playerName).getOrThrow()
@@ -123,5 +133,5 @@ internal class RatingDBApiImpl(
                         .and { UserRatingTable.reportedUser.eq(ratedPlayer.id) }
                 }.count()
         }
-    }.onFailure(Throwable::printStackTrace)
+    }.logFailure()
 }

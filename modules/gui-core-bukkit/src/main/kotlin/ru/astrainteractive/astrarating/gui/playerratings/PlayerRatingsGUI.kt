@@ -176,9 +176,9 @@ internal class PlayerRatingsGUI(
                     displayName(
                         translationContext.toComponent(
                             translation.playerNameColor.raw + (
-                                    userAndRating.userCreatedReport?.normalName
-                                        ?: "-"
-                                    )
+                                userAndRating.userCreatedReport?.normalName
+                                    ?: "-"
+                                )
                         )
                     )
                     buildList<Component> {
