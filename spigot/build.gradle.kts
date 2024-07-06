@@ -50,7 +50,7 @@ minecraftMultiplatform {
         implementation(projects.modules.shared.bukkitMain)
     }
 }
-val localFolder = File("D:\\Minecraft Servers\\Servers\\conf.smp\\smp\\plugins")
+val localFolder = File("D:\\Minecraft Servers\\Servers\\esmp-configuration\\test\\plugins")
     .takeIf { it.exists() }
     ?: File(rootDir, "jars")
 
