@@ -1,7 +1,6 @@
 package ru.astrainteractive.astrarating.core.di
 
 import ru.astrainteractive.astralibs.async.AsyncComponent
-import ru.astrainteractive.astralibs.filemanager.impl.JVMResourceFileManager
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.serialization.StringFormatExt.parse
 import ru.astrainteractive.astralibs.serialization.StringFormatExt.writeIntoFile
@@ -27,21 +26,21 @@ interface CoreModule {
     ) : CoreModule {
 
         override val translation: Reloadable<PluginTranslation> = Reloadable {
-            val fileManager = JVMResourceFileManager("translations.yml", dataFolder, this::class.java)
+            val file = dataFolder.resolve("translations.yml")
             val serializer = YamlStringFormat()
-            serializer.parse<PluginTranslation>(fileManager.configFile)
+            serializer.parse<PluginTranslation>(file)
                 .onFailure(Throwable::printStackTrace)
                 .getOrElse { PluginTranslation() }
-                .also { serializer.writeIntoFile(it, fileManager.configFile) }
+                .also { serializer.writeIntoFile(it, file) }
         }
 
         override val config: Reloadable<EmpireConfig> = Reloadable {
-            val fileManager = JVMResourceFileManager("config.yml", dataFolder, this::class.java)
+            val file = dataFolder.resolve("config.yml")
             val serializer = YamlStringFormat()
-            serializer.parse<EmpireConfig>(fileManager.configFile)
+            serializer.parse<EmpireConfig>(file)
                 .onFailure(Throwable::printStackTrace)
                 .getOrElse { EmpireConfig() }
-                .also { serializer.writeIntoFile(it, fileManager.configFile) }
+                .also { serializer.writeIntoFile(it, file) }
         }
         override val scope: Dependency<AsyncComponent> = Single {
             AsyncComponent.Default()

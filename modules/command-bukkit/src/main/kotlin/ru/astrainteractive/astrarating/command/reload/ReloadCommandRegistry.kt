@@ -1,11 +1,12 @@
 package ru.astrainteractive.astrarating.command.reload
 
-import ru.astrainteractive.astralibs.command.api.commandfactory.BukkitCommandFactory
-import ru.astrainteractive.astralibs.command.api.parser.BukkitCommandParser
-import ru.astrainteractive.astralibs.command.api.registry.BukkitCommandRegistry
-import ru.astrainteractive.astralibs.command.api.registry.BukkitCommandRegistryContext.Companion.toCommandRegistryContext
+import ru.astrainteractive.astralibs.command.api.context.BukkitCommandContextExt.requirePermission
+import ru.astrainteractive.astralibs.command.api.error.ErrorHandler
+import ru.astrainteractive.astralibs.command.api.exception.NoPermissionException
+import ru.astrainteractive.astralibs.command.api.executor.CommandExecutor
+import ru.astrainteractive.astralibs.command.api.parser.CommandParser
+import ru.astrainteractive.astralibs.command.api.util.PluginExt.registerCommand
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
-import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissible
 import ru.astrainteractive.astrarating.LifecyclePlugin
 import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.core.RatingPermission
@@ -17,31 +18,24 @@ internal class ReloadCommandRegistry(
 ) : KyoriComponentSerializer by kyoriComponentSerializer {
 
     fun register() {
-        val command = BukkitCommandFactory.create(
+        plugin.registerCommand(
             alias = "aratingreload",
-            commandParser = BukkitCommandParser { context ->
-                val hasPermission = context.sender.toPermissible().hasPermission(RatingPermission.Reload)
-                if (!hasPermission) return@BukkitCommandParser ReloadCommand.Result.NoPermission
-                ReloadCommand.Result.Success(context.sender)
-            },
-            commandExecutor = {
+            commandExecutor = CommandExecutor<ReloadCommand.Result> {
                 it.sender.sendMessage(translation.reload.let(::toComponent))
                 plugin.onReload()
                 it.sender.sendMessage(translation.reloadComplete.let(::toComponent))
             },
-            commandSideEffect = { context, result ->
-                when (result) {
-                    ReloadCommand.Result.NoPermission -> {
-                        context.sender.sendMessage(translation.noPermission.let(::toComponent))
-                    }
-
-                    is ReloadCommand.Result.Success -> Unit
-                }
+            commandParser = CommandParser { context ->
+                context.requirePermission(RatingPermission.Reload)
+                ReloadCommand.Result(context.sender)
             },
-            mapper = {
-                (it as? ReloadCommand.Result.Success)?.sender?.let(ReloadCommand::Input)
+            errorHandler = ErrorHandler { commandContext, throwable ->
+                when (throwable) {
+                    is NoPermissionException -> with(kyoriComponentSerializer) {
+                        commandContext.sender.sendMessage(translation.noPermission.component)
+                    }
+                }
             }
         )
-        BukkitCommandRegistry.register(command, plugin.toCommandRegistryContext())
     }
 }

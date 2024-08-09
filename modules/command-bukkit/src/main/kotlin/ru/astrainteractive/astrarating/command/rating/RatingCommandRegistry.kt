@@ -2,10 +2,11 @@ package ru.astrainteractive.astrarating.command.rating
 
 import kotlinx.coroutines.CoroutineScope
 import org.bukkit.plugin.java.JavaPlugin
-import ru.astrainteractive.astralibs.command.api.commandfactory.BukkitCommandFactory
-import ru.astrainteractive.astralibs.command.api.registry.BukkitCommandRegistry
-import ru.astrainteractive.astralibs.command.api.registry.BukkitCommandRegistryContext.Companion.toCommandRegistryContext
+import ru.astrainteractive.astralibs.command.api.error.ErrorHandler
+import ru.astrainteractive.astralibs.command.api.util.PluginExt.registerCommand
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
+import ru.astrainteractive.astralibs.logging.JUtiltLogger
+import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCase
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
@@ -20,11 +21,12 @@ internal class RatingCommandRegistry(
     private val dispatchers: KotlinDispatchers,
     private val kyoriComponentSerializer: KyoriComponentSerializer,
     private val guiRouter: GuiRouter
-) {
+) : Logger by JUtiltLogger("RatingCommandRegistry") {
 
     fun register() {
-        val command = BukkitCommandFactory.create(
+        plugin.registerCommand(
             alias = "arating",
+            commandParser = RatingCommandParser(),
             commandExecutor = RatingCommandExecutor(
                 addRatingUseCase = addRatingUseCase,
                 translation = translation,
@@ -33,53 +35,17 @@ internal class RatingCommandRegistry(
                 kyoriComponentSerializer = kyoriComponentSerializer,
                 router = guiRouter
             ),
-            commandParser = RatingCommandParser(),
-            commandSideEffect = { context, result ->
-                when (result) {
-                    RatingCommand.Result.NotPlayer -> with(kyoriComponentSerializer) {
-                        context.sender.sendMessage(translation.onlyPlayerCommand.let(::toComponent))
+            errorHandler = ErrorHandler { commandContext, throwable ->
+                when (throwable) {
+                    is RatingCommand.Error.NotPlayer -> with(kyoriComponentSerializer) {
+                        commandContext.sender.sendMessage(translation.onlyPlayerCommand.component)
                     }
-
-                    RatingCommand.Result.WrongUsage -> with(kyoriComponentSerializer) {
-                        context.sender.sendMessage(translation.wrongUsage.let(::toComponent))
+                    is RatingCommand.Error.WrongUsage -> with(kyoriComponentSerializer) {
+                        commandContext.sender.sendMessage(translation.wrongUsage.component)
                     }
-
-                    is RatingCommand.Result.OpenPlayerRatingGui,
-                    is RatingCommand.Result.Reload,
-                    is RatingCommand.Result.OpenRatingsGui,
-                    is RatingCommand.Result.ChangeRating -> Unit
-                }
-            },
-            mapper = {
-                when (it) {
-                    is RatingCommand.Result.OpenRatingsGui -> {
-                        RatingCommand.Result.OpenRatingsGui(it.executor)
-                    }
-
-                    is RatingCommand.Result.Reload -> {
-                        RatingCommand.Result.Reload(it.executor)
-                    }
-
-                    is RatingCommand.Result.ChangeRating -> {
-                        RatingCommand.Result.ChangeRating(
-                            value = it.value,
-                            message = it.message,
-                            executor = it.executor,
-                            ratedPlayer = it.ratedPlayer
-                        )
-                    }
-
-                    RatingCommand.Result.WrongUsage -> null
-                    RatingCommand.Result.NotPlayer -> null
-                    is RatingCommand.Result.OpenPlayerRatingGui -> {
-                        RatingCommand.Result.OpenPlayerRatingGui(
-                            it.player,
-                            it.selectedPlayerName
-                        )
-                    }
+                    else -> warn { "#register unhandled exception ${throwable::class}" }
                 }
             }
         )
-        BukkitCommandRegistry.register(command, plugin.toCommandRegistryContext())
     }
 }

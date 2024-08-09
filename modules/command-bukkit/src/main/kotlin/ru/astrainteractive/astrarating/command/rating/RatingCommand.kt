@@ -3,11 +3,10 @@ package ru.astrainteractive.astrarating.command.rating
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import ru.astrainteractive.astralibs.command.api.command.BukkitCommand
+import ru.astrainteractive.astralibs.command.api.exception.CommandException
 
-internal interface RatingCommand : BukkitCommand {
+internal interface RatingCommand {
     sealed interface Result {
-        data object WrongUsage : Result
         class ChangeRating(
             val value: Int,
             val message: String,
@@ -18,6 +17,9 @@ internal interface RatingCommand : BukkitCommand {
         class OpenPlayerRatingGui(val player: Player, val selectedPlayerName: String) : Result
         class OpenRatingsGui(val executor: Player) : Result
         class Reload(val executor: CommandSender) : Result
-        data object NotPlayer : Result
+    }
+    sealed class Error(message: String) : CommandException(message) {
+        data object NotPlayer : Error("Not Player")
+        data object WrongUsage : Error("Wrong usage")
     }
 }

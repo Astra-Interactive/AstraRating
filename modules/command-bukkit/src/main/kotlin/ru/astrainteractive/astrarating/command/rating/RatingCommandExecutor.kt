@@ -132,9 +132,6 @@ internal class RatingCommandExecutor(
             is RatingCommand.Result.Reload -> {
                 reload(input)
             }
-
-            RatingCommand.Result.NotPlayer,
-            RatingCommand.Result.WrongUsage -> Unit
         }
     }
 }

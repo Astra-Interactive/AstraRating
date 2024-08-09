@@ -4,10 +4,11 @@ import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.command.api.context.BukkitCommandContext
-import ru.astrainteractive.astralibs.command.api.parser.BukkitCommandParser
+import ru.astrainteractive.astralibs.command.api.parser.CommandParser
 
-internal class RatingCommandParser : BukkitCommandParser<RatingCommand.Result> {
+internal class RatingCommandParser : CommandParser<RatingCommand.Result, BukkitCommandContext> {
 
+    @Suppress("ThrowsCount")
     private fun parseChangeRating(
         label: String,
         args: Array<out String>,
@@ -16,13 +17,13 @@ internal class RatingCommandParser : BukkitCommandParser<RatingCommand.Result> {
         val amount = when (label) {
             "like", "+" -> 1
             "dislike", "-" -> -1
-            else -> return RatingCommand.Result.WrongUsage
+            else -> throw RatingCommand.Error.WrongUsage
         }
 
-        val commandExecutor = (sender as? Player) ?: return RatingCommand.Result.NotPlayer
+        val commandExecutor = (sender as? Player) ?: throw RatingCommand.Error.NotPlayer
 
         val ratedPlayer = args.getOrNull(1)
-            ?.let(Bukkit::getOfflinePlayer) ?: return RatingCommand.Result.WrongUsage
+            ?.let(Bukkit::getOfflinePlayer) ?: throw RatingCommand.Error.WrongUsage
 
         val message = args.toList().subList(2, args.size).joinToString(" ")
         return RatingCommand.Result.ChangeRating(
@@ -45,14 +46,14 @@ internal class RatingCommandParser : BukkitCommandParser<RatingCommand.Result> {
             }
 
             "rating" -> {
-                if (sender !is Player) return RatingCommand.Result.NotPlayer
+                if (sender !is Player) throw RatingCommand.Error.NotPlayer
                 commandContext.args.getOrNull(1)?.takeIf(String::isNotBlank)?.let { requestedPlayer ->
                     RatingCommand.Result.OpenPlayerRatingGui(sender, requestedPlayer)
                 } ?: RatingCommand.Result.OpenRatingsGui(sender)
             }
 
             "reload" -> RatingCommand.Result.Reload(sender)
-            else -> RatingCommand.Result.WrongUsage
+            else -> throw RatingCommand.Error.WrongUsage
         }
     }
 }
