@@ -45,8 +45,11 @@ interface CoreModule {
             factory = ::PluginTranslation,
             loader = {
                 val file = dataFolder.resolve("translations.yml")
+                val defaultFile = dataFolder.resolve("translations.default.yml")
                 yamlStringFormat.parse<PluginTranslation>(file)
                     .onFailure {
+                        defaultFile.createNewFile()
+                        yamlStringFormat.writeIntoFile(it, defaultFile)
                         error { "Could not read translations.yml! Loaded default. Error -> ${it.message}" }
                     }
                     .onSuccess {
@@ -59,8 +62,11 @@ interface CoreModule {
             factory = ::EmpireConfig,
             loader = {
                 val file = dataFolder.resolve("config.yml")
+                val defaultFile = dataFolder.resolve("config.default.yml")
                 yamlStringFormat.parse<EmpireConfig>(file)
                     .onFailure {
+                        defaultFile.createNewFile()
+                        yamlStringFormat.writeIntoFile(it, defaultFile)
                         error { "Could not read config.yml! Loaded default. Error -> ${it.message}" }
                     }
                     .onSuccess {

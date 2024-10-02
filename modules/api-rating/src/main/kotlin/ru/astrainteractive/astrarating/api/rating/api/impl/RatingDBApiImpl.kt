@@ -31,7 +31,7 @@ import kotlin.time.Duration.Companion.seconds
 internal class RatingDBApiImpl(
     private val databaseFlow: Flow<Database>,
     private val isDebugProvider: () -> Boolean
-) : RatingDBApi, Logger by JUtiltLogger("RatingDBApi") {
+) : RatingDBApi, Logger by JUtiltLogger("AstraRating-RatingDBApi") {
     companion object {
         private val MAX_TIMEOUT = 5.seconds
     }

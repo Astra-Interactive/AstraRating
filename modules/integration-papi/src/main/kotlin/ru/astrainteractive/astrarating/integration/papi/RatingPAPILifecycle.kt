@@ -8,7 +8,7 @@ import ru.astrainteractive.astrarating.integration.papi.di.PapiDependencies
 
 internal class RatingPAPILifecycle(dependencies: PapiDependencies) :
     Lifecycle,
-    Logger by JUtiltLogger("RatingPAPILifecycle") {
+    Logger by JUtiltLogger("AstraRating-RatingPAPILifecycle") {
     private val expansion by lazy {
         RatingPAPIExpansion(dependencies)
     }
