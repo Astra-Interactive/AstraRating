@@ -1,12 +1,13 @@
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import ru.astrainteractive.astralibs.exposed.model.DatabaseConfiguration
+import ru.astrainteractive.astralibs.serialization.YamlStringFormat
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
 import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
 import ru.astrainteractive.astrarating.db.rating.di.DBRatingModule
+import ru.astrainteractive.astrarating.db.rating.model.DbRatingConfiguration
 import ru.astrainteractive.astrarating.dto.RatingType
 import ru.astrainteractive.astrarating.model.UserModel
 import java.io.File
@@ -46,7 +47,10 @@ class AuctionsTests {
     @BeforeTest
     fun setup(): Unit = runBlocking {
         module = DBRatingModule.Default(
-            dbConfigurationFlow = flowOf(DatabaseConfiguration.SQLite("dbtest")),
+            stringFormat = YamlStringFormat(),
+            defaultConfig = {
+                DbRatingConfiguration(databaseConfiguration = DatabaseConfiguration.SQLite("test"))
+            },
             dataFolder = File("./test").also {
                 it.mkdirs()
                 it.deleteOnExit()

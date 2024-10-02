@@ -20,6 +20,7 @@ import ru.astrainteractive.astrarating.core.di.factory.ConfigKrateFactory
 import ru.astrainteractive.astrarating.db.rating.entity.UserRatingTable
 import ru.astrainteractive.astrarating.db.rating.entity.UserTable
 import ru.astrainteractive.astrarating.db.rating.model.DbRatingConfiguration
+import ru.astrainteractive.klibs.kstorage.api.value.ValueFactory
 import java.io.File
 
 interface DBRatingModule {
@@ -28,7 +29,8 @@ interface DBRatingModule {
 
     class Default(
         stringFormat: StringFormat,
-        private val dataFolder: File
+        private val dataFolder: File,
+        defaultConfig: ValueFactory<DbRatingConfiguration> = ValueFactory { DbRatingConfiguration() }
     ) : DBRatingModule {
         private val coroutineScope = CoroutineFeature.Default(Dispatchers.IO)
 
@@ -36,7 +38,7 @@ interface DBRatingModule {
             fileNameWithoutExtension = "database",
             dataFolder = dataFolder,
             stringFormat = stringFormat,
-            factory = ::DbRatingConfiguration
+            factory = defaultConfig
         )
 
         override val databaseFlow: Flow<Database> = dbConfigurationConfig
