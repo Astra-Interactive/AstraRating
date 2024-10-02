@@ -44,11 +44,12 @@ class RootModuleImpl(plugin: LifecyclePlugin) : RootModule {
         )
     }
 
-    override val papiModule: PapiModule? by lazy {
+    override val papiModule: PapiModule by lazy {
         PapiModule.Default(
             cachedApi = apiRatingModule.cachedApi,
-            configKrate = coreModule.config,
-            scope = coreModule.scope
+            scope = coreModule.scope,
+            dataFolder = bukkitModule.plugin.dataFolder,
+            yamlStringFormat = coreModule.yamlStringFormat
         )
     }
 

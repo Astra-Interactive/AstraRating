@@ -27,18 +27,9 @@ data class EmpireConfig(
     val cutWords: Boolean = false,
     val gui: Gui = Gui(),
     val databaseConnection: DatabaseConfiguration = DatabaseConfiguration.H2("ASTRA_RATING_RATINGS"),
-    @SerialName("coloring")
-    val coloring: List<Coloring> = emptyList(),
     val events: Events = Events(),
     val debug: Boolean = false
 ) {
-    @Serializable
-    data class Coloring(
-        val less: Int? = null,
-        val equal: Int? = null,
-        val more: Int? = null,
-        val color: String
-    )
 
     @Serializable
     class Events(

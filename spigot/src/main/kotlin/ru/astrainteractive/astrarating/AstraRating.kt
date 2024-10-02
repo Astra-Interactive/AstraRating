@@ -15,7 +15,7 @@ class AstraRating : LifecyclePlugin() {
             rootModule.dbRatingModule.lifecycle,
             rootModule.commandsModule.lifecycle,
             rootModule.eventModule.lifecycle,
-            rootModule.papiModule?.lifecycle
+            rootModule.papiModule.lifecycle
         )
 
     /**

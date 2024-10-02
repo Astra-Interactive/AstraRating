@@ -49,7 +49,7 @@ interface CoreModule {
                 yamlStringFormat.parse<PluginTranslation>(file)
                     .onFailure {
                         defaultFile.createNewFile()
-                        yamlStringFormat.writeIntoFile(it, defaultFile)
+                        yamlStringFormat.writeIntoFile(PluginTranslation(), defaultFile)
                         error { "Could not read translations.yml! Loaded default. Error -> ${it.message}" }
                     }
                     .onSuccess {
@@ -66,7 +66,7 @@ interface CoreModule {
                 yamlStringFormat.parse<EmpireConfig>(file)
                     .onFailure {
                         defaultFile.createNewFile()
-                        yamlStringFormat.writeIntoFile(it, defaultFile)
+                        yamlStringFormat.writeIntoFile(EmpireConfig(), defaultFile)
                         error { "Could not read config.yml! Loaded default. Error -> ${it.message}" }
                     }
                     .onSuccess {

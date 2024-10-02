@@ -19,7 +19,7 @@ interface RootModule {
 
     val apiRatingModule: ApiRatingModule
 
-    val papiModule: PapiModule?
+    val papiModule: PapiModule
 
     val sharedModule: SharedModule
 

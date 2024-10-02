@@ -34,48 +34,55 @@ Section will be created by default if you're installing plugin first time
 # If you define both mysql and sqlite - mysql will be used
 # To reconnect from mysql to sqlite and vise versa full restart is required
 databaseConnection:
-  sqlite: true
-  mysql:
-    database: "my_database_name"
-    host: "127.0.0.1"
-    port: 3306
-    username: "my_username"
-    password: "XXX_SUPER_PASSWORD_SECURITY"
+  type: "MySql"
+  host: "0.0.0.0"
+  port: 3006
+  user: "user_name"
+  password: "password"
+  name: "rating_database"
+# Or  
+databaseConnection:
+  type: "H2"
+  name: "file_name"
+# Or  
+databaseConnection:
+  type: "SQLite"
+  name: "file_name"
 ```
 
 ### Adding Colors placeholders
 
 Section will be created by default if you're installing plugin first time
 
+papi.yml
 ```yaml
 # Color are sorted by value: [-10, -5, 0, 5, 10]
 # Be sure to fill ALL GAPS/INTERVALS - if not you'll have errors in console
 # If you don't want this feature - remove coloring section or comment it using '#' symbol
-coloring:
-  # If <-5 -> #eb3131
-  - less: -5
-    color: #eb3131
-  # If <-10 -> #9c0303
-  - less: -10
-    color: #9c0303
-  # If <0 -> #FFFFFF
-  - less: 0
-    color: #FFFFFF
-  # If ==0 -> #FFFFFF
-  - equal: 0
-    color: #FFFFFF
-  # If >0 -> #FFFFFF
-  - more: 0
-    color: #FFFFFF
-  # If >5 -> #51a8f5
-  - more: 5
-    color: #51a8f5
-  # If >10 -> #0872cf
-  - more: 10
-    color: #0872cf
+colorings:
+# [-inf,-10)
+- type: LESS
+  value: -10  
+  color: "#9c0303"
+# [-10,-0)
+- type: LESS
+  value: 0  
+  color: "#eb3131"
+# [0,0]
+- type: EQUAL  
+  value: 0
+  color: "#FFFFFF"
+# [0,10)
+- type: MORE
+  value: 0
+  color: "#51a8f5"
+# [10,+inf]
+- type: MORE
+  more: 10
+  color: "#0872cf"    
 ```
 
-### Adding events
+### Adding events [Experimental]
 
 Section will be created by default if you're installing plugin first time.
 

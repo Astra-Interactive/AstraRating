@@ -2,6 +2,7 @@ package ru.astrainteractive.astrarating.db.rating.di
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.Database
@@ -30,6 +31,7 @@ interface DBRatingModule {
         private val coroutineScope = CoroutineFeature.Default(Dispatchers.IO)
 
         override val databaseFlow: Flow<Database> = dbConfigurationFlow
+            .distinctUntilChanged()
             .mapCached(coroutineScope) { dbConfig, oldDatabase ->
                 println("Got cached value!")
                 oldDatabase?.run(TransactionManager::closeAndUnregister)

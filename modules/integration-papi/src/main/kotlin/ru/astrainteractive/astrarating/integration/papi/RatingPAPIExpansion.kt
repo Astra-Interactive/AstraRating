@@ -2,6 +2,7 @@ package ru.astrainteractive.astrarating.integration.papi
 
 import org.bukkit.OfflinePlayer
 import ru.astrainteractive.astralibs.expansion.KPlaceholderExpansion
+import ru.astrainteractive.astralibs.expansion.PlaceholderExpansionFacade
 import ru.astrainteractive.astrarating.integration.papi.di.PapiDependencies
 import ru.astrainteractive.astrarating.integration.papi.placeholder.ColorPlaceholder
 import ru.astrainteractive.astrarating.integration.papi.placeholder.RatingAmountPlaceholder
@@ -9,7 +10,7 @@ import ru.astrainteractive.astrarating.integration.papi.placeholder.api.RatingPl
 
 internal class RatingPAPIExpansion(
     dependencies: PapiDependencies
-) : KPlaceholderExpansion(
+) : PlaceholderExpansionFacade, KPlaceholderExpansion(
     "erating",
     "RomanMakeev",
     "1.0.0"
