@@ -1,13 +1,15 @@
 package ru.astrainteractive.astrarating.core.di.factory
 
 import kotlinx.serialization.StringFormat
+import ru.astrainteractive.astralibs.logging.JUtiltLogger
+import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.astralibs.serialization.StringFormatExt.parse
 import ru.astrainteractive.astralibs.serialization.StringFormatExt.writeIntoFile
 import ru.astrainteractive.klibs.kstorage.api.impl.DefaultStateFlowMutableKrate
 import ru.astrainteractive.klibs.kstorage.api.value.ValueFactory
 import java.io.File
 
-object ConfigKrateFactory {
+object ConfigKrateFactory : Logger by JUtiltLogger("AstraRating-ConfigKrateFactory") {
     inline fun <reified T> create(
         fileNameWithoutExtension: String,
         stringFormat: StringFormat,

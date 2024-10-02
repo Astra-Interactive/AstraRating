@@ -69,7 +69,7 @@ colorings:
   value: 0  
   color: "#eb3131"
 # [0,0]
-- type: EQUAL  
+- type: EQUALS  
   value: 0
   color: "#FFFFFF"
 # [0,10)
@@ -78,7 +78,7 @@ colorings:
   color: "#51a8f5"
 # [10,+inf]
 - type: MORE
-  more: 10
+  value: 10
   color: "#0872cf"    
 ```
 
