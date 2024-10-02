@@ -33,7 +33,7 @@ Section will be created by default if you're installing plugin first time
 # Use only one sqlite or mysql
 # If you define both mysql and sqlite - mysql will be used
 # To reconnect from mysql to sqlite and vise versa full restart is required
-databaseConnection:
+rating_database:
   type: "MySql"
   host: "0.0.0.0"
   port: 3006
@@ -41,11 +41,11 @@ databaseConnection:
   password: "password"
   name: "rating_database"
 # Or  
-databaseConnection:
+rating_database:
   type: "H2"
   name: "file_name"
 # Or  
-databaseConnection:
+rating_database:
   type: "SQLite"
   name: "file_name"
 ```
