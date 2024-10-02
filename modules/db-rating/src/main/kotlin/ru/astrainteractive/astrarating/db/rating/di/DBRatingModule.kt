@@ -1,5 +1,6 @@
 package ru.astrainteractive.astrarating.db.rating.di
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -26,12 +27,17 @@ interface DBRatingModule {
         private val dbConfigurationFlow: Flow<DatabaseConfiguration>,
         private val dataFolder: File
     ) : DBRatingModule {
+        private val coroutineScope = CoroutineFeature.Default(Dispatchers.IO)
 
         override val databaseFlow: Flow<Database> = dbConfigurationFlow
-            .mapCached(CoroutineFeature.Unconfined()) { dbConfig, oldDatabase ->
+            .mapCached(coroutineScope) { dbConfig, oldDatabase ->
+                println("Got cached value!")
                 oldDatabase?.run(TransactionManager::closeAndUnregister)
+                println("Creating database")
                 val database = DatabaseFactory(dataFolder).create(dbConfig)
+                println("Set transaction")
                 TransactionManager.manager.defaultIsolationLevel = java.sql.Connection.TRANSACTION_SERIALIZABLE
+                println("Create schema")
                 transaction(database) {
                     addLogger(Slf4jSqlDebugLogger)
                     SchemaUtils.create(
@@ -39,6 +45,7 @@ interface DBRatingModule {
                         UserRatingTable
                     )
                 }
+                println("Return database")
                 database
             }
 

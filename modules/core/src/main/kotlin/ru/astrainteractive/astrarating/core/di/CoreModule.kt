@@ -1,9 +1,14 @@
 package ru.astrainteractive.astrarating.core.di
 
+import com.charleskorn.kaml.PolymorphismStyle
+import com.charleskorn.kaml.Yaml
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.serialization.StringFormat
 import ru.astrainteractive.astralibs.async.CoroutineFeature
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
+import ru.astrainteractive.astralibs.logging.JUtiltLogger
+import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.astralibs.serialization.StringFormatExt.parse
 import ru.astrainteractive.astralibs.serialization.StringFormatExt.writeIntoFile
 import ru.astrainteractive.astralibs.serialization.YamlStringFormat
@@ -15,6 +20,7 @@ import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import java.io.File
 
 interface CoreModule {
+    val yamlStringFormat: StringFormat
     val lifecycle: Lifecycle
     val config: StateFlowKrate<EmpireConfig>
     val translation: StateFlowKrate<PluginTranslation>
@@ -24,28 +30,43 @@ interface CoreModule {
     class Default(
         dataFolder: File,
         override val dispatchers: KotlinDispatchers,
-    ) : CoreModule {
+    ) : CoreModule, Logger by JUtiltLogger("AstraRating-CoreModule") {
 
+        override val yamlStringFormat: StringFormat by lazy {
+            YamlStringFormat(
+                configuration = Yaml.default.configuration.copy(
+                    encodeDefaults = true,
+                    strictMode = false,
+                    polymorphismStyle = PolymorphismStyle.Property
+                ),
+            )
+        }
         override val translation = DefaultStateFlowMutableKrate(
             factory = ::PluginTranslation,
             loader = {
                 val file = dataFolder.resolve("translations.yml")
-                val serializer = YamlStringFormat()
-                serializer.parse<PluginTranslation>(file)
-                    .onFailure(Throwable::printStackTrace)
+                yamlStringFormat.parse<PluginTranslation>(file)
+                    .onFailure {
+                        error { "Could not read translations.yml! Loaded default. Error -> ${it.message}" }
+                    }
+                    .onSuccess {
+                        yamlStringFormat.writeIntoFile(it, file)
+                    }
                     .getOrElse { PluginTranslation() }
-                    .also { serializer.writeIntoFile(it, file) }
             }
         )
         override val config = DefaultStateFlowMutableKrate(
             factory = ::EmpireConfig,
             loader = {
                 val file = dataFolder.resolve("config.yml")
-                val serializer = YamlStringFormat()
-                serializer.parse<EmpireConfig>(file)
-                    .onFailure(Throwable::printStackTrace)
+                yamlStringFormat.parse<EmpireConfig>(file)
+                    .onFailure {
+                        error { "Could not read config.yml! Loaded default. Error -> ${it.message}" }
+                    }
+                    .onSuccess {
+                        yamlStringFormat.writeIntoFile(it, file)
+                    }
                     .getOrElse { EmpireConfig() }
-                    .also { serializer.writeIntoFile(it, file) }
             }
         )
         override val scope = CoroutineFeature.Default(Dispatchers.IO)

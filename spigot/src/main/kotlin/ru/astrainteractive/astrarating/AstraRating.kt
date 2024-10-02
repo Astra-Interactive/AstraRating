@@ -32,10 +32,7 @@ class AstraRating : LifecyclePlugin() {
         lifecycles.forEach(Lifecycle::onDisable)
     }
 
-    /**
-     * As it says, function for plugin reload
-     */
-    fun reloadPlugin() {
+    override fun onReload() {
         lifecycles.forEach(Lifecycle::onReload)
     }
 }
