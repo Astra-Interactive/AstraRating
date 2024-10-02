@@ -12,6 +12,7 @@ dependencies {
     implementation(libs.bundles.kotlin)
     // AstraLibs
     implementation(libs.minecraft.astralibs.core)
+    implementation(libs.minecraft.astralibs.exposed)
     implementation(libs.minecraft.astralibs.menu.bukkit)
     implementation(libs.minecraft.astralibs.core.bukkit)
     implementation(libs.minecraft.astralibs.command)

@@ -2,6 +2,7 @@ package ru.astrainteractive.astrarating.core
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import ru.astrainteractive.astralibs.exposed.model.DatabaseConfiguration
 
 /**
  * Example config file with 3 types of initialization
@@ -25,7 +26,7 @@ data class EmpireConfig(
     val trimMessageAfter: Int = 10,
     val cutWords: Boolean = false,
     val gui: Gui = Gui(),
-    val databaseConnection: ConnectionModel = ConnectionModel(),
+    val databaseConnection: DatabaseConfiguration = DatabaseConfiguration.H2("ASTRA_RATING_RATINGS"),
     @SerialName("coloring")
     val coloring: List<Coloring> = emptyList(),
     val events: Events = Events(),

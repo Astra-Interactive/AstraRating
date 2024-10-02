@@ -17,6 +17,7 @@ dependencies {
     // Test
     testImplementation(libs.bundles.testing.kotlin)
     testImplementation(libs.tests.kotlin.test)
+    testImplementation(libs.minecraft.astralibs.exposed)
     // Local
     implementation(projects.modules.dbRating)
     implementation(projects.modules.core)

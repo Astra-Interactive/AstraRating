@@ -1,14 +1,14 @@
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
+import org.jetbrains.exposed.sql.transactions.TransactionManager
+import ru.astrainteractive.astralibs.exposed.model.DatabaseConfiguration
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
 import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
-import ru.astrainteractive.astrarating.db.rating.di.factory.RatingDatabaseFactory
-import ru.astrainteractive.astrarating.db.rating.model.DBConnection
+import ru.astrainteractive.astrarating.db.rating.di.DBRatingModule
 import ru.astrainteractive.astrarating.dto.RatingType
 import ru.astrainteractive.astrarating.model.UserModel
-import ru.astrainteractive.klibs.kstorage.api.impl.DefaultMutableKrate
 import java.io.File
 import java.util.UUID
 import kotlin.test.AfterTest
@@ -19,18 +19,13 @@ import kotlin.test.assertNotNull
 
 class AuctionsTests {
 
-    private val dbName = "./dbv2_auction.db"
-
-    private val database = DefaultMutableKrate(
-        factory = { null },
-        loader = {
-            RatingDatabaseFactory(DBConnection.SQLite(dbName)).create()
-        }
-    )
+    private var module: DBRatingModule? = null
+    private val requireModule: DBRatingModule
+        get() = module ?: error("The module is null")
 
     private val api: RatingDBApi
         get() = ApiRatingModule.Default(
-            databaseFlow = flowOf(database.cachedValue).filterNotNull(),
+            databaseFlow = requireModule.databaseFlow,
             coroutineScope = GlobalScope,
             isDebugProvider = { false }
         ).ratingDBApi
@@ -44,15 +39,18 @@ class AuctionsTests {
 
     @AfterTest
     fun destroy(): Unit = runBlocking {
-        database.cachedValue?.connector?.invoke()?.close()
+        TransactionManager.closeAndUnregister(requireModule.databaseFlow.first())
     }
 
     @BeforeTest
     fun setup(): Unit = runBlocking {
-        File("./$dbName").delete()
-        database.cachedValue?.connector?.invoke()?.close()
-        database?.loadAndGet()
-        database.cachedValue
+        module = DBRatingModule.Default(
+            dbConfigurationFlow = flowOf(DatabaseConfiguration.SQLite("dbtest")),
+            dataFolder = File("./test").also {
+                it.mkdirs()
+                it.deleteOnExit()
+            }
+        )
     }
 
     @Test

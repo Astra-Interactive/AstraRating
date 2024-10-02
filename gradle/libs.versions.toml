@@ -70,7 +70,7 @@ klibs-kdi = { module = "ru.astrainteractive.klibs:kdi", version.ref = "klibs-kdi
 klibs-kstorage = { module = "ru.astrainteractive.klibs:kstorage", version.ref = "klibs-kstorage" }
 
 # AstraLibs
-minecraft-astralibs-orm = { module = "ru.astrainteractive.astralibs:orm", version.ref = "minecraft-astralibs" }
+minecraft-astralibs-exposed = { module = "ru.astrainteractive.astralibs:exposed", version.ref = "minecraft-astralibs" }
 minecraft-astralibs-core = { module = "ru.astrainteractive.astralibs:core", version.ref = "minecraft-astralibs" }
 minecraft-astralibs-menu-bukkit = { module = "ru.astrainteractive.astralibs:menu-bukkit", version.ref = "minecraft-astralibs" }
 minecraft-astralibs-core-bukkit = { module = "ru.astrainteractive.astralibs:core-bukkit", version.ref = "minecraft-astralibs" }

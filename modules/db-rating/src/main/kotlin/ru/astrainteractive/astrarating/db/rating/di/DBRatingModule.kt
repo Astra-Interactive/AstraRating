@@ -4,13 +4,18 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.Slf4jSqlDebugLogger
+import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.TransactionManager
+import org.jetbrains.exposed.sql.transactions.transaction
 import ru.astrainteractive.astralibs.async.CoroutineFeature
+import ru.astrainteractive.astralibs.exposed.factory.DatabaseFactory
+import ru.astrainteractive.astralibs.exposed.model.DatabaseConfiguration
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.util.FlowExt.mapCached
-import ru.astrainteractive.astrarating.core.di.CoreModule
-import ru.astrainteractive.astrarating.db.rating.di.factory.RatingDatabaseFactory
-import ru.astrainteractive.astrarating.db.rating.model.DBConnection
+import ru.astrainteractive.astrarating.db.rating.entity.UserRatingTable
+import ru.astrainteractive.astrarating.db.rating.entity.UserTable
 import java.io.File
 
 interface DBRatingModule {
@@ -18,26 +23,23 @@ interface DBRatingModule {
     val databaseFlow: Flow<Database>
 
     class Default(
-        private val coreModule: CoreModule,
+        private val dbConfigurationFlow: Flow<DatabaseConfiguration>,
         private val dataFolder: File
     ) : DBRatingModule {
 
-        override val databaseFlow: Flow<Database> = coreModule.config
-            .cachedStateFlow
-            .mapCached(CoroutineFeature.Unconfined()) { config, database ->
-                database?.run(TransactionManager::closeAndUnregister)
-                val connection = when (val mysql = config.databaseConnection.mysql) {
-                    null -> DBConnection.SQLite(
-                        name = "${dataFolder}${File.separator}data.db"
-                    )
-
-                    else -> DBConnection.MySql(
-                        url = "jdbc:mysql://${mysql.host}:${mysql.port}/${mysql.database}",
-                        user = mysql.username,
-                        password = mysql.password
+        override val databaseFlow: Flow<Database> = dbConfigurationFlow
+            .mapCached(CoroutineFeature.Unconfined()) { dbConfig, oldDatabase ->
+                oldDatabase?.run(TransactionManager::closeAndUnregister)
+                val database = DatabaseFactory(dataFolder).create(dbConfig)
+                TransactionManager.manager.defaultIsolationLevel = java.sql.Connection.TRANSACTION_SERIALIZABLE
+                transaction(database) {
+                    addLogger(Slf4jSqlDebugLogger)
+                    SchemaUtils.create(
+                        UserTable,
+                        UserRatingTable
                     )
                 }
-                RatingDatabaseFactory(connection).create()
+                database
             }
 
         override val lifecycle: Lifecycle by lazy {

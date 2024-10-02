@@ -12,6 +12,7 @@ dependencies {
     implementation(libs.klibs.kstorage)
     // AstraLibs
     implementation(libs.minecraft.astralibs.core)
+    implementation(libs.minecraft.astralibs.exposed)
     // Exposed
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)

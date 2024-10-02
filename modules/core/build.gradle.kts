@@ -8,6 +8,7 @@ dependencies {
     // Kotlin
     implementation(libs.bundles.kotlin)
     implementation(libs.minecraft.astralibs.core)
+    implementation(libs.minecraft.astralibs.exposed)
     implementation(libs.klibs.mikro.core)
     implementation(libs.klibs.kstorage)
     implementation("io.github.reactivecircus.cache4k:cache4k-jvm:0.13.0")
