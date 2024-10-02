@@ -6,54 +6,50 @@ import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.menu.event.DefaultInventoryClickEvent
 import ru.astrainteractive.astrarating.LifecyclePlugin
-import ru.astrainteractive.klibs.kdi.Factory
-import ru.astrainteractive.klibs.kdi.Lateinit
-import ru.astrainteractive.klibs.kdi.Reloadable
-import ru.astrainteractive.klibs.kdi.Single
-import ru.astrainteractive.klibs.kdi.getValue
+import ru.astrainteractive.klibs.kstorage.api.Krate
+import ru.astrainteractive.klibs.kstorage.api.impl.DefaultStateFlowMutableKrate
 
 interface BukkitModule {
     val lifecycle: Lifecycle
 
     // Core
-    val plugin: Lateinit<LifecyclePlugin>
-    val inventoryClickEvent: Single<DefaultInventoryClickEvent>
-    val kyoriComponentSerializer: Reloadable<KyoriComponentSerializer>
+    val plugin: LifecyclePlugin
+    val inventoryClickEvent: DefaultInventoryClickEvent
+    val kyoriComponentSerializer: Krate<KyoriComponentSerializer>
 
     // Services
-    val bstats: Factory<Metrics>
-    val eventListener: Single<EventListener>
+    val bstats: () -> Metrics
+    val eventListener: EventListener
 
-    class Default : BukkitModule {
-        override val plugin = Lateinit<LifecyclePlugin>()
+    class Default(override val plugin: LifecyclePlugin) : BukkitModule {
 
-        override val inventoryClickEvent: Single<DefaultInventoryClickEvent> = Single {
+        override val inventoryClickEvent by lazy {
             DefaultInventoryClickEvent()
         }
 
-        override val kyoriComponentSerializer: Reloadable<KyoriComponentSerializer> = Reloadable {
-            KyoriComponentSerializer.Legacy
-        }
+        override val kyoriComponentSerializer = DefaultStateFlowMutableKrate<KyoriComponentSerializer>(
+            factory = { KyoriComponentSerializer.Legacy },
+            loader = { KyoriComponentSerializer.Legacy }
+        )
 
-        override val bstats = Factory {
-            val plugin by plugin
+        override val bstats = {
             Metrics(plugin, 15801)
         }
 
-        override val eventListener: Single<EventListener> = Single {
-            object : EventListener {}
+        override val eventListener by lazy {
+            EventListener.Default()
         }
 
         override val lifecycle: Lifecycle by lazy {
             Lifecycle.Lambda(
                 onEnable = {
-                    eventListener.value.onEnable(plugin.value)
-                    inventoryClickEvent.value.onEnable(plugin.value)
-                    bstats.create()
+                    eventListener.onEnable(plugin)
+                    inventoryClickEvent.onEnable(plugin)
+                    bstats.invoke()
                 },
                 onDisable = {
-                    eventListener.value.onDisable()
-                    inventoryClickEvent.value.onDisable()
+                    eventListener.onDisable()
+                    inventoryClickEvent.onDisable()
                 }
             )
         }

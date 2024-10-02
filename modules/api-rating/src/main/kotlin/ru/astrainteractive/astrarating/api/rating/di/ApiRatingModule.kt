@@ -1,31 +1,31 @@
 package ru.astrainteractive.astrarating.api.rating.di
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import org.jetbrains.exposed.sql.Database
 import ru.astrainteractive.astrarating.api.rating.api.CachedApi
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
 import ru.astrainteractive.astrarating.api.rating.api.impl.CachedApiImpl
 import ru.astrainteractive.astrarating.api.rating.api.impl.RatingDBApiImpl
-import ru.astrainteractive.klibs.kdi.Provider
-import ru.astrainteractive.klibs.kdi.getValue
 
 interface ApiRatingModule {
     val ratingDBApi: RatingDBApi
     val cachedApi: CachedApi
 
     class Default(
-        database: Database,
+        databaseFlow: Flow<Database>,
         coroutineScope: CoroutineScope,
-        isDebugProvider: Provider<Boolean>
+        isDebugProvider: () -> Boolean
     ) : ApiRatingModule {
 
-        override val ratingDBApi: RatingDBApi by Provider {
+        override val ratingDBApi: RatingDBApi by lazy {
             RatingDBApiImpl(
-                database = database,
+                databaseFlow = databaseFlow,
                 isDebugProvider = isDebugProvider
             )
         }
-        override val cachedApi: CachedApi by Provider {
+
+        override val cachedApi: CachedApi by lazy {
             CachedApiImpl(
                 databaseApi = ratingDBApi,
                 scope = coroutineScope

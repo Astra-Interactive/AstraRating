@@ -8,8 +8,8 @@ dependencies {
     // Kotlin
     implementation(libs.bundles.kotlin)
     // klibs
-    implementation(libs.klibs.kdi)
     implementation(libs.klibs.mikro.core)
+    implementation(libs.klibs.kstorage)
     // AstraLibs
     implementation(libs.minecraft.astralibs.core)
     // Exposed

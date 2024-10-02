@@ -15,8 +15,8 @@ dependencies {
     implementation(libs.minecraft.astralibs.core.bukkit)
     implementation(libs.minecraft.astralibs.command)
     implementation(libs.minecraft.astralibs.command.bukkit)
-    implementation(libs.klibs.kdi)
     implementation(libs.klibs.mikro.core)
+    implementation(libs.klibs.kstorage)
     // Local
     implementation(projects.modules.core)
     implementation(projects.modules.coreBukkit)

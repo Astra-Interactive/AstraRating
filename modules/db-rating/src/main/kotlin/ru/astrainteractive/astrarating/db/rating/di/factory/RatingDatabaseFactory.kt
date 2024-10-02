@@ -10,12 +10,11 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import ru.astrainteractive.astrarating.db.rating.entity.UserRatingTable
 import ru.astrainteractive.astrarating.db.rating.entity.UserTable
 import ru.astrainteractive.astrarating.db.rating.model.DBConnection
-import ru.astrainteractive.klibs.kdi.Factory
 
 class RatingDatabaseFactory(
     private val dbConnection: DBConnection
-) : Factory<Database> {
-    override fun create(): Database {
+) {
+    fun create(): Database {
         val database = DatabaseFactory(dbConnection).create()
         TransactionManager.manager.defaultIsolationLevel = java.sql.Connection.TRANSACTION_SERIALIZABLE
         runBlocking {

@@ -10,7 +10,6 @@ import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.core.di.CoreModule
 import ru.astrainteractive.astrarating.di.BukkitModule
-import ru.astrainteractive.klibs.kdi.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 internal interface EventDependencies {
@@ -24,18 +23,19 @@ internal interface EventDependencies {
     val translationContext: KyoriComponentSerializer
 
     class Default(
-        coreModule: CoreModule,
+        private val coreModule: CoreModule,
         apiRatingModule: ApiRatingModule,
-        bukkitModule: BukkitModule
+        private val bukkitModule: BukkitModule
     ) : EventDependencies {
 
-        override val configDependency by coreModule.config
+        override val configDependency get() = coreModule.config.cachedValue
         override val apiDependency = apiRatingModule.ratingDBApi
-        override val translationDependency by coreModule.translation
-        override val scope by coreModule.scope
-        override val eventListener by bukkitModule.eventListener
-        override val plugin by bukkitModule.plugin
+        override val translationDependency get() = coreModule.translation.cachedValue
+        override val scope = coreModule.scope
+        override val eventListener = bukkitModule.eventListener
+        override val plugin = bukkitModule.plugin
         override val dispatchers = coreModule.dispatchers
-        override val translationContext: KyoriComponentSerializer by bukkitModule.kyoriComponentSerializer
+        override val translationContext: KyoriComponentSerializer
+            get() = bukkitModule.kyoriComponentSerializer.cachedValue
     }
 }

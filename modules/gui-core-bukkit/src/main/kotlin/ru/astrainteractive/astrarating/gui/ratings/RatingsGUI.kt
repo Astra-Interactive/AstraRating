@@ -1,6 +1,7 @@
 package ru.astrainteractive.astrarating.gui.ratings
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -34,8 +35,6 @@ import ru.astrainteractive.astrarating.gui.util.PlayerHeadUtil
 import ru.astrainteractive.astrarating.gui.util.TimeUtility
 import ru.astrainteractive.astrarating.gui.util.normalName
 import ru.astrainteractive.astrarating.gui.util.offlinePlayer
-import ru.astrainteractive.klibs.kdi.Provider
-import ru.astrainteractive.klibs.kdi.getValue
 
 internal class RatingsGUI(
     player: Player,
@@ -76,24 +75,20 @@ internal class RatingsGUI(
 
     override val inventorySize: InventorySize = InventorySize.XL
 
-    private val backPageButton by Provider {
-        navigationSlots.backPageSlot { inventory.close() }
-    }
+    private val backPageButton
+        get() = navigationSlots.backPageSlot { inventory.close() }
 
-    override val nextPageButton by Provider {
-        navigationSlots.nextPageSlot
-    }
+    override val nextPageButton
+        get() = navigationSlots.nextPageSlot
 
-    override val prevPageButton by Provider {
-        navigationSlots.prevPageSlot
-    }
+    override val prevPageButton
+        get() = navigationSlots.prevPageSlot
 
-    private val sortButton: InventorySlot by Provider {
-        sortSlots.ratingsSortSlot(
+    private val sortButton: InventorySlot
+        get() = sortSlots.ratingsSortSlot(
             sort = allRatingsComponent.model.value.sort,
             onClick = allRatingsComponent::onSortClicked
         )
-    }
 
     override var pageContext: PageContext = PageContext(
         maxItemsPerPage = 45,
@@ -108,7 +103,7 @@ internal class RatingsGUI(
 
     override fun onInventoryClosed(it: InventoryCloseEvent) {
         super.onInventoryClosed(it)
-        allRatingsComponent.close()
+        allRatingsComponent.cancel()
     }
 
     private fun setManageButtons() {

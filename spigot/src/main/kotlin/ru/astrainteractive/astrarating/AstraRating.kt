@@ -7,7 +7,7 @@ import ru.astrainteractive.astrarating.di.impl.RootModuleImpl
  * Initial class for your plugin
  */
 class AstraRating : LifecyclePlugin() {
-    private val rootModule = RootModuleImpl()
+    private val rootModule = RootModuleImpl(this)
     private val lifecycles: List<Lifecycle>
         get() = listOfNotNull(
             rootModule.coreModule.lifecycle,
@@ -17,10 +17,6 @@ class AstraRating : LifecyclePlugin() {
             rootModule.eventModule.lifecycle,
             rootModule.papiModule?.lifecycle
         )
-
-    init {
-        rootModule.bukkitModule.plugin.initialize(this)
-    }
 
     /**
      * This method called when server starts or PlugMan load plugin.

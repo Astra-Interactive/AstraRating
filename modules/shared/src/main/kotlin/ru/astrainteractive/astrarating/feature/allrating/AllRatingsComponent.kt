@@ -8,7 +8,6 @@ import ru.astrainteractive.astrarating.model.UsersRatingsSort
 interface AllRatingsComponent : CoroutineScope {
     val model: StateFlow<Model>
     fun onSortClicked()
-    fun close()
 
     data class Model(
         val userRatings: List<RatedUserDTO> = emptyList(),

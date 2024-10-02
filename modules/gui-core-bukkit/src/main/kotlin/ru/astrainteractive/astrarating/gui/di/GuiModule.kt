@@ -6,8 +6,6 @@ import ru.astrainteractive.astrarating.core.di.CoreModule
 import ru.astrainteractive.astrarating.feature.di.SharedModule
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.gui.router.GuiRouterImpl
-import ru.astrainteractive.klibs.kdi.Provider
-import ru.astrainteractive.klibs.kdi.getValue
 
 interface GuiModule {
     val router: GuiRouter
@@ -18,13 +16,11 @@ interface GuiModule {
         translationContext: KyoriComponentSerializer,
         private val sharedModule: SharedModule
     ) : GuiModule {
-        override val router: GuiRouter by Provider {
-            GuiRouterImpl(
-                coreModule = coreModule,
-                apiRatingModule = apiRatingModule,
-                translationContext = translationContext,
-                sharedModule = sharedModule
-            )
-        }
+        override val router: GuiRouter = GuiRouterImpl(
+            coreModule = coreModule,
+            apiRatingModule = apiRatingModule,
+            translationContext = translationContext,
+            sharedModule = sharedModule
+        )
     }
 }

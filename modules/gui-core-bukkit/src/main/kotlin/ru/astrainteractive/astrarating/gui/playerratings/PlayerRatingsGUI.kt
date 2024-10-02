@@ -1,6 +1,7 @@
 package ru.astrainteractive.astrarating.gui.playerratings
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -130,7 +131,7 @@ internal class PlayerRatingsGUI(
     }
 
     override fun onInventoryClosed(it: InventoryCloseEvent) {
-        playerRatingsComponent.close()
+        playerRatingsComponent.cancel()
         super.onInventoryClosed(it)
     }
 
