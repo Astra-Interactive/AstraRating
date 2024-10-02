@@ -7,12 +7,10 @@ import ru.astrainteractive.astralibs.expansion.PlaceholderExpansionFacade
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
-import ru.astrainteractive.astralibs.serialization.StringFormatExt.parse
-import ru.astrainteractive.astralibs.serialization.StringFormatExt.writeIntoFile
 import ru.astrainteractive.astrarating.api.rating.api.CachedApi
+import ru.astrainteractive.astrarating.core.di.factory.ConfigKrateFactory
 import ru.astrainteractive.astrarating.integration.papi.di.factory.PapiFactory
 import ru.astrainteractive.astrarating.integration.papi.model.PapiConfig
-import ru.astrainteractive.klibs.kstorage.api.impl.DefaultStateFlowMutableKrate
 import java.io.File
 
 interface PapiModule {
@@ -27,22 +25,11 @@ interface PapiModule {
         private val isPapiEnabled: Boolean
             get() = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")
 
-        private val papiConfiguration = DefaultStateFlowMutableKrate(
-            factory = ::PapiConfig,
-            loader = {
-                val file = dataFolder.resolve("papi.yml")
-                val defaultFile = dataFolder.resolve("papi.default.yml")
-                yamlStringFormat.parse<PapiConfig>(file)
-                    .onFailure {
-                        defaultFile.createNewFile()
-                        yamlStringFormat.writeIntoFile(PapiConfig(), defaultFile)
-                        error { "Could not read papi.yml! Loaded default. Error -> ${it.message}" }
-                    }
-                    .onSuccess {
-                        yamlStringFormat.writeIntoFile(it, file)
-                    }
-                    .getOrElse { PapiConfig() }
-            }
+        private val papiConfiguration = ConfigKrateFactory.create(
+            fileNameWithoutExtension = "papi",
+            dataFolder = dataFolder,
+            stringFormat = yamlStringFormat,
+            factory = ::PapiConfig
         )
 
         private val placeholderFacade: PlaceholderExpansionFacade by lazy {
@@ -65,6 +52,7 @@ interface PapiModule {
                     if (placeholderFacade.isRegistered()) placeholderFacade.unregister()
                     placeholderFacade.register()
                 }
+                papiConfiguration.loadAndGet()
             },
             onDisable = {
                 if (isPapiEnabled) {

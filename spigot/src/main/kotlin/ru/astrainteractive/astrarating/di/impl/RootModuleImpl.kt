@@ -1,6 +1,5 @@
 package ru.astrainteractive.astrarating.di.impl
 
-import kotlinx.coroutines.flow.map
 import ru.astrainteractive.astralibs.async.DefaultBukkitDispatchers
 import ru.astrainteractive.astrarating.LifecyclePlugin
 import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
@@ -29,10 +28,8 @@ class RootModuleImpl(plugin: LifecyclePlugin) : RootModule {
 
     override val dbRatingModule: DBRatingModule by lazy {
         DBRatingModule.Default(
+            stringFormat = coreModule.yamlStringFormat,
             dataFolder = bukkitModule.plugin.dataFolder,
-            dbConfigurationFlow = coreModule.config
-                .cachedStateFlow
-                .map { it.databaseConnection }
         )
     }
 

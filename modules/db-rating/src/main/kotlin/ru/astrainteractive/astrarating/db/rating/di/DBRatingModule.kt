@@ -2,9 +2,10 @@ package ru.astrainteractive.astrarating.db.rating.di
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.StringFormat
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Slf4jSqlDebugLogger
@@ -13,11 +14,12 @@ import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import ru.astrainteractive.astralibs.async.CoroutineFeature
 import ru.astrainteractive.astralibs.exposed.factory.DatabaseFactory
-import ru.astrainteractive.astralibs.exposed.model.DatabaseConfiguration
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.util.FlowExt.mapCached
+import ru.astrainteractive.astrarating.core.di.factory.ConfigKrateFactory
 import ru.astrainteractive.astrarating.db.rating.entity.UserRatingTable
 import ru.astrainteractive.astrarating.db.rating.entity.UserTable
+import ru.astrainteractive.astrarating.db.rating.model.DbRatingConfiguration
 import java.io.File
 
 interface DBRatingModule {
@@ -25,18 +27,26 @@ interface DBRatingModule {
     val databaseFlow: Flow<Database>
 
     class Default(
-        private val dbConfigurationFlow: Flow<DatabaseConfiguration>,
+        stringFormat: StringFormat,
         private val dataFolder: File
     ) : DBRatingModule {
         private val coroutineScope = CoroutineFeature.Default(Dispatchers.IO)
 
-        override val databaseFlow: Flow<Database> = dbConfigurationFlow
-            .distinctUntilChanged()
+        private val dbConfigurationConfig = ConfigKrateFactory.create<DbRatingConfiguration>(
+            fileNameWithoutExtension = "database",
+            dataFolder = dataFolder,
+            stringFormat = stringFormat,
+            factory = ::DbRatingConfiguration
+        )
+
+        override val databaseFlow: Flow<Database> = dbConfigurationConfig
+            .cachedStateFlow
+            .distinctUntilChangedBy { it.databaseConfiguration }
             .mapCached(coroutineScope) { dbConfig, oldDatabase ->
                 println("Got cached value!")
                 oldDatabase?.run(TransactionManager::closeAndUnregister)
                 println("Creating database")
-                val database = DatabaseFactory(dataFolder).create(dbConfig)
+                val database = DatabaseFactory(dataFolder).create(dbConfig.databaseConfiguration)
                 println("Set transaction")
                 TransactionManager.manager.defaultIsolationLevel = java.sql.Connection.TRANSACTION_SERIALIZABLE
                 println("Create schema")
