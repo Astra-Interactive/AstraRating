@@ -40,6 +40,7 @@ class AuctionsTests {
     @AfterTest
     fun destroy(): Unit = runBlocking {
         TransactionManager.closeAndUnregister(requireModule.databaseFlow.first())
+        File("./test").deleteRecursively()
     }
 
     @BeforeTest
