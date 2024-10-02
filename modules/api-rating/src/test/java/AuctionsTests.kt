@@ -1,15 +1,15 @@
-
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import org.jetbrains.exposed.sql.transactions.TransactionManager
+import ru.astrainteractive.astralibs.exposed.model.DatabaseConfiguration
+import ru.astrainteractive.astralibs.serialization.YamlStringFormat
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
 import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
-import ru.astrainteractive.astrarating.db.rating.di.factory.RatingDatabaseFactory
-import ru.astrainteractive.astrarating.db.rating.model.DBConnection
+import ru.astrainteractive.astrarating.db.rating.di.DBRatingModule
+import ru.astrainteractive.astrarating.db.rating.model.DbRatingConfiguration
 import ru.astrainteractive.astrarating.dto.RatingType
 import ru.astrainteractive.astrarating.model.UserModel
-import ru.astrainteractive.klibs.kdi.Provider
-import ru.astrainteractive.klibs.kdi.Reloadable
-import ru.astrainteractive.klibs.kdi.getValue
 import java.io.File
 import java.util.UUID
 import kotlin.test.AfterTest
@@ -20,19 +20,16 @@ import kotlin.test.assertNotNull
 
 class AuctionsTests {
 
-    private val dbName = "./dbv2_auction.db"
+    private var module: DBRatingModule? = null
+    private val requireModule: DBRatingModule
+        get() = module ?: error("The module is null")
 
-    private val database = Reloadable {
-        RatingDatabaseFactory(DBConnection.SQLite(dbName)).create()
-    }
-
-    private val api: RatingDBApi by Provider {
-        ApiRatingModule.Default(
-            database = database.value,
+    private val api: RatingDBApi
+        get() = ApiRatingModule.Default(
+            databaseFlow = requireModule.databaseFlow,
             coroutineScope = GlobalScope,
             isDebugProvider = { false }
         ).ratingDBApi
-    }
 
     val randomUser: UserModel
         get() = UserModel(
@@ -43,15 +40,22 @@ class AuctionsTests {
 
     @AfterTest
     fun destroy(): Unit = runBlocking {
-        database.value.connector.invoke().close()
+        TransactionManager.closeAndUnregister(requireModule.databaseFlow.first())
+        File("./test").deleteRecursively()
     }
 
     @BeforeTest
     fun setup(): Unit = runBlocking {
-        File("./$dbName").delete()
-        database.value.connector.invoke().close()
-        database.reload()
-        database.value
+        module = DBRatingModule.Default(
+            stringFormat = YamlStringFormat(),
+            defaultConfig = {
+                DbRatingConfiguration(databaseConfiguration = DatabaseConfiguration.SQLite("test"))
+            },
+            dataFolder = File("./test").also {
+                it.mkdirs()
+                it.deleteOnExit()
+            }
+        )
     }
 
     @Test

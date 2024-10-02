@@ -21,7 +21,7 @@ internal class RatingCommandRegistry(
     private val dispatchers: KotlinDispatchers,
     private val kyoriComponentSerializer: KyoriComponentSerializer,
     private val guiRouter: GuiRouter
-) : Logger by JUtiltLogger("RatingCommandRegistry") {
+) : Logger by JUtiltLogger("AstraRating-RatingCommandRegistry") {
 
     fun register() {
         plugin.registerCommand(

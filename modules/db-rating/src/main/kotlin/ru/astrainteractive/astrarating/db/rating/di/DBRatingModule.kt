@@ -1,46 +1,75 @@
 package ru.astrainteractive.astrarating.db.rating.di
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.StringFormat
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.Slf4jSqlDebugLogger
+import org.jetbrains.exposed.sql.addLogger
+import org.jetbrains.exposed.sql.transactions.TransactionManager
+import org.jetbrains.exposed.sql.transactions.transaction
+import ru.astrainteractive.astralibs.async.CoroutineFeature
+import ru.astrainteractive.astralibs.exposed.factory.DatabaseFactory
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
-import ru.astrainteractive.astrarating.core.di.CoreModule
-import ru.astrainteractive.astrarating.db.rating.di.factory.RatingDatabaseFactory
-import ru.astrainteractive.astrarating.db.rating.model.DBConnection
-import ru.astrainteractive.klibs.kdi.Single
-import ru.astrainteractive.klibs.kdi.getValue
+import ru.astrainteractive.astralibs.util.FlowExt.mapCached
+import ru.astrainteractive.astrarating.core.di.factory.ConfigKrateFactory
+import ru.astrainteractive.astrarating.db.rating.entity.UserRatingTable
+import ru.astrainteractive.astrarating.db.rating.entity.UserTable
+import ru.astrainteractive.astrarating.db.rating.model.DbRatingConfiguration
+import ru.astrainteractive.klibs.kstorage.api.value.ValueFactory
 import java.io.File
 
 interface DBRatingModule {
     val lifecycle: Lifecycle
-    val database: Database
+    val databaseFlow: Flow<Database>
 
     class Default(
-        private val coreModule: CoreModule,
-        private val dataFolder: File
+        stringFormat: StringFormat,
+        private val dataFolder: File,
+        defaultConfig: ValueFactory<DbRatingConfiguration> = ValueFactory { DbRatingConfiguration() }
     ) : DBRatingModule {
-        private val connection: DBConnection
-            get() = when (val mysql = coreModule.config.value.databaseConnection.mysql) {
-                null -> DBConnection.SQLite(
-                    name = "${dataFolder}${File.separator}data.db"
-                )
+        private val coroutineScope = CoroutineFeature.Default(Dispatchers.IO)
 
-                else -> DBConnection.MySql(
-                    url = "jdbc:mysql://${mysql.host}:${mysql.port}/${mysql.database}",
-                    user = mysql.username,
-                    password = mysql.password
-                )
+        private val dbConfigurationConfig = ConfigKrateFactory.create<DbRatingConfiguration>(
+            fileNameWithoutExtension = "database",
+            dataFolder = dataFolder,
+            stringFormat = stringFormat,
+            factory = defaultConfig
+        )
+
+        override val databaseFlow: Flow<Database> = dbConfigurationConfig
+            .cachedStateFlow
+            .distinctUntilChangedBy { it.databaseConfiguration }
+            .mapCached(coroutineScope) { dbConfig, oldDatabase ->
+                println("Got cached value!")
+                oldDatabase?.run(TransactionManager::closeAndUnregister)
+                println("Creating database")
+                val database = DatabaseFactory(dataFolder).create(dbConfig.databaseConfiguration)
+                println("Set transaction")
+                TransactionManager.manager.defaultIsolationLevel = java.sql.Connection.TRANSACTION_SERIALIZABLE
+                println("Create schema")
+                transaction(database) {
+                    addLogger(Slf4jSqlDebugLogger)
+                    SchemaUtils.create(
+                        UserTable,
+                        UserRatingTable
+                    )
+                }
+                println("Return database")
+                database
             }
-
-        override val database: Database by Single {
-            RatingDatabaseFactory(connection).create()
-        }
 
         override val lifecycle: Lifecycle by lazy {
             Lifecycle.Lambda(
-                onEnable = {
-                    database.connector.invoke().connection
-                },
+                onEnable = {},
                 onDisable = {
-                    database.connector.invoke().close()
+                    runBlocking {
+                        databaseFlow.first().run(TransactionManager::closeAndUnregister)
+                    }
                 }
             )
         }

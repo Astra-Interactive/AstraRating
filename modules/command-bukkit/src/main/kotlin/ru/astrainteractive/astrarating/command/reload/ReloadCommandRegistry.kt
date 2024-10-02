@@ -2,7 +2,7 @@ package ru.astrainteractive.astrarating.command.reload
 
 import ru.astrainteractive.astralibs.command.api.context.BukkitCommandContextExt.requirePermission
 import ru.astrainteractive.astralibs.command.api.error.ErrorHandler
-import ru.astrainteractive.astralibs.command.api.exception.NoPermissionException
+import ru.astrainteractive.astralibs.command.api.exception.DefaultCommandException
 import ru.astrainteractive.astralibs.command.api.executor.CommandExecutor
 import ru.astrainteractive.astralibs.command.api.parser.CommandParser
 import ru.astrainteractive.astralibs.command.api.util.PluginExt.registerCommand
@@ -31,7 +31,7 @@ internal class ReloadCommandRegistry(
             },
             errorHandler = ErrorHandler { commandContext, throwable ->
                 when (throwable) {
-                    is NoPermissionException -> with(kyoriComponentSerializer) {
+                    is DefaultCommandException.NoPermissionException -> with(kyoriComponentSerializer) {
                         commandContext.sender.sendMessage(translation.noPermission.component)
                     }
                 }

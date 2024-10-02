@@ -1,59 +1,66 @@
 package ru.astrainteractive.astrarating.core.di
 
-import ru.astrainteractive.astralibs.async.AsyncComponent
+import com.charleskorn.kaml.PolymorphismStyle
+import com.charleskorn.kaml.Yaml
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.serialization.StringFormat
+import ru.astrainteractive.astralibs.async.CoroutineFeature
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
-import ru.astrainteractive.astralibs.serialization.StringFormatExt.parse
-import ru.astrainteractive.astralibs.serialization.StringFormatExt.writeIntoFile
+import ru.astrainteractive.astralibs.logging.JUtiltLogger
+import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.astralibs.serialization.YamlStringFormat
 import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.core.PluginTranslation
-import ru.astrainteractive.klibs.kdi.Dependency
-import ru.astrainteractive.klibs.kdi.Reloadable
-import ru.astrainteractive.klibs.kdi.Single
+import ru.astrainteractive.astrarating.core.di.factory.ConfigKrateFactory
+import ru.astrainteractive.klibs.kstorage.api.flow.StateFlowKrate
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import java.io.File
 
 interface CoreModule {
+    val yamlStringFormat: StringFormat
     val lifecycle: Lifecycle
-    val config: Reloadable<EmpireConfig>
-    val translation: Dependency<PluginTranslation>
-    val scope: Dependency<AsyncComponent>
+    val config: StateFlowKrate<EmpireConfig>
+    val translation: StateFlowKrate<PluginTranslation>
+    val scope: CoroutineFeature
     val dispatchers: KotlinDispatchers
 
     class Default(
         dataFolder: File,
         override val dispatchers: KotlinDispatchers,
-    ) : CoreModule {
+    ) : CoreModule, Logger by JUtiltLogger("AstraRating-CoreModule") {
 
-        override val translation: Reloadable<PluginTranslation> = Reloadable {
-            val file = dataFolder.resolve("translations.yml")
-            val serializer = YamlStringFormat()
-            serializer.parse<PluginTranslation>(file)
-                .onFailure(Throwable::printStackTrace)
-                .getOrElse { PluginTranslation() }
-                .also { serializer.writeIntoFile(it, file) }
+        override val yamlStringFormat: StringFormat by lazy {
+            YamlStringFormat(
+                configuration = Yaml.default.configuration.copy(
+                    encodeDefaults = true,
+                    strictMode = false,
+                    polymorphismStyle = PolymorphismStyle.Property
+                ),
+            )
         }
-
-        override val config: Reloadable<EmpireConfig> = Reloadable {
-            val file = dataFolder.resolve("config.yml")
-            val serializer = YamlStringFormat()
-            serializer.parse<EmpireConfig>(file)
-                .onFailure(Throwable::printStackTrace)
-                .getOrElse { EmpireConfig() }
-                .also { serializer.writeIntoFile(it, file) }
-        }
-        override val scope: Dependency<AsyncComponent> = Single {
-            AsyncComponent.Default()
-        }
+        override val translation = ConfigKrateFactory.create(
+            fileNameWithoutExtension = "translations",
+            dataFolder = dataFolder,
+            stringFormat = yamlStringFormat,
+            factory = ::PluginTranslation
+        )
+        override val config = ConfigKrateFactory.create(
+            fileNameWithoutExtension = "config",
+            dataFolder = dataFolder,
+            stringFormat = yamlStringFormat,
+            factory = ::EmpireConfig
+        )
+        override val scope = CoroutineFeature.Default(Dispatchers.IO)
 
         override val lifecycle: Lifecycle by lazy {
             Lifecycle.Lambda(
                 onReload = {
-                    config.reload()
-                    translation.reload()
+                    config.loadAndGet()
+                    translation.loadAndGet()
                 },
                 onDisable = {
-                    scope.value.close()
+                    scope.cancel()
                 }
             )
         }

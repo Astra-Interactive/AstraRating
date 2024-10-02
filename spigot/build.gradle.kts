@@ -1,13 +1,12 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import ru.astrainteractive.gradleplugin.property.extension.ModelPropertyValueExt.requireProjectInfo
-import ru.astrainteractive.gradleplugin.setupSpigotProcessor
 
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
     alias(libs.plugins.klibs.gradle.java.core)
-    id("ru.astrainteractive.gradleplugin.minecraft.multiplatform")
     id("io.github.goooler.shadow")
+    alias(libs.plugins.klibs.minecraft.shadow)
+    alias(libs.plugins.klibs.minecraft.resource.processor)
 }
 
 dependencies {
@@ -15,13 +14,14 @@ dependencies {
     implementation(libs.bundles.kotlin)
     // AstraLibs
     implementation(libs.minecraft.astralibs.core)
+    implementation(libs.minecraft.astralibs.exposed)
     implementation(libs.minecraft.astralibs.menu.bukkit)
     implementation(libs.minecraft.astralibs.core.bukkit)
     implementation(libs.minecraft.astralibs.command)
     implementation(libs.minecraft.astralibs.command.bukkit)
     // klibs
-    implementation(libs.klibs.kdi)
     implementation(libs.klibs.mikro.core)
+    implementation(libs.klibs.kstorage)
     // Exposed
     implementation(libs.exposed.core)
     // Test
@@ -31,7 +31,6 @@ dependencies {
     compileOnly(libs.minecraft.paper.api)
     implementation(libs.minecraft.bstats)
     compileOnly(libs.minecraft.papi)
-//    compileOnly(libs.discordsrv)
     compileOnly(libs.minecraft.vaultapi)
     implementation(libs.minecraft.bstats)
     // Local
@@ -45,43 +44,31 @@ dependencies {
     implementation(projects.modules.commandBukkit)
     implementation(projects.modules.eventBukkit)
 }
-minecraftMultiplatform {
-    dependencies {
-        implementation(projects.modules.shared.bukkitMain)
-    }
+
+minecraftProcessResource {
+    spigotResourceProcessor.process()
 }
-val localFolder = File("D:\\Minecraft Servers\\Servers\\esmp-configuration\\test\\plugins")
-    .takeIf { it.exists() }
-    ?: File(rootDir, "jars")
 
-setupSpigotProcessor()
+setupShadow {
+    requireShadowJarTask {
+        destination = File("/home/makeevrserg/Desktop/server/data/plugins")
+            .takeIf { it.exists() }
+            ?: File(rootDir, "jars")
 
-val shadowJar = tasks.named<ShadowJar>("shadowJar")
-shadowJar.configure {
-    if (!localFolder.exists()) localFolder.mkdirs()
+        val projectInfo = requireProjectInfo
+        isReproducibleFileOrder = true
+        mergeServiceFiles()
+        dependsOn(configurations)
+        archiveClassifier.set(null as String?)
+        relocate("org.bstats", projectInfo.group)
 
-    val projectInfo = requireProjectInfo
-    isReproducibleFileOrder = true
-    mergeServiceFiles()
-    dependsOn(configurations)
-    archiveClassifier.set(null as String?)
-    relocate("org.bstats", projectInfo.group)
-
-//    listOf(
-//        "kotlin",
-//        "org.jetbrains",
-//        "ru.astrainteractive.astralibs"
-//    ).forEach { relocate(it, "${projectInfo.group}.$it") }
-    minimize {
-//        exclude("org.jetbrains.exposed.jdbc.ExposedConnectionImpl")
-        exclude(dependency(libs.exposed.jdbc.get()))
-        exclude(dependency(libs.exposed.dao.get()))
-        exclude(dependency("org.jetbrains.kotlin:kotlin-stdlib:${libs.versions.kotlin.version.get()}"))
-//        exclude(dependency("org.jetbrains.exposed:exposed-jdbc:${libs.versions.exposed.get()}"))
-//        exclude(dependency("org.jetbrains.exposed:exposed-dao:${libs.versions.exposed.get()}"))
+        minimize {
+            exclude(dependency(libs.exposed.jdbc.get()))
+            exclude(dependency(libs.exposed.dao.get()))
+            exclude(dependency("org.jetbrains.kotlin:kotlin-stdlib:${libs.versions.kotlin.version.get()}"))
+        }
+        archiveVersion.set(projectInfo.versionString)
+        archiveBaseName.set(projectInfo.name)
+        destinationDirectory.set(destination.get())
     }
-    archiveVersion.set(projectInfo.versionString)
-    archiveBaseName.set(projectInfo.name)
-    localFolder.apply { if (!exists()) parentFile.mkdirs() }
-    localFolder.also(destinationDirectory::set)
 }

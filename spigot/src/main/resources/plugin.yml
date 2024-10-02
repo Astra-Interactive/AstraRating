@@ -10,6 +10,10 @@ api-version: 1.13
 softdepend: [ DiscordSRV, PlaceholderAPI ]
 depend: [ ]
 loadbefore: [ ]
+libraries:
+  - "org.xerial:sqlite-jdbc:3.46.1.0"
+  - "mysql:mysql-connector-java:8.0.33"
+  - "com.h2database:h2:2.2.224"
 commands:
   aratingreload:
     description: Reload plugin

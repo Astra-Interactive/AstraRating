@@ -1,33 +1,64 @@
 package ru.astrainteractive.astrarating.integration.papi.di
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.serialization.StringFormat
 import org.bukkit.Bukkit
+import ru.astrainteractive.astralibs.expansion.PlaceholderExpansionFacade
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
+import ru.astrainteractive.astralibs.logging.JUtiltLogger
+import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.astrarating.api.rating.api.CachedApi
-import ru.astrainteractive.astrarating.core.EmpireConfig
-import ru.astrainteractive.astrarating.integration.papi.RatingPAPILifecycle
-import ru.astrainteractive.klibs.kdi.Dependency
-import ru.astrainteractive.klibs.kdi.getValue
+import ru.astrainteractive.astrarating.core.di.factory.ConfigKrateFactory
+import ru.astrainteractive.astrarating.integration.papi.di.factory.PapiFactory
+import ru.astrainteractive.astrarating.integration.papi.model.PapiConfig
+import java.io.File
 
 interface PapiModule {
-    val lifecycle: Lifecycle?
+    val lifecycle: Lifecycle
 
     class Default(
         cachedApi: CachedApi,
-        config: Dependency<EmpireConfig>,
-        scope: CoroutineScope
-    ) : PapiModule {
-        private val papiDependencies = object : PapiDependencies {
-            override val cachedApi: CachedApi = cachedApi
-            override val config by config
-            override val scope: CoroutineScope = scope
+        scope: CoroutineScope,
+        dataFolder: File,
+        yamlStringFormat: StringFormat
+    ) : PapiModule, Logger by JUtiltLogger("AstraRating-PapiModule") {
+        private val isPapiEnabled: Boolean
+            get() = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")
+
+        private val papiConfiguration = ConfigKrateFactory.create(
+            fileNameWithoutExtension = "papi",
+            dataFolder = dataFolder,
+            stringFormat = yamlStringFormat,
+            factory = ::PapiConfig
+        )
+
+        private val placeholderFacade: PlaceholderExpansionFacade by lazy {
+            PapiFactory(
+                dependencies = PapiDependencies.Default(
+                    cachedApi = cachedApi,
+                    scope = scope,
+                    getPapiConfiguration = { papiConfiguration.cachedValue }
+                )
+            ).create()
         }
-        override val lifecycle: Lifecycle? by lazy {
-            if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-                RatingPAPILifecycle(papiDependencies)
-            } else {
-                null
+        override val lifecycle: Lifecycle = Lifecycle.Lambda(
+            onEnable = {
+                if (isPapiEnabled) {
+                    placeholderFacade.register()
+                }
+            },
+            onReload = {
+                if (isPapiEnabled) {
+                    if (placeholderFacade.isRegistered()) placeholderFacade.unregister()
+                    placeholderFacade.register()
+                }
+                papiConfiguration.loadAndGet()
+            },
+            onDisable = {
+                if (isPapiEnabled) {
+                    if (placeholderFacade.isRegistered()) placeholderFacade.unregister()
+                }
             }
-        }
+        )
     }
 }

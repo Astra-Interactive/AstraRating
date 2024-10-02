@@ -10,7 +10,6 @@ interface PlayerRatingsComponent : CoroutineScope {
     val model: StateFlow<Model>
     fun onSortClicked()
     fun onDeleteClicked(item: UserRatingDTO)
-    fun close()
     data class Model(
         val playerName: String,
         val allRatings: List<UserRatingDTO> = emptyList(),

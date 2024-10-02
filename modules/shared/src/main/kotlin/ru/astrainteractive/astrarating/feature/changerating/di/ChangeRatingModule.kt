@@ -10,9 +10,7 @@ import ru.astrainteractive.astrarating.feature.changerating.domain.check.CheckVa
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCase
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCaseImpl
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.InsertUserUseCaseImpl
-import ru.astrainteractive.klibs.kdi.Provider
-import ru.astrainteractive.klibs.kdi.Reloadable
-import ru.astrainteractive.klibs.kdi.getValue
+import ru.astrainteractive.klibs.kstorage.api.Krate
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 interface ChangeRatingModule {
@@ -20,11 +18,11 @@ interface ChangeRatingModule {
 
     class Default(
         private val dbApi: RatingDBApi,
-        private val empireConfig: Reloadable<EmpireConfig>,
+        private val empireConfigKrate: Krate<EmpireConfig>,
         private val dispatchers: KotlinDispatchers,
     ) : ChangeRatingModule {
-        override val addRatingUseCase: AddRatingUseCase by Provider {
-            AddRatingUseCaseImpl(
+        override val addRatingUseCase: AddRatingUseCase
+            get() = AddRatingUseCaseImpl(
                 insertRatingRepository = InsertRatingRepositoryImpl(dbApi = dbApi, dispatchers = dispatchers),
                 insertUserUseCase = InsertUserUseCaseImpl(
                     insertUserRepository = InsertUserRepositoryImpl(
@@ -41,9 +39,8 @@ interface ChangeRatingModule {
                         dbApi = dbApi,
                         dispatchers = dispatchers
                     ),
-                    config = empireConfig.value,
+                    config = empireConfigKrate.cachedValue,
                 )
             )
-        }
     }
 }

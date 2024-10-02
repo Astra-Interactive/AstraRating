@@ -10,9 +10,9 @@ dependencies {
     implementation(libs.minecraft.astralibs.core)
     implementation(libs.minecraft.astralibs.menu.bukkit)
     implementation(libs.minecraft.astralibs.core.bukkit)
-    implementation(libs.klibs.kdi)
     implementation(libs.minecraft.bstats)
     implementation(libs.klibs.mikro.core)
+    implementation(libs.klibs.kstorage)
     implementation("io.github.reactivecircus.cache4k:cache4k-jvm:0.13.0")
     // Spigot dependencies
     compileOnly(libs.minecraft.paper.api)

@@ -31,11 +31,11 @@ interface EventModule {
         override val lifecycle: Lifecycle by lazy {
             Lifecycle.Lambda(
                 onEnable = {
-                    events.forEach { event -> event.onEnable(bukkitModule.plugin.value) }
+                    events.forEach { event -> event.onEnable(bukkitModule.plugin) }
                 },
                 onDisable = {
                     events.forEach(EventListener::onDisable)
-                    HandlerList.unregisterAll(bukkitModule.plugin.value)
+                    HandlerList.unregisterAll(bukkitModule.plugin)
                 }
             )
         }

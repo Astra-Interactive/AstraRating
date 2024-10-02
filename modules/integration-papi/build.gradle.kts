@@ -12,7 +12,7 @@ dependencies {
     implementation(libs.minecraft.astralibs.core.bukkit)
     // klibs
     implementation(libs.klibs.mikro.core)
-    implementation(libs.klibs.kdi)
+    implementation(libs.klibs.kstorage)
     // Test
     testImplementation(libs.bundles.testing.kotlin)
     testImplementation(libs.tests.kotlin.test)

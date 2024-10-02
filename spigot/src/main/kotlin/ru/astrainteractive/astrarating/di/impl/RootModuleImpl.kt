@@ -1,6 +1,7 @@
 package ru.astrainteractive.astrarating.di.impl
 
 import ru.astrainteractive.astralibs.async.DefaultBukkitDispatchers
+import ru.astrainteractive.astrarating.LifecyclePlugin
 import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
 import ru.astrainteractive.astrarating.command.di.CommandsModule
 import ru.astrainteractive.astrarating.core.di.CoreModule
@@ -11,53 +12,50 @@ import ru.astrainteractive.astrarating.event.di.EventModule
 import ru.astrainteractive.astrarating.feature.di.SharedModule
 import ru.astrainteractive.astrarating.gui.di.GuiModule
 import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
-import ru.astrainteractive.klibs.kdi.Provider
-import ru.astrainteractive.klibs.kdi.Single
-import ru.astrainteractive.klibs.kdi.getValue
 
-class RootModuleImpl : RootModule {
+class RootModuleImpl(plugin: LifecyclePlugin) : RootModule {
 
-    override val bukkitModule: BukkitModule by Single {
-        BukkitModule.Default()
+    override val bukkitModule: BukkitModule by lazy {
+        BukkitModule.Default(plugin)
     }
 
     override val coreModule: CoreModule by lazy {
         CoreModule.Default(
-            dataFolder = bukkitModule.plugin.value.dataFolder,
-            dispatchers = DefaultBukkitDispatchers(bukkitModule.plugin.value)
+            dataFolder = bukkitModule.plugin.dataFolder,
+            dispatchers = DefaultBukkitDispatchers(bukkitModule.plugin)
         )
     }
 
-    override val dbRatingModule: DBRatingModule by Single {
+    override val dbRatingModule: DBRatingModule by lazy {
         DBRatingModule.Default(
-            coreModule = coreModule,
-            dataFolder = bukkitModule.plugin.value.dataFolder,
+            stringFormat = coreModule.yamlStringFormat,
+            dataFolder = bukkitModule.plugin.dataFolder,
         )
     }
 
-    override val apiRatingModule: ApiRatingModule by Provider {
-        val scope by coreModule.scope
+    override val apiRatingModule: ApiRatingModule by lazy {
         ApiRatingModule.Default(
-            database = dbRatingModule.database,
-            coroutineScope = scope,
-            isDebugProvider = { coreModule.config.value.debug }
+            databaseFlow = dbRatingModule.databaseFlow,
+            coroutineScope = coreModule.scope,
+            isDebugProvider = { coreModule.config.cachedValue.debug }
         )
     }
 
-    override val papiModule: PapiModule? by Single {
+    override val papiModule: PapiModule by lazy {
         PapiModule.Default(
             cachedApi = apiRatingModule.cachedApi,
-            config = coreModule.config,
-            scope = coreModule.scope.value
+            scope = coreModule.scope,
+            dataFolder = bukkitModule.plugin.dataFolder,
+            yamlStringFormat = coreModule.yamlStringFormat
         )
     }
 
-    override val sharedModule: SharedModule by Single {
+    override val sharedModule: SharedModule by lazy {
         SharedModule.Default(
             apiRatingModule = apiRatingModule,
             dispatchers = coreModule.dispatchers,
-            coroutineScope = coreModule.scope.value,
-            empireConfig = coreModule.config,
+            coroutineScope = coreModule.scope,
+            empireConfigKrate = coreModule.config,
         )
     }
 
@@ -65,7 +63,7 @@ class RootModuleImpl : RootModule {
         GuiModule.Default(
             coreModule = coreModule,
             apiRatingModule = apiRatingModule,
-            translationContext = bukkitModule.kyoriComponentSerializer.value,
+            translationContext = bukkitModule.kyoriComponentSerializer.cachedValue,
             sharedModule = sharedModule
         )
     }

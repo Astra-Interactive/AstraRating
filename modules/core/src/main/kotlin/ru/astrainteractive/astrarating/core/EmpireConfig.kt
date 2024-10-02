@@ -25,19 +25,9 @@ data class EmpireConfig(
     val trimMessageAfter: Int = 10,
     val cutWords: Boolean = false,
     val gui: Gui = Gui(),
-    val databaseConnection: ConnectionModel = ConnectionModel(),
-    @SerialName("coloring")
-    val coloring: List<Coloring> = emptyList(),
     val events: Events = Events(),
     val debug: Boolean = false
 ) {
-    @Serializable
-    data class Coloring(
-        val less: Int? = null,
-        val equal: Int? = null,
-        val more: Int? = null,
-        val color: String
-    )
 
     @Serializable
     class Events(

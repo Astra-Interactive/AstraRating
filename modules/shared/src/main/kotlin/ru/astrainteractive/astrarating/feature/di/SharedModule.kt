@@ -11,9 +11,7 @@ import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUse
 import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUseCaseImpl
 import ru.astrainteractive.astrarating.feature.playerrating.presentation.DefaultPlayerRatingsComponent
 import ru.astrainteractive.astrarating.feature.playerrating.presentation.PlayerRatingsComponent
-import ru.astrainteractive.klibs.kdi.Reloadable
-import ru.astrainteractive.klibs.kdi.Single
-import ru.astrainteractive.klibs.kdi.getValue
+import ru.astrainteractive.klibs.kstorage.api.Krate
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 interface SharedModule {
@@ -26,16 +24,16 @@ interface SharedModule {
         private val apiRatingModule: ApiRatingModule,
         private val dispatchers: KotlinDispatchers,
         private val coroutineScope: CoroutineScope,
-        private val empireConfig: Reloadable<EmpireConfig>,
+        private val empireConfigKrate: Krate<EmpireConfig>,
     ) : SharedModule {
-        override val changeRatingModule: ChangeRatingModule by Single {
+        override val changeRatingModule: ChangeRatingModule by lazy {
             ChangeRatingModule.Default(
                 dbApi = apiRatingModule.ratingDBApi,
-                empireConfig = empireConfig,
+                empireConfigKrate = empireConfigKrate,
                 dispatchers = dispatchers,
             )
         }
-        private val allRatingsRepository by Single {
+        private val allRatingsRepository by lazy {
             AllRatingsRepositoryImpl(
                 dbApi = apiRatingModule.ratingDBApi,
                 coroutineScope = coroutineScope,

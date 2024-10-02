@@ -11,8 +11,6 @@ import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRa
 import ru.astrainteractive.astrarating.feature.di.SharedModule
 import ru.astrainteractive.astrarating.gui.di.GuiModule
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
-import ru.astrainteractive.klibs.kdi.Provider
-import ru.astrainteractive.klibs.kdi.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 internal interface CommandsDependencies {
@@ -26,23 +24,22 @@ internal interface CommandsDependencies {
     val router: GuiRouter
 
     class Default(
-        sharedModule: SharedModule,
-        bukkitModule: BukkitModule,
-        coreModule: CoreModule,
-        guiModule: GuiModule
+        private val sharedModule: SharedModule,
+        private val bukkitModule: BukkitModule,
+        private val coreModule: CoreModule,
+        private val guiModule: GuiModule
     ) : CommandsDependencies {
 
-        override val plugin: LifecyclePlugin by bukkitModule.plugin
-        override val addRatingUseCase: AddRatingUseCase by Provider {
-            sharedModule.changeRatingModule.addRatingUseCase
-        }
+        override val plugin: LifecyclePlugin = bukkitModule.plugin
+        override val addRatingUseCase: AddRatingUseCase
+            get() = sharedModule.changeRatingModule.addRatingUseCase
         override val dispatchers = coreModule.dispatchers
-        override val scope by coreModule.scope
-        override val translation by coreModule.translation
-        override val config by coreModule.config
+        override val scope = coreModule.scope
+        override val translation get() = coreModule.translation.cachedValue
+        override val config get() = coreModule.config.cachedValue
 
-        override val kyoriComponentSerializer by bukkitModule.kyoriComponentSerializer
+        override val kyoriComponentSerializer get() = bukkitModule.kyoriComponentSerializer.cachedValue
 
-        override val router: GuiRouter by Provider { guiModule.router }
+        override val router: GuiRouter get() = guiModule.router
     }
 }

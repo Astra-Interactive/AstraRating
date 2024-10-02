@@ -3,7 +3,7 @@ package ru.astrainteractive.astrarating.feature.playerrating.presentation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.astrainteractive.astralibs.async.AsyncComponent
+import ru.astrainteractive.astralibs.async.CoroutineFeature
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
 import ru.astrainteractive.astrarating.dto.UserRatingDTO
 import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUseCase
@@ -16,13 +16,13 @@ internal class DefaultPlayerRatingsComponent(
     private val dbApi: RatingDBApi,
     private val dispatchers: KotlinDispatchers,
     private val sortRatingUseCase: SortRatingUseCase
-) : PlayerRatingsComponent, AsyncComponent() {
+) : PlayerRatingsComponent, CoroutineFeature by CoroutineFeature.Default(dispatchers.Main) {
     override val model = MutableStateFlow(
         PlayerRatingsComponent.Model(playerName = playerName)
     )
 
     override fun onSortClicked() {
-        componentScope.launch(dispatchers.IO) {
+        launch(dispatchers.IO) {
             val sort = model.value.sort.next(UserRatingsSort.entries.toTypedArray())
             val input = SortRatingUseCase.Input(
                 ratings = model.value.allRatings,
@@ -39,7 +39,7 @@ internal class DefaultPlayerRatingsComponent(
     }
 
     override fun onDeleteClicked(item: UserRatingDTO) {
-        componentScope.launch(dispatchers.IO) {
+        launch(dispatchers.IO) {
             model.update { it.copy(isLoading = true) }
             dbApi.deleteUserRating(item)
             model.update { it.copy(isLoading = false) }
@@ -48,7 +48,7 @@ internal class DefaultPlayerRatingsComponent(
     }
 
     private fun reload() {
-        componentScope.launch(dispatchers.IO) {
+        launch(dispatchers.IO) {
             model.update { it.copy(isLoading = true) }
             val playerName = model.value.playerName
             val userRatings = dbApi.fetchUserRatings(playerName)
