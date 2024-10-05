@@ -62,7 +62,7 @@ class AuctionsTests {
         val user = randomUser
         // Insert and select user
         val id = api.insertUser(user).getOrThrow()
-        api.selectUser(user.minecraftName).getOrThrow().also { selectedUser ->
+        api.selectUser(user.minecraftUUID).getOrThrow().also { selectedUser ->
             assertNotNull(selectedUser)
             assertEquals(id, selectedUser.id)
             assertEquals(user.minecraftUUID.toString(), selectedUser.minecraftUUID)
@@ -73,11 +73,11 @@ class AuctionsTests {
     fun `Rate user on user`(): Unit = runBlocking {
         val reportedUser = randomUser.let {
             api.insertUser(it).getOrThrow()
-            api.selectUser(it.minecraftName).getOrThrow()
+            api.selectUser(it.minecraftUUID).getOrThrow()
         }
         val userCreatedReport = randomUser.let {
             api.insertUser(it).getOrThrow()
-            api.selectUser(it.minecraftName).getOrThrow()
+            api.selectUser(it.minecraftUUID).getOrThrow()
         }
         api.insertUserRating(
             reporter = userCreatedReport,
@@ -86,16 +86,19 @@ class AuctionsTests {
             type = RatingType.USER_RATING,
             ratingValue = 1
         ).getOrThrow()
-        api.fetchUserRatings(reportedUser.minecraftName).getOrThrow().also { reportsOnUser ->
+        api.fetchUserRatings(reportedUser.minecraftUUID.let(UUID::fromString)).getOrThrow().also { reportsOnUser ->
             assertNotNull(reportsOnUser)
             assertEquals(1, reportsOnUser.size)
         }
-        api.countPlayerOnPlayerDayRated(userCreatedReport.minecraftName, reportedUser.minecraftName).getOrThrow()
+        api.countPlayerOnPlayerDayRated(
+            userCreatedReport.minecraftUUID.let(UUID::fromString),
+            reportedUser.minecraftUUID.let(UUID::fromString)
+        ).getOrThrow()
             .also { count ->
                 assertNotNull(count)
                 assertEquals(1, count)
             }
-        api.countPlayerTotalDayRated(userCreatedReport.minecraftName).getOrThrow().also { count ->
+        api.countPlayerTotalDayRated(userCreatedReport.minecraftUUID.let(UUID::fromString)).getOrThrow().also { count ->
             assertNotNull(count)
             assertEquals(1, count)
         }
@@ -110,7 +113,7 @@ class AuctionsTests {
             type = RatingType.USER_RATING,
             ratingValue = 1
         ).getOrThrow()
-        api.fetchUserRatings(reportedUser.minecraftName).getOrThrow().also { userRatings ->
+        api.fetchUserRatings(reportedUser.minecraftUUID.let(UUID::fromString)).getOrThrow().also { userRatings ->
             assertNotNull(userRatings)
             assertEquals(2, userRatings.size)
         }
@@ -118,7 +121,7 @@ class AuctionsTests {
             assertNotNull(ratings)
             val rating = assertNotNull(ratings.firstOrNull())
 
-            assertEquals(2, rating.rating)
+            assertEquals(2, rating.ratingTotal)
         }
     }
 }

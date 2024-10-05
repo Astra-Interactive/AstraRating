@@ -129,7 +129,8 @@ internal class RatingsGUI(
                 index = i,
                 firstPlayed = userAndRating.userDTO.offlinePlayer.firstPlayed,
                 lastPlayed = userAndRating.userDTO.offlinePlayer.lastPlayed,
-                rating = userAndRating.rating,
+                ratingTotal = userAndRating.ratingTotal,
+                ratingCounts = userAndRating.ratingCounts,
                 playerName = userAndRating.userDTO.normalName,
                 click = Click {
                     val route = GuiRouter.Route.PlayerRating(

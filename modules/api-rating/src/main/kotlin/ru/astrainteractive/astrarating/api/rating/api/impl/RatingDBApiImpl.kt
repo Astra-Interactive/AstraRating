@@ -6,18 +6,21 @@ import kotlinx.coroutines.flow.timeout
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.alias
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.max
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
-import ru.astrainteractive.astrarating.db.rating.entity.UserDAO
 import ru.astrainteractive.astrarating.db.rating.entity.UserRatingTable
 import ru.astrainteractive.astrarating.db.rating.entity.UserTable
-import ru.astrainteractive.astrarating.db.rating.mapping.UserMapper
 import ru.astrainteractive.astrarating.dto.RatedUserDTO
 import ru.astrainteractive.astrarating.dto.RatingType
 import ru.astrainteractive.astrarating.dto.UserDTO
@@ -47,16 +50,30 @@ internal class RatingDBApiImpl(
 
     override suspend fun selectUser(playerUUID: UUID): Result<UserDTO> = kotlin.runCatching {
         transaction(requireDatabase()) {
-            UserDAO.find {
-                UserTable.minecraftUUID.eq(playerUUID.toString())
-            }.firstOrNull()?.let(UserMapper::toDTO) ?: error("Could not find $playerUUID")
+            UserTable.selectAll()
+                .where { UserTable.minecraftUUID.eq(playerUUID.toString()) }
+                .limit(1)
+                .map {
+                    UserDTO(
+                        id = it[UserTable.id].value,
+                        minecraftUUID = it[UserTable.minecraftUUID],
+                        minecraftName = it[UserTable.minecraftName],
+                        lastUpdated = it[UserTable.lastUpdated]
+                    )
+                }.firstOrNull() ?: error("Could not find user with uuid $playerUUID")
         }
     }.logFailure()
 
     override suspend fun updateUser(user: UserDTO) = kotlin.runCatching {
+        selectUser(user.minecraftUUID.let(UUID::fromString))
         transaction(requireDatabase()) {
-            val userDao = UserDAO.findById(user.id) ?: error("User not found!")
-            userDao.lastUpdated = System.currentTimeMillis()
+            UserTable.update(
+                where = { UserTable.minecraftUUID.eq(user.minecraftUUID) },
+                body = {
+                    it[UserTable.minecraftName] = user.minecraftName
+                    it[UserTable.lastUpdated] = user.lastUpdated
+                }
+            )
         }
     }.logFailure()
 
@@ -134,13 +151,38 @@ internal class RatingDBApiImpl(
 
     override suspend fun fetchUsersTotalRating() = kotlin.runCatching {
         transaction(requireDatabase()) {
-            UserDAO.all().filter { !it.rating.empty() }.map {
-                val reportedPlayer = it.let(UserMapper::toDTO)
-                RatedUserDTO(
-                    userDTO = reportedPlayer,
-                    rating = it.rating.sumOf { it.rating }
+            val ratingsSum = UserRatingTable.rating.sum().alias("rating_total")
+            val ratingsCount = UserRatingTable.rating.count().alias("rating_count")
+            val lastUpdated = UserRatingTable.time.max().alias("last_updated")
+
+            UserTable
+                .join(
+                    otherTable = UserRatingTable,
+                    onColumn = UserTable.id,
+                    otherColumn = UserRatingTable.reportedUser,
+                    joinType = JoinType.INNER,
                 )
-            }
+                .select(
+                    UserTable.id,
+                    UserTable.minecraftUUID,
+                    UserTable.minecraftName,
+                    ratingsSum,
+                    ratingsCount,
+                    lastUpdated
+                )
+                .groupBy(UserTable.id)
+                .map {
+                    RatedUserDTO(
+                        userDTO = UserDTO(
+                            id = it[UserTable.id].value,
+                            minecraftUUID = it[UserTable.minecraftUUID],
+                            minecraftName = it[UserTable.minecraftName],
+                            lastUpdated = it[lastUpdated] ?: 0L,
+                        ),
+                        ratingTotal = it[ratingsSum] ?: 0,
+                        ratingCounts = it[ratingsCount]
+                    )
+                }
         }
     }.logFailure()
 

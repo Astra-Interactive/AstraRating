@@ -17,14 +17,15 @@ internal fun SlotContext.ratingsSlot(
     click: Click,
     firstPlayed: Long,
     lastPlayed: Long,
-    rating: Int,
+    ratingTotal: Int,
+    ratingCounts: Long,
     playerName: String
 ): InventorySlot = InventorySlot.Builder()
     .setIndex(index)
     .setItemStack(PlayerHeadUtil.getHead(playerName))
     .editMeta {
         val color = when {
-            rating > 0 -> translation.positiveColor.raw
+            ratingTotal > 0 -> translation.positiveColor.raw
             else -> translation.negativeColor.raw
         }
         displayName(translation.playerNameColor.plus(playerName).component)
@@ -43,7 +44,8 @@ internal fun SlotContext.ratingsSlot(
                 ).orEmpty()
                 add(translation.lastConnection.plus(" ").plus(timeFormatted).component)
             }
-            translation.rating.plus(": ").plus(color).plus("$rating").component.run(::add)
+            translation.ratingTotal.plus(": ").plus(color).plus("$ratingTotal").component.run(::add)
+            translation.ratingCounts.plus(": ").plus("$ratingCounts").component.run(::add)
         }.run(::lore)
     }
     .setOnClickListener(click)

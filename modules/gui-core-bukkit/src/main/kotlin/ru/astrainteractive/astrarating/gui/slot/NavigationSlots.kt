@@ -49,7 +49,7 @@ internal fun SlotContext.ratingsPlayerSlot(
     .setIndex(i)
     .setItemStack(PlayerHeadUtil.getHead(userAndRating.userDTO.normalName))
     .editMeta {
-        val color = if (userAndRating.rating > 0) translation.positiveColor else translation.negativeColor
+        val color = if (userAndRating.ratingTotal > 0) translation.positiveColor else translation.negativeColor
 
         displayName(translation.playerNameColor.plus(userAndRating.userDTO.normalName).component)
         buildList {
@@ -68,7 +68,7 @@ internal fun SlotContext.ratingsPlayerSlot(
                 ).orEmpty()
                 add(translation.lastConnection.plus(" ").plus(lastPlayedFormatted))
             }
-            add(translation.rating.plus(": ").plus(color).plus("${userAndRating.rating}"))
+            add(translation.ratingTotal.plus(": ").plus(color).plus("${userAndRating.ratingTotal}"))
         }
     }
     .setOnClickListener { onClick.invoke() }
