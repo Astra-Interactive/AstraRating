@@ -8,11 +8,11 @@ import ru.astrainteractive.astrarating.dto.RatedUserDTO
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import kotlin.time.Duration.Companion.seconds
 
-internal class AllRatingsRepositoryImpl(
+internal class AllRatingsCachedRepositoryImpl(
     private val dbApi: RatingDBApi,
     private val coroutineScope: CoroutineScope,
     private val dispatchers: KotlinDispatchers
-) : AllRatingsRepository {
+) : AllRatingsCachedRepository {
     private val jcache = JCache<Unit, List<RatedUserDTO>>(
         expiresAfterAccess = 30.seconds,
         updateAfterAccess = 10.seconds,
@@ -27,5 +27,9 @@ internal class AllRatingsRepositoryImpl(
         return withContext(dispatchers.IO) {
             jcache.get(Unit)
         }
+    }
+
+    override fun clear() {
+        jcache.clear()
     }
 }

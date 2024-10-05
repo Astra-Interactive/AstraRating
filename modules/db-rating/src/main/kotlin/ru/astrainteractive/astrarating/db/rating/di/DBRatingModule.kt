@@ -1,6 +1,7 @@
 package ru.astrainteractive.astrarating.db.rating.di
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.first
@@ -45,13 +46,9 @@ interface DBRatingModule {
             .cachedStateFlow
             .distinctUntilChangedBy { it.databaseConfiguration }
             .mapCached(coroutineScope) { dbConfig, oldDatabase ->
-                println("Got cached value!")
                 oldDatabase?.run(TransactionManager::closeAndUnregister)
-                println("Creating database")
                 val database = DatabaseFactory(dataFolder).create(dbConfig.databaseConfiguration)
-                println("Set transaction")
                 TransactionManager.manager.defaultIsolationLevel = java.sql.Connection.TRANSACTION_SERIALIZABLE
-                println("Create schema")
                 transaction(database) {
                     addLogger(Slf4jSqlDebugLogger)
                     SchemaUtils.create(
@@ -59,7 +56,6 @@ interface DBRatingModule {
                         UserRatingTable
                     )
                 }
-                println("Return database")
                 database
             }
 
@@ -70,6 +66,7 @@ interface DBRatingModule {
                     runBlocking {
                         databaseFlow.first().run(TransactionManager::closeAndUnregister)
                     }
+                    coroutineScope.cancel()
                 }
             )
         }

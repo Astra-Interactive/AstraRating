@@ -18,8 +18,9 @@ import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import java.io.File
 
 interface CoreModule {
-    val yamlStringFormat: StringFormat
     val lifecycle: Lifecycle
+
+    val yamlStringFormat: StringFormat
     val config: StateFlowKrate<EmpireConfig>
     val translation: StateFlowKrate<PluginTranslation>
     val scope: CoroutineFeature

@@ -1,13 +1,15 @@
 package ru.astrainteractive.astrarating.gui.router
 
 import org.bukkit.entity.Player
+import java.util.UUID
 
 interface GuiRouter {
     sealed interface Route {
         class AllRatings(val executor: Player) : Route
         class PlayerRating(
             val executor: Player,
-            val selectedPlayerName: String
+            val selectedPlayerName: String,
+            val selectedPlayerUUID: UUID
         ) : Route
     }
 

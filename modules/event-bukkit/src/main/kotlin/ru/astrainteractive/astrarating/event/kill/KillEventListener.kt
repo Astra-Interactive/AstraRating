@@ -24,7 +24,7 @@ internal class KillEventListener(
         scope.launch(dispatchers.IO) {
             val killedPlayerRating = apiDependency.fetchUsersTotalRating().getOrNull().orEmpty()
                 .firstOrNull { it.userDTO.minecraftUUID == killedPlayer.uniqueId.toString() }
-                ?.rating
+                ?.ratingTotal
                 ?: error("Could not fetch rating of ${killedPlayer.name}")
             if (killedPlayerRating <= 0) return@launch
 

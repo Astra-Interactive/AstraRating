@@ -3,7 +3,7 @@
 ## No-Lag and free!
 
 > [!CAUTION]
-> Java 21 and Paper 1.21 only supported! Use other versions on your own risk!
+> Java 21 and Paper 1.21.1 only supported! Use other versions on your own risk!
 
 More plugins from [AstraInteractive](https://github.com/Astra-Interactive)
 

@@ -102,7 +102,9 @@ class PluginTranslation(
     @SerialName("menu.sort.sort")
     val sort: StringDesc.Raw = StringDesc.Raw("&#1B76CAСортировка"),
     @SerialName("menu.rating")
-    val rating: StringDesc.Raw = StringDesc.Raw("&#1B76CAРейтинг"),
+    val ratingTotal: StringDesc.Raw = StringDesc.Raw("&#1B76CAРейтинг"),
+    @SerialName("menu.rating_counts")
+    val ratingCounts: StringDesc.Raw = StringDesc.Raw("&#1B76CAРейтингов"),
     @SerialName("menu.message")
     val message: StringDesc.Raw = StringDesc.Raw("&#1B76CAСообщение:"),
     @SerialName("menu.loading")

@@ -14,12 +14,12 @@ interface BukkitModule {
 
     // Core
     val plugin: LifecyclePlugin
-    val inventoryClickEvent: DefaultInventoryClickEvent
     val kyoriComponentSerializer: Krate<KyoriComponentSerializer>
 
     // Services
     val bstats: () -> Metrics
     val eventListener: EventListener
+    val inventoryClickEvent: DefaultInventoryClickEvent
 
     class Default(override val plugin: LifecyclePlugin) : BukkitModule {
 

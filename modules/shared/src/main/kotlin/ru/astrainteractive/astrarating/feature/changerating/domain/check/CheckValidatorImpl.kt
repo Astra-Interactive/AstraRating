@@ -2,21 +2,25 @@ package ru.astrainteractive.astrarating.feature.changerating.domain.check
 
 import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.core.RatingPermission
+import ru.astrainteractive.astrarating.core.util.KrateExt.getValue
 import ru.astrainteractive.astrarating.feature.changerating.data.PlayerOnPlayerCounterRepository
 import ru.astrainteractive.astrarating.feature.changerating.data.PlayerTotalRatingRepository
+import ru.astrainteractive.klibs.kstorage.api.Krate
 
 internal class CheckValidatorImpl(
     private val playerOnPlayerCounterRepository: PlayerOnPlayerCounterRepository,
     private val playerTotalRatingRepository: PlayerTotalRatingRepository,
-    private val config: EmpireConfig
+    configKrate: Krate<EmpireConfig>
 ) : CheckValidator {
+    private val config by configKrate
+
     private suspend fun checkCanVoteOnPlayer(check: Check.CanVoteOnPlayer): Boolean {
         val maxVotePerPlayer = check.creator.permissible
             ?.maxPermissionSize(RatingPermission.SinglePlayerPerDay)
             ?: config.maxRatingPerPlayer
         val votedOnPlayerAmount = playerOnPlayerCounterRepository.countPlayerOnPlayerDayRated(
-            creatorName = check.creator.name,
-            ratedName = check.rated?.name ?: error("Rated player doesn't have a name!")
+            creatorUUID = check.creator.uuid,
+            ratedUUID = check.rated?.uuid ?: error("Rated player doesn't have a name!")
         )
         return votedOnPlayerAmount < maxVotePerPlayer
     }
@@ -25,7 +29,7 @@ internal class CheckValidatorImpl(
         val maxVotesPerDay = check.playerModel.permissible
             ?.maxPermissionSize(RatingPermission.MaxRatePerDay)
             ?: config.maxRatingPerDay
-        val todayVotedAmount = playerTotalRatingRepository.countPlayerTotalDayRated(check.playerModel.name)
+        val todayVotedAmount = playerTotalRatingRepository.countPlayerTotalDayRated(check.playerModel.uuid)
         return todayVotedAmount < maxVotesPerDay
     }
 

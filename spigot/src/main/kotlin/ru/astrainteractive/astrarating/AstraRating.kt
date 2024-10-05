@@ -1,38 +1,19 @@
 package ru.astrainteractive.astrarating
 
-import ru.astrainteractive.astralibs.lifecycle.Lifecycle
-import ru.astrainteractive.astrarating.di.impl.RootModuleImpl
+import ru.astrainteractive.astrarating.di.RootModule
 
-/**
- * Initial class for your plugin
- */
 class AstraRating : LifecyclePlugin() {
-    private val rootModule = RootModuleImpl(this)
-    private val lifecycles: List<Lifecycle>
-        get() = listOfNotNull(
-            rootModule.coreModule.lifecycle,
-            rootModule.bukkitModule.lifecycle,
-            rootModule.dbRatingModule.lifecycle,
-            rootModule.commandsModule.lifecycle,
-            rootModule.eventModule.lifecycle,
-            rootModule.papiModule.lifecycle
-        )
+    private val rootModule = RootModule.Default(this)
 
-    /**
-     * This method called when server starts or PlugMan load plugin.
-     */
     override fun onEnable() {
-        lifecycles.forEach(Lifecycle::onEnable)
+        rootModule.lifecycle.onEnable()
     }
 
-    /**
-     * This method called when server is shutting down or when PlugMan disable plugin.
-     */
     override fun onDisable() {
-        lifecycles.forEach(Lifecycle::onDisable)
+        rootModule.lifecycle.onDisable()
     }
 
     override fun onReload() {
-        lifecycles.forEach(Lifecycle::onReload)
+        rootModule.lifecycle.onReload()
     }
 }

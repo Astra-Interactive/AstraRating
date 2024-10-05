@@ -47,8 +47,13 @@ internal class RatingCommandParser : CommandParser<RatingCommand.Result, BukkitC
 
             "rating" -> {
                 if (sender !is Player) throw RatingCommand.Error.NotPlayer
-                commandContext.args.getOrNull(1)?.takeIf(String::isNotBlank)?.let { requestedPlayer ->
-                    RatingCommand.Result.OpenPlayerRatingGui(sender, requestedPlayer)
+                commandContext.args.getOrNull(1)?.takeIf(String::isNotBlank)?.let { requestedPlayerName ->
+                    val requestedPlayerUuid = Bukkit.getOfflinePlayer(requestedPlayerName).uniqueId
+                    RatingCommand.Result.OpenPlayerRatingGui(
+                        player = sender,
+                        selectedPlayerName = requestedPlayerName,
+                        selectedPlayerUUID = requestedPlayerUuid
+                    )
                 } ?: RatingCommand.Result.OpenRatingsGui(sender)
             }
 

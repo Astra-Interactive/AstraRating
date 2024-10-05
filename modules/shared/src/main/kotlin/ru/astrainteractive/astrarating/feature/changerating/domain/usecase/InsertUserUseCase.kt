@@ -27,7 +27,7 @@ internal class InsertUserUseCaseImpl(
     private val insertUserRepository: InsertUserRepository,
 ) : InsertUserUseCase {
     override suspend fun invoke(input: Input): Output {
-        val existedUserOutput = insertUserRepository.selectUser(input.playerModel.name)
+        val existedUserOutput = insertUserRepository.selectUser(input.playerModel.uuid)
             .map(UserDTO::id)
             .map { id ->
                 UserDTO(

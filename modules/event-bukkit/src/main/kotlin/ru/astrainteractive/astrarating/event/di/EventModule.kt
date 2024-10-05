@@ -23,11 +23,14 @@ interface EventModule {
                 bukkitModule = bukkitModule
             )
         }
+
         private val killEvent by lazy {
             KillEventListener(dependencies)
         }
+
         private val events: List<EventListener>
             get() = listOf(killEvent)
+
         override val lifecycle: Lifecycle by lazy {
             Lifecycle.Lambda(
                 onEnable = {

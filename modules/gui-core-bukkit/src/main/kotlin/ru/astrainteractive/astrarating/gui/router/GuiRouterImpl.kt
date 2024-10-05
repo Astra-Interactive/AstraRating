@@ -40,7 +40,8 @@ internal class GuiRouterImpl(
                     player = route.executor,
                     module = guiDependencies,
                     playerRatingsComponent = sharedModule.createPlayerRatingsComponent(
-                        playerName = route.selectedPlayerName
+                        playerName = route.selectedPlayerName,
+                        playerUUID = route.selectedPlayerUUID
                     ),
                     router = this@GuiRouterImpl
                 )

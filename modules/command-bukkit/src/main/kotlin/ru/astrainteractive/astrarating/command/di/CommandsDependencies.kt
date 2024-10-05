@@ -31,8 +31,7 @@ internal interface CommandsDependencies {
     ) : CommandsDependencies {
 
         override val plugin: LifecyclePlugin = bukkitModule.plugin
-        override val addRatingUseCase: AddRatingUseCase
-            get() = sharedModule.changeRatingModule.addRatingUseCase
+        override val addRatingUseCase: AddRatingUseCase = sharedModule.changeRatingModule.addRatingUseCase
         override val dispatchers = coreModule.dispatchers
         override val scope = coreModule.scope
         override val translation get() = coreModule.translation.cachedValue

@@ -50,4 +50,8 @@ class JCache<K : Any, V : Any>(
         if (cacheData == null || cacheData.needUpdate(updateAfterAccess)) refresh(key)
         return cacheData?.data
     }
+
+    fun clear() {
+        cache.invalidateAll()
+    }
 }

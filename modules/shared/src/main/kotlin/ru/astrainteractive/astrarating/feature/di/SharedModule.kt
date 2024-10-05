@@ -1,23 +1,30 @@
 package ru.astrainteractive.astrarating.feature.di
 
 import kotlinx.coroutines.CoroutineScope
+import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
 import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.feature.allrating.AllRatingsComponent
 import ru.astrainteractive.astrarating.feature.allrating.DefaultAllRatingsComponent
-import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsRepositoryImpl
+import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsCachedRepositoryImpl
 import ru.astrainteractive.astrarating.feature.changerating.di.ChangeRatingModule
-import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUseCase
 import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUseCaseImpl
 import ru.astrainteractive.astrarating.feature.playerrating.presentation.DefaultPlayerRatingsComponent
 import ru.astrainteractive.astrarating.feature.playerrating.presentation.PlayerRatingsComponent
 import ru.astrainteractive.klibs.kstorage.api.Krate
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
+import java.util.UUID
 
 interface SharedModule {
+    val lifecycle: Lifecycle
+
     val changeRatingModule: ChangeRatingModule
 
-    fun createPlayerRatingsComponent(playerName: String): PlayerRatingsComponent
+    fun createPlayerRatingsComponent(
+        playerName: String,
+        playerUUID: UUID
+    ): PlayerRatingsComponent
+
     fun createAllRatingsComponent(): AllRatingsComponent
 
     class Default(
@@ -34,20 +41,20 @@ interface SharedModule {
             )
         }
         private val allRatingsRepository by lazy {
-            AllRatingsRepositoryImpl(
+            AllRatingsCachedRepositoryImpl(
                 dbApi = apiRatingModule.ratingDBApi,
                 coroutineScope = coroutineScope,
                 dispatchers = dispatchers
             )
         }
-        private val sortRatingUseCase: SortRatingUseCase = SortRatingUseCaseImpl()
 
-        override fun createPlayerRatingsComponent(playerName: String): PlayerRatingsComponent {
+        override fun createPlayerRatingsComponent(playerName: String, playerUUID: UUID): PlayerRatingsComponent {
             return DefaultPlayerRatingsComponent(
                 playerName = playerName,
+                playerUUID = playerUUID,
                 dbApi = apiRatingModule.ratingDBApi,
                 dispatchers = dispatchers,
-                sortRatingUseCase = sortRatingUseCase
+                sortRatingUseCase = SortRatingUseCaseImpl()
             )
         }
 
@@ -57,5 +64,9 @@ interface SharedModule {
                 dispatchers = dispatchers
             )
         }
+
+        override val lifecycle: Lifecycle = Lifecycle.Lambda(
+            onDisable = { allRatingsRepository.clear() }
+        )
     }
 }
