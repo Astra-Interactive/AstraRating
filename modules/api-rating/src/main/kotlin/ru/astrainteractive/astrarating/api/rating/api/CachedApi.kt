@@ -12,4 +12,6 @@ interface CachedApi {
      * @return rating of player or 0 if it's not cached
      */
     fun getPlayerRating(name: String, uuid: UUID): Int
+
+    fun clear()
 }

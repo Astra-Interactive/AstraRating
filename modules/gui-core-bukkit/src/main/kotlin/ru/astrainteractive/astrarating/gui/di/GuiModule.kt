@@ -14,7 +14,7 @@ interface GuiModule {
         coreModule: CoreModule,
         apiRatingModule: ApiRatingModule,
         translationContext: KyoriComponentSerializer,
-        private val sharedModule: SharedModule
+        sharedModule: SharedModule
     ) : GuiModule {
         override val router: GuiRouter = GuiRouterImpl(
             coreModule = coreModule,

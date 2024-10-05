@@ -36,4 +36,8 @@ internal class CachedApiImpl(
             )
         )?.rating ?: 0
     }
+
+    override fun clear() {
+        jcache.clear()
+    }
 }

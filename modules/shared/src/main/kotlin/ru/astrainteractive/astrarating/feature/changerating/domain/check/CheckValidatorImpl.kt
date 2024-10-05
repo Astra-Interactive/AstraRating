@@ -2,14 +2,18 @@ package ru.astrainteractive.astrarating.feature.changerating.domain.check
 
 import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.core.RatingPermission
+import ru.astrainteractive.astrarating.core.util.KrateExt.getValue
 import ru.astrainteractive.astrarating.feature.changerating.data.PlayerOnPlayerCounterRepository
 import ru.astrainteractive.astrarating.feature.changerating.data.PlayerTotalRatingRepository
+import ru.astrainteractive.klibs.kstorage.api.Krate
 
 internal class CheckValidatorImpl(
     private val playerOnPlayerCounterRepository: PlayerOnPlayerCounterRepository,
     private val playerTotalRatingRepository: PlayerTotalRatingRepository,
-    private val config: EmpireConfig
+    configKrate: Krate<EmpireConfig>
 ) : CheckValidator {
+    private val config by configKrate
+
     private suspend fun checkCanVoteOnPlayer(check: Check.CanVoteOnPlayer): Boolean {
         val maxVotePerPlayer = check.creator.permissible
             ?.maxPermissionSize(RatingPermission.SinglePlayerPerDay)

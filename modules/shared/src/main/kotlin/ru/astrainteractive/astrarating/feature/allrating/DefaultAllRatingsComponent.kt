@@ -4,13 +4,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.astrainteractive.astralibs.async.CoroutineFeature
-import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsRepository
+import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsCachedRepository
 import ru.astrainteractive.astrarating.model.UsersRatingsSort
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.util.next
 
 internal class DefaultAllRatingsComponent(
-    private val repository: AllRatingsRepository,
+    private val repository: AllRatingsCachedRepository,
     dispatchers: KotlinDispatchers
 ) : AllRatingsComponent, CoroutineFeature by CoroutineFeature.Default(dispatchers.Main) {
     override val model = MutableStateFlow(AllRatingsComponent.Model())

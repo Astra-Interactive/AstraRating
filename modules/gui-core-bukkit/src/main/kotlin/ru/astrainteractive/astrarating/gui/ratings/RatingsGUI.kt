@@ -1,14 +1,15 @@
 package ru.astrainteractive.astrarating.gui.ratings
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.event.inventory.InventoryCloseEvent
+import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
+import ru.astrainteractive.astralibs.menu.clicker.Click
+import ru.astrainteractive.astralibs.menu.core.Menu
 import ru.astrainteractive.astralibs.menu.holder.DefaultPlayerHolder
 import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
 import ru.astrainteractive.astralibs.menu.inventory.PaginatedInventoryMenu
@@ -18,21 +19,18 @@ import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.getIndex
 import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isFirstPage
 import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isLastPage
 import ru.astrainteractive.astralibs.menu.slot.InventorySlot
-import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.editMeta
-import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setIndex
-import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setItemStack
-import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setOnClickListener
 import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.feature.allrating.AllRatingsComponent
 import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
 import ru.astrainteractive.astrarating.gui.ratings.di.RatingsGUIDependencies
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
-import ru.astrainteractive.astrarating.gui.slot.NavigationSlots
-import ru.astrainteractive.astrarating.gui.slot.SlotContext
-import ru.astrainteractive.astrarating.gui.slot.SortSlots
-import ru.astrainteractive.astrarating.gui.util.PlayerHeadUtil
-import ru.astrainteractive.astrarating.gui.util.TimeUtility
+import ru.astrainteractive.astrarating.gui.slot.backPageSlot
+import ru.astrainteractive.astrarating.gui.slot.context.SlotContext
+import ru.astrainteractive.astrarating.gui.slot.nextPageSlot
+import ru.astrainteractive.astrarating.gui.slot.prevPageSlot
+import ru.astrainteractive.astrarating.gui.slot.ratingsSlot
+import ru.astrainteractive.astrarating.gui.slot.ratingsSortSlot
 import ru.astrainteractive.astrarating.gui.util.normalName
 import ru.astrainteractive.astrarating.gui.util.offlinePlayer
 
@@ -53,21 +51,13 @@ internal class RatingsGUI(
         translationContext = translationContext
     )
 
-    private val slotContext = object : SlotContext {
+    private val slotContext = object :
+        SlotContext,
+        KyoriComponentSerializer by translationContext {
         override val translation: PluginTranslation = module.translation
         override val config: EmpireConfig = module.config
+        override val menu: Menu = this@RatingsGUI
     }
-
-    private val navigationSlots = NavigationSlots(
-        slotContext = slotContext,
-        menu = this,
-        translationContext = translationContext
-    )
-
-    private val sortSlots = SortSlots(
-        slotContext = slotContext,
-        translationContext = translationContext
-    )
 
     override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
 
@@ -76,16 +66,16 @@ internal class RatingsGUI(
     override val inventorySize: InventorySize = InventorySize.XL
 
     private val backPageButton
-        get() = navigationSlots.backPageSlot { inventory.close() }
+        get() = slotContext.backPageSlot { inventory.close() }
 
     override val nextPageButton
-        get() = navigationSlots.nextPageSlot
+        get() = slotContext.nextPageSlot
 
     override val prevPageButton
-        get() = navigationSlots.prevPageSlot
+        get() = slotContext.prevPageSlot
 
     private val sortButton: InventorySlot
-        get() = sortSlots.ratingsSortSlot(
+        get() = slotContext.ratingsSortSlot(
             sort = allRatingsComponent.model.value.sort,
             onClick = allRatingsComponent::onSortClicked
         )
@@ -99,11 +89,6 @@ internal class RatingsGUI(
     override fun onInventoryClicked(e: InventoryClickEvent) {
         super.onInventoryClicked(e)
         e.isCancelled = true
-    }
-
-    override fun onInventoryClosed(it: InventoryCloseEvent) {
-        super.onInventoryClosed(it)
-        allRatingsComponent.cancel()
     }
 
     private fun setManageButtons() {
@@ -139,55 +124,20 @@ internal class RatingsGUI(
         for (i in 0 until pageContext.maxItemsPerPage) {
             val index = pageContext.getIndex(i)
             val userAndRating = model.userRatings.getOrNull(index) ?: continue
-            InventorySlot.Builder()
-                .setIndex(i)
-                .setItemStack(PlayerHeadUtil.getHead(userAndRating.userDTO.normalName))
-                .editMeta {
-                    val color = when {
-                        userAndRating.rating > 0 -> translation.positiveColor.raw
-                        else -> translation.negativeColor.raw
-                    }
-                    displayName(
-                        translationContext.toComponent(
-                            translation.playerNameColor.raw + userAndRating.userDTO.normalName
-                        )
-                    )
-                    buildList {
-                        if (config.gui.showFirstConnection) {
-                            val component = translationContext.toComponent(
-                                "${translation.firstConnection.raw} ${
-                                    TimeUtility.formatToString(
-                                        time = userAndRating.userDTO.offlinePlayer.firstPlayed,
-                                        format = config.gui.format
-                                    )
-                                }"
-                            )
-                            add(component)
-                        }
-                        if (config.gui.showLastConnection) {
-                            val component = translationContext.toComponent(
-                                "${translation.lastConnection.raw} ${
-                                    TimeUtility.formatToString(
-                                        time = userAndRating.userDTO.offlinePlayer.lastPlayed,
-                                        format = config.gui.format
-                                    )
-                                }"
-                            )
-                            add(component)
-                        }
-                        translationContext
-                            .toComponent("${translation.rating.raw}: ${color}${userAndRating.rating}")
-                            .run(::add)
-                    }.run(::lore)
-                }
-                .setOnClickListener {
+            slotContext.ratingsSlot(
+                index = i,
+                firstPlayed = userAndRating.userDTO.offlinePlayer.firstPlayed,
+                lastPlayed = userAndRating.userDTO.offlinePlayer.lastPlayed,
+                rating = userAndRating.rating,
+                playerName = userAndRating.userDTO.normalName,
+                click = Click {
                     val route = GuiRouter.Route.PlayerRating(
                         executor = playerHolder.player,
                         selectedPlayerName = userAndRating.userDTO.minecraftName
                     )
                     router.navigate(route)
                 }
-                .build().setInventorySlot()
+            ).setInventorySlot()
         }
     }
 }
