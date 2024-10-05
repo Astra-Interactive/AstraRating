@@ -19,8 +19,8 @@ internal class CheckValidatorImpl(
             ?.maxPermissionSize(RatingPermission.SinglePlayerPerDay)
             ?: config.maxRatingPerPlayer
         val votedOnPlayerAmount = playerOnPlayerCounterRepository.countPlayerOnPlayerDayRated(
-            creatorName = check.creator.name,
-            ratedName = check.rated?.name ?: error("Rated player doesn't have a name!")
+            creatorUUID = check.creator.uuid,
+            ratedUUID = check.rated?.uuid ?: error("Rated player doesn't have a name!")
         )
         return votedOnPlayerAmount < maxVotePerPlayer
     }
@@ -29,7 +29,7 @@ internal class CheckValidatorImpl(
         val maxVotesPerDay = check.playerModel.permissible
             ?.maxPermissionSize(RatingPermission.MaxRatePerDay)
             ?: config.maxRatingPerDay
-        val todayVotedAmount = playerTotalRatingRepository.countPlayerTotalDayRated(check.playerModel.name)
+        val todayVotedAmount = playerTotalRatingRepository.countPlayerTotalDayRated(check.playerModel.uuid)
         return todayVotedAmount < maxVotesPerDay
     }
 

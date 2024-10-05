@@ -10,15 +10,20 @@ import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUse
 import ru.astrainteractive.astrarating.model.UserRatingsSort
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.util.next
+import java.util.UUID
 
 internal class DefaultPlayerRatingsComponent(
     playerName: String,
+    playerUUID: UUID,
     private val dbApi: RatingDBApi,
     private val dispatchers: KotlinDispatchers,
     private val sortRatingUseCase: SortRatingUseCase
 ) : PlayerRatingsComponent, CoroutineFeature by CoroutineFeature.Default(dispatchers.Main) {
     override val model = MutableStateFlow(
-        PlayerRatingsComponent.Model(playerName = playerName)
+        PlayerRatingsComponent.Model(
+            playerName = playerName,
+            playerUUID = playerUUID
+        )
     )
 
     override fun onSortClicked() {
@@ -50,8 +55,7 @@ internal class DefaultPlayerRatingsComponent(
     private fun reload() {
         launch(dispatchers.IO) {
             model.update { it.copy(isLoading = true) }
-            val playerName = model.value.playerName
-            val userRatings = dbApi.fetchUserRatings(playerName)
+            val userRatings = dbApi.fetchUserRatings(model.value.playerUUID)
                 .onFailure(Throwable::printStackTrace)
                 .getOrDefault(emptyList())
             model.update {

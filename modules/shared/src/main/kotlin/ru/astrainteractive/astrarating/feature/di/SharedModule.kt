@@ -13,13 +13,18 @@ import ru.astrainteractive.astrarating.feature.playerrating.presentation.Default
 import ru.astrainteractive.astrarating.feature.playerrating.presentation.PlayerRatingsComponent
 import ru.astrainteractive.klibs.kstorage.api.Krate
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
+import java.util.UUID
 
 interface SharedModule {
     val lifecycle: Lifecycle
 
     val changeRatingModule: ChangeRatingModule
 
-    fun createPlayerRatingsComponent(playerName: String): PlayerRatingsComponent
+    fun createPlayerRatingsComponent(
+        playerName: String,
+        playerUUID: UUID
+    ): PlayerRatingsComponent
+
     fun createAllRatingsComponent(): AllRatingsComponent
 
     class Default(
@@ -43,9 +48,10 @@ interface SharedModule {
             )
         }
 
-        override fun createPlayerRatingsComponent(playerName: String): PlayerRatingsComponent {
+        override fun createPlayerRatingsComponent(playerName: String, playerUUID: UUID): PlayerRatingsComponent {
             return DefaultPlayerRatingsComponent(
                 playerName = playerName,
+                playerUUID = playerUUID,
                 dbApi = apiRatingModule.ratingDBApi,
                 dispatchers = dispatchers,
                 sortRatingUseCase = SortRatingUseCaseImpl()

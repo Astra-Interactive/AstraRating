@@ -35,7 +35,6 @@ class AuctionsTests {
         get() = UserModel(
             minecraftUUID = UUID.randomUUID(),
             minecraftName = UUID.randomUUID().toString(),
-            discordID = UUID.randomUUID().toString(),
         )
 
     @AfterTest

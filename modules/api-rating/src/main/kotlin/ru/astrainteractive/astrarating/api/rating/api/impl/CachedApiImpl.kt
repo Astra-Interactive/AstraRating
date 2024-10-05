@@ -17,7 +17,7 @@ internal class CachedApiImpl(
         maximumSize = 100L,
         coroutineScope = scope,
         update = { playerData ->
-            val rating = databaseApi.fetchUserRatings(playerData.name).getOrNull()?.sumOf {
+            val rating = databaseApi.fetchUserRatings(playerData.uuid).getOrNull()?.sumOf {
                 it.rating
             } ?: 0
             RatingData(rating)

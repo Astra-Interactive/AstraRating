@@ -33,6 +33,7 @@ import ru.astrainteractive.astrarating.gui.slot.ratingsSlot
 import ru.astrainteractive.astrarating.gui.slot.ratingsSortSlot
 import ru.astrainteractive.astrarating.gui.util.normalName
 import ru.astrainteractive.astrarating.gui.util.offlinePlayer
+import java.util.UUID
 
 internal class RatingsGUI(
     player: Player,
@@ -133,7 +134,8 @@ internal class RatingsGUI(
                 click = Click {
                     val route = GuiRouter.Route.PlayerRating(
                         executor = playerHolder.player,
-                        selectedPlayerName = userAndRating.userDTO.minecraftName
+                        selectedPlayerName = userAndRating.userDTO.minecraftName,
+                        selectedPlayerUUID = userAndRating.userDTO.minecraftUUID.let(UUID::fromString)
                     )
                     router.navigate(route)
                 }

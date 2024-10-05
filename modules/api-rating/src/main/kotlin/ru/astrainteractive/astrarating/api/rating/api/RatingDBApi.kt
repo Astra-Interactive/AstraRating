@@ -5,13 +5,14 @@ import ru.astrainteractive.astrarating.dto.RatingType
 import ru.astrainteractive.astrarating.dto.UserDTO
 import ru.astrainteractive.astrarating.dto.UserRatingDTO
 import ru.astrainteractive.astrarating.model.UserModel
+import java.util.UUID
 
 interface RatingDBApi {
     /**
      * Select user
-     * @param playerName - name of the player
+     * @param playerUUID - name of the player
      */
-    suspend fun selectUser(playerName: String): Result<UserDTO>
+    suspend fun selectUser(playerUUID: UUID): Result<UserDTO>
 
     /**
      * Update user in database
@@ -49,9 +50,9 @@ interface RatingDBApi {
 
     /**
      * Fetch user rating values
-     * @param playerName - name of the player
+     * @param playerUUID - uuid of the player
      */
-    suspend fun fetchUserRatings(playerName: String): Result<List<UserRatingDTO>>
+    suspend fun fetchUserRatings(playerUUID: UUID): Result<List<UserRatingDTO>>
 
     /**
      * Fetch users overall ratings
@@ -60,17 +61,17 @@ interface RatingDBApi {
 
     /**
      * Count how much player rated during past 24h
-     * @param playerName name of the player
+     * @param playerUUID uuid of the player
      */
-    suspend fun countPlayerTotalDayRated(playerName: String): Result<Long>
+    suspend fun countPlayerTotalDayRated(playerUUID: UUID): Result<Long>
 
     /**
-     * Count how much player [playerName] reated on [ratedPlayerName] during 24h
-     * @param playerName - name of executor
-     * @param ratedPlayerName - name of rated player
+     * Count how much player [playerUUID] rated on [ratedPlayerUUID] during 24h
+     * @param playerUUID - uuid of executor
+     * @param ratedPlayerUUID - uuid of rated player
      */
     suspend fun countPlayerOnPlayerDayRated(
-        playerName: String,
-        ratedPlayerName: String
+        playerUUID: UUID,
+        ratedPlayerUUID: UUID
     ): Result<Long>
 }
