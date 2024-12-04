@@ -10,7 +10,7 @@ driver-jdbc = "3.47.1.0" # https://github.com/xerial/sqlite-jdbc
 driver-mysql = "8.0.33" # https://github.com/mysql/mysql-connector-j
 
 # klibs
-klibs-gradleplugin = "1.4.0" # https://github.com/makeevrserg/gradle-plugin
+klibs-gradleplugin = "1.5.0-alpha02" # https://github.com/makeevrserg/gradle-plugin
 klibs-mikro = "1.8.8" # https://github.com/makeevrserg/klibs.mikro
 klibs-kdi = "1.4.8" # https://github.com/makeevrserg/klibs.kdi
 klibs-kstorage = "3.2.0" # https://github.com/makeevrserg/klibs.kstorage
