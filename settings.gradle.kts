@@ -41,7 +41,7 @@ dependencyResolutionManagement {
 }
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 rootProject.name = "AstraRating"
-include("spigot")
+include(":instances:bukkit")
 // modules
 include("modules:db-rating")
 include("modules:api-rating")
