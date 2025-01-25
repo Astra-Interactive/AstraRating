@@ -1,5 +1,6 @@
 package ru.astrainteractive.astrarating.gui.loading
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
@@ -49,9 +50,9 @@ internal class LoadingIndicator(
         job = null
     }
 
-    suspend fun display() {
+    suspend fun display(scope: CoroutineScope) {
         stop()
-        job = menu.menuScope.launch {
+        job = scope.launch {
             while (isActive) {
                 render()
                 delay(100L)

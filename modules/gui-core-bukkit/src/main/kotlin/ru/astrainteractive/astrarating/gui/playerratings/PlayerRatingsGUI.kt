@@ -114,7 +114,7 @@ internal class PlayerRatingsGUI(
                 if (it.isLoading) {
                     inventory.clear()
                     setManageButtons()
-                    loadingIndicator.display()
+                    loadingIndicator.display(menuScope)
                 } else {
                     loadingIndicator.stop()
                     render()

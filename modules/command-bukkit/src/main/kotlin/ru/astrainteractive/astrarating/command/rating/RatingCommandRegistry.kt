@@ -3,7 +3,7 @@ package ru.astrainteractive.astrarating.command.rating
 import kotlinx.coroutines.CoroutineScope
 import org.bukkit.plugin.java.JavaPlugin
 import ru.astrainteractive.astralibs.command.api.error.ErrorHandler
-import ru.astrainteractive.astralibs.command.api.util.PluginExt.registerCommand
+import ru.astrainteractive.astralibs.command.api.util.PluginExt.setCommandExecutor
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
@@ -24,7 +24,7 @@ internal class RatingCommandRegistry(
 ) : Logger by JUtiltLogger("AstraRating-RatingCommandRegistry") {
 
     fun register() {
-        plugin.registerCommand(
+        plugin.setCommandExecutor(
             alias = "arating",
             commandParser = RatingCommandParser(),
             commandExecutor = RatingCommandExecutor(

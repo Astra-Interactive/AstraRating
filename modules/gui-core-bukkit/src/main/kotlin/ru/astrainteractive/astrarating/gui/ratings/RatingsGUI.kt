@@ -105,7 +105,7 @@ internal class RatingsGUI(
                 if (it.isLoading) {
                     inventory.clear()
                     setManageButtons()
-                    loadingIndicator.display()
+                    loadingIndicator.display(menuScope)
                 } else {
                     loadingIndicator.stop()
                     render()
