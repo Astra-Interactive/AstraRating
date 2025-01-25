@@ -11,7 +11,7 @@ dependencies {
     implementation(libs.minecraft.astralibs.exposed)
     implementation(libs.klibs.mikro.core)
     implementation(libs.klibs.kstorage)
-    implementation("io.github.reactivecircus.cache4k:cache4k-jvm:0.13.0")
+    implementation("io.github.reactivecircus.cache4k:cache4k-jvm:0.14.0")
     // Test
     testImplementation(libs.bundles.testing.kotlin)
     testImplementation(libs.tests.kotlin.test)
