@@ -9,7 +9,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.menu.clicker.Click
-import ru.astrainteractive.astralibs.menu.core.Menu
 import ru.astrainteractive.astralibs.menu.holder.DefaultPlayerHolder
 import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
 import ru.astrainteractive.astralibs.menu.inventory.PaginatedInventoryMenu
@@ -21,7 +20,8 @@ import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isLastPa
 import ru.astrainteractive.astralibs.menu.slot.InventorySlot
 import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.core.PluginTranslation
-import ru.astrainteractive.astrarating.feature.allrating.AllRatingsComponent
+import ru.astrainteractive.astrarating.feature.allrating.AllRatingsFeature
+import ru.astrainteractive.astrarating.feature.allrating.model.AllRatingsState
 import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.gui.slot.backPageSlot
@@ -38,7 +38,7 @@ import java.util.UUID
 @Suppress("LongParameterList")
 internal class RatingsGUI(
     player: Player,
-    private val allRatingsComponent: AllRatingsComponent,
+    private val allRatingsComponent: AllRatingsFeature,
     private val router: GuiRouter,
     private val dispatchers: KotlinDispatchers,
     private val translation: PluginTranslation,
@@ -119,7 +119,7 @@ internal class RatingsGUI(
 
     @Suppress("LongMethod")
     override fun render() {
-        val model: AllRatingsComponent.Model = allRatingsComponent.model.value
+        val model: AllRatingsState = allRatingsComponent.model.value
         inventory.clear()
         setManageButtons()
         sortButton.setInventorySlot()

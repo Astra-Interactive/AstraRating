@@ -13,7 +13,7 @@ import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.util.next
 import java.util.UUID
 
- class PlayerRatingsFeature(
+class PlayerRatingsFeature internal constructor(
     playerName: String,
     playerUUID: UUID,
     private val dbApi: RatingDBApi,

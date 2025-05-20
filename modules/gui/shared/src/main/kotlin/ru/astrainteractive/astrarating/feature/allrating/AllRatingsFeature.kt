@@ -5,17 +5,18 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.astrainteractive.astralibs.async.CoroutineFeature
 import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsCachedRepository
+import ru.astrainteractive.astrarating.feature.allrating.model.AllRatingsState
 import ru.astrainteractive.astrarating.model.UsersRatingsSort
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.util.next
 
-internal class DefaultAllRatingsComponent(
+class AllRatingsFeature internal constructor(
     private val repository: AllRatingsCachedRepository,
     dispatchers: KotlinDispatchers
-) : AllRatingsComponent, CoroutineFeature by CoroutineFeature.Default(dispatchers.Main) {
-    override val model = MutableStateFlow(AllRatingsComponent.Model())
+) : CoroutineFeature by CoroutineFeature.Default(dispatchers.Main) {
+    val model = MutableStateFlow(AllRatingsState())
 
-    override fun onSortClicked() {
+    fun onSortClicked() {
         val nextSort = model.value.sort.next(UsersRatingsSort.entries.toTypedArray())
         val userRatings = model.value.userRatings
         val sortedUserRatings = if (nextSort == UsersRatingsSort.ASC) {

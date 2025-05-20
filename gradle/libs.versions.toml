@@ -13,7 +13,6 @@ driver-mysql = "8.0.33" # https://github.com/mysql/mysql-connector-j
 klibs-gradleplugin = "1.5.0-alpha02" # https://github.com/makeevrserg/gradle-plugin
 klibs-mikro = "1.8.18" # https://github.com/makeevrserg/klibs.mikro
 klibs-kstorage = "4.0.0" # https://github.com/makeevrserg/klibs.kstorage
-klibs-paging = "2.4.0" # https://github.com/makeevrserg/klibs.paging
 
 # Minecraft
 minecraft-velocity = "4.0.0-SNAPSHOT" # https://github.com/PaperMC/Velocity
@@ -66,7 +65,6 @@ minecraft-mockbukkit = { module = "com.github.MockBukkit:MockBukkit", version.re
 # klibs
 klibs-mikro-core = { module = "ru.astrainteractive.klibs:mikro-core", version.ref = "klibs-mikro" }
 klibs-kstorage = { module = "ru.astrainteractive.klibs:kstorage", version.ref = "klibs-kstorage" }
-klibs-paging = { module = "ru.astrainteractive.klibs:paging", version.ref = "klibs-paging" }
 
 # AstraLibs
 minecraft-astralibs-exposed = { module = "ru.astrainteractive.astralibs:exposed", version.ref = "minecraft-astralibs" }

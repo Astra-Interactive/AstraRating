@@ -4,8 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
 import ru.astrainteractive.astrarating.core.EmpireConfig
-import ru.astrainteractive.astrarating.feature.allrating.AllRatingsComponent
-import ru.astrainteractive.astrarating.feature.allrating.DefaultAllRatingsComponent
+import ru.astrainteractive.astrarating.feature.allrating.AllRatingsFeature
 import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsCachedRepositoryImpl
 import ru.astrainteractive.astrarating.feature.changerating.di.ChangeRatingModule
 import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUseCaseImpl
@@ -22,9 +21,9 @@ interface SharedModule {
     fun createPlayerRatingsComponent(
         playerName: String,
         playerUUID: UUID
-    ): PlayerRatingsComponent
+    ): PlayerRatingsFeature
 
-    fun createAllRatingsComponent(): AllRatingsComponent
+    fun createAllRatingsComponent(): AllRatingsFeature
 
     class Default(
         private val apiRatingModule: ApiRatingModule,
@@ -47,7 +46,7 @@ interface SharedModule {
             )
         }
 
-        override fun createPlayerRatingsComponent(playerName: String, playerUUID: UUID): PlayerRatingsComponent {
+        override fun createPlayerRatingsComponent(playerName: String, playerUUID: UUID): PlayerRatingsFeature {
             return PlayerRatingsFeature(
                 playerName = playerName,
                 playerUUID = playerUUID,
@@ -57,8 +56,8 @@ interface SharedModule {
             )
         }
 
-        override fun createAllRatingsComponent(): AllRatingsComponent {
-            return DefaultAllRatingsComponent(
+        override fun createAllRatingsComponent(): AllRatingsFeature {
+            return AllRatingsFeature(
                 repository = allRatingsRepository,
                 dispatchers = dispatchers
             )
