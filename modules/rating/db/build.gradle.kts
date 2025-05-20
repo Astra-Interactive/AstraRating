@@ -19,5 +19,5 @@ dependencies {
     implementation(libs.exposed.jdbc)
     implementation("mysql:mysql-connector-java:8.0.33")
     // Local
-    implementation(projects.modules.core)
+    implementation(projects.modules.core.api)
 }

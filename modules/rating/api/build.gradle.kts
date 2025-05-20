@@ -7,18 +7,18 @@ plugins {
 dependencies {
     // Kotlin
     implementation(libs.bundles.kotlin)
-    // AstraLibs
-    implementation(libs.minecraft.astralibs.core)
     // klibs
     implementation(libs.klibs.mikro.core)
+    implementation(libs.minecraft.astralibs.core)
     implementation(libs.klibs.kstorage)
-    // Bukkit
-    compileOnly(libs.minecraft.paper.api)
+    // Exposed
+    implementation(libs.exposed.core)
+    implementation(libs.exposed.dao)
     // Test
     testImplementation(libs.bundles.testing.kotlin)
     testImplementation(libs.tests.kotlin.test)
+    testImplementation(libs.minecraft.astralibs.exposed)
     // Local
-    implementation(projects.modules.apiRating)
-    implementation(projects.modules.dbRating)
-    implementation(projects.modules.core)
+    implementation(projects.modules.rating.db)
+    implementation(projects.modules.core.api)
 }

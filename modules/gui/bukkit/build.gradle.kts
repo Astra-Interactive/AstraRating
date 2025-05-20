@@ -18,8 +18,8 @@ dependencies {
     implementation(libs.minecraft.astralibs.command.bukkit)
     implementation(libs.klibs.mikro.core)
     // Local
-    implementation(projects.modules.core)
-    implementation(projects.modules.apiRating)
-    implementation(projects.modules.dbRating)
-    implementation(projects.modules.shared)
+    implementation(projects.modules.core.api)
+    implementation(projects.modules.rating.api)
+    implementation(projects.modules.rating.db)
+    implementation(projects.modules.gui.shared)
 }
