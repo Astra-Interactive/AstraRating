@@ -7,34 +7,35 @@ import ru.astrainteractive.astralibs.async.CoroutineFeature
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
 import ru.astrainteractive.astrarating.dto.UserRatingDTO
 import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUseCase
+import ru.astrainteractive.astrarating.feature.playerrating.presentation.model.PlayerRatingsState
 import ru.astrainteractive.astrarating.model.UserRatingsSort
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.util.next
 import java.util.UUID
 
-internal class DefaultPlayerRatingsComponent(
+ class PlayerRatingsFeature(
     playerName: String,
     playerUUID: UUID,
     private val dbApi: RatingDBApi,
     private val dispatchers: KotlinDispatchers,
     private val sortRatingUseCase: SortRatingUseCase
-) : PlayerRatingsComponent, CoroutineFeature by CoroutineFeature.Default(dispatchers.Main) {
-    override val model = MutableStateFlow(
-        PlayerRatingsComponent.Model(
+) : CoroutineFeature by CoroutineFeature.Default(dispatchers.Main) {
+    val state = MutableStateFlow(
+        value = PlayerRatingsState(
             playerName = playerName,
             playerUUID = playerUUID
         )
     )
 
-    override fun onSortClicked() {
+    fun onSortClicked() {
         launch(dispatchers.IO) {
-            val sort = model.value.sort.next(UserRatingsSort.entries.toTypedArray())
+            val sort = state.value.sort.next(UserRatingsSort.entries.toTypedArray())
             val input = SortRatingUseCase.Input(
-                ratings = model.value.allRatings,
+                ratings = state.value.allRatings,
                 sort = sort
             )
             val result = sortRatingUseCase.invoke(input)
-            model.update {
+            state.update {
                 it.copy(
                     sort = sort,
                     allRatings = result.ratings
@@ -43,26 +44,26 @@ internal class DefaultPlayerRatingsComponent(
         }
     }
 
-    override fun onDeleteClicked(item: UserRatingDTO) {
+    fun onDeleteClicked(item: UserRatingDTO) {
         launch(dispatchers.IO) {
-            model.update { it.copy(isLoading = true) }
+            state.update { it.copy(isLoading = true) }
             dbApi.deleteUserRating(item)
-            model.update { it.copy(isLoading = false) }
+            state.update { it.copy(isLoading = false) }
             reload()
         }
     }
 
     private fun reload() {
         launch(dispatchers.IO) {
-            model.update { it.copy(isLoading = true) }
-            val userRatings = dbApi.fetchUserRatings(model.value.playerUUID)
+            state.update { it.copy(isLoading = true) }
+            val userRatings = dbApi.fetchUserRatings(state.value.playerUUID)
                 .onFailure(Throwable::printStackTrace)
                 .getOrDefault(emptyList())
-            model.update {
+            state.update {
                 it.copy(allRatings = userRatings)
             }
             onSortClicked()
-            model.update { it.copy(isLoading = false) }
+            state.update { it.copy(isLoading = false) }
         }
     }
 

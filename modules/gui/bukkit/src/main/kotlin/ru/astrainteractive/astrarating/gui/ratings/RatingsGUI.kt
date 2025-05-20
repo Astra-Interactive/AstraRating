@@ -55,13 +55,12 @@ internal class RatingsGUI(
         translationContext = translationContext
     )
 
-    private val slotContext = object :
-        SlotContext,
-        KyoriComponentSerializer by translationContext {
-        override val translation: PluginTranslation = this@RatingsGUI.translation
-        override val config: EmpireConfig = this@RatingsGUI.config
-        override val menu: Menu = this@RatingsGUI
-    }
+    private val slotContext = SlotContext(
+        translation = translation,
+        config = config,
+        menu = this,
+        kyoriComponentSerializer = translationContext
+    )
 
     override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
 

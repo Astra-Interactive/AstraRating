@@ -9,8 +9,7 @@ import ru.astrainteractive.astrarating.feature.allrating.DefaultAllRatingsCompon
 import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsCachedRepositoryImpl
 import ru.astrainteractive.astrarating.feature.changerating.di.ChangeRatingModule
 import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUseCaseImpl
-import ru.astrainteractive.astrarating.feature.playerrating.presentation.DefaultPlayerRatingsComponent
-import ru.astrainteractive.astrarating.feature.playerrating.presentation.PlayerRatingsComponent
+import ru.astrainteractive.astrarating.feature.playerrating.presentation.PlayerRatingsFeature
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import java.util.UUID
@@ -49,7 +48,7 @@ interface SharedModule {
         }
 
         override fun createPlayerRatingsComponent(playerName: String, playerUUID: UUID): PlayerRatingsComponent {
-            return DefaultPlayerRatingsComponent(
+            return PlayerRatingsFeature(
                 playerName = playerName,
                 playerUUID = playerUUID,
                 dbApi = apiRatingModule.ratingDBApi,
