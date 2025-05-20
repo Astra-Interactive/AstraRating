@@ -83,7 +83,7 @@ interface RootModule {
             GuiModule.Default(
                 coreModule = coreModule,
                 apiRatingModule = apiRatingModule,
-                translationContext = bukkitModule.kyoriComponentSerializer.cachedValue,
+                kyoriKrate = bukkitModule.kyoriComponentSerializer,
                 sharedModule = sharedModule
             )
         }

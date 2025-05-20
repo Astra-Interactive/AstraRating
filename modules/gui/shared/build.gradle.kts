@@ -12,6 +12,7 @@ dependencies {
     // klibs
     implementation(libs.klibs.mikro.core)
     implementation(libs.klibs.kstorage)
+    implementation(libs.klibs.paging)
     // Bukkit
     compileOnly(libs.minecraft.paper.api)
     // Test

@@ -9,11 +9,12 @@ import ru.astrainteractive.astrarating.feature.di.SharedModule
 import ru.astrainteractive.astrarating.gui.di.GuiDependencies
 import ru.astrainteractive.astrarating.gui.playerratings.PlayerRatingsGUI
 import ru.astrainteractive.astrarating.gui.ratings.RatingsGUI
+import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 
 internal class GuiRouterImpl(
     private val coreModule: CoreModule,
     private val apiRatingModule: ApiRatingModule,
-    private val translationContext: KyoriComponentSerializer,
+    private val kyoriKrate: CachedKrate<KyoriComponentSerializer>,
     private val sharedModule: SharedModule
 ) : GuiRouter {
     private val scope = coreModule.scope
@@ -22,7 +23,7 @@ internal class GuiRouterImpl(
         get() = GuiDependencies.Default(
             coreModule = coreModule,
             apiRatingModule = apiRatingModule,
-            translationContext = translationContext
+            translationContext = kyoriKrate.cachedValue // todo
         )
 
     override fun navigate(route: GuiRouter.Route) {

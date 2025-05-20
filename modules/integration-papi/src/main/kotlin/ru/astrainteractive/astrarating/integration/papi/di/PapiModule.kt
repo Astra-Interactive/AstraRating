@@ -52,7 +52,7 @@ interface PapiModule {
                     if (placeholderFacade.isRegistered()) placeholderFacade.unregister()
                     placeholderFacade.register()
                 }
-                papiConfiguration.loadAndGet()
+                papiConfiguration.getValue()
             },
             onDisable = {
                 if (isPapiEnabled) {

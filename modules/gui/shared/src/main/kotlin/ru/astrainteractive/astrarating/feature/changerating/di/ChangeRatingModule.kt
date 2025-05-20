@@ -10,7 +10,7 @@ import ru.astrainteractive.astrarating.feature.changerating.domain.check.CheckVa
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCase
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCaseImpl
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.InsertUserUseCaseImpl
-import ru.astrainteractive.klibs.kstorage.api.Krate
+import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 interface ChangeRatingModule {
@@ -18,7 +18,7 @@ interface ChangeRatingModule {
 
     class Default(
         dbApi: RatingDBApi,
-        empireConfigKrate: Krate<EmpireConfig>,
+        empireConfigKrate: CachedKrate<EmpireConfig>,
         dispatchers: KotlinDispatchers,
     ) : ChangeRatingModule {
         override val addRatingUseCase: AddRatingUseCase = AddRatingUseCaseImpl(

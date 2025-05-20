@@ -6,6 +6,7 @@ import ru.astrainteractive.astrarating.core.di.CoreModule
 import ru.astrainteractive.astrarating.feature.di.SharedModule
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.gui.router.GuiRouterImpl
+import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 
 interface GuiModule {
     val router: GuiRouter
@@ -13,13 +14,13 @@ interface GuiModule {
     class Default(
         coreModule: CoreModule,
         apiRatingModule: ApiRatingModule,
-        translationContext: KyoriComponentSerializer,
+        kyoriKrate: CachedKrate<KyoriComponentSerializer>,
         sharedModule: SharedModule
     ) : GuiModule {
         override val router: GuiRouter = GuiRouterImpl(
             coreModule = coreModule,
             apiRatingModule = apiRatingModule,
-            translationContext = translationContext,
+            kyoriKrate = kyoriKrate,
             sharedModule = sharedModule
         )
     }
