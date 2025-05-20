@@ -23,7 +23,6 @@ import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.feature.allrating.AllRatingsComponent
 import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
-import ru.astrainteractive.astrarating.gui.ratings.di.RatingsGUIDependencies
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.gui.slot.backPageSlot
 import ru.astrainteractive.astrarating.gui.slot.context.SlotContext
@@ -33,15 +32,19 @@ import ru.astrainteractive.astrarating.gui.slot.ratingsSlot
 import ru.astrainteractive.astrarating.gui.slot.ratingsSortSlot
 import ru.astrainteractive.astrarating.gui.util.normalName
 import ru.astrainteractive.astrarating.gui.util.offlinePlayer
+import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import java.util.UUID
 
+@Suppress("LongParameterList")
 internal class RatingsGUI(
     player: Player,
-    private val module: RatingsGUIDependencies,
     private val allRatingsComponent: AllRatingsComponent,
-    private val router: GuiRouter
-) : PaginatedInventoryMenu(),
-    RatingsGUIDependencies by module {
+    private val router: GuiRouter,
+    private val dispatchers: KotlinDispatchers,
+    private val translation: PluginTranslation,
+    private val config: EmpireConfig,
+    private val translationContext: KyoriComponentSerializer,
+) : PaginatedInventoryMenu() {
 
     override val childComponents: List<CoroutineScope>
         get() = listOf(allRatingsComponent)
@@ -55,8 +58,8 @@ internal class RatingsGUI(
     private val slotContext = object :
         SlotContext,
         KyoriComponentSerializer by translationContext {
-        override val translation: PluginTranslation = module.translation
-        override val config: EmpireConfig = module.config
+        override val translation: PluginTranslation = this@RatingsGUI.translation
+        override val config: EmpireConfig = this@RatingsGUI.config
         override val menu: Menu = this@RatingsGUI
     }
 

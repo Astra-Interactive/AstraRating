@@ -27,7 +27,6 @@ import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.core.RatingPermission
 import ru.astrainteractive.astrarating.feature.playerrating.presentation.PlayerRatingsComponent
 import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
-import ru.astrainteractive.astrarating.gui.playerratings.di.PlayerRatingGuiDependencies
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.gui.slot.backPageSlot
 import ru.astrainteractive.astrarating.gui.slot.context.SlotContext
@@ -38,14 +37,19 @@ import ru.astrainteractive.astrarating.gui.slot.playerRatingsSortSlot
 import ru.astrainteractive.astrarating.gui.slot.prevPageSlot
 import ru.astrainteractive.astrarating.gui.util.normalName
 import ru.astrainteractive.astrarating.gui.util.offlinePlayer
+import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
+@Suppress("LongParameterList")
 internal class PlayerRatingsGUI(
     selectedPlayerName: String,
     private val player: Player,
-    private val module: PlayerRatingGuiDependencies,
+    private val dispatchers: KotlinDispatchers,
+    private val translation: PluginTranslation,
+    private val config: EmpireConfig,
+    private val translationContext: KyoriComponentSerializer,
     private val playerRatingsComponent: PlayerRatingsComponent,
-    private val router: GuiRouter
-) : PaginatedInventoryMenu(), PlayerRatingGuiDependencies by module {
+    private val router: GuiRouter,
+) : PaginatedInventoryMenu() {
     override val childComponents: List<CoroutineScope>
         get() = listOf(playerRatingsComponent)
 
@@ -56,8 +60,8 @@ internal class PlayerRatingsGUI(
     )
 
     private val slotContext = object : SlotContext, KyoriComponentSerializer by translationContext {
-        override val translation: PluginTranslation = module.translation
-        override val config: EmpireConfig = module.config
+        override val translation: PluginTranslation = this@PlayerRatingsGUI.translation
+        override val config: EmpireConfig = this@PlayerRatingsGUI.config
         override val menu: Menu = this@PlayerRatingsGUI
     }
 

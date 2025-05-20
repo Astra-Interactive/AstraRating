@@ -16,16 +16,16 @@ interface EventModule {
         apiRatingModule: ApiRatingModule,
         bukkitModule: BukkitModule
     ) : EventModule {
-        private val dependencies by lazy {
-            EventDependencies.Default(
-                coreModule = coreModule,
-                apiRatingModule = apiRatingModule,
-                bukkitModule = bukkitModule
-            )
-        }
 
         private val killEvent by lazy {
-            KillEventListener(dependencies)
+            KillEventListener(
+                configDependency = coreModule.config.cachedValue,
+                scope = coreModule.scope,
+                apiDependency = apiRatingModule.ratingDBApi,
+                dispatchers = coreModule.dispatchers,
+                translationContext = bukkitModule.kyoriComponentSerializer.cachedValue,
+                translationDependency = coreModule.translation.cachedValue
+            )
         }
 
         private val events: List<EventListener>
