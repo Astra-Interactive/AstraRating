@@ -82,8 +82,7 @@ interface RootModule {
         override val guiModule: GuiModule by lazy {
             GuiModule.Default(
                 coreModule = coreModule,
-                apiRatingModule = apiRatingModule,
-                translationContext = bukkitModule.kyoriComponentSerializer.cachedValue,
+                kyoriKrate = bukkitModule.kyoriComponentSerializer,
                 sharedModule = sharedModule
             )
         }

@@ -1,18 +1,27 @@
 package ru.astrainteractive.astrarating.event.kill
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.PlayerDeathEvent
 import ru.astrainteractive.astralibs.event.EventListener
+import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
+import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApiExt.upsertUser
+import ru.astrainteractive.astrarating.core.EmpireConfig
+import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.dto.RatingType
-import ru.astrainteractive.astrarating.event.di.EventDependencies
 import ru.astrainteractive.astrarating.model.UserModel
+import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 internal class KillEventListener(
-    module: EventDependencies
-) : EventDependencies by module,
-    EventListener {
+    val configDependency: EmpireConfig,
+    val scope: CoroutineScope,
+    val apiDependency: RatingDBApi,
+    val dispatchers: KotlinDispatchers,
+    val translationContext: KyoriComponentSerializer,
+    val translationDependency: PluginTranslation
+) : EventListener {
 
     @EventHandler
     fun onPlayerKilledPlayer(e: PlayerDeathEvent) {

@@ -9,6 +9,7 @@ dependencies {
     implementation(libs.bundles.kotlin)
     // Spigot dependencies
     compileOnly(libs.minecraft.paper.api)
+    implementation(libs.klibs.kstorage)
     // AstraLibs
     implementation(libs.minecraft.astralibs.core)
     implementation(libs.minecraft.astralibs.menu.bukkit)
@@ -16,12 +17,9 @@ dependencies {
     implementation(libs.minecraft.astralibs.command)
     implementation(libs.minecraft.astralibs.command.bukkit)
     implementation(libs.klibs.mikro.core)
-    implementation(libs.klibs.kstorage)
     // Local
     implementation(projects.modules.core.api)
-    implementation(projects.modules.core.bukkit)
     implementation(projects.modules.rating.api)
     implementation(projects.modules.rating.db)
     implementation(projects.modules.gui.shared)
-    implementation(projects.modules.gui.bukkit)
 }
