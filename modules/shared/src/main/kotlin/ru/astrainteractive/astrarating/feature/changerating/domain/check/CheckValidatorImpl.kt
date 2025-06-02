@@ -2,15 +2,15 @@ package ru.astrainteractive.astrarating.feature.changerating.domain.check
 
 import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.core.RatingPermission
-import ru.astrainteractive.astrarating.core.util.KrateExt.getValue
 import ru.astrainteractive.astrarating.feature.changerating.data.PlayerOnPlayerCounterRepository
 import ru.astrainteractive.astrarating.feature.changerating.data.PlayerTotalRatingRepository
-import ru.astrainteractive.klibs.kstorage.api.Krate
+import ru.astrainteractive.klibs.kstorage.api.CachedKrate
+import ru.astrainteractive.klibs.kstorage.util.getValue
 
 internal class CheckValidatorImpl(
     private val playerOnPlayerCounterRepository: PlayerOnPlayerCounterRepository,
     private val playerTotalRatingRepository: PlayerTotalRatingRepository,
-    configKrate: Krate<EmpireConfig>
+    configKrate: CachedKrate<EmpireConfig>
 ) : CheckValidator {
     private val config by configKrate
 
