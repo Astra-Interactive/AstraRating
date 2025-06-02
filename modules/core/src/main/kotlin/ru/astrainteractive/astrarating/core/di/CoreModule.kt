@@ -13,7 +13,7 @@ import ru.astrainteractive.astralibs.serialization.YamlStringFormat
 import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.core.di.factory.ConfigKrateFactory
-import ru.astrainteractive.klibs.kstorage.api.flow.StateFlowKrate
+import ru.astrainteractive.klibs.kstorage.api.StateFlowKrate
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import java.io.File
 
@@ -57,8 +57,8 @@ interface CoreModule {
         override val lifecycle: Lifecycle by lazy {
             Lifecycle.Lambda(
                 onReload = {
-                    config.loadAndGet()
-                    translation.loadAndGet()
+                    config.getValue()
+                    translation.getValue()
                 },
                 onDisable = {
                     scope.cancel()

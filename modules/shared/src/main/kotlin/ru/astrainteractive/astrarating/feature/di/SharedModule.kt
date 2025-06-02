@@ -11,7 +11,7 @@ import ru.astrainteractive.astrarating.feature.changerating.di.ChangeRatingModul
 import ru.astrainteractive.astrarating.feature.playerrating.domain.SortRatingUseCaseImpl
 import ru.astrainteractive.astrarating.feature.playerrating.presentation.DefaultPlayerRatingsComponent
 import ru.astrainteractive.astrarating.feature.playerrating.presentation.PlayerRatingsComponent
-import ru.astrainteractive.klibs.kstorage.api.Krate
+import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import java.util.UUID
 
@@ -31,7 +31,7 @@ interface SharedModule {
         private val apiRatingModule: ApiRatingModule,
         private val dispatchers: KotlinDispatchers,
         private val coroutineScope: CoroutineScope,
-        private val empireConfigKrate: Krate<EmpireConfig>,
+        private val empireConfigKrate: CachedKrate<EmpireConfig>,
     ) : SharedModule {
         override val changeRatingModule: ChangeRatingModule by lazy {
             ChangeRatingModule.Default(
