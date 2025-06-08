@@ -5,7 +5,7 @@ package ru.astrainteractive.astrarating.core
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import ru.astrainteractive.astralibs.string.StringDesc
-import ru.astrainteractive.astralibs.string.StringDescExt.replace
+import ru.astrainteractive.astralibs.string.replace
 
 @Serializable
 class PluginTranslation(

@@ -21,7 +21,7 @@ import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isFirstP
 import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isLastPage
 import ru.astrainteractive.astralibs.menu.slot.InventorySlot
 import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissible
-import ru.astrainteractive.astralibs.string.StringDescExt.replace
+import ru.astrainteractive.astralibs.string.replace
 import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.core.RatingPermission
