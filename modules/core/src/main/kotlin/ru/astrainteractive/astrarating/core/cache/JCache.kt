@@ -13,7 +13,7 @@ class JCache<K : Any, V : Any>(
     private val updateAfterAccess: Duration,
     maximumSize: Long,
     private val coroutineScope: CoroutineScope,
-    private val update: suspend CoroutineScope.(K) -> V
+    private val update: suspend CoroutineScope.(K) -> V?
 ) {
     private val limitedDispatcher = Dispatchers.IO.limitedParallelism(1)
     private val cache: Cache<K, Data<V>> = Cache.Builder<K, Data<V>>()
@@ -32,16 +32,20 @@ class JCache<K : Any, V : Any>(
 
     private suspend fun refreshAndGet(key: K) = withContext(limitedDispatcher) {
         val updated = update.invoke(this, key)
-        val data = Data(updated)
-        cache.put(key, data)
-        data.data
+        if (updated != null) {
+            val data = Data(updated)
+            cache.put(key, data)
+            data.data
+        } else {
+            null
+        }
     }
 
     private fun refresh(key: K) = coroutineScope.launch(limitedDispatcher) {
         refreshAndGet(key)
     }
 
-    suspend fun get(key: K): V {
+    suspend fun get(key: K): V? {
         return getIfPresent(key) ?: refreshAndGet(key)
     }
 
