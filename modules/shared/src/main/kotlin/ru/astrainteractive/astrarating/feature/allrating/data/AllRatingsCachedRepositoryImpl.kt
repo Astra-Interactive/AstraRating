@@ -25,7 +25,7 @@ internal class AllRatingsCachedRepositoryImpl(
 
     override suspend fun fetchUsersTotalRating(): List<RatedUserDTO> {
         return withContext(dispatchers.IO) {
-            jcache.get(Unit)
+            jcache.get(Unit).orEmpty()
         }
     }
 
