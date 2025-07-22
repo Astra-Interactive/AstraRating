@@ -2,7 +2,6 @@ package ru.astrainteractive.astrarating.di
 
 import ru.astrainteractive.astralibs.async.DefaultBukkitDispatchers
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
-import ru.astrainteractive.astrarating.LifecyclePlugin
 import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
 import ru.astrainteractive.astrarating.command.di.CommandsModule
 import ru.astrainteractive.astrarating.core.di.CoreModule

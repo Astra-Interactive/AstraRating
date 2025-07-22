@@ -1,5 +1,6 @@
 package ru.astrainteractive.astrarating
 
+import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
 import ru.astrainteractive.astrarating.di.RootModule
 
 class AstraRating : LifecyclePlugin() {

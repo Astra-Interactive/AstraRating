@@ -3,7 +3,7 @@ package ru.astrainteractive.astrarating.api.rating.api.impl
 import kotlinx.coroutines.CoroutineScope
 import ru.astrainteractive.astrarating.api.rating.api.CachedApi
 import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
-import ru.astrainteractive.astrarating.core.cache.JCache
+import ru.astrainteractive.astrarating.core.cache.DefaultKCache
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
@@ -11,7 +11,7 @@ internal class CachedApiImpl(
     private val databaseApi: RatingDBApi,
     scope: CoroutineScope
 ) : CachedApi {
-    private val jcache = JCache<PlayerData, RatingData>(
+    private val jcache = DefaultKCache<PlayerData, RatingData>(
         expiresAfterAccess = 30.seconds,
         updateAfterAccess = 10.seconds,
         maximumSize = 100L,
@@ -38,6 +38,6 @@ internal class CachedApiImpl(
     }
 
     override fun clear() {
-        jcache.clear()
+        jcache.invalidateAll()
     }
 }

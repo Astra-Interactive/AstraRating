@@ -30,7 +30,7 @@ gradle-buildconfig = "5.6.7" # https://github.com/gmazzo/gradle-buildconfig-plug
 
 # Exposed
 exposed = "0.61.0" # https://github.com/JetBrains/Exposed
-
+guava = "33.4.8-jre"
 [libraries]
 # Kotlin
 kotlin-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
@@ -76,6 +76,7 @@ minecraft-astralibs-core-bukkit = { module = "ru.astrainteractive.astralibs:core
 minecraft-astralibs-command = { module = "ru.astrainteractive.astralibs:command", version.ref = "minecraft-astralibs" }
 minecraft-astralibs-command-bukkit = { module = "ru.astrainteractive.astralibs:command-bukkit", version.ref = "minecraft-astralibs" }
 
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
 [bundles]
 exposed = ["exposed-java-time", "exposed-jdbc", "exposed-dao", "exposed-core"]
 minecraft-bukkit = ["minecraft-paper-api", "minecraft-spigot-api", "minecraft-spigot-core", "minecraft-vaultapi", "minecraft-papi"]

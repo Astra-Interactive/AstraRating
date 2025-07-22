@@ -2,23 +2,30 @@ package ru.astrainteractive.astrarating.core.cache
 
 import io.github.reactivecircus.cache4k.Cache
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-class JCache<K : Any, V : Any>(
+interface KCache<K : Any, V : Any> {
+    suspend fun get(key: K): V?
+
+    fun getIfPresent(key: K): V?
+
+    fun invalidateAll()
+}
+
+class DefaultKCache<K : Any, V : Any>(
     expiresAfterAccess: Duration,
-    private val updateAfterAccess: Duration,
+    expireAfterWrite: Duration = Duration.INFINITE,
     maximumSize: Long,
+    private val updateAfterAccess: Duration,
     private val coroutineScope: CoroutineScope,
-    private val update: suspend CoroutineScope.(K) -> V?
-) {
-    private val limitedDispatcher = Dispatchers.IO.limitedParallelism(1)
+    private val update: suspend (K) -> V?
+) : KCache<K, V> {
     private val cache: Cache<K, Data<V>> = Cache.Builder<K, Data<V>>()
         .maximumCacheSize(maximumSize)
         .expireAfterAccess(expiresAfterAccess)
+        .expireAfterWrite(expireAfterWrite)
         .build()
 
     private class Data<T : Any>(val data: T) {
@@ -30,9 +37,9 @@ class JCache<K : Any, V : Any>(
         }
     }
 
-    private suspend fun refreshAndGet(key: K) = withContext(limitedDispatcher) {
-        val updated = update.invoke(this, key)
-        if (updated != null) {
+    private suspend fun refreshAndGet(key: K): V? {
+        val updated = update.invoke(key)
+        return if (updated != null) {
             val data = Data(updated)
             cache.put(key, data)
             data.data
@@ -41,21 +48,21 @@ class JCache<K : Any, V : Any>(
         }
     }
 
-    private fun refresh(key: K) = coroutineScope.launch(limitedDispatcher) {
+    private fun refresh(key: K) = coroutineScope.launch {
         refreshAndGet(key)
     }
 
-    suspend fun get(key: K): V? {
+    override suspend fun get(key: K): V? {
         return getIfPresent(key) ?: refreshAndGet(key)
     }
 
-    fun getIfPresent(key: K): V? {
+    override fun getIfPresent(key: K): V? {
         val cacheData = cache.get(key)
         if (cacheData == null || cacheData.needUpdate(updateAfterAccess)) refresh(key)
         return cacheData?.data
     }
 
-    fun clear() {
+    override fun invalidateAll() {
         cache.invalidateAll()
     }
 }

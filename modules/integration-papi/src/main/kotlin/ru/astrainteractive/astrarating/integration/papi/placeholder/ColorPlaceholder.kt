@@ -2,7 +2,7 @@ package ru.astrainteractive.astrarating.integration.papi.placeholder
 
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
-import ru.astrainteractive.astrarating.core.cache.JCache
+import ru.astrainteractive.astrarating.core.cache.DefaultKCache
 import ru.astrainteractive.astrarating.integration.papi.coloring.ColoringUtil
 import ru.astrainteractive.astrarating.integration.papi.di.PapiDependencies
 import ru.astrainteractive.astrarating.integration.papi.placeholder.api.RatingPlaceholder
@@ -13,14 +13,14 @@ internal class ColorPlaceholder(
     dependencies: PapiDependencies
 ) : RatingPlaceholder, PapiDependencies by dependencies {
 
-    private val jcache = JCache<UUID, String>(
+    private val jcache = DefaultKCache<UUID, String>(
         expiresAfterAccess = 30.seconds,
         updateAfterAccess = 10.seconds,
         maximumSize = 100L,
         coroutineScope = scope,
         update = { uuid ->
             val name = Bukkit.getOfflinePlayer(uuid).name ?: Bukkit.getPlayer(uuid)?.name
-            name ?: return@JCache ""
+            name ?: return@DefaultKCache ""
             val rating = cachedApi.getPlayerRating(name, uuid)
 
             ColoringUtil.getColoringByRating(
