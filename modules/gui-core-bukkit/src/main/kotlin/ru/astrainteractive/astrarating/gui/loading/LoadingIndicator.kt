@@ -15,7 +15,7 @@ import ru.astrainteractive.astrarating.core.PluginTranslation
 internal class LoadingIndicator(
     private val menu: Menu,
     private val translation: PluginTranslation,
-    private val translationContext: KyoriComponentSerializer
+    private val kyori: KyoriComponentSerializer
 ) {
     private var job: Job? = null
     private val items = listOf(
@@ -36,7 +36,7 @@ internal class LoadingIndicator(
             val material = items[(i + offset) % items.size]
             val itemStack = ItemStack(material)
             itemStack.editMeta {
-                val message = translationContext.toComponent(translation.loading)
+                val message = kyori.toComponent(translation.loading)
                 it.displayName(message)
             }
             menu.inventory.setItem(i, itemStack)

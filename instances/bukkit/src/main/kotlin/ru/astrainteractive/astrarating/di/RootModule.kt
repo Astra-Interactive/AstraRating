@@ -76,10 +76,8 @@ class RootModule(plugin: LifecyclePlugin) {
     private val guiModule: GuiModule by lazy {
         GuiModule.Default(
             coreModule = coreModule,
-            apiRatingModule = apiRatingModule,
-            translationContext = bukkitModule.kyoriComponentSerializer.cachedValue,
+            translationContext = bukkitModule.kyoriComponentSerializer,
             ratingPlayerModule = ratingPlayerModule,
-            changeRatingModule = ratingChangeModule,
             ratingPlayersModule = ratingPlayersModule
         )
     }

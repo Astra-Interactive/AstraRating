@@ -9,7 +9,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.menu.clicker.Click
-import ru.astrainteractive.astralibs.menu.core.Menu
 import ru.astrainteractive.astralibs.menu.holder.DefaultPlayerHolder
 import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
 import ru.astrainteractive.astralibs.menu.inventory.PaginatedInventoryMenu
@@ -23,7 +22,6 @@ import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.feature.rating.players.RatingPlayersComponent
 import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
-import ru.astrainteractive.astrarating.gui.ratings.di.RatingsGUIDependencies
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.gui.slot.backPageSlot
 import ru.astrainteractive.astrarating.gui.slot.context.SlotContext
@@ -33,36 +31,42 @@ import ru.astrainteractive.astrarating.gui.slot.ratingsSlot
 import ru.astrainteractive.astrarating.gui.slot.ratingsSortSlot
 import ru.astrainteractive.astrarating.gui.util.normalName
 import ru.astrainteractive.astrarating.gui.util.offlinePlayer
+import ru.astrainteractive.klibs.kstorage.api.CachedKrate
+import ru.astrainteractive.klibs.kstorage.util.getValue
+import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import java.util.UUID
 
+@Suppress("LongParameterList")
 internal class RatingsGUI(
     player: Player,
-    private val module: RatingsGUIDependencies,
+    private val dispatchers: KotlinDispatchers,
+    private val translationKrate: CachedKrate<PluginTranslation>,
+    private val configKratre: CachedKrate<EmpireConfig>,
+    private val kyoriKrate: CachedKrate<KyoriComponentSerializer>,
     private val ratingPlayersComponent: RatingPlayersComponent,
     private val router: GuiRouter
-) : PaginatedInventoryMenu(),
-    RatingsGUIDependencies by module {
+) : PaginatedInventoryMenu() {
 
     override val childComponents: List<CoroutineScope>
         get() = listOf(ratingPlayersComponent)
 
     private val loadingIndicator = LoadingIndicator(
         menu = this,
-        translation = translation,
-        translationContext = translationContext
+        translation = translationKrate.getValue(),
+        kyori = kyoriKrate.getValue()
     )
 
-    private val slotContext = object :
-        SlotContext,
-        KyoriComponentSerializer by translationContext {
-        override val translation: PluginTranslation = module.translation
-        override val config: EmpireConfig = module.config
-        override val menu: Menu = this@RatingsGUI
-    }
+    private val slotContext = SlotContext(
+        translationKrate = translationKrate,
+        configKrate = configKratre,
+        kyoriKrate = kyoriKrate,
+        menu = this
+    )
 
     override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
 
-    override var title: Component = translationContext.toComponent(translation.ratingsTitle)
+    override var title: Component = kyoriKrate.getValue()
+        .toComponent(translationKrate.getValue().ratingsTitle)
 
     override val inventorySize: InventorySize = InventorySize.XL
 
