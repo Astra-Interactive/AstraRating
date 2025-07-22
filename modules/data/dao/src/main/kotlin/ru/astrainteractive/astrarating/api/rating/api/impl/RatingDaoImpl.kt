@@ -18,7 +18,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
-import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
+import ru.astrainteractive.astrarating.api.rating.api.RatingDao
 import ru.astrainteractive.astrarating.db.rating.entity.UserRatingTable
 import ru.astrainteractive.astrarating.db.rating.entity.UserTable
 import ru.astrainteractive.astrarating.dto.RatedUserDTO
@@ -30,10 +30,10 @@ import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
 @Suppress("TooManyFunctions")
-internal class RatingDBApiImpl(
+internal class RatingDaoImpl(
     private val databaseFlow: Flow<Database>,
     private val isDebugProvider: () -> Boolean
-) : RatingDBApi, Logger by JUtiltLogger("AstraRating-RatingDBApi") {
+) : RatingDao, Logger by JUtiltLogger("AstraRating-RatingDBApi") {
     companion object {
         private val MAX_TIMEOUT = 5.seconds
     }

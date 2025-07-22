@@ -28,55 +28,50 @@ import ru.astrainteractive.klibs.kstorage.api.value.ValueFactory
 import ru.astrainteractive.klibs.kstorage.util.asStateFlowMutableKrate
 import java.io.File
 
-interface DBRatingModule {
-    val lifecycle: Lifecycle
-    val databaseFlow: Flow<Database>
+class DBRatingModule(
+    stringFormat: StringFormat,
+    private val dataFolder: File,
+    defaultConfig: ValueFactory<DbRatingConfiguration> = ValueFactory { DbRatingConfiguration() }
+) : Logger by JUtiltLogger("AstraRating-DBRatingModule") {
+    private val coroutineScope = CoroutineFeature.Default(Dispatchers.IO)
 
-    class Default(
-        stringFormat: StringFormat,
-        private val dataFolder: File,
-        defaultConfig: ValueFactory<DbRatingConfiguration> = ValueFactory { DbRatingConfiguration() }
-    ) : DBRatingModule, Logger by JUtiltLogger("AstraRating-DBRatingModule") {
-        private val coroutineScope = CoroutineFeature.Default(Dispatchers.IO)
-
-        private val dbConfigurationConfig = DefaultMutableKrate(
-            factory = defaultConfig,
-            loader = {
-                stringFormat.parseOrWriteIntoDefault(
-                    file = dataFolder.resolve("database.yml"),
-                    default = defaultConfig::create,
-                    logger = this
-                )
-            }
-        ).asStateFlowMutableKrate()
-
-        override val databaseFlow: Flow<Database> = dbConfigurationConfig
-            .cachedStateFlow
-            .distinctUntilChangedBy { it.databaseConfiguration }
-            .mapCached(coroutineScope) { dbConfig, oldDatabase ->
-                oldDatabase?.run(TransactionManager::closeAndUnregister)
-                val database = dbConfig.databaseConfiguration.connect(dataFolder)
-                TransactionManager.manager.defaultIsolationLevel = java.sql.Connection.TRANSACTION_SERIALIZABLE
-                transaction(database) {
-                    addLogger(Slf4jSqlDebugLogger)
-                    SchemaUtils.create(
-                        UserTable,
-                        UserRatingTable
-                    )
-                }
-                database
-            }
-
-        override val lifecycle: Lifecycle by lazy {
-            Lifecycle.Lambda(
-                onEnable = {},
-                onDisable = {
-                    runBlocking {
-                        databaseFlow.first().run(TransactionManager::closeAndUnregister)
-                    }
-                    coroutineScope.cancel()
-                }
+    private val dbConfigurationConfig = DefaultMutableKrate(
+        factory = defaultConfig,
+        loader = {
+            stringFormat.parseOrWriteIntoDefault(
+                file = dataFolder.resolve("database.yml"),
+                default = defaultConfig::create,
+                logger = this
             )
         }
+    ).asStateFlowMutableKrate()
+
+    val databaseFlow: Flow<Database> = dbConfigurationConfig
+        .cachedStateFlow
+        .distinctUntilChangedBy { it.databaseConfiguration }
+        .mapCached(coroutineScope) { dbConfig, oldDatabase ->
+            oldDatabase?.run(TransactionManager::closeAndUnregister)
+            val database = dbConfig.databaseConfiguration.connect(dataFolder)
+            TransactionManager.manager.defaultIsolationLevel = java.sql.Connection.TRANSACTION_SERIALIZABLE
+            transaction(database) {
+                addLogger(Slf4jSqlDebugLogger)
+                SchemaUtils.create(
+                    UserTable,
+                    UserRatingTable
+                )
+            }
+            database
+        }
+
+    val lifecycle: Lifecycle by lazy {
+        Lifecycle.Lambda(
+            onEnable = {},
+            onDisable = {
+                runBlocking {
+                    databaseFlow.first().run(TransactionManager::closeAndUnregister)
+                }
+                coroutineScope.cancel()
+            }
+        )
     }
 }

@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.astrainteractive.astralibs.async.CoroutineFeature
-import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
+import ru.astrainteractive.astrarating.api.rating.api.RatingDao
 import ru.astrainteractive.astrarating.dto.UserRatingDTO
 import ru.astrainteractive.astrarating.feature.ratings.player.domain.RatingSortUseCase
 import ru.astrainteractive.astrarating.model.UserRatingsSort
@@ -15,7 +15,7 @@ import java.util.UUID
 internal class DefaultRatingPlayerComponent(
     playerName: String,
     playerUUID: UUID,
-    private val dbApi: RatingDBApi,
+    private val dbApi: RatingDao,
     private val dispatchers: KotlinDispatchers,
     private val ratingSortUseCase: RatingSortUseCase
 ) : RatingPlayerComponent, CoroutineFeature by CoroutineFeature.Default(dispatchers.Main) {

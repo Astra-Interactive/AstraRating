@@ -26,8 +26,8 @@ internal class GuiRouterImpl(
                     player = route.executor,
                     ratingPlayersComponent = ratingPlayersModule.createAllRatingsComponent(),
                     router = this@GuiRouterImpl,
-                    configKratre = coreModule.config,
-                    translationKrate = coreModule.translation,
+                    configKratre = coreModule.configKrate,
+                    translationKrate = coreModule.translationKrate,
                     kyoriKrate = translationContext,
                     dispatchers = coreModule.dispatchers
                 )
@@ -40,8 +40,8 @@ internal class GuiRouterImpl(
                         playerUUID = route.selectedPlayerUUID
                     ),
                     router = this@GuiRouterImpl,
-                    configKratre = coreModule.config,
-                    translationKrate = coreModule.translation,
+                    configKratre = coreModule.configKrate,
+                    translationKrate = coreModule.translationKrate,
                     kyoriKrate = translationContext,
                     dispatchers = coreModule.dispatchers
                 )

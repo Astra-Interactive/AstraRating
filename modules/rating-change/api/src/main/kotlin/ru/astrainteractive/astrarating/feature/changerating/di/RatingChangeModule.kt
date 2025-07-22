@@ -1,6 +1,6 @@
 package ru.astrainteractive.astrarating.feature.changerating.di
 
-import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
+import ru.astrainteractive.astrarating.api.rating.api.RatingDao
 import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.feature.changerating.data.InsertRatingRepositoryImpl
 import ru.astrainteractive.astrarating.feature.changerating.data.InsertUserRepositoryImpl
@@ -14,7 +14,7 @@ import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 class RatingChangeModule(
-    dbApi: RatingDBApi,
+    dbApi: RatingDao,
     empireConfigKrate: CachedKrate<EmpireConfig>,
     dispatchers: KotlinDispatchers,
 ) {

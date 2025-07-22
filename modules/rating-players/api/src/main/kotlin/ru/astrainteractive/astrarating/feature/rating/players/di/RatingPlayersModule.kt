@@ -15,7 +15,7 @@ class RatingPlayersModule(
 ) {
     private val allRatingsRepository by lazy {
         RatingPlayersCachedRepositoryImpl(
-            dbApi = apiRatingModule.ratingDBApi,
+            dbApi = apiRatingModule.ratingDao,
             coroutineScope = coroutineScope,
             dispatchers = dispatchers
         )

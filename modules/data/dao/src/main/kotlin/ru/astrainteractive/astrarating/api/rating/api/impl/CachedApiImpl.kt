@@ -2,13 +2,13 @@ package ru.astrainteractive.astrarating.api.rating.api.impl
 
 import kotlinx.coroutines.CoroutineScope
 import ru.astrainteractive.astrarating.api.rating.api.CachedApi
-import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
+import ru.astrainteractive.astrarating.api.rating.api.RatingDao
 import ru.astrainteractive.astrarating.core.cache.DefaultKCache
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
 internal class CachedApiImpl(
-    private val databaseApi: RatingDBApi,
+    private val databaseApi: RatingDao,
     scope: CoroutineScope
 ) : CachedApi {
     private val jcache = DefaultKCache<PlayerData, RatingData>(

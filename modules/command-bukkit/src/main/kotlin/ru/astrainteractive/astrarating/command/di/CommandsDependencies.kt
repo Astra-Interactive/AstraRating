@@ -34,10 +34,10 @@ internal interface CommandsDependencies {
         override val addRatingUseCase: AddRatingUseCase = ratingChangeModule.addRatingUseCase
         override val dispatchers = coreModule.dispatchers
         override val scope = coreModule.scope
-        override val translation get() = coreModule.translation.cachedValue
-        override val config get() = coreModule.config.cachedValue
+        override val translation get() = coreModule.translationKrate.cachedValue
+        override val config get() = coreModule.configKrate.cachedValue
 
-        override val kyoriComponentSerializer get() = bukkitModule.kyoriComponentSerializer.cachedValue
+        override val kyoriComponentSerializer get() = bukkitModule.kyoriKrate.cachedValue
 
         override val router: GuiRouter get() = guiModule.router
     }

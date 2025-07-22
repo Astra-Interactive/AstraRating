@@ -4,7 +4,7 @@ import ru.astrainteractive.astrarating.dto.UserDTO
 import ru.astrainteractive.astrarating.model.UserModel
 
 object RatingDBApiExt {
-    suspend fun RatingDBApi.upsertUser(userModel: UserModel): UserDTO {
+    suspend fun RatingDao.upsertUser(userModel: UserModel): UserDTO {
         val selectedUser = selectUser(userModel.minecraftUUID).getOrNull()
         if (selectedUser != null) return selectedUser
         return UserDTO(

@@ -15,7 +15,7 @@ class RatingPlayerModule(
         return DefaultRatingPlayerComponent(
             playerName = playerName,
             playerUUID = playerUUID,
-            dbApi = apiRatingModule.ratingDBApi,
+            dbApi = apiRatingModule.ratingDao,
             dispatchers = dispatchers,
             ratingSortUseCase = RatingSortUseCaseImpl()
         )

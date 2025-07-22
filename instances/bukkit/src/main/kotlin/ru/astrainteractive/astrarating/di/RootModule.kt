@@ -37,7 +37,7 @@ class RootModule(plugin: LifecyclePlugin) {
         ApiRatingModule.Default(
             databaseFlow = dbRatingModule.databaseFlow,
             coroutineScope = coreModule.scope,
-            isDebugProvider = { coreModule.config.cachedValue.debug }
+            isDebugProvider = { coreModule.configKrate.cachedValue.debug }
         )
     }
 
@@ -53,8 +53,8 @@ class RootModule(plugin: LifecyclePlugin) {
     private val ratingChangeModule: RatingChangeModule by lazy {
         RatingChangeModule(
             dispatchers = coreModule.dispatchers,
-            empireConfigKrate = coreModule.config,
-            dbApi = apiRatingModule.ratingDBApi
+            empireConfigKrate = coreModule.configKrate,
+            dbApi = apiRatingModule.ratingDao
         )
     }
 
@@ -76,7 +76,7 @@ class RootModule(plugin: LifecyclePlugin) {
     private val guiModule: GuiModule by lazy {
         GuiModule.Default(
             coreModule = coreModule,
-            translationContext = bukkitModule.kyoriComponentSerializer,
+            translationContext = bukkitModule.kyoriKrate,
             ratingPlayerModule = ratingPlayerModule,
             ratingPlayersModule = ratingPlayersModule
         )

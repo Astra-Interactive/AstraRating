@@ -7,7 +7,7 @@ import ru.astrainteractive.astrarating.dto.UserRatingDTO
 import ru.astrainteractive.astrarating.model.UserModel
 import java.util.UUID
 
-interface RatingDBApi {
+interface RatingDao {
     /**
      * Select user
      * @param playerUUID - name of the player

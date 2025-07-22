@@ -4,7 +4,7 @@ import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import ru.astrainteractive.astralibs.exposed.model.DatabaseConfiguration
 import ru.astrainteractive.astralibs.serialization.YamlStringFormat
-import ru.astrainteractive.astrarating.api.rating.api.RatingDBApi
+import ru.astrainteractive.astrarating.api.rating.api.RatingDao
 import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
 import ru.astrainteractive.astrarating.db.rating.di.DBRatingModule
 import ru.astrainteractive.astrarating.db.rating.model.DbRatingConfiguration
@@ -24,7 +24,7 @@ class AuctionsTests {
     private val requireModule: DBRatingModule
         get() = module ?: error("The module is null")
 
-    private val api: RatingDBApi
+    private val api: RatingDao
         get() = ApiRatingModule.Default(
             databaseFlow = requireModule.databaseFlow,
             coroutineScope = GlobalScope,
