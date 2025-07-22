@@ -35,9 +35,7 @@ internal class DefaultRatingPlayersComponent(
         launch(dispatchers.IO) {
             model.update { it.copy(isLoading = true) }
             val userRatings = repository.fetchUsersTotalRating()
-            model.update {
-                it.copy(userRatings = userRatings)
-            }
+            model.update { it.copy(userRatings = userRatings) }
             onSortClicked()
             model.update { it.copy(isLoading = false) }
         }
