@@ -18,7 +18,7 @@ dependencies {
     testImplementation(libs.bundles.testing.kotlin)
     testImplementation(libs.tests.kotlin.test)
     // Local
-    implementation(projects.modules.apiRating)
-    implementation(projects.modules.dbRating)
-    implementation(projects.modules.core)
+    implementation(projects.modules.data.dao)
+    implementation(projects.modules.data.exposed)
+    implementation(projects.modules.core.api)
 }

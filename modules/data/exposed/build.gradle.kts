@@ -9,16 +9,15 @@ dependencies {
     implementation(libs.bundles.kotlin)
     // klibs
     implementation(libs.klibs.mikro.core)
-    implementation(libs.minecraft.astralibs.core)
     implementation(libs.klibs.kstorage)
+    // AstraLibs
+    implementation(libs.minecraft.astralibs.core)
+    implementation(libs.minecraft.astralibs.exposed)
     // Exposed
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)
-    // Test
-    testImplementation(libs.bundles.testing.kotlin)
-    testImplementation(libs.tests.kotlin.test)
-    testImplementation(libs.minecraft.astralibs.exposed)
+    implementation(libs.exposed.jdbc)
+    implementation("mysql:mysql-connector-java:8.0.33")
     // Local
-    implementation(projects.modules.dbRating)
-    implementation(projects.modules.core)
+    implementation(projects.modules.core.api)
 }

@@ -20,6 +20,6 @@ dependencies {
     compileOnly(libs.minecraft.paper.api)
     compileOnly(libs.minecraft.papi)
     // Local
-    implementation(projects.modules.apiRating)
-    implementation(projects.modules.core)
+    implementation(projects.modules.data.dao)
+    implementation(projects.modules.core.api)
 }
