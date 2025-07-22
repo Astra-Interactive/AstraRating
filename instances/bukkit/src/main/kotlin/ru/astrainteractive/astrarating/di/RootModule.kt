@@ -1,6 +1,5 @@
 package ru.astrainteractive.astrarating.di
 
-import kotlinx.coroutines.coroutineScope
 import ru.astrainteractive.astralibs.async.DefaultBukkitDispatchers
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
@@ -9,9 +8,9 @@ import ru.astrainteractive.astrarating.command.di.CommandsModule
 import ru.astrainteractive.astrarating.core.di.CoreModule
 import ru.astrainteractive.astrarating.db.rating.di.DBRatingModule
 import ru.astrainteractive.astrarating.event.di.EventModule
-import ru.astrainteractive.astrarating.feature.allrating.di.AllRatingsModule
-import ru.astrainteractive.astrarating.feature.changerating.di.ChangeRatingModule
-import ru.astrainteractive.astrarating.feature.playerrating.di.PlayerRatingsModule
+import ru.astrainteractive.astrarating.feature.changerating.di.RatingChangeModule
+import ru.astrainteractive.astrarating.feature.rating.players.di.RatingPlayersModule
+import ru.astrainteractive.astrarating.feature.ratings.player.di.RatingPlayerModule
 import ru.astrainteractive.astrarating.gui.di.GuiModule
 import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
 
@@ -51,23 +50,23 @@ class RootModule(plugin: LifecyclePlugin) {
         )
     }
 
-    private val changeRatingModule: ChangeRatingModule by lazy {
-        ChangeRatingModule(
+    private val ratingChangeModule: RatingChangeModule by lazy {
+        RatingChangeModule(
             dispatchers = coreModule.dispatchers,
             empireConfigKrate = coreModule.config,
             dbApi = apiRatingModule.ratingDBApi
         )
     }
 
-    private val playerRatingsModule: PlayerRatingsModule by lazy {
-        PlayerRatingsModule(
+    private val ratingPlayerModule: RatingPlayerModule by lazy {
+        RatingPlayerModule(
             apiRatingModule = apiRatingModule,
             dispatchers = coreModule.dispatchers,
         )
     }
 
-    private val allRatingsModule: AllRatingsModule by lazy {
-        AllRatingsModule(
+    private val ratingPlayersModule: RatingPlayersModule by lazy {
+        RatingPlayersModule(
             apiRatingModule = apiRatingModule,
             dispatchers = coreModule.dispatchers,
             coroutineScope = coreModule.scope
@@ -79,9 +78,9 @@ class RootModule(plugin: LifecyclePlugin) {
             coreModule = coreModule,
             apiRatingModule = apiRatingModule,
             translationContext = bukkitModule.kyoriComponentSerializer.cachedValue,
-            playerRatingsModule = playerRatingsModule,
-            changeRatingModule = changeRatingModule,
-            allRatingsModule = allRatingsModule
+            ratingPlayerModule = ratingPlayerModule,
+            changeRatingModule = ratingChangeModule,
+            ratingPlayersModule = ratingPlayersModule
         )
     }
 
@@ -98,7 +97,7 @@ class RootModule(plugin: LifecyclePlugin) {
             bukkitModule = bukkitModule,
             coreModule = coreModule,
             guiModule = guiModule,
-            changeRatingModule = changeRatingModule
+            ratingChangeModule = ratingChangeModule
         )
     }
     private val lifecycles: List<Lifecycle>
@@ -107,7 +106,7 @@ class RootModule(plugin: LifecyclePlugin) {
             bukkitModule.lifecycle,
             dbRatingModule.lifecycle,
             apiRatingModule.lifecycle,
-            allRatingsModule.lifecycle,
+            ratingPlayersModule.lifecycle,
             commandsModule.lifecycle,
             eventModule.lifecycle,
             papiModule.lifecycle,

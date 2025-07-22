@@ -1,28 +1,28 @@
-package ru.astrainteractive.astrarating.feature.allrating.di
+package ru.astrainteractive.astrarating.feature.rating.players.di
 
 import kotlinx.coroutines.CoroutineScope
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
-import ru.astrainteractive.astrarating.feature.allrating.AllRatingsComponent
-import ru.astrainteractive.astrarating.feature.allrating.DefaultAllRatingsComponent
-import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsCachedRepositoryImpl
+import ru.astrainteractive.astrarating.feature.rating.players.DefaultRatingPlayersComponent
+import ru.astrainteractive.astrarating.feature.rating.players.RatingPlayersComponent
+import ru.astrainteractive.astrarating.feature.rating.players.data.RatingPlayersCachedRepositoryImpl
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
-class AllRatingsModule(
+class RatingPlayersModule(
     private val apiRatingModule: ApiRatingModule,
     private val dispatchers: KotlinDispatchers,
     private val coroutineScope: CoroutineScope,
 ) {
     private val allRatingsRepository by lazy {
-        AllRatingsCachedRepositoryImpl(
+        RatingPlayersCachedRepositoryImpl(
             dbApi = apiRatingModule.ratingDBApi,
             coroutineScope = coroutineScope,
             dispatchers = dispatchers
         )
     }
 
-    fun createAllRatingsComponent(): AllRatingsComponent {
-        return DefaultAllRatingsComponent(
+    fun createAllRatingsComponent(): RatingPlayersComponent {
+        return DefaultRatingPlayersComponent(
             repository = allRatingsRepository,
             dispatchers = dispatchers
         )

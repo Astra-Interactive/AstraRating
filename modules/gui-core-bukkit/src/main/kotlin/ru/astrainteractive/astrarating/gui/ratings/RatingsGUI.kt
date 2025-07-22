@@ -21,7 +21,7 @@ import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isLastPa
 import ru.astrainteractive.astralibs.menu.slot.InventorySlot
 import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.core.PluginTranslation
-import ru.astrainteractive.astrarating.feature.allrating.AllRatingsComponent
+import ru.astrainteractive.astrarating.feature.rating.players.RatingPlayersComponent
 import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
 import ru.astrainteractive.astrarating.gui.ratings.di.RatingsGUIDependencies
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
@@ -38,13 +38,13 @@ import java.util.UUID
 internal class RatingsGUI(
     player: Player,
     private val module: RatingsGUIDependencies,
-    private val allRatingsComponent: AllRatingsComponent,
+    private val ratingPlayersComponent: RatingPlayersComponent,
     private val router: GuiRouter
 ) : PaginatedInventoryMenu(),
     RatingsGUIDependencies by module {
 
     override val childComponents: List<CoroutineScope>
-        get() = listOf(allRatingsComponent)
+        get() = listOf(ratingPlayersComponent)
 
     private val loadingIndicator = LoadingIndicator(
         menu = this,
@@ -77,14 +77,14 @@ internal class RatingsGUI(
 
     private val sortButton: InventorySlot
         get() = slotContext.ratingsSortSlot(
-            sort = allRatingsComponent.model.value.sort,
-            onClick = allRatingsComponent::onSortClicked
+            sort = ratingPlayersComponent.model.value.sort,
+            onClick = ratingPlayersComponent::onSortClicked
         )
 
     override var pageContext: PageContext = PageContext(
         maxItemsPerPage = 45,
         page = 0,
-        maxItems = allRatingsComponent.model.value.userRatings.size
+        maxItems = ratingPlayersComponent.model.value.userRatings.size
     )
 
     override fun onInventoryClicked(e: InventoryClickEvent) {
@@ -99,7 +99,7 @@ internal class RatingsGUI(
     }
 
     override fun onInventoryCreated() {
-        allRatingsComponent.model
+        ratingPlayersComponent.model
             .onEach {
                 pageContext = pageContext.copy(maxItems = it.userRatings.size)
                 if (it.isLoading) {
@@ -117,7 +117,7 @@ internal class RatingsGUI(
 
     @Suppress("LongMethod")
     override fun render() {
-        val model: AllRatingsComponent.Model = allRatingsComponent.model.value
+        val model: RatingPlayersComponent.Model = ratingPlayersComponent.model.value
         inventory.clear()
         setManageButtons()
         sortButton.setInventorySlot()

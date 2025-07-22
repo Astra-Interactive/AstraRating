@@ -1,4 +1,4 @@
-package ru.astrainteractive.astrarating.feature.playerrating.presentation
+package ru.astrainteractive.astrarating.feature.ratings.player.presentation
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
@@ -7,7 +7,7 @@ import ru.astrainteractive.astrarating.dto.UserRatingDTO
 import ru.astrainteractive.astrarating.model.UserRatingsSort
 import java.util.UUID
 
-interface PlayerRatingComponent : CoroutineScope {
+interface RatingPlayerComponent : CoroutineScope {
     val model: StateFlow<Model>
     fun onSortClicked()
     fun onDeleteClicked(item: UserRatingDTO)

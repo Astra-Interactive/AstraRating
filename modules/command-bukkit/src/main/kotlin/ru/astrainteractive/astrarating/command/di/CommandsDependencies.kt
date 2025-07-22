@@ -7,7 +7,7 @@ import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.core.di.CoreModule
 import ru.astrainteractive.astrarating.di.BukkitModule
-import ru.astrainteractive.astrarating.feature.changerating.di.ChangeRatingModule
+import ru.astrainteractive.astrarating.feature.changerating.di.RatingChangeModule
 import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCase
 import ru.astrainteractive.astrarating.gui.di.GuiModule
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
@@ -24,14 +24,14 @@ internal interface CommandsDependencies {
     val router: GuiRouter
 
     class Default(
-        private val changeRatingModule: ChangeRatingModule,
+        private val ratingChangeModule: RatingChangeModule,
         private val bukkitModule: BukkitModule,
         private val coreModule: CoreModule,
         private val guiModule: GuiModule
     ) : CommandsDependencies {
 
         override val plugin: LifecyclePlugin = bukkitModule.plugin
-        override val addRatingUseCase: AddRatingUseCase = changeRatingModule.addRatingUseCase
+        override val addRatingUseCase: AddRatingUseCase = ratingChangeModule.addRatingUseCase
         override val dispatchers = coreModule.dispatchers
         override val scope = coreModule.scope
         override val translation get() = coreModule.translation.cachedValue

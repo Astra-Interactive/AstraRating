@@ -1,4 +1,4 @@
-package ru.astrainteractive.astrarating.feature.allrating.data
+package ru.astrainteractive.astrarating.feature.rating.players.data
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
@@ -8,11 +8,11 @@ import ru.astrainteractive.astrarating.dto.RatedUserDTO
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import kotlin.time.Duration.Companion.seconds
 
-internal class AllRatingsCachedRepositoryImpl(
+internal class RatingPlayersCachedRepositoryImpl(
     private val dbApi: RatingDBApi,
     private val coroutineScope: CoroutineScope,
     private val dispatchers: KotlinDispatchers
-) : AllRatingsCachedRepository {
+) : RatingPlayersCachedRepository {
     private val jcache = DefaultKCache<Unit, List<RatedUserDTO>>(
         expiresAfterAccess = 30.seconds,
         updateAfterAccess = 10.seconds,

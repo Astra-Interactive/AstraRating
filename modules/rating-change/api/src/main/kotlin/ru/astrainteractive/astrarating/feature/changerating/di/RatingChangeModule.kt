@@ -13,7 +13,7 @@ import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.Inser
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
-class ChangeRatingModule(
+class RatingChangeModule(
     dbApi: RatingDBApi,
     empireConfigKrate: CachedKrate<EmpireConfig>,
     dispatchers: KotlinDispatchers,

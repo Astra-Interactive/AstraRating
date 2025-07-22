@@ -1,19 +1,19 @@
-package ru.astrainteractive.astrarating.feature.allrating
+package ru.astrainteractive.astrarating.feature.rating.players
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.astrainteractive.astralibs.async.CoroutineFeature
-import ru.astrainteractive.astrarating.feature.allrating.data.AllRatingsCachedRepository
+import ru.astrainteractive.astrarating.feature.rating.players.data.RatingPlayersCachedRepository
 import ru.astrainteractive.astrarating.model.UsersRatingsSort
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.util.next
 
-internal class DefaultAllRatingsComponent(
-    private val repository: AllRatingsCachedRepository,
+internal class DefaultRatingPlayersComponent(
+    private val repository: RatingPlayersCachedRepository,
     dispatchers: KotlinDispatchers
-) : AllRatingsComponent, CoroutineFeature by CoroutineFeature.Default(dispatchers.Main) {
-    override val model = MutableStateFlow(AllRatingsComponent.Model())
+) : RatingPlayersComponent, CoroutineFeature by CoroutineFeature.Default(dispatchers.Main) {
+    override val model = MutableStateFlow(RatingPlayersComponent.Model())
 
     override fun onSortClicked() {
         val nextSort = model.value.sort.next(UsersRatingsSort.entries.toTypedArray())
