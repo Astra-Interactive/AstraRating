@@ -4,7 +4,7 @@ import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
 import ru.astrainteractive.astrarating.di.RootModule
 
 class AstraRating : LifecyclePlugin() {
-    private val rootModule = RootModule.Default(this)
+    private val rootModule = RootModule(this)
 
     override fun onEnable() {
         rootModule.lifecycle.onEnable()

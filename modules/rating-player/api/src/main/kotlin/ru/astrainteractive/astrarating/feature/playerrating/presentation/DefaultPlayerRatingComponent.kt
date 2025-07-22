@@ -12,15 +12,15 @@ import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.util.next
 import java.util.UUID
 
-internal class DefaultPlayerRatingsComponent(
+internal class DefaultPlayerRatingComponent(
     playerName: String,
     playerUUID: UUID,
     private val dbApi: RatingDBApi,
     private val dispatchers: KotlinDispatchers,
     private val sortRatingUseCase: SortRatingUseCase
-) : PlayerRatingsComponent, CoroutineFeature by CoroutineFeature.Default(dispatchers.Main) {
+) : PlayerRatingComponent, CoroutineFeature by CoroutineFeature.Default(dispatchers.Main) {
     override val model = MutableStateFlow(
-        PlayerRatingsComponent.Model(
+        PlayerRatingComponent.Model(
             playerName = playerName,
             playerUUID = playerUUID
         )

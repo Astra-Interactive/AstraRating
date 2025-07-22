@@ -7,7 +7,7 @@ import ru.astrainteractive.astrarating.dto.UserRatingDTO
 import ru.astrainteractive.astrarating.model.UserRatingsSort
 import java.util.UUID
 
-interface PlayerRatingsComponent : CoroutineScope {
+interface PlayerRatingComponent : CoroutineScope {
     val model: StateFlow<Model>
     fun onSortClicked()
     fun onDeleteClicked(item: UserRatingDTO)

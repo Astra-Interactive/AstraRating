@@ -25,7 +25,7 @@ import ru.astrainteractive.astralibs.string.replace
 import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.core.RatingPermission
-import ru.astrainteractive.astrarating.feature.playerrating.presentation.PlayerRatingsComponent
+import ru.astrainteractive.astrarating.feature.playerrating.presentation.PlayerRatingComponent
 import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
 import ru.astrainteractive.astrarating.gui.playerratings.di.PlayerRatingGuiDependencies
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
@@ -43,11 +43,11 @@ internal class PlayerRatingsGUI(
     selectedPlayerName: String,
     private val player: Player,
     private val module: PlayerRatingGuiDependencies,
-    private val playerRatingsComponent: PlayerRatingsComponent,
+    private val playerRatingComponent: PlayerRatingComponent,
     private val router: GuiRouter
 ) : PaginatedInventoryMenu(), PlayerRatingGuiDependencies by module {
     override val childComponents: List<CoroutineScope>
-        get() = listOf(playerRatingsComponent)
+        get() = listOf(playerRatingComponent)
 
     private val loadingIndicator = LoadingIndicator(
         menu = this,
@@ -83,17 +83,17 @@ internal class PlayerRatingsGUI(
 
     private val sortButton: InventorySlot
         get() = slotContext.playerRatingsSortSlot(
-            sort = playerRatingsComponent.model.value.sort,
-            click = { playerRatingsComponent.onSortClicked() }
+            sort = playerRatingComponent.model.value.sort,
+            click = { playerRatingComponent.onSortClicked() }
         )
 
     private val killEventSlot: InventorySlot?
-        get() = slotContext.killEventSlot(playerRatingsComponent.model.value.killCounts)
+        get() = slotContext.killEventSlot(playerRatingComponent.model.value.killCounts)
 
     override var pageContext: PageContext = PageContext(
         page = 0,
         maxItemsPerPage = 45,
-        maxItems = playerRatingsComponent.model.value.userRatings.size
+        maxItems = playerRatingComponent.model.value.userRatings.size
     )
 
     override fun onInventoryClicked(e: InventoryClickEvent) {
@@ -108,7 +108,7 @@ internal class PlayerRatingsGUI(
     }
 
     override fun onInventoryCreated() {
-        playerRatingsComponent.model
+        playerRatingComponent.model
             .onEach {
                 pageContext = pageContext.copy(maxItems = it.userRatings.size)
                 if (it.isLoading) {
@@ -126,7 +126,7 @@ internal class PlayerRatingsGUI(
 
     @Suppress("CyclomaticComplexMethod", "LongMethod")
     override fun render() {
-        val model: PlayerRatingsComponent.Model = playerRatingsComponent.model.value
+        val model: PlayerRatingComponent.Model = playerRatingComponent.model.value
         inventory.clear()
         setManageButtons()
         sortButton.setInventorySlot()
@@ -155,7 +155,7 @@ internal class PlayerRatingsGUI(
                     val item = model.userRatings
                         .getOrNull(pageContext.maxItemsPerPage * pageContext.page + e.slot)
                         ?: return@Click
-                    playerRatingsComponent.onDeleteClicked(item)
+                    playerRatingComponent.onDeleteClicked(item)
                 }
             ).setInventorySlot()
         }

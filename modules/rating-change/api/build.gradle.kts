@@ -12,11 +12,6 @@ dependencies {
     // klibs
     implementation(libs.klibs.mikro.core)
     implementation(libs.klibs.kstorage)
-    // Bukkit
-    compileOnly(libs.minecraft.paper.api)
-    // Test
-    testImplementation(libs.bundles.testing.kotlin)
-    testImplementation(libs.tests.kotlin.test)
     // Local
     implementation(projects.modules.data.dao)
     implementation(projects.modules.data.exposed)

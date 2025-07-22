@@ -37,12 +37,14 @@ dependencies {
     implementation(projects.modules.data.exposed)
     implementation(projects.modules.data.dao)
     implementation(projects.modules.integrationPapi)
-    implementation(projects.modules.shared)
     implementation(projects.modules.core.api)
     implementation(projects.modules.core.bukkit)
     implementation(projects.modules.guiCoreBukkit)
     implementation(projects.modules.commandBukkit)
     implementation(projects.modules.eventBukkit)
+    implementation(projects.modules.ratingChange.api)
+    implementation(projects.modules.ratingPlayer.api)
+    implementation(projects.modules.ratingPlayers.api)
 }
 
 minecraftProcessResource {

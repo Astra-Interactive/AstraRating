@@ -13,36 +13,32 @@ import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.Inser
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
-interface ChangeRatingModule {
-    val addRatingUseCase: AddRatingUseCase
-
-    class Default(
-        dbApi: RatingDBApi,
-        empireConfigKrate: CachedKrate<EmpireConfig>,
-        dispatchers: KotlinDispatchers,
-    ) : ChangeRatingModule {
-        override val addRatingUseCase: AddRatingUseCase = AddRatingUseCaseImpl(
-            insertRatingRepository = InsertRatingRepositoryImpl(
+class ChangeRatingModule(
+    dbApi: RatingDBApi,
+    empireConfigKrate: CachedKrate<EmpireConfig>,
+    dispatchers: KotlinDispatchers,
+) {
+    val addRatingUseCase: AddRatingUseCase = AddRatingUseCaseImpl(
+        insertRatingRepository = InsertRatingRepositoryImpl(
+            dbApi = dbApi,
+            dispatchers = dispatchers
+        ),
+        insertUserUseCase = InsertUserUseCaseImpl(
+            insertUserRepository = InsertUserRepositoryImpl(
+                dbApi = dbApi,
+                dispatchers = dispatchers
+            )
+        ),
+        checkValidator = CheckValidatorImpl(
+            playerTotalRatingRepository = PlayerTotalRatingRepositoryImpl(
                 dbApi = dbApi,
                 dispatchers = dispatchers
             ),
-            insertUserUseCase = InsertUserUseCaseImpl(
-                insertUserRepository = InsertUserRepositoryImpl(
-                    dbApi = dbApi,
-                    dispatchers = dispatchers
-                )
+            playerOnPlayerCounterRepository = PlayerOnPlayerCounterRepositoryImpl(
+                dbApi = dbApi,
+                dispatchers = dispatchers
             ),
-            checkValidator = CheckValidatorImpl(
-                playerTotalRatingRepository = PlayerTotalRatingRepositoryImpl(
-                    dbApi = dbApi,
-                    dispatchers = dispatchers
-                ),
-                playerOnPlayerCounterRepository = PlayerOnPlayerCounterRepositoryImpl(
-                    dbApi = dbApi,
-                    dispatchers = dispatchers
-                ),
-                configKrate = empireConfigKrate,
-            )
+            configKrate = empireConfigKrate,
         )
-    }
+    )
 }
