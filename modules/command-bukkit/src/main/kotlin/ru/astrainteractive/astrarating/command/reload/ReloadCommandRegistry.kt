@@ -6,6 +6,7 @@ import ru.astrainteractive.astralibs.command.api.executor.CommandExecutor
 import ru.astrainteractive.astralibs.command.api.parser.CommandParser
 import ru.astrainteractive.astralibs.command.api.util.PluginExt.setCommandExecutor
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
+import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
 import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.core.RatingPermission
 import javax.naming.NoPermissionException

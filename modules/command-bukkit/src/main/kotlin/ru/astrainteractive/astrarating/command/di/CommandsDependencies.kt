@@ -2,6 +2,7 @@ package ru.astrainteractive.astrarating.command.di
 
 import kotlinx.coroutines.CoroutineScope
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
+import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
 import ru.astrainteractive.astrarating.core.EmpireConfig
 import ru.astrainteractive.astrarating.core.PluginTranslation
 import ru.astrainteractive.astrarating.core.di.CoreModule
