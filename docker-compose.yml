@@ -1,0 +1,19 @@
+services:
+  # For command call use `docker exec mc_docker_astrarating rcon-cli <your_command>`
+  mc_docker_astrarating:
+    restart: no
+    container_name: mc_docker_astrarating
+    image: itzg/minecraft-server # https://github.com/itzg/docker-minecraft-server
+    tty: true
+    stdin_open: true
+    ports:
+      - "25565:25565"
+    environment:
+      MEMORY: 4G
+      EULA: true
+      ONLINE_MODE: FALSE
+      # Paper --------------------
+      TYPE: PAPER
+      VERSION: 1.21.4
+    volumes:
+      - ./build/bukkit:/data # Bukkit/Paper/Spigot
