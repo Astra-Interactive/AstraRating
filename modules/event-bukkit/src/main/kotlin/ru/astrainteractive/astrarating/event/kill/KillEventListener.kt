@@ -20,10 +20,10 @@ import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 internal class KillEventListener(
     configKrate: CachedKrate<AstraRatingConfig>,
     translationKrate: CachedKrate<AstraRatingTranslation>,
+    val kyoriKrate: CachedKrate<KyoriComponentSerializer>,
     val ratingDao: RatingDao,
     val scope: CoroutineScope,
-    val dispatchers: KotlinDispatchers,
-    val kyoriKrate: CachedKrate<KyoriComponentSerializer>
+    val dispatchers: KotlinDispatchers
 ) : EventListener, KyoriComponentSerializer by kyoriKrate.unwrap() {
     private val config by configKrate
     private val translation by translationKrate

@@ -20,7 +20,7 @@ import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isLastPa
 import ru.astrainteractive.astralibs.menu.slot.InventorySlot
 import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
-import ru.astrainteractive.astrarating.feature.rating.players.RatingPlayersComponent
+import ru.astrainteractive.astrarating.feature.rating.players.presentation.RatingPlayersComponent
 import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.gui.slot.backPageSlot

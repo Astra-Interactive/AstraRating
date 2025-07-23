@@ -1,4 +1,4 @@
-package ru.astrainteractive.astrarating.feature.rating.players
+package ru.astrainteractive.astrarating.feature.rating.players.presentation
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
