@@ -10,7 +10,7 @@ import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setI
 import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setItemStack
 import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setOnClickListener
 import ru.astrainteractive.astralibs.string.plus
-import ru.astrainteractive.astrarating.dto.RatedUserDTO
+import ru.astrainteractive.astrarating.data.exposed.dto.RatedUserDTO
 import ru.astrainteractive.astrarating.gui.slot.context.SlotContext
 import ru.astrainteractive.astrarating.gui.util.PlayerHeadUtil
 import ru.astrainteractive.astrarating.gui.util.TimeUtility

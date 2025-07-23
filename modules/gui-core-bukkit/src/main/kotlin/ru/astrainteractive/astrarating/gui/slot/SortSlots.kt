@@ -7,11 +7,11 @@ import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setI
 import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setItemStack
 import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setOnClickListener
 import ru.astrainteractive.astralibs.string.plus
+import ru.astrainteractive.astrarating.data.exposed.model.UserRatingsSort
+import ru.astrainteractive.astrarating.data.exposed.model.UsersRatingsSort
 import ru.astrainteractive.astrarating.gui.slot.context.SlotContext
 import ru.astrainteractive.astrarating.gui.util.desc
 import ru.astrainteractive.astrarating.gui.util.toItemStack
-import ru.astrainteractive.astrarating.model.UserRatingsSort
-import ru.astrainteractive.astrarating.model.UsersRatingsSort
 
 internal fun SlotContext.ratingsSortSlot(sort: UsersRatingsSort, onClick: () -> Unit): InventorySlot =
     InventorySlot.Builder()

@@ -2,7 +2,6 @@ package ru.astrainteractive.astrarating.core.di
 
 import com.charleskorn.kaml.PolymorphismStyle
 import com.charleskorn.kaml.Yaml
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.serialization.StringFormat
 import ru.astrainteractive.astralibs.async.CoroutineFeature
@@ -11,8 +10,8 @@ import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.astralibs.serialization.StringFormatExt.parseOrWriteIntoDefault
 import ru.astrainteractive.astralibs.serialization.YamlStringFormat
-import ru.astrainteractive.astrarating.core.EmpireConfig
-import ru.astrainteractive.astrarating.core.PluginTranslation
+import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
+import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
 import ru.astrainteractive.klibs.kstorage.api.impl.DefaultMutableKrate
 import ru.astrainteractive.klibs.kstorage.util.asStateFlowMutableKrate
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
@@ -33,28 +32,28 @@ class CoreModule(
         )
     }
     val translationKrate = DefaultMutableKrate(
-        factory = ::PluginTranslation,
+        factory = ::AstraRatingTranslation,
         loader = {
             yamlStringFormat.parseOrWriteIntoDefault(
                 file = dataFolder.resolve("translations.yml"),
-                default = ::PluginTranslation,
+                default = ::AstraRatingTranslation,
                 logger = this
             )
         }
     ).asStateFlowMutableKrate()
 
     val configKrate = DefaultMutableKrate(
-        factory = ::EmpireConfig,
+        factory = ::AstraRatingConfig,
         loader = {
             yamlStringFormat.parseOrWriteIntoDefault(
                 file = dataFolder.resolve("config.yml"),
-                default = ::EmpireConfig,
+                default = ::AstraRatingConfig,
                 logger = this
             )
         }
     ).asStateFlowMutableKrate()
-    val scope = CoroutineFeature.Default(Dispatchers.IO)
-
+    val ioScope = CoroutineFeature.Default(dispatchers.IO)
+    val mainScope = CoroutineFeature.Default(dispatchers.Main)
     val lifecycle: Lifecycle by lazy {
         Lifecycle.Lambda(
             onReload = {
@@ -62,7 +61,7 @@ class CoreModule(
                 translationKrate.getValue()
             },
             onDisable = {
-                scope.cancel()
+                ioScope.cancel()
             }
         )
     }

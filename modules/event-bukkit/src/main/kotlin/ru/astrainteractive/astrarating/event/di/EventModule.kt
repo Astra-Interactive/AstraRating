@@ -3,14 +3,14 @@ package ru.astrainteractive.astrarating.event.di
 import org.bukkit.event.HandlerList
 import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
-import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
+import ru.astrainteractive.astrarating.core.di.BukkitModule
 import ru.astrainteractive.astrarating.core.di.CoreModule
-import ru.astrainteractive.astrarating.di.BukkitModule
+import ru.astrainteractive.astrarating.data.dao.di.RatingDaoModule
 import ru.astrainteractive.astrarating.event.kill.KillEventListener
 
 class EventModule(
     coreModule: CoreModule,
-    apiRatingModule: ApiRatingModule,
+    ratingDaoModule: RatingDaoModule,
     bukkitModule: BukkitModule
 ) {
     private val killEvent by lazy {
@@ -18,8 +18,8 @@ class EventModule(
             configKrate = coreModule.configKrate,
             translationKrate = coreModule.translationKrate,
             kyoriKrate = bukkitModule.kyoriKrate,
-            ratingDao = apiRatingModule.ratingDao,
-            scope = coreModule.scope,
+            ratingDao = ratingDaoModule.ratingDao,
+            scope = coreModule.ioScope,
             dispatchers = coreModule.dispatchers
         )
     }

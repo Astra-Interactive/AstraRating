@@ -1,9 +1,9 @@
 package ru.astrainteractive.astrarating.feature.ratings.player.domain
 
-import ru.astrainteractive.astrarating.dto.UserRatingDTO
+import ru.astrainteractive.astrarating.data.exposed.dto.UserRatingDTO
+import ru.astrainteractive.astrarating.data.exposed.model.UserRatingsSort
 import ru.astrainteractive.astrarating.feature.ratings.player.domain.RatingSortUseCase.Input
 import ru.astrainteractive.astrarating.feature.ratings.player.domain.RatingSortUseCase.Output
-import ru.astrainteractive.astrarating.model.UserRatingsSort
 
 internal interface RatingSortUseCase {
     class Input(val ratings: List<UserRatingDTO>, val sort: UserRatingsSort)

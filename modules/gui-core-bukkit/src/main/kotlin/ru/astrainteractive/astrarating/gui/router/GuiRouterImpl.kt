@@ -16,7 +16,7 @@ internal class GuiRouterImpl(
     private val ratingPlayerModule: RatingPlayerModule,
     private val ratingPlayersModule: RatingPlayersModule
 ) : GuiRouter {
-    private val scope = coreModule.scope
+    private val scope = coreModule.ioScope
     private val dispatchers = coreModule.dispatchers
 
     override fun navigate(route: GuiRouter.Route) {

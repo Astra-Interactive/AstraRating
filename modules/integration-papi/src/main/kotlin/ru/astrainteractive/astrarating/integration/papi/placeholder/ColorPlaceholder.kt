@@ -21,7 +21,7 @@ internal class ColorPlaceholder(
         update = { uuid ->
             val name = Bukkit.getOfflinePlayer(uuid).name ?: Bukkit.getPlayer(uuid)?.name
             name ?: return@DefaultKCache ""
-            val rating = cachedApi.getPlayerRating(name, uuid)
+            val rating = ratingCachedDao.getPlayerRating(name, uuid)
 
             ColoringUtil.getColoringByRating(
                 colorings = papiConfiguration.colorings,

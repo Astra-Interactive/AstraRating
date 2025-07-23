@@ -2,9 +2,9 @@ package ru.astrainteractive.astrarating.feature.rating.players.data
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
-import ru.astrainteractive.astrarating.api.rating.api.RatingDao
 import ru.astrainteractive.astrarating.core.cache.DefaultKCache
-import ru.astrainteractive.astrarating.dto.RatedUserDTO
+import ru.astrainteractive.astrarating.data.dao.RatingDao
+import ru.astrainteractive.astrarating.data.exposed.dto.RatedUserDTO
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import kotlin.time.Duration.Companion.seconds
 

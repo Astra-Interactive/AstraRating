@@ -4,10 +4,10 @@ package ru.astrainteractive.astrarating.gui.util
 
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
-import ru.astrainteractive.astrarating.core.PluginTranslation
-import ru.astrainteractive.astrarating.dto.UserDTO
-import ru.astrainteractive.astrarating.model.UserRatingsSort
-import ru.astrainteractive.astrarating.model.UsersRatingsSort
+import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
+import ru.astrainteractive.astrarating.data.exposed.dto.UserDTO
+import ru.astrainteractive.astrarating.data.exposed.model.UserRatingsSort
+import ru.astrainteractive.astrarating.data.exposed.model.UsersRatingsSort
 import java.util.UUID
 
 internal val UserDTO.offlinePlayer: OfflinePlayer
@@ -19,16 +19,16 @@ internal val UserDTO.normalName: String
 
 internal val UsersRatingsSort.desc: TranslationDesc
     get() = when (this) {
-        UsersRatingsSort.ASC -> TranslationDesc(PluginTranslation::sortASC)
-        UsersRatingsSort.DESC -> TranslationDesc(PluginTranslation::sortDESC)
+        UsersRatingsSort.ASC -> TranslationDesc(AstraRatingTranslation::sortASC)
+        UsersRatingsSort.DESC -> TranslationDesc(AstraRatingTranslation::sortDESC)
     }
 
 internal val UserRatingsSort.desc: TranslationDesc
     get() = when (this) {
-        UserRatingsSort.PLAYER_ASC -> TranslationDesc(PluginTranslation::sortPlayerASC)
-        UserRatingsSort.PLAYER_DESC -> TranslationDesc(PluginTranslation::sortPlayerDESC)
-        UserRatingsSort.DATE_DESC -> TranslationDesc(PluginTranslation::sortDateDESC)
-        UserRatingsSort.DATE_ASC -> TranslationDesc(PluginTranslation::sortDateASC)
-        UserRatingsSort.RATING_DESC -> TranslationDesc(PluginTranslation::sortRatingDESC)
-        UserRatingsSort.RATING_ASC -> TranslationDesc(PluginTranslation::sortRatingASC)
+        UserRatingsSort.PLAYER_ASC -> TranslationDesc(AstraRatingTranslation::sortPlayerASC)
+        UserRatingsSort.PLAYER_DESC -> TranslationDesc(AstraRatingTranslation::sortPlayerDESC)
+        UserRatingsSort.DATE_DESC -> TranslationDesc(AstraRatingTranslation::sortDateDESC)
+        UserRatingsSort.DATE_ASC -> TranslationDesc(AstraRatingTranslation::sortDateASC)
+        UserRatingsSort.RATING_DESC -> TranslationDesc(AstraRatingTranslation::sortRatingDESC)
+        UserRatingsSort.RATING_ASC -> TranslationDesc(AstraRatingTranslation::sortRatingASC)
     }

@@ -8,20 +8,16 @@ import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.gui.router.GuiRouterImpl
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 
-interface GuiModule {
-    val router: GuiRouter
-
-    class Default(
-        coreModule: CoreModule,
-        translationContext: CachedKrate<KyoriComponentSerializer>,
-        ratingPlayerModule: RatingPlayerModule,
-        ratingPlayersModule: RatingPlayersModule
-    ) : GuiModule {
-        override val router: GuiRouter = GuiRouterImpl(
-            coreModule = coreModule,
-            translationContext = translationContext,
-            ratingPlayerModule = ratingPlayerModule,
-            ratingPlayersModule = ratingPlayersModule
-        )
-    }
+class GuiModule(
+    coreModule: CoreModule,
+    translationContext: CachedKrate<KyoriComponentSerializer>,
+    ratingPlayerModule: RatingPlayerModule,
+    ratingPlayersModule: RatingPlayersModule
+) {
+    val router: GuiRouter = GuiRouterImpl(
+        coreModule = coreModule,
+        translationContext = translationContext,
+        ratingPlayerModule = ratingPlayerModule,
+        ratingPlayersModule = ratingPlayersModule
+    )
 }

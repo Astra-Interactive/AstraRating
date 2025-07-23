@@ -7,13 +7,13 @@ import ru.astrainteractive.astralibs.command.api.parser.CommandParser
 import ru.astrainteractive.astralibs.command.api.util.PluginExt.setCommandExecutor
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
-import ru.astrainteractive.astrarating.core.PluginTranslation
-import ru.astrainteractive.astrarating.core.RatingPermission
+import ru.astrainteractive.astrarating.core.settings.AstraRatingPermission
+import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
 import javax.naming.NoPermissionException
 
 internal class ReloadCommandRegistry(
     private val plugin: LifecyclePlugin,
-    private val translation: PluginTranslation,
+    private val translation: AstraRatingTranslation,
     private val kyoriComponentSerializer: KyoriComponentSerializer
 ) : KyoriComponentSerializer by kyoriComponentSerializer {
 
@@ -26,7 +26,7 @@ internal class ReloadCommandRegistry(
                 it.sender.sendMessage(translation.reloadComplete.let(::toComponent))
             },
             commandParser = CommandParser { context ->
-                context.requirePermission(RatingPermission.Reload)
+                context.requirePermission(AstraRatingPermission.Reload)
                 ReloadCommand.Result(context.sender)
             },
             errorHandler = ErrorHandler { commandContext, throwable ->

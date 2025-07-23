@@ -7,19 +7,19 @@ import org.bukkit.event.entity.PlayerDeathEvent
 import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.kyori.unwrap
-import ru.astrainteractive.astrarating.api.rating.api.RatingDBApiExt.upsertUser
-import ru.astrainteractive.astrarating.api.rating.api.RatingDao
-import ru.astrainteractive.astrarating.core.EmpireConfig
-import ru.astrainteractive.astrarating.core.PluginTranslation
-import ru.astrainteractive.astrarating.dto.RatingType
-import ru.astrainteractive.astrarating.model.UserModel
+import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
+import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
+import ru.astrainteractive.astrarating.data.dao.RatingDao
+import ru.astrainteractive.astrarating.data.dao.upsertUser
+import ru.astrainteractive.astrarating.data.exposed.dto.RatingType
+import ru.astrainteractive.astrarating.data.exposed.model.UserModel
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 internal class KillEventListener(
-    configKrate: CachedKrate<EmpireConfig>,
-    translationKrate: CachedKrate<PluginTranslation>,
+    configKrate: CachedKrate<AstraRatingConfig>,
+    translationKrate: CachedKrate<AstraRatingTranslation>,
     val ratingDao: RatingDao,
     val scope: CoroutineScope,
     val dispatchers: KotlinDispatchers,

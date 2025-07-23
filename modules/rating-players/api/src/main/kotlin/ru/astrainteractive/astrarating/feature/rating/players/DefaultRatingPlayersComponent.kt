@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.astrainteractive.astralibs.async.CoroutineFeature
+import ru.astrainteractive.astrarating.data.exposed.model.UsersRatingsSort
 import ru.astrainteractive.astrarating.feature.rating.players.data.RatingPlayersCachedRepository
-import ru.astrainteractive.astrarating.model.UsersRatingsSort
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.util.next
 

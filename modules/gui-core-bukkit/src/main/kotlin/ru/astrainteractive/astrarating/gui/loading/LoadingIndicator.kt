@@ -10,11 +10,11 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.menu.core.Menu
-import ru.astrainteractive.astrarating.core.PluginTranslation
+import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
 
 internal class LoadingIndicator(
     private val menu: Menu,
-    private val translation: PluginTranslation,
+    private val translation: AstraRatingTranslation,
     private val kyori: KyoriComponentSerializer
 ) {
     private var job: Job? = null

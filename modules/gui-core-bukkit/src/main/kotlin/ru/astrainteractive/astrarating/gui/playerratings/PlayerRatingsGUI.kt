@@ -21,9 +21,9 @@ import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isLastPa
 import ru.astrainteractive.astralibs.menu.slot.InventorySlot
 import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissible
 import ru.astrainteractive.astralibs.string.replace
-import ru.astrainteractive.astrarating.core.EmpireConfig
-import ru.astrainteractive.astrarating.core.PluginTranslation
-import ru.astrainteractive.astrarating.core.RatingPermission
+import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
+import ru.astrainteractive.astrarating.core.settings.AstraRatingPermission
+import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
 import ru.astrainteractive.astrarating.feature.ratings.player.presentation.RatingPlayerComponent
 import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
@@ -46,8 +46,8 @@ internal class PlayerRatingsGUI(
     private val player: Player,
     private val ratingPlayerComponent: RatingPlayerComponent,
     private val router: GuiRouter,
-    private val translationKrate: CachedKrate<PluginTranslation>,
-    private val configKratre: CachedKrate<EmpireConfig>,
+    private val translationKrate: CachedKrate<AstraRatingTranslation>,
+    private val configKratre: CachedKrate<AstraRatingConfig>,
     private val kyoriKrate: CachedKrate<KyoriComponentSerializer>,
     private val dispatchers: KotlinDispatchers
 ) : PaginatedInventoryMenu() {
@@ -152,11 +152,11 @@ internal class PlayerRatingsGUI(
                 lastPlayed = userAndRating.reportedUser.offlinePlayer.lastPlayed,
                 canDelete = playerHolder.player
                     .toPermissible()
-                    .hasPermission(RatingPermission.DeleteReport),
+                    .hasPermission(AstraRatingPermission.DeleteReport),
                 click = Click { e ->
                     val canDelete = playerHolder.player
                         .toPermissible()
-                        .hasPermission(RatingPermission.DeleteReport)
+                        .hasPermission(AstraRatingPermission.DeleteReport)
                     if (!canDelete) return@Click
                     if (e.click != ClickType.LEFT) return@Click
                     val item = model.userRatings

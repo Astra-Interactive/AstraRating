@@ -4,10 +4,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.astrainteractive.astralibs.async.CoroutineFeature
-import ru.astrainteractive.astrarating.api.rating.api.RatingDao
-import ru.astrainteractive.astrarating.dto.UserRatingDTO
+import ru.astrainteractive.astrarating.data.dao.RatingDao
+import ru.astrainteractive.astrarating.data.exposed.dto.UserRatingDTO
+import ru.astrainteractive.astrarating.data.exposed.model.UserRatingsSort
 import ru.astrainteractive.astrarating.feature.ratings.player.domain.RatingSortUseCase
-import ru.astrainteractive.astrarating.model.UserRatingsSort
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.util.next
 import java.util.UUID

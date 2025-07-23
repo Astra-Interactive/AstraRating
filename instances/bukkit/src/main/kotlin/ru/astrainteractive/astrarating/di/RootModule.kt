@@ -3,48 +3,48 @@ package ru.astrainteractive.astrarating.di
 import ru.astrainteractive.astralibs.async.DefaultBukkitDispatchers
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
-import ru.astrainteractive.astrarating.api.rating.di.ApiRatingModule
 import ru.astrainteractive.astrarating.command.di.CommandsModule
+import ru.astrainteractive.astrarating.core.di.BukkitModule
 import ru.astrainteractive.astrarating.core.di.CoreModule
-import ru.astrainteractive.astrarating.db.rating.di.DBRatingModule
+import ru.astrainteractive.astrarating.data.dao.di.RatingDaoModule
+import ru.astrainteractive.astrarating.data.exposed.db.rating.di.DBRatingModule
 import ru.astrainteractive.astrarating.event.di.EventModule
-import ru.astrainteractive.astrarating.feature.changerating.di.RatingChangeModule
+import ru.astrainteractive.astrarating.feature.rating.change.di.RatingChangeModule
 import ru.astrainteractive.astrarating.feature.rating.players.di.RatingPlayersModule
 import ru.astrainteractive.astrarating.feature.ratings.player.di.RatingPlayerModule
 import ru.astrainteractive.astrarating.gui.di.GuiModule
 import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
 
 class RootModule(plugin: LifecyclePlugin) {
-    private val bukkitModule: BukkitModule by lazy {
-        BukkitModule.Default(plugin)
-    }
-
     private val coreModule: CoreModule by lazy {
-        CoreModule.Default(
-            dataFolder = bukkitModule.plugin.dataFolder,
-            dispatchers = DefaultBukkitDispatchers(bukkitModule.plugin)
+        CoreModule(
+            dataFolder = plugin.dataFolder,
+            dispatchers = DefaultBukkitDispatchers(plugin)
         )
+    }
+    private val bukkitModule: BukkitModule by lazy {
+        BukkitModule(plugin, coreModule.mainScope)
     }
 
     private val dbRatingModule: DBRatingModule by lazy {
-        DBRatingModule.Default(
+        DBRatingModule(
             stringFormat = coreModule.yamlStringFormat,
             dataFolder = bukkitModule.plugin.dataFolder,
         )
     }
 
-    private val apiRatingModule: ApiRatingModule by lazy {
-        ApiRatingModule.Default(
+    private val ratingDaoModule: RatingDaoModule by lazy {
+        RatingDaoModule(
             databaseFlow = dbRatingModule.databaseFlow,
-            coroutineScope = coreModule.scope,
+            coroutineScope = coreModule.ioScope,
             isDebugProvider = { coreModule.configKrate.cachedValue.debug }
         )
     }
 
     private val papiModule: PapiModule by lazy {
-        PapiModule.Default(
-            cachedApi = apiRatingModule.cachedApi,
-            scope = coreModule.scope,
+        PapiModule(
+            ratingCachedDao = ratingDaoModule.ratingCachedDao,
+            scope = coreModule.ioScope,
             dataFolder = bukkitModule.plugin.dataFolder,
             yamlStringFormat = coreModule.yamlStringFormat
         )
@@ -53,28 +53,28 @@ class RootModule(plugin: LifecyclePlugin) {
     private val ratingChangeModule: RatingChangeModule by lazy {
         RatingChangeModule(
             dispatchers = coreModule.dispatchers,
-            empireConfigKrate = coreModule.configKrate,
-            dbApi = apiRatingModule.ratingDao
+            astraRatingConfigKrate = coreModule.configKrate,
+            dbApi = ratingDaoModule.ratingDao
         )
     }
 
     private val ratingPlayerModule: RatingPlayerModule by lazy {
         RatingPlayerModule(
-            apiRatingModule = apiRatingModule,
+            ratingDaoModule = ratingDaoModule,
             dispatchers = coreModule.dispatchers,
         )
     }
 
     private val ratingPlayersModule: RatingPlayersModule by lazy {
         RatingPlayersModule(
-            apiRatingModule = apiRatingModule,
+            ratingDaoModule = ratingDaoModule,
             dispatchers = coreModule.dispatchers,
-            coroutineScope = coreModule.scope
+            coroutineScope = coreModule.ioScope
         )
     }
 
     private val guiModule: GuiModule by lazy {
-        GuiModule.Default(
+        GuiModule(
             coreModule = coreModule,
             translationContext = bukkitModule.kyoriKrate,
             ratingPlayerModule = ratingPlayerModule,
@@ -83,15 +83,15 @@ class RootModule(plugin: LifecyclePlugin) {
     }
 
     private val eventModule: EventModule by lazy {
-        EventModule.Default(
+        EventModule(
             coreModule = coreModule,
-            apiRatingModule = apiRatingModule,
+            ratingDaoModule = ratingDaoModule,
             bukkitModule = bukkitModule
         )
     }
 
     private val commandsModule: CommandsModule by lazy {
-        CommandsModule.Default(
+        CommandsModule(
             bukkitModule = bukkitModule,
             coreModule = coreModule,
             guiModule = guiModule,
@@ -103,7 +103,7 @@ class RootModule(plugin: LifecyclePlugin) {
             coreModule.lifecycle,
             bukkitModule.lifecycle,
             dbRatingModule.lifecycle,
-            apiRatingModule.lifecycle,
+            ratingDaoModule.lifecycle,
             ratingPlayersModule.lifecycle,
             commandsModule.lifecycle,
             eventModule.lifecycle,

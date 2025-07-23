@@ -18,8 +18,8 @@ import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.getIndex
 import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isFirstPage
 import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isLastPage
 import ru.astrainteractive.astralibs.menu.slot.InventorySlot
-import ru.astrainteractive.astrarating.core.EmpireConfig
-import ru.astrainteractive.astrarating.core.PluginTranslation
+import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
+import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
 import ru.astrainteractive.astrarating.feature.rating.players.RatingPlayersComponent
 import ru.astrainteractive.astrarating.gui.loading.LoadingIndicator
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
@@ -32,7 +32,6 @@ import ru.astrainteractive.astrarating.gui.slot.ratingsSortSlot
 import ru.astrainteractive.astrarating.gui.util.normalName
 import ru.astrainteractive.astrarating.gui.util.offlinePlayer
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
-import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import java.util.UUID
 
@@ -40,8 +39,8 @@ import java.util.UUID
 internal class RatingsGUI(
     player: Player,
     private val dispatchers: KotlinDispatchers,
-    private val translationKrate: CachedKrate<PluginTranslation>,
-    private val configKratre: CachedKrate<EmpireConfig>,
+    private val translationKrate: CachedKrate<AstraRatingTranslation>,
+    private val configKratre: CachedKrate<AstraRatingConfig>,
     private val kyoriKrate: CachedKrate<KyoriComponentSerializer>,
     private val ratingPlayersComponent: RatingPlayersComponent,
     private val router: GuiRouter

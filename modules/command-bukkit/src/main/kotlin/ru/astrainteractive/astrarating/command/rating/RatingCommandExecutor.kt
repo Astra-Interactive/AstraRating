@@ -9,16 +9,16 @@ import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.command.api.executor.CommandExecutor
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissible
-import ru.astrainteractive.astrarating.core.PluginTranslation
-import ru.astrainteractive.astrarating.dto.RatingType
-import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCase
+import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
+import ru.astrainteractive.astrarating.data.exposed.dto.RatingType
+import ru.astrainteractive.astrarating.data.exposed.model.PlayerModel
+import ru.astrainteractive.astrarating.feature.rating.change.domain.usecase.AddRatingUseCase
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
-import ru.astrainteractive.astrarating.model.PlayerModel
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 internal class RatingCommandExecutor(
     private val addRatingUseCase: AddRatingUseCase,
-    private val translation: PluginTranslation,
+    private val translation: AstraRatingTranslation,
     private val coroutineScope: CoroutineScope,
     private val dispatchers: KotlinDispatchers,
     kyoriComponentSerializer: KyoriComponentSerializer,

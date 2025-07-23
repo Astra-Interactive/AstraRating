@@ -7,8 +7,8 @@ import ru.astrainteractive.astralibs.command.api.util.PluginExt.setCommandExecut
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
-import ru.astrainteractive.astrarating.core.PluginTranslation
-import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCase
+import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
+import ru.astrainteractive.astrarating.feature.rating.change.domain.usecase.AddRatingUseCase
 import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
@@ -16,7 +16,7 @@ import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 internal class RatingCommandRegistry(
     private val plugin: JavaPlugin,
     private val addRatingUseCase: AddRatingUseCase,
-    private val translation: PluginTranslation,
+    private val translation: AstraRatingTranslation,
     private val coroutineScope: CoroutineScope,
     private val dispatchers: KotlinDispatchers,
     private val kyoriComponentSerializer: KyoriComponentSerializer,

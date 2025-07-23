@@ -4,7 +4,7 @@ package ru.astrainteractive.astrarating.gui.util
 
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
-import ru.astrainteractive.astrarating.core.EmpireConfig
+import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
 import kotlin.math.max
 
 internal fun subListFromString(text: String, threshold: Int, cutWords: Boolean): List<String> {
@@ -18,7 +18,7 @@ internal fun subListFromString(text: String, threshold: Int, cutWords: Boolean):
     return res
 }
 
-internal fun EmpireConfig.Gui.Buttons.Button.toItemStack(): ItemStack {
+internal fun AstraRatingConfig.Gui.Buttons.Button.toItemStack(): ItemStack {
     val material = Material.getMaterial(material.uppercase()) ?: Material.PAPER
     val itemStack = ItemStack(material)
     itemStack.editMeta { meta ->

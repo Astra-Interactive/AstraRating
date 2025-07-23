@@ -2,8 +2,8 @@ package ru.astrainteractive.astrarating.feature.rating.players
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
-import ru.astrainteractive.astrarating.dto.RatedUserDTO
-import ru.astrainteractive.astrarating.model.UsersRatingsSort
+import ru.astrainteractive.astrarating.data.exposed.dto.RatedUserDTO
+import ru.astrainteractive.astrarating.data.exposed.model.UsersRatingsSort
 
 interface RatingPlayersComponent : CoroutineScope {
     val model: StateFlow<Model>
