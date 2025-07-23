@@ -1,7 +1,9 @@
 package ru.astrainteractive.astrarating.command.di
 
-import CommandManager
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
+import ru.astrainteractive.astrarating.command.rating.RatingCommandExecutor
+import ru.astrainteractive.astrarating.command.rating.createRatingCommandNode
+import ru.astrainteractive.astrarating.command.reload.createReloadCommandNode
 import ru.astrainteractive.astrarating.core.di.BukkitModule
 import ru.astrainteractive.astrarating.core.di.CoreModule
 import ru.astrainteractive.astrarating.core.gui.di.GuiBukkitModule
@@ -13,19 +15,29 @@ class CommandsModule(
     coreModule: CoreModule,
     guiBukkitModule: GuiBukkitModule
 ) {
-    private val commandManager: CommandManager by lazy {
-        val dependencies = CommandsDependencies.Default(
-            bukkitModule = bukkitModule,
-            coreModule = coreModule,
-            guiBukkitModule = guiBukkitModule,
-            ratingChangeModule = ratingChangeModule
-        )
-        CommandManager(dependencies)
-    }
     val lifecycle: Lifecycle by lazy {
         Lifecycle.Lambda(
             onEnable = {
-                commandManager
+                bukkitModule.commandRegistrarContext.registerWhenReady(
+                    node = createReloadCommandNode(
+                        lifecyclePlugin = bukkitModule.plugin,
+                        translationKrate = coreModule.translationKrate,
+                        kyoriKrate = bukkitModule.kyoriKrate
+                    )
+                )
+                bukkitModule.commandRegistrarContext.registerWhenReady(
+                    node = createRatingCommandNode(
+                        kyoriKrate = bukkitModule.kyoriKrate,
+                        ratingCommandExecutor = RatingCommandExecutor(
+                            addRatingUseCase = ratingChangeModule.addRatingUseCase,
+                            translationKrate = coreModule.translationKrate,
+                            coroutineScope = coreModule.ioScope,
+                            dispatchers = coreModule.dispatchers,
+                            kyoriKrate = bukkitModule.kyoriKrate,
+                            router = guiBukkitModule.router
+                        )
+                    )
+                )
             }
         )
     }
