@@ -5,12 +5,12 @@ import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
 import ru.astrainteractive.astrarating.core.di.BukkitModule
 import ru.astrainteractive.astrarating.core.di.CoreModule
+import ru.astrainteractive.astrarating.core.gui.di.GuiBukkitModule
+import ru.astrainteractive.astrarating.core.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
 import ru.astrainteractive.astrarating.feature.rating.change.di.RatingChangeModule
 import ru.astrainteractive.astrarating.feature.rating.change.domain.usecase.AddRatingUseCase
-import ru.astrainteractive.astrarating.gui.di.GuiModule
-import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 internal interface CommandsDependencies {
@@ -27,7 +27,7 @@ internal interface CommandsDependencies {
         private val ratingChangeModule: RatingChangeModule,
         private val bukkitModule: BukkitModule,
         private val coreModule: CoreModule,
-        private val guiModule: GuiModule
+        private val guiBukkitModule: GuiBukkitModule
     ) : CommandsDependencies {
 
         override val plugin: LifecyclePlugin = bukkitModule.plugin
@@ -39,6 +39,6 @@ internal interface CommandsDependencies {
 
         override val kyoriComponentSerializer get() = bukkitModule.kyoriKrate.cachedValue
 
-        override val router: GuiRouter get() = guiModule.router
+        override val router: GuiRouter get() = guiBukkitModule.router
     }
 }

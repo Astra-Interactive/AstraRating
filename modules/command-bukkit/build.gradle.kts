@@ -22,6 +22,6 @@ dependencies {
     implementation(projects.modules.core.bukkit)
     implementation(projects.modules.data.dao)
     implementation(projects.modules.data.exposed)
-    implementation(projects.modules.guiCoreBukkit)
+    implementation(projects.modules.core.guiBukkit)
     implementation(projects.modules.ratingChange.api)
 }

@@ -7,9 +7,9 @@ import ru.astrainteractive.astralibs.command.api.util.PluginExt.setCommandExecut
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.logging.JUtiltLogger
 import ru.astrainteractive.astralibs.logging.Logger
+import ru.astrainteractive.astrarating.core.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
 import ru.astrainteractive.astrarating.feature.rating.change.domain.usecase.AddRatingUseCase
-import ru.astrainteractive.astrarating.gui.router.GuiRouter
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 @Suppress("LongParameterList")

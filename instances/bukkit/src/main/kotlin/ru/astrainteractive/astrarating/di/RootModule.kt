@@ -6,13 +6,13 @@ import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
 import ru.astrainteractive.astrarating.command.di.CommandsModule
 import ru.astrainteractive.astrarating.core.di.BukkitModule
 import ru.astrainteractive.astrarating.core.di.CoreModule
+import ru.astrainteractive.astrarating.core.gui.di.GuiBukkitModule
 import ru.astrainteractive.astrarating.data.dao.di.RatingDaoModule
 import ru.astrainteractive.astrarating.data.exposed.db.rating.di.DBRatingModule
 import ru.astrainteractive.astrarating.event.di.EventModule
 import ru.astrainteractive.astrarating.feature.rating.change.di.RatingChangeModule
 import ru.astrainteractive.astrarating.feature.rating.players.di.RatingPlayersModule
 import ru.astrainteractive.astrarating.feature.ratings.player.di.RatingPlayerModule
-import ru.astrainteractive.astrarating.gui.di.GuiModule
 import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
 
 class RootModule(plugin: LifecyclePlugin) {
@@ -73,8 +73,8 @@ class RootModule(plugin: LifecyclePlugin) {
         )
     }
 
-    private val guiModule: GuiModule by lazy {
-        GuiModule(
+    private val guiBukkitModule: GuiBukkitModule by lazy {
+        GuiBukkitModule(
             coreModule = coreModule,
             translationContext = bukkitModule.kyoriKrate,
             ratingPlayerModule = ratingPlayerModule,
@@ -94,7 +94,7 @@ class RootModule(plugin: LifecyclePlugin) {
         CommandsModule(
             bukkitModule = bukkitModule,
             coreModule = coreModule,
-            guiModule = guiModule,
+            guiBukkitModule = guiBukkitModule,
             ratingChangeModule = ratingChangeModule
         )
     }
