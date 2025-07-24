@@ -1,6 +1,7 @@
 package ru.astrainteractive.astrarating.command.rating
 
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
+import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.LiteralCommandNode
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.Bukkit
@@ -20,6 +21,23 @@ import ru.astrainteractive.astrarating.command.exception.UnknownPlayerCommandExc
 import ru.astrainteractive.astrarating.command.exception.UsageCommandException
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
+
+private fun openRating(
+    ctx: CommandContext<CommandSourceStack>,
+    commandExceptionHandler: CommandExceptionHandler,
+    ratingCommandExecutor: RatingCommandExecutor
+) {
+    val executor = ctx.source.sender as? Player
+    if (executor == null) {
+        commandExceptionHandler.handle(ctx, OnlyPlayerCommandException())
+        return
+    }
+    ratingCommandExecutor.execute(
+        RatingCommand.Result.OpenRatingsGui(
+            executor = executor
+        )
+    )
+}
 
 @Suppress("LongMethod")
 internal fun createRatingCommandNode(
@@ -61,6 +79,13 @@ internal fun createRatingCommandNode(
                 }
             }
             literal("rating") {
+                runs { ctx ->
+                    openRating(
+                        ctx = ctx,
+                        commandExceptionHandler = commandExceptionHandler,
+                        ratingCommandExecutor = ratingCommandExecutor
+                    )
+                }
                 stringArgument("like_dislike") {
                     hints(listOf("like", "dislike", "+", "-"))
                     stringArgument("player") player@{
@@ -116,15 +141,10 @@ internal fun createRatingCommandNode(
                 }
             }
             runs { ctx ->
-                val executor = ctx.source.sender as? Player
-                if (executor == null) {
-                    commandExceptionHandler.handle(ctx, OnlyPlayerCommandException())
-                    return@runs
-                }
-                ratingCommandExecutor.execute(
-                    RatingCommand.Result.OpenRatingsGui(
-                        executor = executor
-                    )
+                openRating(
+                    ctx = ctx,
+                    commandExceptionHandler = commandExceptionHandler,
+                    ratingCommandExecutor = ratingCommandExecutor
                 )
             }
         }.build()
