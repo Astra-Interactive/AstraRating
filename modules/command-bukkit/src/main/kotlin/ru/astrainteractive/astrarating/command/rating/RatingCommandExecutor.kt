@@ -58,47 +58,47 @@ internal class RatingCommandExecutor(
         )
         val result = runCatching { addRatingUseCase.invoke(useCaseInput) }
         result.onFailure {
-            input.executor.sendMessage(translation.unknownError.let(::toComponent))
+            input.executor.sendMessage(translation.unknownError.component)
             it.printStackTrace()
         }
         result.onSuccess {
             when (it) {
                 AddRatingUseCase.Output.AlreadyMaxDayVotes -> {
-                    input.executor.sendMessage(translation.alreadyMaxDayVotes.let(::toComponent))
+                    input.executor.sendMessage(translation.alreadyMaxDayVotes.component)
                 }
 
                 AddRatingUseCase.Output.AlreadyMaxVotesOnPlayer -> {
-                    input.executor.sendMessage(translation.alreadyMaxPlayerVotes.let(::toComponent))
+                    input.executor.sendMessage(translation.alreadyMaxPlayerVotes.component)
                 }
 
                 AddRatingUseCase.Output.MessageNotCorrect -> {
-                    input.executor.sendMessage(translation.wrongMessageLen.let(::toComponent))
+                    input.executor.sendMessage(translation.wrongMessageLen.component)
                 }
 
                 AddRatingUseCase.Output.NoPermission -> {
-                    input.executor.sendMessage(translation.noPermission.let(::toComponent))
+                    input.executor.sendMessage(translation.noPermission.component)
                 }
 
                 AddRatingUseCase.Output.NotEnoughOnServer -> {
-                    input.executor.sendMessage(translation.notEnoughOnServer.let(::toComponent))
+                    input.executor.sendMessage(translation.notEnoughOnServer.component)
                 }
 
                 AddRatingUseCase.Output.PlayerNotExists -> {
-                    input.executor.sendMessage(translation.playerNotExists.let(::toComponent))
+                    input.executor.sendMessage(translation.playerNotExists.component)
                 }
 
                 AddRatingUseCase.Output.SamePlayer -> {
-                    input.executor.sendMessage(translation.cantRateSelf.let(::toComponent))
+                    input.executor.sendMessage(translation.cantRateSelf.component)
                 }
 
                 AddRatingUseCase.Output.Success -> {
                     if (input.value > 0) {
                         input.executor.sendMessage(
-                            translation.likedUser(input.ratedPlayer.name ?: "-").let(::toComponent)
+                            translation.likedUser(input.ratedPlayer.name ?: "-").component
                         )
                     } else {
                         input.executor.sendMessage(
-                            translation.dislikedUser(input.ratedPlayer.name ?: "-").let(::toComponent)
+                            translation.dislikedUser(input.ratedPlayer.name ?: "-").component
                         )
                     }
                 }
