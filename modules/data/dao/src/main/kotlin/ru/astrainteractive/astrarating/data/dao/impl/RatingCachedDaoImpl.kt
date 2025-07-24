@@ -17,9 +17,10 @@ internal class RatingCachedDaoImpl(
         maximumSize = 100L,
         coroutineScope = scope,
         update = { playerData ->
-            val rating = databaseApi.fetchUserRatings(playerData.uuid).getOrNull()?.sumOf {
-                it.rating
-            } ?: 0
+            val rating = databaseApi.fetchUserRatings(playerData.uuid)
+                .getOrNull()
+                ?.sumOf { userRatingDTO -> userRatingDTO.rating }
+                ?: 0
             RatingData(rating)
         }
     )

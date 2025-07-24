@@ -1,11 +1,12 @@
 package ru.astrainteractive.astrarating.data.exposed.db.rating.di
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 import kotlinx.serialization.StringFormat
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -68,7 +69,7 @@ class DBRatingModule(
         Lifecycle.Lambda(
             onEnable = {},
             onDisable = {
-                runBlocking {
+                GlobalScope.launch {
                     databaseFlow.first().run(TransactionManager::closeAndUnregister)
                 }
                 coroutineScope.cancel()
