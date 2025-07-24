@@ -28,6 +28,7 @@ class CommandExceptionHandler(
             is BadArgumentException -> translation.wrongUsage
             is ArgumentTypeException -> translation.wrongUsage
             is NoPermissionException -> translation.noPermission
+            is UnknownPlayerCommandException,
             is NoPlayerException -> translation.playerNotExists
             is OnlyPlayerCommandException -> translation.onlyPlayerCommand
             else -> {

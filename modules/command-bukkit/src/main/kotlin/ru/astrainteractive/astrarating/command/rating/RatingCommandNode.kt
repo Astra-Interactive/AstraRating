@@ -89,7 +89,7 @@ internal fun createRatingCommandNode(
                 stringArgument("like_dislike") {
                     hints(listOf("like", "dislike", "+", "-"))
                     stringArgument("player") player@{
-                        hints(Bukkit.getOnlinePlayers().map(Player::getName))
+                        hints { Bukkit.getOnlinePlayers().map(Player::getName) }
                         fun RequiredArgumentBuilder<CommandSourceStack, *>.messageArgument(
                             sizeLeft: Int,
                             maxSize: Int
