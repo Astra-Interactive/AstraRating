@@ -7,8 +7,8 @@ import ru.astrainteractive.astralibs.command.api.util.runs
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
-import ru.astrainteractive.astrarating.core.util.getValue
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
+import ru.astrainteractive.klibs.kstorage.util.getValue
 
 fun createReloadCommandNode(
     lifecyclePlugin: LifecyclePlugin,

@@ -18,8 +18,8 @@ import ru.astrainteractive.astrarating.command.exception.CommandExceptionHandler
 import ru.astrainteractive.astrarating.command.exception.OnlyPlayerCommandException
 import ru.astrainteractive.astrarating.command.exception.UnknownPlayerCommandException
 import ru.astrainteractive.astrarating.command.exception.UsageCommandException
-import ru.astrainteractive.astrarating.core.util.getValue
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
+import ru.astrainteractive.klibs.kstorage.util.getValue
 
 @Suppress("LongMethod")
 internal fun createRatingCommandNode(
