@@ -1,6 +1,7 @@
 package ru.astrainteractive.astrarating.command.di
 
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
+import ru.astrainteractive.astrarating.command.exception.CommandExceptionHandler
 import ru.astrainteractive.astrarating.command.rating.RatingCommandExecutor
 import ru.astrainteractive.astrarating.command.rating.createRatingCommandNode
 import ru.astrainteractive.astrarating.command.reload.createReloadCommandNode
@@ -28,6 +29,10 @@ class CommandsModule(
                 bukkitModule.commandRegistrarContext.registerWhenReady(
                     node = createRatingCommandNode(
                         kyoriKrate = bukkitModule.kyoriKrate,
+                        commandExceptionHandler = CommandExceptionHandler(
+                            translationKrate = coreModule.translationKrate,
+                            kyoriKrate = bukkitModule.kyoriKrate
+                        ),
                         ratingCommandExecutor = RatingCommandExecutor(
                             addRatingUseCase = ratingChangeModule.addRatingUseCase,
                             translationKrate = coreModule.translationKrate,
