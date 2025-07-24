@@ -1,7 +1,7 @@
 package ru.astrainteractive.astrarating.data.dao.impl
 
 import kotlinx.coroutines.CoroutineScope
-import ru.astrainteractive.astrarating.core.cache.DefaultKCache
+import ru.astrainteractive.astrarating.core.cache.Cache4kCache
 import ru.astrainteractive.astrarating.data.dao.RatingCachedDao
 import ru.astrainteractive.astrarating.data.dao.RatingDao
 import java.util.UUID
@@ -11,7 +11,7 @@ internal class RatingCachedDaoImpl(
     private val databaseApi: RatingDao,
     scope: CoroutineScope
 ) : RatingCachedDao {
-    private val jcache = DefaultKCache<PlayerData, RatingData>(
+    private val jcache = Cache4kCache<PlayerData, RatingData>(
         expiresAfterAccess = 30.seconds,
         updateAfterAccess = 10.seconds,
         maximumSize = 100L,

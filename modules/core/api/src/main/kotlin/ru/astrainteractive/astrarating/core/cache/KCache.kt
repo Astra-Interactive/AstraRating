@@ -14,7 +14,7 @@ interface KCache<K : Any, V : Any> {
     fun invalidateAll()
 }
 
-class DefaultKCache<K : Any, V : Any>(
+class Cache4kCache<K : Any, V : Any>(
     expiresAfterAccess: Duration,
     expireAfterWrite: Duration = Duration.INFINITE,
     maximumSize: Long,

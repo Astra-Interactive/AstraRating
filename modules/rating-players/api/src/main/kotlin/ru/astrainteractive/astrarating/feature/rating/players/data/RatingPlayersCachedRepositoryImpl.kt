@@ -2,7 +2,7 @@ package ru.astrainteractive.astrarating.feature.rating.players.data
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
-import ru.astrainteractive.astrarating.core.cache.DefaultKCache
+import ru.astrainteractive.astrarating.core.cache.Cache4kCache
 import ru.astrainteractive.astrarating.data.dao.RatingDao
 import ru.astrainteractive.astrarating.data.exposed.dto.RatedUserDTO
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
@@ -13,7 +13,7 @@ internal class RatingPlayersCachedRepositoryImpl(
     private val coroutineScope: CoroutineScope,
     private val dispatchers: KotlinDispatchers
 ) : RatingPlayersCachedRepository {
-    private val jcache = DefaultKCache<Unit, List<RatedUserDTO>>(
+    private val jcache = Cache4kCache<Unit, List<RatedUserDTO>>(
         expiresAfterAccess = 30.seconds,
         updateAfterAccess = 10.seconds,
         maximumSize = 1L,
