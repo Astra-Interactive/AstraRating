@@ -18,10 +18,10 @@ dependencies {
     implementation(libs.klibs.mikro.core)
     implementation(libs.klibs.kstorage)
     // Local
-    implementation(projects.modules.core)
-    implementation(projects.modules.coreBukkit)
-    implementation(projects.modules.apiRating)
-    implementation(projects.modules.dbRating)
-    implementation(projects.modules.shared)
-    implementation(projects.modules.guiCoreBukkit)
+    implementation(projects.modules.core.api)
+    implementation(projects.modules.core.bukkit)
+    implementation(projects.modules.data.dao)
+    implementation(projects.modules.data.exposed)
+    implementation(projects.modules.core.guiBukkit)
+    implementation(projects.modules.ratingChange.api)
 }

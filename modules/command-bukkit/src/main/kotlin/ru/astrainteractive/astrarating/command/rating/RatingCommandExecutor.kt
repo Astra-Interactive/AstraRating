@@ -8,23 +8,27 @@ import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.command.api.executor.CommandExecutor
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
+import ru.astrainteractive.astralibs.kyori.unwrap
 import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissible
-import ru.astrainteractive.astrarating.core.PluginTranslation
-import ru.astrainteractive.astrarating.dto.RatingType
-import ru.astrainteractive.astrarating.feature.changerating.domain.usecase.AddRatingUseCase
-import ru.astrainteractive.astrarating.gui.router.GuiRouter
-import ru.astrainteractive.astrarating.model.PlayerModel
+import ru.astrainteractive.astrarating.core.gui.router.GuiRouter
+import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
+import ru.astrainteractive.astrarating.data.exposed.dto.RatingType
+import ru.astrainteractive.astrarating.data.exposed.model.PlayerModel
+import ru.astrainteractive.astrarating.feature.rating.change.domain.usecase.AddRatingUseCase
+import ru.astrainteractive.klibs.kstorage.api.CachedKrate
+import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 internal class RatingCommandExecutor(
     private val addRatingUseCase: AddRatingUseCase,
-    private val translation: PluginTranslation,
     private val coroutineScope: CoroutineScope,
     private val dispatchers: KotlinDispatchers,
-    kyoriComponentSerializer: KyoriComponentSerializer,
+    translationKrate: CachedKrate<AstraRatingTranslation>,
+    kyoriKrate: CachedKrate<KyoriComponentSerializer>,
     private val router: GuiRouter
 ) : CommandExecutor<RatingCommand.Result>,
-    KyoriComponentSerializer by kyoriComponentSerializer {
+    KyoriComponentSerializer by kyoriKrate.unwrap() {
+    private val translation by translationKrate
 
     private fun OfflinePlayer.toPlayerModel(): PlayerModel? {
         return PlayerModel(
@@ -54,47 +58,47 @@ internal class RatingCommandExecutor(
         )
         val result = runCatching { addRatingUseCase.invoke(useCaseInput) }
         result.onFailure {
-            input.executor.sendMessage(translation.unknownError.let(::toComponent))
+            input.executor.sendMessage(translation.unknownError.component)
             it.printStackTrace()
         }
         result.onSuccess {
             when (it) {
                 AddRatingUseCase.Output.AlreadyMaxDayVotes -> {
-                    input.executor.sendMessage(translation.alreadyMaxDayVotes.let(::toComponent))
+                    input.executor.sendMessage(translation.alreadyMaxDayVotes.component)
                 }
 
                 AddRatingUseCase.Output.AlreadyMaxVotesOnPlayer -> {
-                    input.executor.sendMessage(translation.alreadyMaxPlayerVotes.let(::toComponent))
+                    input.executor.sendMessage(translation.alreadyMaxPlayerVotes.component)
                 }
 
                 AddRatingUseCase.Output.MessageNotCorrect -> {
-                    input.executor.sendMessage(translation.wrongMessageLen.let(::toComponent))
+                    input.executor.sendMessage(translation.wrongMessageLen.component)
                 }
 
                 AddRatingUseCase.Output.NoPermission -> {
-                    input.executor.sendMessage(translation.noPermission.let(::toComponent))
+                    input.executor.sendMessage(translation.noPermission.component)
                 }
 
                 AddRatingUseCase.Output.NotEnoughOnServer -> {
-                    input.executor.sendMessage(translation.notEnoughOnServer.let(::toComponent))
+                    input.executor.sendMessage(translation.notEnoughOnServer.component)
                 }
 
                 AddRatingUseCase.Output.PlayerNotExists -> {
-                    input.executor.sendMessage(translation.playerNotExists.let(::toComponent))
+                    input.executor.sendMessage(translation.playerNotExists.component)
                 }
 
                 AddRatingUseCase.Output.SamePlayer -> {
-                    input.executor.sendMessage(translation.cantRateSelf.let(::toComponent))
+                    input.executor.sendMessage(translation.cantRateSelf.component)
                 }
 
                 AddRatingUseCase.Output.Success -> {
                     if (input.value > 0) {
                         input.executor.sendMessage(
-                            translation.likedUser(input.ratedPlayer.name ?: "-").let(::toComponent)
+                            translation.likedUser(input.ratedPlayer.name ?: "-").component
                         )
                     } else {
                         input.executor.sendMessage(
-                            translation.dislikedUser(input.ratedPlayer.name ?: "-").let(::toComponent)
+                            translation.dislikedUser(input.ratedPlayer.name ?: "-").component
                         )
                     }
                 }

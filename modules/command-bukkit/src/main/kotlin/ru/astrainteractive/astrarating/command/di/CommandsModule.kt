@@ -1,36 +1,49 @@
 package ru.astrainteractive.astrarating.command.di
 
-import CommandManager
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
+import ru.astrainteractive.astrarating.command.exception.CommandExceptionHandler
+import ru.astrainteractive.astrarating.command.rating.RatingCommandExecutor
+import ru.astrainteractive.astrarating.command.rating.createRatingCommandNode
+import ru.astrainteractive.astrarating.command.reload.createReloadCommandNode
+import ru.astrainteractive.astrarating.core.di.BukkitModule
 import ru.astrainteractive.astrarating.core.di.CoreModule
-import ru.astrainteractive.astrarating.di.BukkitModule
-import ru.astrainteractive.astrarating.feature.di.SharedModule
-import ru.astrainteractive.astrarating.gui.di.GuiModule
+import ru.astrainteractive.astrarating.core.gui.di.GuiBukkitModule
+import ru.astrainteractive.astrarating.feature.rating.change.di.RatingChangeModule
 
-interface CommandsModule {
-    val lifecycle: Lifecycle
-
-    class Default(
-        sharedModule: SharedModule,
-        bukkitModule: BukkitModule,
-        coreModule: CoreModule,
-        guiModule: GuiModule
-    ) : CommandsModule {
-        private val commandManager: CommandManager by lazy {
-            val dependencies = CommandsDependencies.Default(
-                sharedModule = sharedModule,
-                bukkitModule = bukkitModule,
-                coreModule = coreModule,
-                guiModule = guiModule
-            )
-            CommandManager(dependencies)
-        }
-        override val lifecycle: Lifecycle by lazy {
-            Lifecycle.Lambda(
-                onEnable = {
-                    commandManager
-                }
-            )
-        }
+class CommandsModule(
+    ratingChangeModule: RatingChangeModule,
+    bukkitModule: BukkitModule,
+    coreModule: CoreModule,
+    guiBukkitModule: GuiBukkitModule
+) {
+    val lifecycle: Lifecycle by lazy {
+        Lifecycle.Lambda(
+            onEnable = {
+                bukkitModule.commandRegistrarContext.registerWhenReady(
+                    node = createReloadCommandNode(
+                        lifecyclePlugin = bukkitModule.plugin,
+                        translationKrate = coreModule.translationKrate,
+                        kyoriKrate = bukkitModule.kyoriKrate
+                    )
+                )
+                bukkitModule.commandRegistrarContext.registerWhenReady(
+                    node = createRatingCommandNode(
+                        kyoriKrate = bukkitModule.kyoriKrate,
+                        commandExceptionHandler = CommandExceptionHandler(
+                            translationKrate = coreModule.translationKrate,
+                            kyoriKrate = bukkitModule.kyoriKrate
+                        ),
+                        ratingCommandExecutor = RatingCommandExecutor(
+                            addRatingUseCase = ratingChangeModule.addRatingUseCase,
+                            translationKrate = coreModule.translationKrate,
+                            coroutineScope = coreModule.ioScope,
+                            dispatchers = coreModule.dispatchers,
+                            kyoriKrate = bukkitModule.kyoriKrate,
+                            router = guiBukkitModule.router
+                        )
+                    )
+                )
+            }
+        )
     }
 }

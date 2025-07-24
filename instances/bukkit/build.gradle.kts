@@ -34,15 +34,17 @@ dependencies {
     compileOnly(libs.minecraft.vaultapi)
     implementation(libs.minecraft.bstats)
     // Local
-    implementation(projects.modules.dbRating)
-    implementation(projects.modules.apiRating)
+    implementation(projects.modules.data.exposed)
+    implementation(projects.modules.data.dao)
     implementation(projects.modules.integrationPapi)
-    implementation(projects.modules.shared)
-    implementation(projects.modules.core)
-    implementation(projects.modules.coreBukkit)
-    implementation(projects.modules.guiCoreBukkit)
+    implementation(projects.modules.core.api)
+    implementation(projects.modules.core.bukkit)
+    implementation(projects.modules.core.guiBukkit)
     implementation(projects.modules.commandBukkit)
     implementation(projects.modules.eventBukkit)
+    implementation(projects.modules.ratingChange.api)
+    implementation(projects.modules.ratingPlayer.api)
+    implementation(projects.modules.ratingPlayers.api)
 }
 
 minecraftProcessResource {
@@ -51,7 +53,9 @@ minecraftProcessResource {
 
 astraShadowJar {
     requireShadowJarTask {
-        destination = File("/home/makeevrserg/Desktop/temp-server/build/bukkit/plugins")
+        destination = rootProject.layout.buildDirectory.asFile.get()
+            .resolve("bukkit")
+            .resolve("plugins")
             .takeIf { it.exists() }
             ?: File(rootDir, "jars")
 

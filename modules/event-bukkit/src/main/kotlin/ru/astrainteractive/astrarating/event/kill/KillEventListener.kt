@@ -1,47 +1,61 @@
 package ru.astrainteractive.astrarating.event.kill
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.PlayerDeathEvent
 import ru.astrainteractive.astralibs.event.EventListener
-import ru.astrainteractive.astrarating.api.rating.api.RatingDBApiExt.upsertUser
-import ru.astrainteractive.astrarating.dto.RatingType
-import ru.astrainteractive.astrarating.event.di.EventDependencies
-import ru.astrainteractive.astrarating.model.UserModel
+import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
+import ru.astrainteractive.astralibs.kyori.unwrap
+import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
+import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
+import ru.astrainteractive.astrarating.data.dao.RatingDao
+import ru.astrainteractive.astrarating.data.dao.upsertUser
+import ru.astrainteractive.astrarating.data.exposed.dto.RatingType
+import ru.astrainteractive.astrarating.data.exposed.model.UserModel
+import ru.astrainteractive.klibs.kstorage.api.CachedKrate
+import ru.astrainteractive.klibs.kstorage.util.getValue
+import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 internal class KillEventListener(
-    module: EventDependencies
-) : EventDependencies by module,
-    EventListener {
+    configKrate: CachedKrate<AstraRatingConfig>,
+    translationKrate: CachedKrate<AstraRatingTranslation>,
+    val kyoriKrate: CachedKrate<KyoriComponentSerializer>,
+    val ratingDao: RatingDao,
+    val scope: CoroutineScope,
+    val dispatchers: KotlinDispatchers
+) : EventListener, KyoriComponentSerializer by kyoriKrate.unwrap() {
+    private val config by configKrate
+    private val translation by translationKrate
 
     @EventHandler
     fun onPlayerKilledPlayer(e: PlayerDeathEvent) {
-        if (!configDependency.events.killPlayer.enabled) return
-        if (configDependency.events.killPlayer.changeBy == 0) return
+        if (!config.events.killPlayer.enabled) return
+        if (config.events.killPlayer.changeBy == 0) return
         val killedPlayer = e.entity
         val killerPlayer = killedPlayer.killer ?: return
 
         scope.launch(dispatchers.IO) {
-            val killedPlayerRating = apiDependency.fetchUsersTotalRating().getOrNull().orEmpty()
+            val killedPlayerRating = ratingDao.fetchUsersTotalRating().getOrNull().orEmpty()
                 .firstOrNull { it.userDTO.minecraftUUID == killedPlayer.uniqueId.toString() }
                 ?.ratingTotal
                 ?: error("Could not fetch rating of ${killedPlayer.name}")
             if (killedPlayerRating <= 0) return@launch
 
-            apiDependency.insertUserRating(
+            ratingDao.insertUserRating(
                 reporter = null,
-                reported = apiDependency.upsertUser(
+                reported = ratingDao.upsertUser(
                     userModel = UserModel(
                         minecraftUUID = killerPlayer.uniqueId,
                         minecraftName = killerPlayer.name
                     )
                 ),
-                message = translationDependency.killedPlayer(killedPlayer.name).raw,
+                message = translation.killedPlayer(killedPlayer.name).raw,
                 type = RatingType.PLAYER_KILL,
-                ratingValue = configDependency.events.killPlayer.changeBy
+                ratingValue = config.events.killPlayer.changeBy
             )
-            translationDependency.youKilledPlayer(killedPlayer.name)
-                .let(translationContext::toComponent)
+            translation.youKilledPlayer(killedPlayer.name)
+                .component
                 .run(killerPlayer::sendMessage)
         }
     }
