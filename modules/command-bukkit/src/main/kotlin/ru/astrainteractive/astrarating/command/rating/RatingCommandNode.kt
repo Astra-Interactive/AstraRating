@@ -43,6 +43,11 @@ internal fun createRatingCommandNode(
                         val targetPlayerUuid = targetPlayer?.uniqueId
                         val targetPlayerName = targetPlayer?.name
                         if (targetPlayerUuid == null || targetPlayerName == null) {
+                            commandExceptionHandler.handle(ctx, UnknownPlayerCommandException())
+                            return@runs
+                        }
+                        if (!targetPlayer.hasPlayedBefore()) {
+                            commandExceptionHandler.handle(ctx, UnknownPlayerCommandException())
                             return@runs
                         }
                         ratingCommandExecutor.execute(
@@ -84,6 +89,10 @@ internal fun createRatingCommandNode(
                                     }
                                     val ratedPlayer = ctx.findArgument("player", OfflinePlayerArgument)
                                     if (ratedPlayer == null) {
+                                        commandExceptionHandler.handle(ctx, UnknownPlayerCommandException())
+                                        return@runs
+                                    }
+                                    if (!ratedPlayer.hasPlayedBefore()) {
                                         commandExceptionHandler.handle(ctx, UnknownPlayerCommandException())
                                         return@runs
                                     }
