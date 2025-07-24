@@ -15,10 +15,10 @@ interface KCache<K : Any, V : Any> {
 }
 
 class Cache4kCache<K : Any, V : Any>(
-    expiresAfterAccess: Duration,
+    expiresAfterAccess: Duration = Duration.INFINITE,
     expireAfterWrite: Duration = Duration.INFINITE,
-    maximumSize: Long,
-    private val updateAfterAccess: Duration,
+    maximumSize: Long = Long.MAX_VALUE,
+    private val updateAfterAccess: Duration = Duration.INFINITE,
     private val coroutineScope: CoroutineScope,
     private val update: suspend (K) -> V?
 ) : KCache<K, V> {
