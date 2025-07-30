@@ -7,11 +7,11 @@ import ru.astrainteractive.astrarating.data.exposed.model.UsersRatingsSort
 
 interface RatingPlayersComponent : CoroutineScope {
     val model: StateFlow<Model>
-    fun onSortClicked()
+    fun onSortClicked(isRightClick: Boolean = false)
 
     data class Model(
         val userRatings: List<RatedUserDTO> = emptyList(),
-        val sort: UsersRatingsSort = UsersRatingsSort.ASC,
+        val sort: UsersRatingsSort = UsersRatingsSort.TotalRating(true),
         val isLoading: Boolean = false
     )
 }

@@ -27,10 +27,10 @@ internal fun SlotContext.playerRatingsSlot(
     .setIndex(index)
     .setItemStack(PlayerHeadUtil.getHead(userCreatedReportName))
     .editMeta {
-        displayName(translation.playerNameColor.plus(userCreatedReportName).component)
+        displayName(translation.gui.playerNameColor.plus(userCreatedReportName).component)
         buildList {
             subListFromString(
-                translation.message.plus(" ").plus(color).plus(message).raw,
+                translation.gui.message(color.plus(message).raw).raw,
                 config.trimMessageAfter,
                 config.cutWords
             ).forEachIndexed { _, messagePart -> add(color.plus(messagePart).component) }
@@ -40,17 +40,21 @@ internal fun SlotContext.playerRatingsSlot(
                     time = firstPlayed,
                     format = config.gui.format
                 ).orEmpty()
-                add(translation.firstConnection.plus(" ").plus(time).component)
+                if (time.isNotBlank() && firstPlayed != 0L) {
+                    add(translation.gui.firstConnection(time).component)
+                }
             }
             if (config.gui.showLastConnection) {
                 val time = TimeUtility.formatToString(
                     time = lastPlayed,
                     format = config.gui.format
                 ).orEmpty()
-                add(translation.lastConnection.plus(" ").plus(time).component)
+                if (time.isNotBlank() && lastPlayed != 0L) {
+                    add(translation.gui.lastConnection(time).component)
+                }
             }
             if (canDelete && config.gui.showDeleteReport) {
-                add(translation.clickToDeleteReport.component)
+                add(translation.gui.clickToDeleteReport.component)
             }
         }.run(::lore)
     }

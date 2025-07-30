@@ -1,5 +1,7 @@
 package ru.astrainteractive.astrarating.data.exposed.model
 
-enum class UsersRatingsSort {
-    ASC, DESC
+sealed interface UsersRatingsSort {
+    val isAsc: Boolean
+
+    data class TotalRating(override val isAsc: Boolean) : UsersRatingsSort
 }

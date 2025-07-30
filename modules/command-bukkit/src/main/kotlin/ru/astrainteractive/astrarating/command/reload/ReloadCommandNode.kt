@@ -20,9 +20,9 @@ fun createReloadCommandNode(
     return with(kyori) {
         command("aratingreload") {
             runs {
-                it.source.sender.sendMessage(translation.reload.component)
+                it.source.sender.sendMessage(translation.general.reload.component)
                 lifecyclePlugin.onReload()
-                it.source.sender.sendMessage(translation.reloadComplete.component)
+                it.source.sender.sendMessage(translation.general.reloadComplete.component)
             }
         }.build()
     }

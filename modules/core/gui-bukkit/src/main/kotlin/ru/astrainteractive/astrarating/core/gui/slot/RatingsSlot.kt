@@ -25,27 +25,31 @@ internal fun SlotContext.ratingsSlot(
     .setItemStack(PlayerHeadUtil.getHead(playerName))
     .editMeta {
         val color = when {
-            ratingTotal > 0 -> translation.positiveColor.raw
-            else -> translation.negativeColor.raw
+            ratingTotal > 0 -> translation.gui.positiveColor.raw
+            else -> translation.gui.negativeColor.raw
         }
-        displayName(translation.playerNameColor.plus(playerName).component)
+        displayName(translation.gui.playerNameColor.plus(playerName).component)
         buildList {
             if (config.gui.showFirstConnection) {
                 val timeFormatted = TimeUtility.formatToString(
                     time = firstPlayed,
                     format = config.gui.format
                 ).orEmpty()
-                add(translation.firstConnection.plus(" ").plus(timeFormatted).component)
+                if (timeFormatted.isNotBlank() && firstPlayed != 0L) {
+                    add(translation.gui.firstConnection(timeFormatted).component)
+                }
             }
             if (config.gui.showLastConnection) {
                 val timeFormatted = TimeUtility.formatToString(
                     time = lastPlayed,
                     format = config.gui.format
                 ).orEmpty()
-                add(translation.lastConnection.plus(" ").plus(timeFormatted).component)
+                if (timeFormatted.isNotBlank() && lastPlayed != 0L) {
+                    add(translation.gui.lastConnection(timeFormatted).component)
+                }
             }
-            translation.ratingTotal.plus(": ").plus(color).plus("$ratingTotal").component.run(::add)
-            translation.ratingCounts.plus(": ").plus("$ratingCounts").component.run(::add)
+            translation.gui.ratingTotal(color.plus("$ratingTotal")).component.run(::add)
+            translation.gui.ratingCounts.plus(": ").plus("$ratingCounts").component.run(::add)
         }.run(::lore)
     }
     .setOnClickListener(click)

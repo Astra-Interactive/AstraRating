@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.launch
 import org.bukkit.plugin.java.JavaPlugin
 
+// TODO move to AstraLibs
 fun <E : LifecycleEvent> JavaPlugin.lifecycleEventFlow(
     configuration: LifecycleEventType.Prioritizable<LifecycleEventOwner, E>
 ) = channelFlow {

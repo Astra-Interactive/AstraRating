@@ -19,13 +19,14 @@ import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isFirstP
 import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isLastPage
 import ru.astrainteractive.astralibs.menu.slot.InventorySlot
 import ru.astrainteractive.astrarating.core.gui.loading.GuiLoadingIndicator
+import ru.astrainteractive.astrarating.core.gui.mapping.UsersRatingsSortMapper
 import ru.astrainteractive.astrarating.core.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.core.gui.slot.backPageSlot
 import ru.astrainteractive.astrarating.core.gui.slot.context.SlotContext
 import ru.astrainteractive.astrarating.core.gui.slot.nextPageSlot
+import ru.astrainteractive.astrarating.core.gui.slot.playerRatingsSortSlot
 import ru.astrainteractive.astrarating.core.gui.slot.prevPageSlot
 import ru.astrainteractive.astrarating.core.gui.slot.ratingsSlot
-import ru.astrainteractive.astrarating.core.gui.slot.ratingsSortSlot
 import ru.astrainteractive.astrarating.core.gui.util.normalName
 import ru.astrainteractive.astrarating.core.gui.util.offlinePlayer
 import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
@@ -43,7 +44,8 @@ internal class RatingsGUI(
     private val configKratre: CachedKrate<AstraRatingConfig>,
     private val kyoriKrate: CachedKrate<KyoriComponentSerializer>,
     private val ratingPlayersComponent: RatingPlayersComponent,
-    private val router: GuiRouter
+    private val router: GuiRouter,
+    private val usersRatingsSortMapper: UsersRatingsSortMapper
 ) : PaginatedInventoryMenu() {
 
     override val childComponents: List<CoroutineScope>
@@ -65,7 +67,7 @@ internal class RatingsGUI(
     override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
 
     override var title: Component = kyoriKrate.getValue()
-        .toComponent(translationKrate.getValue().ratingsTitle)
+        .toComponent(translationKrate.getValue().gui.ratingsTitle)
 
     override val inventorySize: InventorySize = InventorySize.XL
 
@@ -79,9 +81,10 @@ internal class RatingsGUI(
         get() = slotContext.prevPageSlot
 
     private val sortButton: InventorySlot
-        get() = slotContext.ratingsSortSlot(
-            sort = ratingPlayersComponent.model.value.sort,
-            onClick = ratingPlayersComponent::onSortClicked
+        get() = slotContext.playerRatingsSortSlot(
+            sortType = ratingPlayersComponent.model.value.sort,
+            click = { ratingPlayersComponent.onSortClicked() },
+            usersRatingsSortMapper = usersRatingsSortMapper
         )
 
     override var pageContext: PageContext = PageContext(

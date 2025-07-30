@@ -4,10 +4,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.astrainteractive.astralibs.async.CoroutineFeature
+import ru.astrainteractive.astrarating.core.util.sortedBy
 import ru.astrainteractive.astrarating.data.exposed.model.UsersRatingsSort
 import ru.astrainteractive.astrarating.feature.rating.players.data.RatingPlayersCachedRepository
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
-import ru.astrainteractive.klibs.mikro.core.util.next
+import kotlin.math.absoluteValue
 
 internal class DefaultRatingPlayersComponent(
     private val repository: RatingPlayersCachedRepository,
@@ -15,18 +16,28 @@ internal class DefaultRatingPlayersComponent(
 ) : RatingPlayersComponent, CoroutineFeature by CoroutineFeature.Default(dispatchers.Main) {
     override val model = MutableStateFlow(RatingPlayersComponent.Model())
 
-    override fun onSortClicked() {
-        val nextSort = model.value.sort.next(UsersRatingsSort.entries.toTypedArray())
-        val userRatings = model.value.userRatings
-        val sortedUserRatings = if (nextSort == UsersRatingsSort.ASC) {
-            userRatings.sortedBy { it.ratingTotal }
+    override fun onSortClicked(isRightClick: Boolean) {
+        val sorts = listOf(
+            UsersRatingsSort.TotalRating(true),
+            UsersRatingsSort.TotalRating(false),
+        )
+        val offset = if (isRightClick) -1 else 1
+        val i = sorts.indexOfFirst { sortType -> sortType == model.value.sort }
+
+        val newSortType = if (i == -1) {
+            sorts.first()
+        } else if (i + offset == -1) {
+            sorts[sorts.lastIndex]
         } else {
-            userRatings.sortedByDescending { it.ratingTotal }
+            sorts[(i + offset).absoluteValue % sorts.size]
         }
+
+        val userRatings = model.value.userRatings
+        val sortedUserRatings = userRatings.sortedBy(newSortType.isAsc) { it.ratingTotal }
         model.update {
             it.copy(
                 userRatings = sortedUserRatings,
-                sort = nextSort
+                sort = newSortType
             )
         }
     }

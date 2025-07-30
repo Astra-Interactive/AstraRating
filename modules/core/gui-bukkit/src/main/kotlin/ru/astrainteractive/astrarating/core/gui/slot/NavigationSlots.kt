@@ -21,7 +21,7 @@ import ru.astrainteractive.astrarating.data.exposed.dto.RatedUserDTO
 internal fun SlotContext.backPageSlot(click: Click) = InventorySlot.Builder()
     .setIndex(49)
     .setItemStack(config.gui.buttons.back.toItemStack())
-    .editMeta { displayName(translation.menuClose.component) }
+    .editMeta { displayName(translation.gui.menuClose.component) }
     .setOnClickListener(click)
     .build()
 
@@ -29,7 +29,7 @@ internal val SlotContext.nextPageSlot: InventorySlot
     get() = InventorySlot.Builder()
         .setIndex(53)
         .setItemStack(config.gui.buttons.next.toItemStack())
-        .editMeta { displayName(translation.menuNextPage.component) }
+        .editMeta { displayName(translation.gui.menuNextPage.component) }
         .setOnClickListener { (menu as PaginatedInventoryMenu).showNextPage() }
         .build()
 
@@ -37,7 +37,7 @@ internal val SlotContext.prevPageSlot: InventorySlot
     get() = InventorySlot.Builder()
         .setIndex(45)
         .setItemStack(config.gui.buttons.prev.toItemStack())
-        .editMeta { displayName(translation.menuPrevPage.component) }
+        .editMeta { displayName(translation.gui.menuPrevPage.component) }
         .setOnClickListener { (menu as PaginatedInventoryMenu).showPrevPage() }
         .build()
 
@@ -49,26 +49,29 @@ internal fun SlotContext.ratingsPlayerSlot(
     .setIndex(i)
     .setItemStack(PlayerHeadUtil.getHead(userAndRating.userDTO.normalName))
     .editMeta {
-        val color = if (userAndRating.ratingTotal > 0) translation.positiveColor else translation.negativeColor
+        val color = if (userAndRating.ratingTotal > 0) translation.gui.positiveColor else translation.gui.negativeColor
 
-        displayName(translation.playerNameColor.plus(userAndRating.userDTO.normalName).component)
+        displayName(translation.gui.playerNameColor.plus(userAndRating.userDTO.normalName).component)
         buildList {
             if (config.gui.showFirstConnection) {
                 val firstPlayerFormatted = TimeUtility.formatToString(
                     time = userAndRating.userDTO.offlinePlayer.firstPlayed,
                     format = config.gui.format
                 ).orEmpty()
-
-                add(translation.firstConnection.plus(" ").plus(firstPlayerFormatted))
+                if (firstPlayerFormatted.isNotBlank() && userAndRating.userDTO.offlinePlayer.firstPlayed != 0L) {
+                    add(translation.gui.firstConnection(firstPlayerFormatted))
+                }
             }
             if (config.gui.showLastConnection) {
                 val lastPlayedFormatted = TimeUtility.formatToString(
                     time = userAndRating.userDTO.offlinePlayer.lastPlayed,
                     format = config.gui.format
                 ).orEmpty()
-                add(translation.lastConnection.plus(" ").plus(lastPlayedFormatted))
+                if (lastPlayedFormatted.isNotBlank() && userAndRating.userDTO.offlinePlayer.lastPlayed != 0L) {
+                    add(translation.gui.lastConnection(lastPlayedFormatted))
+                }
             }
-            add(translation.ratingTotal.plus(": ").plus(color).plus("${userAndRating.ratingTotal}"))
+            add(translation.gui.ratingTotal(color.plus("${userAndRating.ratingTotal}").raw))
         }
     }
     .setOnClickListener { onClick.invoke() }
