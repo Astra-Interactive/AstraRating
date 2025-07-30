@@ -105,7 +105,7 @@ class AstraRatingTranslation(
         @SerialName("ratings_title")
         val ratingsTitle: StringDesc.Raw = StringDesc.Raw("&2Рейтинг"),
         @SerialName("player_rating_title")
-        val playerRatingTitle: StringDesc.Raw = StringDesc.Raw("&7Рейтинг игрока &2%player%"),
+        val playerRatingTitle: StringDesc.Raw = StringDesc.Raw("&2Рейтинг игрока %player%"),
         @SerialName("prev_page")
         val menuPrevPage: StringDesc.Raw = StringDesc.Raw("&7Пред. страницы"),
         @SerialName("next_page")
