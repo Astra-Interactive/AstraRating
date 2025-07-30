@@ -50,11 +50,11 @@ internal class KillEventListener(
                         minecraftName = killerPlayer.name
                     )
                 ),
-                message = translation.killedPlayer(killedPlayer.name).raw,
+                message = translation.gui.killedPlayer(killedPlayer.name).raw,
                 type = RatingType.PLAYER_KILL,
                 ratingValue = config.events.killPlayer.changeBy
             )
-            translation.youKilledPlayer(killedPlayer.name)
+            translation.messages.youKilledPlayer(killedPlayer.name)
                 .component
                 .run(killerPlayer::sendMessage)
         }

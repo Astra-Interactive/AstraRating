@@ -7,6 +7,7 @@ import ru.astrainteractive.astralibs.async.CoroutineFeature
 import ru.astrainteractive.astrarating.data.dao.RatingDao
 import ru.astrainteractive.astrarating.data.exposed.dto.UserRatingDTO
 import ru.astrainteractive.astrarating.data.exposed.model.UserRatingsSort
+import ru.astrainteractive.astrarating.data.exposed.model.UsersRatingsSort
 import ru.astrainteractive.astrarating.feature.ratings.player.domain.RatingSortUseCase
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.util.next
@@ -26,17 +27,32 @@ internal class DefaultRatingPlayerComponent(
         )
     )
 
-    override fun onSortClicked() {
+    override fun onSortClicked(isRightClick: Boolean) {
         launch(dispatchers.IO) {
-            val sort = model.value.sort.next(UserRatingsSort.entries.toTypedArray())
+            val sorts = listOf(
+                UserRatingsSort.Rating(true),
+                UserRatingsSort.Rating(false),
+                UserRatingsSort.Player(true),
+                UserRatingsSort.Player(false),
+                UserRatingsSort.Date(true),
+                UserRatingsSort.Date(false)
+            )
+            val i = sorts.indexOfFirst { sortType -> sortType == model.value.sort }
+
+            val newSortType = if (i == -1) {
+                sorts.first()
+            } else {
+                val offset = if (isRightClick) -1 else 1
+                sorts[(i + offset) % sorts.size]
+            }
             val input = RatingSortUseCase.Input(
                 ratings = model.value.allRatings,
-                sort = sort
+                sort = newSortType
             )
             val result = ratingSortUseCase.invoke(input)
             model.update {
                 it.copy(
-                    sort = sort,
+                    sort = newSortType,
                     allRatings = result.ratings
                 )
             }

@@ -36,7 +36,7 @@ internal class GuiLoadingIndicator(
             val material = items[(i + offset) % items.size]
             val itemStack = ItemStack(material)
             itemStack.editMeta {
-                val message = kyori.toComponent(translation.loading)
+                val message = kyori.toComponent(translation.gui.loading)
                 it.displayName(message)
             }
             menu.inventory.setItem(i, itemStack)

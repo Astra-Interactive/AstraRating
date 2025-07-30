@@ -11,10 +11,12 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import org.bukkit.plugin.java.JavaPlugin
 
+// TODO move to AstraLibs
 interface CommandRegistrarContext<T> {
     fun registerWhenReady(node: LiteralCommandNode<T>)
 }
 
+// TODO move to AstraLibs
 class PaperCommandRegistrarContext(
     private val mainScope: CoroutineScope,
     private val plugin: JavaPlugin

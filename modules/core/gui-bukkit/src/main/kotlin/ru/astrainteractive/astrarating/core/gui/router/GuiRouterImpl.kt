@@ -4,6 +4,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astrarating.core.di.CoreModule
+import ru.astrainteractive.astrarating.core.gui.mapping.UserRatingsSortMapper
+import ru.astrainteractive.astrarating.core.gui.mapping.UsersRatingsSortMapper
 import ru.astrainteractive.astrarating.feature.rating.player.gui.PlayerRatingsGUI
 import ru.astrainteractive.astrarating.feature.rating.players.di.RatingPlayersModule
 import ru.astrainteractive.astrarating.feature.rating.players.gui.RatingsGUI
@@ -29,7 +31,8 @@ internal class GuiRouterImpl(
                     configKratre = coreModule.configKrate,
                     translationKrate = coreModule.translationKrate,
                     kyoriKrate = translationContext,
-                    dispatchers = coreModule.dispatchers
+                    dispatchers = coreModule.dispatchers,
+                    usersRatingsSortMapper = UsersRatingsSortMapper(coreModule.translationKrate)
                 )
 
                 is GuiRouter.Route.PlayerRating -> PlayerRatingsGUI(
@@ -43,7 +46,8 @@ internal class GuiRouterImpl(
                     configKratre = coreModule.configKrate,
                     translationKrate = coreModule.translationKrate,
                     kyoriKrate = translationContext,
-                    dispatchers = coreModule.dispatchers
+                    dispatchers = coreModule.dispatchers,
+                    userRatingsSortMapper = UserRatingsSortMapper(coreModule.translationKrate)
                 )
             }
             withContext(dispatchers.Main) {

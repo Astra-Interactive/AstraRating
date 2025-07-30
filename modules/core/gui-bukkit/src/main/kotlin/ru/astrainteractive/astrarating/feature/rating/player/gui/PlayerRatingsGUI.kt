@@ -22,6 +22,7 @@ import ru.astrainteractive.astralibs.menu.slot.InventorySlot
 import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissible
 import ru.astrainteractive.astralibs.string.replace
 import ru.astrainteractive.astrarating.core.gui.loading.GuiLoadingIndicator
+import ru.astrainteractive.astrarating.core.gui.mapping.UserRatingsSortMapper
 import ru.astrainteractive.astrarating.core.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.core.gui.slot.backPageSlot
 import ru.astrainteractive.astrarating.core.gui.slot.context.SlotContext
@@ -49,7 +50,8 @@ internal class PlayerRatingsGUI(
     private val translationKrate: CachedKrate<AstraRatingTranslation>,
     private val configKratre: CachedKrate<AstraRatingConfig>,
     private val kyoriKrate: CachedKrate<KyoriComponentSerializer>,
-    private val dispatchers: KotlinDispatchers
+    private val dispatchers: KotlinDispatchers,
+    private val userRatingsSortMapper: UserRatingsSortMapper
 ) : PaginatedInventoryMenu() {
     override val childComponents: List<CoroutineScope>
         get() = listOf(ratingPlayerComponent)
@@ -72,7 +74,7 @@ internal class PlayerRatingsGUI(
     override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
 
     override var title: Component = kyoriKrate.getValue()
-        .toComponent(translation.playerRatingTitle.replace("%player%", selectedPlayerName))
+        .toComponent(translation.gui.playerRatingTitle.replace("%player%", selectedPlayerName))
 
     override val inventorySize: InventorySize = InventorySize.XL
 
@@ -90,8 +92,9 @@ internal class PlayerRatingsGUI(
 
     private val sortButton: InventorySlot
         get() = slotContext.playerRatingsSortSlot(
-            sort = ratingPlayerComponent.model.value.sort,
-            click = { ratingPlayerComponent.onSortClicked() }
+            sortType = ratingPlayerComponent.model.value.sort,
+            click = { ratingPlayerComponent.onSortClicked() },
+            userRatingsSortMapper =userRatingsSortMapper
         )
 
     private val killEventSlot: InventorySlot?
@@ -142,7 +145,7 @@ internal class PlayerRatingsGUI(
         for (i in 0 until pageContext.maxItemsPerPage) {
             val index = pageContext.getIndex(i)
             val userAndRating = list.getOrNull(index) ?: continue
-            val color = if (userAndRating.rating > 0) translation.positiveColor else translation.negativeColor
+            val color = if (userAndRating.rating > 0) translation.gui.positiveColor else translation.gui.negativeColor
             slotContext.playerRatingsSlot(
                 index = i,
                 userCreatedReportName = userAndRating.userCreatedReport?.normalName ?: "-",

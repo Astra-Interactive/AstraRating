@@ -25,15 +25,15 @@ class CommandExceptionHandler(
     fun handle(ctx: CommandContext<CommandSourceStack>, t: Throwable) {
         val desc = when (t) {
             is StringDescCommandException -> t.stringDesc
-            is BadArgumentException -> translation.wrongUsage
-            is ArgumentTypeException -> translation.wrongUsage
-            is NoPermissionException -> translation.noPermission
+            is BadArgumentException -> translation.general.wrongUsage
+            is ArgumentTypeException -> translation.general.wrongUsage
+            is NoPermissionException -> translation.general.noPermission
             is UnknownPlayerCommandException,
-            is NoPlayerException -> translation.playerNotExists
-            is OnlyPlayerCommandException -> translation.onlyPlayerCommand
+            is NoPlayerException -> translation.general.playerNotExist
+            is OnlyPlayerCommandException -> translation.general.onlyPlayerCommand
             else -> {
                 error(t) { "#handle unhandled exception ${t.message}" }
-                translation.unknownError
+                translation.general.unknownError
             }
         }
         ctx.source.sender.sendMessage(desc.component)
