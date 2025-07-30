@@ -35,16 +35,20 @@ internal fun SlotContext.ratingsSlot(
                     time = firstPlayed,
                     format = config.gui.format
                 ).orEmpty()
-                add(translation.gui.firstConnection.plus(" ").plus(timeFormatted).component)
+                if (timeFormatted.isNotBlank() && firstPlayed != 0L) {
+                    add(translation.gui.firstConnection(timeFormatted).component)
+                }
             }
             if (config.gui.showLastConnection) {
                 val timeFormatted = TimeUtility.formatToString(
                     time = lastPlayed,
                     format = config.gui.format
                 ).orEmpty()
-                add(translation.gui.lastConnection.plus(" ").plus(timeFormatted).component)
+                if (timeFormatted.isNotBlank() && lastPlayed != 0L) {
+                    add(translation.gui.lastConnection(timeFormatted).component)
+                }
             }
-            translation.gui.ratingTotal.plus(": ").plus(color).plus("$ratingTotal").component.run(::add)
+            translation.gui.ratingTotal(color.plus("$ratingTotal")).component.run(::add)
             translation.gui.ratingCounts.plus(": ").plus("$ratingCounts").component.run(::add)
         }.run(::lore)
     }

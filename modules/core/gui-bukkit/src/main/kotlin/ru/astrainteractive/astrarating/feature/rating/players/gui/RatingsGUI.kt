@@ -24,9 +24,9 @@ import ru.astrainteractive.astrarating.core.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.core.gui.slot.backPageSlot
 import ru.astrainteractive.astrarating.core.gui.slot.context.SlotContext
 import ru.astrainteractive.astrarating.core.gui.slot.nextPageSlot
+import ru.astrainteractive.astrarating.core.gui.slot.playerRatingsSortSlot
 import ru.astrainteractive.astrarating.core.gui.slot.prevPageSlot
 import ru.astrainteractive.astrarating.core.gui.slot.ratingsSlot
-import ru.astrainteractive.astrarating.core.gui.slot.ratingsSortSlot
 import ru.astrainteractive.astrarating.core.gui.util.normalName
 import ru.astrainteractive.astrarating.core.gui.util.offlinePlayer
 import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
@@ -81,9 +81,9 @@ internal class RatingsGUI(
         get() = slotContext.prevPageSlot
 
     private val sortButton: InventorySlot
-        get() = slotContext.ratingsSortSlot(
+        get() = slotContext.playerRatingsSortSlot(
             sortType = ratingPlayersComponent.model.value.sort,
-            onClick = ratingPlayersComponent::onSortClicked,
+            click = { ratingPlayersComponent.onSortClicked() },
             usersRatingsSortMapper = usersRatingsSortMapper
         )
 

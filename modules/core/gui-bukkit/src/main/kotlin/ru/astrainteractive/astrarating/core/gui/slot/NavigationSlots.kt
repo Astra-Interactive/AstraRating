@@ -58,17 +58,20 @@ internal fun SlotContext.ratingsPlayerSlot(
                     time = userAndRating.userDTO.offlinePlayer.firstPlayed,
                     format = config.gui.format
                 ).orEmpty()
-
-                add(translation.gui.firstConnection.plus(" ").plus(firstPlayerFormatted))
+                if (firstPlayerFormatted.isNotBlank() && userAndRating.userDTO.offlinePlayer.firstPlayed != 0L) {
+                    add(translation.gui.firstConnection(firstPlayerFormatted))
+                }
             }
             if (config.gui.showLastConnection) {
                 val lastPlayedFormatted = TimeUtility.formatToString(
                     time = userAndRating.userDTO.offlinePlayer.lastPlayed,
                     format = config.gui.format
                 ).orEmpty()
-                add(translation.gui.lastConnection.plus(" ").plus(lastPlayedFormatted))
+                if (lastPlayedFormatted.isNotBlank() && userAndRating.userDTO.offlinePlayer.lastPlayed != 0L) {
+                    add(translation.gui.lastConnection(lastPlayedFormatted))
+                }
             }
-            add(translation.gui.ratingTotal.plus(": ").plus(color).plus("${userAndRating.ratingTotal}"))
+            add(translation.gui.ratingTotal(color.plus("${userAndRating.ratingTotal}").raw))
         }
     }
     .setOnClickListener { onClick.invoke() }

@@ -29,8 +29,8 @@ import ru.astrainteractive.astrarating.core.gui.slot.context.SlotContext
 import ru.astrainteractive.astrarating.core.gui.slot.killEventSlot
 import ru.astrainteractive.astrarating.core.gui.slot.nextPageSlot
 import ru.astrainteractive.astrarating.core.gui.slot.playerRatingsSlot
-import ru.astrainteractive.astrarating.core.gui.slot.playerRatingsSortSlot
 import ru.astrainteractive.astrarating.core.gui.slot.prevPageSlot
+import ru.astrainteractive.astrarating.core.gui.slot.ratingsSortSlot
 import ru.astrainteractive.astrarating.core.gui.util.normalName
 import ru.astrainteractive.astrarating.core.gui.util.offlinePlayer
 import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
@@ -91,10 +91,10 @@ internal class PlayerRatingsGUI(
         get() = slotContext.prevPageSlot
 
     private val sortButton: InventorySlot
-        get() = slotContext.playerRatingsSortSlot(
+        get() = slotContext.ratingsSortSlot(
             sortType = ratingPlayerComponent.model.value.sort,
-            click = { ratingPlayerComponent.onSortClicked() },
-            userRatingsSortMapper =userRatingsSortMapper
+            userRatingsSortMapper = userRatingsSortMapper,
+            onClick = { ratingPlayerComponent.onSortClicked() }
         )
 
     private val killEventSlot: InventorySlot?

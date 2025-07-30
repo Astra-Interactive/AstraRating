@@ -11,7 +11,7 @@ interface RatingPlayersComponent : CoroutineScope {
 
     data class Model(
         val userRatings: List<RatedUserDTO> = emptyList(),
-        val sort: UsersRatingsSort = UsersRatingsSort.Players(true),
+        val sort: UsersRatingsSort = UsersRatingsSort.TotalRating(true),
         val isLoading: Boolean = false
     )
 }

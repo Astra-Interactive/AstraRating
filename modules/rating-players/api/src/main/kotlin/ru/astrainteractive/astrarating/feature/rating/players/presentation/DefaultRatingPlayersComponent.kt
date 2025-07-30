@@ -1,6 +1,5 @@
 package ru.astrainteractive.astrarating.feature.rating.players.presentation
 
-import kotlin.collections.sort
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -9,7 +8,7 @@ import ru.astrainteractive.astrarating.core.util.sortedBy
 import ru.astrainteractive.astrarating.data.exposed.model.UsersRatingsSort
 import ru.astrainteractive.astrarating.feature.rating.players.data.RatingPlayersCachedRepository
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
-import ru.astrainteractive.klibs.mikro.core.util.next
+import kotlin.math.absoluteValue
 
 internal class DefaultRatingPlayersComponent(
     private val repository: RatingPlayersCachedRepository,
@@ -19,16 +18,18 @@ internal class DefaultRatingPlayersComponent(
 
     override fun onSortClicked(isRightClick: Boolean) {
         val sorts = listOf(
-            UsersRatingsSort.Players(true),
-            UsersRatingsSort.Players(false),
+            UsersRatingsSort.TotalRating(true),
+            UsersRatingsSort.TotalRating(false),
         )
+        val offset = if (isRightClick) -1 else 1
         val i = sorts.indexOfFirst { sortType -> sortType == model.value.sort }
 
         val newSortType = if (i == -1) {
             sorts.first()
+        } else if (i + offset == -1) {
+            sorts[sorts.lastIndex]
         } else {
-            val offset = if (isRightClick) -1 else 1
-            sorts[(i + offset) % sorts.size]
+            sorts[(i + offset).absoluteValue % sorts.size]
         }
 
         val userRatings = model.value.userRatings

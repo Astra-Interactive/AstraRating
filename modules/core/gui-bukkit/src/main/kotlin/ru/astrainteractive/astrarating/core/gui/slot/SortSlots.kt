@@ -18,18 +18,19 @@ import ru.astrainteractive.astrarating.data.exposed.model.UserRatingsSort
 import ru.astrainteractive.astrarating.data.exposed.model.UsersRatingsSort
 
 internal fun SlotContext.ratingsSortSlot(
-    sortType: UsersRatingsSort,
-    usersRatingsSortMapper: UsersRatingsSortMapper,
+    sortType: UserRatingsSort,
+    userRatingsSortMapper: UserRatingsSortMapper,
     onClick: () -> Unit
 ): InventorySlot =
     InventorySlot.Builder()
         .setIndex(50)
         .setItemStack(config.gui.buttons.sort.toItemStack())
         .setDisplayName(translation.gui.sort.component)
-        .setDisplayName(translation.gui.sortRating.component)
         .apply {
             listOf(
-                UsersRatingsSort.Players(false),
+                UserRatingsSort.Rating(false),
+                UserRatingsSort.Player(false),
+                UserRatingsSort.Date(false),
             ).forEach { entry ->
                 val symbol = translation.gui.sortAscSymbol
                     .takeIf { sortType.isAsc }
@@ -41,7 +42,7 @@ internal fun SlotContext.ratingsSortSlot(
                     translation.gui.enabledColor
                         .takeIf { sortType::class == entry::class }
                         .or { translation.gui.disabledColor }
-                        .plus(usersRatingsSortMapper.toStringDesc(entry))
+                        .plus(userRatingsSortMapper.toStringDesc(entry))
                         .plus(symbol)
                         .component
                 )
@@ -51,18 +52,16 @@ internal fun SlotContext.ratingsSortSlot(
         .build()
 
 internal fun SlotContext.playerRatingsSortSlot(
-    sortType: UserRatingsSort,
-    userRatingsSortMapper: UserRatingsSortMapper,
+    sortType: UsersRatingsSort,
+    usersRatingsSortMapper: UsersRatingsSortMapper,
     click: Click
 ) = InventorySlot.Builder()
     .setIndex(50)
     .setItemStack(config.gui.buttons.sort.toItemStack())
-    .setDisplayName(translation.gui.sortRating.component)
+    .setDisplayName(translation.gui.sort.component)
     .apply {
         listOf(
-            UserRatingsSort.Player(false),
-            UserRatingsSort.Date(false),
-            UserRatingsSort.Rating(false),
+            UsersRatingsSort.TotalRating(false),
         ).forEach { entry ->
             val symbol = translation.gui.sortAscSymbol
                 .takeIf { sortType.isAsc }
@@ -74,7 +73,7 @@ internal fun SlotContext.playerRatingsSortSlot(
                 translation.gui.enabledColor
                     .takeIf { sortType::class == entry::class }
                     .or { translation.gui.disabledColor }
-                    .plus(userRatingsSortMapper.toStringDesc(entry))
+                    .plus(usersRatingsSortMapper.toStringDesc(entry))
                     .plus(symbol)
                     .component
             )
