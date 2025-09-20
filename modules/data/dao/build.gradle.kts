@@ -17,7 +17,6 @@ dependencies {
     // Test
     testImplementation(libs.bundles.testing.kotlin)
     testImplementation(libs.tests.kotlin.test)
-    testImplementation(libs.minecraft.astralibs.exposed)
     // Local
     implementation(projects.modules.data.exposed)
     implementation(projects.modules.core.api)

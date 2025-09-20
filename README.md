@@ -40,7 +40,95 @@ More plugins from [AstraInteractive](https://github.com/Astra-Interactive)
 
 ---
 
-### PlaceholderAPI
+## 🗄️ Database Configuration
+
+<details>
+
+<summary>CLICK TO EXPAND</summary>
+
+AstraRating supports multiple database types through YAML configuration. The plugin uses a flexible
+`DatabaseConfiguration` system that supports **H2**, **MySQL**, **MariaDB**, and **SQLite** databases.
+
+### Configuration File Location
+
+Database configuration is stored in: `./plugins/AstraRating/database.yml`
+
+### Supported Database Types
+
+#### H2 Database
+
+```yaml
+rating_database:
+  type: "H2"
+  path: "./plugins/AstraRating/ASTRA_RATING_RATINGS"
+```
+
+#### SQLite Database (Lightweight file-based)
+
+```yaml
+rating_database:
+  type: "SQLite"
+  path: "./plugins/AstraRating/ratings.db"
+  arguments:
+    - "journal_mode=WAL"
+    - "synchronous=NORMAL"
+```
+
+#### MySQL Database (Recommended for production)
+
+```yaml
+rating_database:
+  type: "MySql"
+  host: "localhost"
+  port: 3306
+  user: "astra_rating"
+  password: "your_secure_password"
+  name: "astra_rating_db"
+  arguments:
+    - "useSSL=false"
+    - "allowPublicKeyRetrieval=true"
+    - "serverTimezone=UTC"
+```
+
+#### MariaDB Database (MySQL-compatible alternative)
+
+```yaml
+rating_database:
+  type: "MariaDB"
+  host: "localhost"
+  port: 3306
+  user: "astra_rating"
+  password: "your_secure_password"
+  name: "astra_rating_db"
+  arguments:
+    - "useSSL=false"
+    - "serverTimezone=UTC"
+```
+
+### Database Migration
+
+When switching between database types:
+
+1. **Stop your server**
+2. **Backup your current database** (very important!)
+3. **Update `database.yml`** with new configuration
+4. **Start your server** - the plugin will automatically create tables in the new database
+5. **Import your data** if needed (manual process)
+
+### Troubleshooting
+
+| Issue                | Solution                                              |
+|:---------------------|:------------------------------------------------------|
+| "Driver not found"   | Ensure the database driver is included in your server |
+| "Connection timeout" | Check host, port, and network connectivity            |
+| "Access denied"      | Verify username, password, and database permissions   |
+| "Database locked"    | Ensure no other processes are using the database file |
+
+---
+
+</details>
+
+## 📜 PlaceholderAPI
 
 | Placeholders        | Description        |
 |:--------------------|:-------------------|
@@ -48,6 +136,10 @@ More plugins from [AstraInteractive](https://github.com/Astra-Interactive)
 | `/%erating_rating%` | Show player rating |
 
 ### PlaceholderAPI Coloring setup
+
+<details>
+
+<summary>CLICK TO EXPAND</summary>
 
 ```yaml
 # Color are sorted by value: [-10, -5, 0, 5, 10]
@@ -75,6 +167,8 @@ colorings:
     value: 10
     color: "#0872cf"    
 ```
+
+</details>
 
 ### Commands
 

@@ -1,6 +1,5 @@
 package ru.astrainteractive.astrarating.data.exposed.db.rating.di
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
@@ -14,19 +13,20 @@ import org.jetbrains.exposed.sql.Slf4jSqlDebugLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
-import ru.astrainteractive.astralibs.async.CoroutineFeature
-import ru.astrainteractive.astralibs.exposed.model.connect
+import ru.astrainteractive.astralibs.async.withTimings
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
-import ru.astrainteractive.astralibs.logging.JUtiltLogger
-import ru.astrainteractive.astralibs.logging.Logger
-import ru.astrainteractive.astralibs.serialization.StringFormatExt.parseOrWriteIntoDefault
-import ru.astrainteractive.astralibs.util.mapCached
+import ru.astrainteractive.astralibs.util.parseOrWriteIntoDefault
 import ru.astrainteractive.astrarating.data.exposed.db.rating.entity.UserRatingTable
 import ru.astrainteractive.astrarating.data.exposed.db.rating.entity.UserTable
 import ru.astrainteractive.astrarating.data.exposed.db.rating.model.DbRatingConfiguration
 import ru.astrainteractive.klibs.kstorage.api.impl.DefaultMutableKrate
 import ru.astrainteractive.klibs.kstorage.api.value.ValueFactory
 import ru.astrainteractive.klibs.kstorage.util.asStateFlowMutableKrate
+import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
+import ru.astrainteractive.klibs.mikro.core.coroutines.mapCached
+import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
+import ru.astrainteractive.klibs.mikro.core.logging.Logger
+import ru.astrainteractive.klibs.mikro.exposed.util.connect
 import java.io.File
 import java.sql.Connection
 
@@ -35,7 +35,7 @@ class DBRatingModule(
     private val dataFolder: File,
     defaultConfig: ValueFactory<DbRatingConfiguration> = ValueFactory { DbRatingConfiguration() }
 ) : Logger by JUtiltLogger("AstraRating-DBRatingModule") {
-    private val coroutineScope = CoroutineFeature.Default(Dispatchers.IO)
+    private val coroutineScope = CoroutineFeature.IO.withTimings()
 
     private val dbConfigurationConfig = DefaultMutableKrate(
         factory = defaultConfig,
@@ -53,7 +53,7 @@ class DBRatingModule(
         .distinctUntilChangedBy { it.databaseConfiguration }
         .mapCached(coroutineScope) { dbConfig, oldDatabase ->
             oldDatabase?.run(TransactionManager::closeAndUnregister)
-            val database = dbConfig.databaseConfiguration.connect(dataFolder)
+            val database = dbConfig.databaseConfiguration.connect()
             TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE
             transaction(database) {
                 addLogger(Slf4jSqlDebugLogger)

@@ -1,12 +1,13 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.gradle.kotlin.dsl.named
 import ru.astrainteractive.gradleplugin.property.extension.ModelPropertyValueExt.requireProjectInfo
 
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
     alias(libs.plugins.klibs.gradle.java.core)
-    id("io.github.goooler.shadow")
-    alias(libs.plugins.klibs.minecraft.shadow)
     alias(libs.plugins.klibs.minecraft.resource.processor)
+    alias(libs.plugins.gradle.shadow)
 }
 
 dependencies {
@@ -14,7 +15,6 @@ dependencies {
     implementation(libs.bundles.kotlin)
     // AstraLibs
     implementation(libs.minecraft.astralibs.core)
-    implementation(libs.minecraft.astralibs.exposed)
     implementation(libs.minecraft.astralibs.menu.bukkit)
     implementation(libs.minecraft.astralibs.core.bukkit)
     implementation(libs.minecraft.astralibs.command)
@@ -48,31 +48,58 @@ dependencies {
 }
 
 minecraftProcessResource {
-    bukkit()
+    bukkit(
+        customProperties = mapOf(
+            "libraries" to listOf(
+                libs.driver.h2.get(),
+                libs.driver.jdbc.get(),
+                libs.driver.mysql.get(),
+                libs.driver.mariadb.get()
+            ).joinToString("\",\"", "[\"", "\"]")
+        )
+    )
 }
 
-astraShadowJar {
-    requireShadowJarTask {
-        destination = rootProject.layout.buildDirectory.asFile.get()
-            .resolve("bukkit")
-            .resolve("plugins")
-            .takeIf { it.exists() }
-            ?: File(rootDir, "jars")
-
-        val projectInfo = requireProjectInfo
-        isReproducibleFileOrder = true
-        mergeServiceFiles()
-        dependsOn(configurations)
-        archiveClassifier.set(null as String?)
-        relocate("org.bstats", projectInfo.group)
-
-        minimize {
-            exclude(dependency(libs.exposed.jdbc.get()))
-            exclude(dependency(libs.exposed.dao.get()))
-            exclude(dependency("org.jetbrains.kotlin:kotlin-stdlib:${libs.versions.kotlin.version.get()}"))
-        }
-        archiveVersion.set(projectInfo.versionString)
-        archiveBaseName.set("${projectInfo.name}-bukkit")
-        destinationDirectory.set(destination.get())
+val shadowJar = tasks.named<ShadowJar>("shadowJar")
+shadowJar.configure {
+    mergeServiceFiles()
+    dependsOn(tasks.named<ProcessResources>("processResources"))
+    isReproducibleFileOrder = true
+    archiveClassifier = null as String?
+    archiveVersion.set(requireProjectInfo.versionString)
+    archiveBaseName.set("${requireProjectInfo.name}-bukkit")
+    destinationDirectory = rootProject
+        .layout.buildDirectory.asFile.get()
+        .resolve("bukkit")
+        .resolve("plugins")
+        .takeIf(File::exists)
+        ?: rootDir.resolve("jars").also(File::mkdirs)
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    configurations = listOf(project.configurations.runtimeClasspath.get())
+    listOf(
+        "co.touchlab",
+        "com.charleskorn",
+        "com.mysql",
+        "google.protobuf",
+        "io.github",
+        "it.krzeminski",
+        "net.thauvin",
+        "okio",
+        "org.jetbrains",
+        "org.intellij",
+        "org.bstats",
+        "org.slf4j",
+        "ru.astrainteractive.klibs",
+        "ru.astrainteractive.astralibs",
+        "ch.qos.logback",
+        "com.ibm.icu",
+        "org.apache",
+    ).forEach { pattern ->
+        relocate(pattern, "${requireProjectInfo.group}.libs.$pattern")
+    }
+    minimize {
+        exclude(dependency(libs.exposed.jdbc.get()))
+        exclude(dependency(libs.exposed.dao.get()))
+        exclude(dependency(libs.exposed.core.get()))
     }
 }

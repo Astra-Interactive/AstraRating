@@ -9,11 +9,11 @@ import ru.astrainteractive.astralibs.command.api.exception.NoPlayerException
 import ru.astrainteractive.astralibs.command.api.exception.StringDescCommandException
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.kyori.unwrap
-import ru.astrainteractive.astralibs.logging.JUtiltLogger
-import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
+import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
+import ru.astrainteractive.klibs.mikro.core.logging.Logger
 
 class CommandExceptionHandler(
     translationKrate: CachedKrate<AstraRatingTranslation>,
