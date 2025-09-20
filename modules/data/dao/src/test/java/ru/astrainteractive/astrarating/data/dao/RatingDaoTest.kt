@@ -4,13 +4,13 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.transactions.TransactionManager
-import ru.astrainteractive.astralibs.exposed.model.DatabaseConfiguration
 import ru.astrainteractive.astralibs.util.YamlStringFormat
 import ru.astrainteractive.astrarating.data.dao.di.RatingDaoModule
 import ru.astrainteractive.astrarating.data.exposed.db.rating.di.DBRatingModule
 import ru.astrainteractive.astrarating.data.exposed.db.rating.model.DbRatingConfiguration
 import ru.astrainteractive.astrarating.data.exposed.dto.RatingType
 import ru.astrainteractive.astrarating.data.exposed.model.UserModel
+import ru.astrainteractive.klibs.mikro.exposed.model.DatabaseConfiguration
 import java.io.File
 import java.util.UUID
 import kotlin.test.AfterTest
@@ -49,7 +49,7 @@ class RatingDaoTest {
         module = DBRatingModule(
             stringFormat = YamlStringFormat(),
             defaultConfig = {
-                DbRatingConfiguration(databaseConfiguration = DatabaseConfiguration.SQLite("test"))
+                DbRatingConfiguration(databaseConfiguration = DatabaseConfiguration.SQLite("./test"))
             },
             dataFolder = File("./test").also {
                 it.mkdirs()

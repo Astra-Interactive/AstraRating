@@ -9,6 +9,7 @@ dependencies {
     implementation(libs.bundles.kotlin)
     // klibs
     implementation(libs.klibs.mikro.core)
+    implementation(libs.klibs.mikro.extensions)
     implementation(libs.minecraft.astralibs.core)
     implementation(libs.klibs.kstorage)
     // Exposed
