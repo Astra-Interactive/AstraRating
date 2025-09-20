@@ -16,8 +16,6 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
-import ru.astrainteractive.astralibs.logging.JUtiltLogger
-import ru.astrainteractive.astralibs.logging.Logger
 import ru.astrainteractive.astrarating.data.dao.RatingDao
 import ru.astrainteractive.astrarating.data.exposed.db.rating.entity.UserRatingTable
 import ru.astrainteractive.astrarating.data.exposed.db.rating.entity.UserTable
@@ -26,6 +24,8 @@ import ru.astrainteractive.astrarating.data.exposed.dto.RatingType
 import ru.astrainteractive.astrarating.data.exposed.dto.UserDTO
 import ru.astrainteractive.astrarating.data.exposed.dto.UserRatingDTO
 import ru.astrainteractive.astrarating.data.exposed.model.UserModel
+import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
+import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 

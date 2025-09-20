@@ -3,17 +3,19 @@ package ru.astrainteractive.astrarating.feature.rating.players.presentation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.astrainteractive.astralibs.async.CoroutineFeature
+import ru.astrainteractive.astralibs.async.withTimings
 import ru.astrainteractive.astrarating.core.util.sortedBy
 import ru.astrainteractive.astrarating.data.exposed.model.UsersRatingsSort
 import ru.astrainteractive.astrarating.feature.rating.players.data.RatingPlayersCachedRepository
+import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import kotlin.math.absoluteValue
 
 internal class DefaultRatingPlayersComponent(
     private val repository: RatingPlayersCachedRepository,
     dispatchers: KotlinDispatchers
-) : RatingPlayersComponent, CoroutineFeature by CoroutineFeature.Default(dispatchers.Main) {
+) : RatingPlayersComponent,
+    CoroutineFeature by CoroutineFeature.Default(dispatchers.Main).withTimings() {
     override val model = MutableStateFlow(RatingPlayersComponent.Model())
 
     override fun onSortClicked(isRightClick: Boolean) {

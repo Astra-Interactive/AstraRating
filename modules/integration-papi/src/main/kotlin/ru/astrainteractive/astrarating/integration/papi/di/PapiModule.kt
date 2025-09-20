@@ -5,14 +5,14 @@ import kotlinx.serialization.StringFormat
 import org.bukkit.Bukkit
 import ru.astrainteractive.astralibs.expansion.PlaceholderExpansionFacade
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
-import ru.astrainteractive.astralibs.logging.JUtiltLogger
-import ru.astrainteractive.astralibs.logging.Logger
-import ru.astrainteractive.astralibs.serialization.StringFormatExt.parseOrWriteIntoDefault
+import ru.astrainteractive.astralibs.util.parseOrWriteIntoDefault
 import ru.astrainteractive.astrarating.data.dao.RatingCachedDao
 import ru.astrainteractive.astrarating.integration.papi.di.factory.PapiFactory
 import ru.astrainteractive.astrarating.integration.papi.model.PapiConfig
 import ru.astrainteractive.klibs.kstorage.api.impl.DefaultMutableKrate
 import ru.astrainteractive.klibs.kstorage.util.asStateFlowMutableKrate
+import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
+import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import java.io.File
 
 class PapiModule(

@@ -6,14 +6,15 @@ kotlin-json = "1.9.0" # https://github.com/Kotlin/kotlinx.serialization
 kotlin-kaml = "0.83.0" # https://github.com/charleskorn/kaml
 
 # Drivers
-driver-jdbc = "3.50.2.0" # https://github.com/xerial/sqlite-jdbc
+driver-h2 = "2.3.232" # https://github.com/h2database/h2database
+driver-jdbc = "3.46.1.0" # https://github.com/xerial/sqlite-jdbc
 driver-mysql = "8.0.33" # https://github.com/mysql/mysql-connector-j
+driver-mariadb = "3.3.1" # https://github.com/mariadb-corporation/mariadb-connector-j
 
 # klibs
-klibs-gradleplugin = "1.5.0-alpha02" # https://github.com/makeevrserg/gradle-plugin
-klibs-mikro = "1.11.0" # https://github.com/makeevrserg/klibs.mikro
-klibs-kdi = "1.4.8" # https://github.com/makeevrserg/klibs.kdi
-klibs-kstorage = "4.2.1" # https://github.com/makeevrserg/klibs.kstorage
+klibs-gradleplugin = "1.10.0" # https://github.com/makeevrserg/gradle-plugin
+klibs-mikro = "1.14.1" # https://github.com/makeevrserg/klibs.mikro
+klibs-kstorage = "4.2.2" # https://github.com/makeevrserg/klibs.kstorage
 
 # Minecraft
 minecraft-velocity = "4.0.0-SNAPSHOT" # https://github.com/PaperMC/Velocity
@@ -21,12 +22,13 @@ minecraft-spigot = "1.21.3-R0.1-SNAPSHOT" # https://github.com/PaperMC/Paper
 minecraft-papi = "2.11.6" # https://github.com/PlaceholderAPI/PlaceholderAPI
 minecraft-protocollib = "5.3.0" # https://github.com/dmulloy2/ProtocolLib
 minecraft-vault = "1.7.1" # https://github.com/MilkBowl/VaultAPI
-minecraft-astralibs = "3.25.0" # https://github.com/Astra-Interactive/AstraLibs
+minecraft-astralibs = "3.26.0" # https://github.com/Astra-Interactive/AstraLibs
 minecraft-bstats = "3.1.0" # https://github.com/Bastian/bStats
 minecraft-mockbukkit = "4.33.2" #https://github.com/MockBukkit/MockBukkit
 
 # BuildConfig
 gradle-buildconfig = "5.6.7" # https://github.com/gmazzo/gradle-buildconfig-plugin
+gradle-shadow = "9.1.0" # https://github.com/johnrengelman/shadow
 
 # Exposed
 exposed = "0.61.0" # https://github.com/JetBrains/Exposed
@@ -40,8 +42,10 @@ kotlin-serializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serializati
 kotlin-serializationKaml = { module = "com.charleskorn.kaml:kaml", version.ref = "kotlin-kaml" }
 
 # Drivers
+driver-h2 = { module = "com.h2database:h2", version.ref = "driver-h2" }
 driver-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "driver-jdbc" }
 driver-mysql = { module = "mysql:mysql-connector-java", version.ref = "driver-mysql" }
+driver-mariadb = { module = "org.mariadb.jdbc:mariadb-java-client", version.ref = "driver-mariadb" }
 
 # Testing
 tests-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
@@ -65,11 +69,10 @@ minecraft-mockbukkit = { module = "com.github.MockBukkit:MockBukkit", version.re
 
 # klibs
 klibs-mikro-core = { module = "ru.astrainteractive.klibs:mikro-core", version.ref = "klibs-mikro" }
-klibs-kdi = { module = "ru.astrainteractive.klibs:kdi", version.ref = "klibs-kdi" }
+klibs-mikro-extensions = { module = "ru.astrainteractive.klibs:mikro-extensions", version.ref = "klibs-mikro" }
 klibs-kstorage = { module = "ru.astrainteractive.klibs:kstorage", version.ref = "klibs-kstorage" }
 
 # AstraLibs
-minecraft-astralibs-exposed = { module = "ru.astrainteractive.astralibs:exposed", version.ref = "minecraft-astralibs" }
 minecraft-astralibs-core = { module = "ru.astrainteractive.astralibs:core", version.ref = "minecraft-astralibs" }
 minecraft-astralibs-menu-bukkit = { module = "ru.astrainteractive.astralibs:menu-bukkit", version.ref = "minecraft-astralibs" }
 minecraft-astralibs-core-bukkit = { module = "ru.astrainteractive.astralibs:core-bukkit", version.ref = "minecraft-astralibs" }
@@ -85,7 +88,6 @@ kotlin = ["kotlin-coroutines-core", "kotlin-coroutines-coreJvm", "kotlin-seriali
 
 
 [plugins]
-
 # Kotlin
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-version" }
 kotlin-gradle = { id = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-version" }
@@ -105,3 +107,5 @@ klibs-gradle-publication = { id = "ru.astrainteractive.gradleplugin.publication"
 klibs-gradle-rootinfo = { id = "ru.astrainteractive.gradleplugin.root.info", version.ref = "klibs-gradleplugin" }
 klibs-minecraft-resource-processor = { id = "ru.astrainteractive.gradleplugin.minecraft.resource-processor", version.ref = "klibs-gradleplugin" }
 klibs-minecraft-shadow = { id = "ru.astrainteractive.gradleplugin.minecraft.shadow", version.ref = "klibs-gradleplugin" }
+
+gradle-shadow = { id = "com.gradleup.shadow", version.ref = "gradle-shadow" }
