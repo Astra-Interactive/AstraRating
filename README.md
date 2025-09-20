@@ -105,27 +105,6 @@ rating_database:
     - "serverTimezone=UTC"
 ```
 
-### Database Migration
-
-When switching between database types:
-
-1. **Stop your server**
-2. **Backup your current database** (very important!)
-3. **Update `database.yml`** with new configuration
-4. **Start your server** - the plugin will automatically create tables in the new database
-5. **Import your data** if needed (manual process)
-
-### Troubleshooting
-
-| Issue                | Solution                                              |
-|:---------------------|:------------------------------------------------------|
-| "Driver not found"   | Ensure the database driver is included in your server |
-| "Connection timeout" | Check host, port, and network connectivity            |
-| "Access denied"      | Verify username, password, and database permissions   |
-| "Database locked"    | Ensure no other processes are using the database file |
-
----
-
 </details>
 
 ## 📜 PlaceholderAPI
