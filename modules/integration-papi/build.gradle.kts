@@ -6,7 +6,9 @@ plugins {
 
 dependencies {
     // Kotlin
-    implementation(libs.bundles.kotlin)
+    implementation(libs.kotlin.coroutines.core)
+    implementation(libs.kotlin.serialization.json)
+
     // AstraLibs
     implementation(libs.minecraft.astralibs.core)
     implementation(libs.minecraft.astralibs.core.bukkit)
@@ -14,7 +16,6 @@ dependencies {
     implementation(libs.klibs.mikro.core)
     implementation(libs.klibs.kstorage)
     // Test
-    testImplementation(libs.bundles.testing.kotlin)
     testImplementation(libs.tests.kotlin.test)
     // Spigot dependencies
     compileOnly(libs.minecraft.paper.api)

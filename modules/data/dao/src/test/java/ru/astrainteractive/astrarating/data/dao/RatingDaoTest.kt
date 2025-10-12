@@ -11,7 +11,7 @@ import ru.astrainteractive.astrarating.data.exposed.db.rating.model.DbRatingConf
 import ru.astrainteractive.astrarating.data.exposed.dto.RatingType
 import ru.astrainteractive.astrarating.data.exposed.model.UserModel
 import ru.astrainteractive.klibs.mikro.exposed.model.DatabaseConfiguration
-import java.io.File
+import java.nio.file.Files
 import java.util.UUID
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -38,23 +38,26 @@ class RatingDaoTest {
             minecraftName = UUID.randomUUID().toString(),
         )
 
+    private fun getTempFolder() = Files.createTempDirectory("dir").toFile()
+
     @AfterTest
     fun destroy(): Unit = runBlocking {
         TransactionManager.Companion.closeAndUnregister(requireModule.databaseFlow.first())
-        File("./test").deleteRecursively()
     }
 
     @BeforeTest
     fun setup(): Unit = runBlocking {
+        val folder = getTempFolder()
         module = DBRatingModule(
             stringFormat = YamlStringFormat(),
             defaultConfig = {
-                DbRatingConfiguration(databaseConfiguration = DatabaseConfiguration.SQLite("./test"))
+                val configuration = folder
+                    .resolve("dbfile")
+                    .absolutePath
+                    .let(DatabaseConfiguration::SQLite)
+                DbRatingConfiguration(databaseConfiguration = configuration)
             },
-            dataFolder = File("./test").also {
-                it.mkdirs()
-                it.deleteOnExit()
-            }
+            dataFolder = folder
         )
     }
 

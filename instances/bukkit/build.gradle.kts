@@ -12,7 +12,8 @@ plugins {
 
 dependencies {
     // Kotlin
-    implementation(libs.bundles.kotlin)
+    implementation(libs.kotlin.serialization.json)
+
     // AstraLibs
     implementation(libs.minecraft.astralibs.core)
     implementation(libs.minecraft.astralibs.menu.bukkit)
@@ -25,7 +26,6 @@ dependencies {
     // Exposed
     implementation(libs.exposed.core)
     // Test
-    testImplementation(libs.bundles.testing.kotlin)
     testImplementation(libs.tests.kotlin.test)
     // Spigot dependencies
     compileOnly(libs.minecraft.paper.api)

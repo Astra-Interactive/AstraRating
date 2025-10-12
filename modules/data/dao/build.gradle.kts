@@ -6,7 +6,7 @@ plugins {
 
 dependencies {
     // Kotlin
-    implementation(libs.bundles.kotlin)
+    implementation(libs.kotlin.serialization.json)
     // klibs
     implementation(libs.klibs.mikro.core)
     implementation(libs.klibs.mikro.extensions)
@@ -16,8 +16,8 @@ dependencies {
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)
     // Test
-    testImplementation(libs.bundles.testing.kotlin)
     testImplementation(libs.tests.kotlin.test)
+    testImplementation(libs.driver.jdbc)
     // Local
     implementation(projects.modules.data.exposed)
     implementation(projects.modules.core.api)
