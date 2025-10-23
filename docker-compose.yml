@@ -9,11 +9,19 @@ services:
     ports:
       - "25565:25565"
     environment:
-      MEMORY: 4G
       EULA: true
-      ONLINE_MODE: FALSE
+      ONLINE_MODE: false
+      # Forge --------------------
+      #      TYPE: FORGE
+      #      VERSION: "1.20.1"
+      #      FORGE_VERSION: "47.2.20"
       # Paper --------------------
       TYPE: PAPER
-      VERSION: 1.21.4
+      VERSION: 1.21.8
+      # Custom -------------------
+    #      CUSTOM_SERVER: https://api.papermc.io/v2/projects/paper/versions/1.21.1/builds/121/downloads/paper-1.21.1-121.jar
     volumes:
+      #      - ./build/forge:/data # Forge
       - ./build/bukkit:/data # Bukkit/Paper/Spigot
+#      - ./build/velocity:/data # Velocity
+#      - ./build/fabric:/data # Fabric

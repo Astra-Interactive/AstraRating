@@ -12,7 +12,8 @@ plugins {
 
 dependencies {
     // Kotlin
-    implementation(libs.bundles.kotlin)
+    implementation(libs.kotlin.serialization.json)
+
     // AstraLibs
     implementation(libs.minecraft.astralibs.core)
     implementation(libs.minecraft.astralibs.menu.bukkit)
@@ -25,7 +26,6 @@ dependencies {
     // Exposed
     implementation(libs.exposed.core)
     // Test
-    testImplementation(libs.bundles.testing.kotlin)
     testImplementation(libs.tests.kotlin.test)
     // Spigot dependencies
     compileOnly(libs.minecraft.paper.api)
@@ -62,44 +62,50 @@ minecraftProcessResource {
 
 val shadowJar = tasks.named<ShadowJar>("shadowJar")
 shadowJar.configure {
-    mergeServiceFiles()
-    dependsOn(tasks.named<ProcessResources>("processResources"))
+
+    val projectInfo = requireProjectInfo
     isReproducibleFileOrder = true
-    archiveClassifier = null as String?
-    archiveVersion.set(requireProjectInfo.versionString)
-    archiveBaseName.set("${requireProjectInfo.name}-bukkit")
-    destinationDirectory = rootProject
-        .layout.buildDirectory.asFile.get()
-        .resolve("bukkit")
-        .resolve("plugins")
-        .takeIf(File::exists)
-        ?: rootDir.resolve("jars").also(File::mkdirs)
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    configurations = listOf(project.configurations.runtimeClasspath.get())
-    listOf(
-        "co.touchlab",
-        "com.charleskorn",
-        "com.mysql",
-        "google.protobuf",
-        "io.github",
-        "it.krzeminski",
-        "net.thauvin",
-        "okio",
-        "org.jetbrains",
-        "org.intellij",
-        "org.bstats",
-        "org.slf4j",
-        "ru.astrainteractive.klibs",
-        "ru.astrainteractive.astralibs",
-        "ch.qos.logback",
-        "com.ibm.icu",
-        "org.apache",
-    ).forEach { pattern ->
-        relocate(pattern, "${requireProjectInfo.group}.libs.$pattern")
-    }
+    mergeServiceFiles()
+    dependsOn(configurations)
+    archiveClassifier.set(null as String?)
+
     minimize {
         exclude(dependency(libs.exposed.jdbc.get()))
         exclude(dependency(libs.exposed.dao.get()))
-        exclude(dependency(libs.exposed.core.get()))
+    }
+    archiveVersion.set(projectInfo.versionString)
+    archiveBaseName.set("${projectInfo.name}-bukkit")
+    destinationDirectory = rootDir.resolve("build")
+        .resolve("bukkit")
+        .resolve("plugins")
+        .takeIf(File::exists)
+        ?: File(rootDir, "jars").also(File::mkdirs)
+
+    relocate("org.bstats", projectInfo.group)
+    listOf(
+        "co.touchlab",
+        "com.mysql",
+        "google.protobuf",
+        "io.github.reactivecircus",
+        "ch.qos.logback",
+        "com.charleskorn.kaml",
+        "com.ibm.icu",
+        "it.krzeminski.snakeyaml",
+        "net.thauvin.erik",
+        "okio",
+        "org.apache",
+        "org.intellij",
+        "org.slf4j",
+        "org.jetbrains.annotations",
+        "ru.astrainteractive.klibs",
+        "ru.astrainteractive.astralibs"
+    ).forEach { pattern -> relocate(pattern, "${projectInfo.group}.$pattern") }
+    listOf(
+        "org.jetbrains.exposed",
+        "kotlinx",
+    ).forEach { pattern ->
+        relocate(pattern, "${projectInfo.group}.$pattern") {
+            exclude("kotlin/kotlin.kotlin_builtins")
+        }
     }
 }

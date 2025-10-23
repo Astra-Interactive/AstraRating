@@ -6,7 +6,8 @@ plugins {
 
 dependencies {
     // Kotlin
-    implementation(libs.bundles.kotlin)
+    implementation(libs.kotlin.serialization.json)
+
     // klibs
     implementation(libs.klibs.mikro.core)
     implementation(libs.klibs.mikro.extensions)
