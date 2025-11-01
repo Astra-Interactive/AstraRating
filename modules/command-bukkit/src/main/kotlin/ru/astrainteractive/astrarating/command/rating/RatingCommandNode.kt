@@ -1,26 +1,24 @@
 package ru.astrainteractive.astrarating.command.rating
 
-import com.mojang.brigadier.builder.RequiredArgumentBuilder
+import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.tree.LiteralCommandNode
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.command.api.argumenttype.OfflinePlayerArgument
-import ru.astrainteractive.astralibs.command.api.argumenttype.StringArgumentType
+import ru.astrainteractive.astralibs.command.api.argumenttype.StringArgumentConverter
+import ru.astrainteractive.astralibs.command.api.util.argument
 import ru.astrainteractive.astralibs.command.api.util.command
-import ru.astrainteractive.astralibs.command.api.util.findArgument
 import ru.astrainteractive.astralibs.command.api.util.hints
 import ru.astrainteractive.astralibs.command.api.util.literal
+import ru.astrainteractive.astralibs.command.api.util.requireArgument
+import ru.astrainteractive.astralibs.command.api.util.requirePlayer
 import ru.astrainteractive.astralibs.command.api.util.runs
-import ru.astrainteractive.astralibs.command.api.util.stringArgument
-import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astrarating.command.exception.CommandExceptionHandler
 import ru.astrainteractive.astrarating.command.exception.OnlyPlayerCommandException
 import ru.astrainteractive.astrarating.command.exception.UnknownPlayerCommandException
 import ru.astrainteractive.astrarating.command.exception.UsageCommandException
-import ru.astrainteractive.klibs.kstorage.api.CachedKrate
-import ru.astrainteractive.klibs.kstorage.util.getValue
 
 private fun openRating(
     ctx: CommandContext<CommandSourceStack>,
@@ -41,105 +39,40 @@ private fun openRating(
 
 @Suppress("LongMethod")
 internal fun createRatingCommandNode(
-    kyoriKrate: CachedKrate<KyoriComponentSerializer>,
     ratingCommandExecutor: RatingCommandExecutor,
     commandExceptionHandler: CommandExceptionHandler
 ): LiteralCommandNode<CommandSourceStack> {
-    val kyori by kyoriKrate
-    return with(kyori) {
-        command("arating") {
-            literal("player") {
-                stringArgument("player") {
-                    hints(Bukkit.getOnlinePlayers().map(Player::getName))
-                    runs { ctx ->
-                        val player = ctx.source.sender as? Player
-                        if (player == null) {
-                            commandExceptionHandler.handle(ctx, OnlyPlayerCommandException())
-                            return@runs
-                        }
-                        val targetPlayer = ctx.findArgument("player", OfflinePlayerArgument)
-                        val targetPlayerUuid = targetPlayer?.uniqueId
-                        val targetPlayerName = targetPlayer?.name
-                        if (targetPlayerUuid == null || targetPlayerName == null) {
-                            commandExceptionHandler.handle(ctx, UnknownPlayerCommandException())
-                            return@runs
-                        }
-                        if (!targetPlayer.hasPlayedBefore()) {
-                            commandExceptionHandler.handle(ctx, UnknownPlayerCommandException())
-                            return@runs
-                        }
-                        ratingCommandExecutor.execute(
-                            RatingCommand.Result.OpenPlayerRatingGui(
-                                player = player,
-                                selectedPlayerName = targetPlayerName,
-                                selectedPlayerUUID = targetPlayerUuid
-                            )
-                        )
-                    }
-                }
-            }
-            literal("rating") {
+    return command("arating") {
+        literal("player") {
+            argument("player", StringArgumentType.string()) { playerArg ->
+                hints { Bukkit.getOnlinePlayers().map(Player::getName) }
                 runs { ctx ->
-                    openRating(
-                        ctx = ctx,
-                        commandExceptionHandler = commandExceptionHandler,
-                        ratingCommandExecutor = ratingCommandExecutor
+
+                    val player = ctx.requirePlayer()
+                    val targetPlayer = runCatching {
+                        ctx.requireArgument(playerArg, OfflinePlayerArgument)
+                    }.getOrNull()
+                    val targetPlayerUuid = targetPlayer?.uniqueId
+                    val targetPlayerName = targetPlayer?.name
+                    if (targetPlayerUuid == null || targetPlayerName == null) {
+                        commandExceptionHandler.handle(ctx, UnknownPlayerCommandException())
+                        return@runs
+                    }
+                    if (!targetPlayer.hasPlayedBefore()) {
+                        commandExceptionHandler.handle(ctx, UnknownPlayerCommandException())
+                        return@runs
+                    }
+                    ratingCommandExecutor.execute(
+                        RatingCommand.Result.OpenPlayerRatingGui(
+                            player = player,
+                            selectedPlayerName = targetPlayerName,
+                            selectedPlayerUUID = targetPlayerUuid
+                        )
                     )
                 }
-                stringArgument("like_dislike") {
-                    hints(listOf("like", "dislike", "+", "-"))
-                    stringArgument("player") player@{
-                        hints { Bukkit.getOnlinePlayers().map(Player::getName) }
-                        fun RequiredArgumentBuilder<CommandSourceStack, *>.messageArgument(
-                            sizeLeft: Int,
-                            maxSize: Int
-                        ) {
-                            if (sizeLeft < 0) return
-                            stringArgument("message_$sizeLeft") message@{
-                                hints(listOf("..."))
-                                messageArgument(sizeLeft - 1, maxSize)
-                                runs { ctx ->
-                                    val executor = ctx.source.sender as? Player
-                                    if (executor == null) {
-                                        commandExceptionHandler.handle(ctx, OnlyPlayerCommandException())
-                                        return@runs
-                                    }
-                                    val value = when (ctx.findArgument("like_dislike", StringArgumentType)) {
-                                        "like", "+" -> 1
-                                        "dislike", "-" -> -1
-                                        else -> {
-                                            commandExceptionHandler.handle(ctx, UsageCommandException())
-                                            return@runs
-                                        }
-                                    }
-                                    val ratedPlayer = ctx.findArgument("player", OfflinePlayerArgument)
-                                    if (ratedPlayer == null) {
-                                        commandExceptionHandler.handle(ctx, UnknownPlayerCommandException())
-                                        return@runs
-                                    }
-                                    if (!ratedPlayer.hasPlayedBefore()) {
-                                        commandExceptionHandler.handle(ctx, UnknownPlayerCommandException())
-                                        return@runs
-                                    }
-                                    ratingCommandExecutor.execute(
-                                        RatingCommand.Result.ChangeRating(
-                                            value = value,
-                                            message = (sizeLeft..maxSize)
-                                                .reversed()
-                                                .mapNotNull { i -> ctx.findArgument("message_$i", StringArgumentType) }
-                                                .joinToString(" "),
-                                            executor = executor,
-                                            ratedPlayer = ratedPlayer
-                                        )
-                                    )
-                                }
-                            }
-                        }
-
-                        messageArgument(300, 300)
-                    }
-                }
             }
+        }
+        literal("rating") {
             runs { ctx ->
                 openRating(
                     ctx = ctx,
@@ -147,6 +80,56 @@ internal fun createRatingCommandNode(
                     ratingCommandExecutor = ratingCommandExecutor
                 )
             }
-        }.build()
-    }
+            argument("like_dislike", StringArgumentType.string()) { ratingTypeArg ->
+                hints { listOf("like", "dislike", "+", "-") }
+                argument("player", StringArgumentType.string()) player@{ playerArg ->
+                    hints { Bukkit.getOnlinePlayers().map(Player::getName) }
+                    argument("message", StringArgumentType.greedyString()) message@{ messageArg ->
+                        hints { listOf("...") }
+                        runs { ctx ->
+                            val executor = ctx.source.sender as? Player
+                            if (executor == null) {
+                                commandExceptionHandler.handle(ctx, OnlyPlayerCommandException())
+                                return@runs
+                            }
+                            val value = when (ctx.requireArgument(ratingTypeArg, StringArgumentConverter)) {
+                                "like", "+" -> 1
+                                "dislike", "-" -> -1
+                                else -> {
+                                    commandExceptionHandler.handle(ctx, UsageCommandException())
+                                    return@runs
+                                }
+                            }
+                            val ratedPlayer = runCatching {
+                                ctx.requireArgument(playerArg, OfflinePlayerArgument)
+                            }.getOrNull()
+                            if (ratedPlayer == null) {
+                                commandExceptionHandler.handle(ctx, UnknownPlayerCommandException())
+                                return@runs
+                            }
+                            if (!ratedPlayer.hasPlayedBefore()) {
+                                commandExceptionHandler.handle(ctx, UnknownPlayerCommandException())
+                                return@runs
+                            }
+                            ratingCommandExecutor.execute(
+                                RatingCommand.Result.ChangeRating(
+                                    value = value,
+                                    message = ctx.requireArgument(messageArg, StringArgumentConverter),
+                                    executor = executor,
+                                    ratedPlayer = ratedPlayer
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        runs { ctx ->
+            openRating(
+                ctx = ctx,
+                commandExceptionHandler = commandExceptionHandler,
+                ratingCommandExecutor = ratingCommandExecutor
+            )
+        }
+    }.build()
 }

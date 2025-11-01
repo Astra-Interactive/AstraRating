@@ -2,7 +2,7 @@ package ru.astrainteractive.astrarating.command.exception
 
 import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
-import ru.astrainteractive.astralibs.command.api.exception.ArgumentTypeException
+import ru.astrainteractive.astralibs.command.api.exception.ArgumentConverterException
 import ru.astrainteractive.astralibs.command.api.exception.BadArgumentException
 import ru.astrainteractive.astralibs.command.api.exception.NoPermissionException
 import ru.astrainteractive.astralibs.command.api.exception.NoPlayerException
@@ -26,7 +26,7 @@ class CommandExceptionHandler(
         val desc = when (t) {
             is StringDescCommandException -> t.stringDesc
             is BadArgumentException -> translation.general.wrongUsage
-            is ArgumentTypeException -> translation.general.wrongUsage
+            is ArgumentConverterException -> translation.general.wrongUsage
             is NoPermissionException -> translation.general.noPermission
             is UnknownPlayerCommandException,
             is NoPlayerException -> translation.general.playerNotExist

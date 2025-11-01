@@ -28,7 +28,6 @@ class CommandsModule(
                 )
                 bukkitModule.commandRegistrarContext.registerWhenReady(
                     node = createRatingCommandNode(
-                        kyoriKrate = bukkitModule.kyoriKrate,
                         commandExceptionHandler = CommandExceptionHandler(
                             translationKrate = coreModule.translationKrate,
                             kyoriKrate = bukkitModule.kyoriKrate
