@@ -6,7 +6,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import ru.astrainteractive.astralibs.command.api.argumenttype.OfflinePlayerArgument
+import ru.astrainteractive.astralibs.command.api.argumenttype.OfflinePlayerArgumentConverter
 import ru.astrainteractive.astralibs.command.api.argumenttype.StringArgumentConverter
 import ru.astrainteractive.astralibs.command.api.util.argument
 import ru.astrainteractive.astralibs.command.api.util.command
@@ -50,7 +50,7 @@ internal fun createRatingCommandNode(
 
                     val player = ctx.requirePlayer()
                     val targetPlayer = runCatching {
-                        ctx.requireArgument(playerArg, OfflinePlayerArgument)
+                        ctx.requireArgument(playerArg, OfflinePlayerArgumentConverter)
                     }.getOrNull()
                     val targetPlayerUuid = targetPlayer?.uniqueId
                     val targetPlayerName = targetPlayer?.name
@@ -84,7 +84,7 @@ internal fun createRatingCommandNode(
                 hints { listOf("like", "dislike", "+", "-") }
                 argument("player", StringArgumentType.string()) player@{ playerArg ->
                     hints { Bukkit.getOnlinePlayers().map(Player::getName) }
-                    argument("message", StringArgumentType.greedyString()) message@{ messageArg ->
+                    argument("message", StringArgumentType.string()) message@{ messageArg ->
                         hints { listOf("...") }
                         runs { ctx ->
                             val executor = ctx.source.sender as? Player
@@ -101,7 +101,7 @@ internal fun createRatingCommandNode(
                                 }
                             }
                             val ratedPlayer = runCatching {
-                                ctx.requireArgument(playerArg, OfflinePlayerArgument)
+                                ctx.requireArgument(playerArg, OfflinePlayerArgumentConverter)
                             }.getOrNull()
                             if (ratedPlayer == null) {
                                 commandExceptionHandler.handle(ctx, UnknownPlayerCommandException())

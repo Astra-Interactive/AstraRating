@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
-    alias(libs.plugins.klibs.gradle.java.core)
+    alias(libs.plugins.klibs.gradle.java.version)
 }
 
 dependencies {
