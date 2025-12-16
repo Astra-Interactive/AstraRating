@@ -3,7 +3,7 @@ package ru.astrainteractive.astrarating.feature.ratings.player.presentation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.astrainteractive.astralibs.async.withTimings
+import ru.astrainteractive.astralibs.coroutines.withTimings
 import ru.astrainteractive.astrarating.data.dao.RatingDao
 import ru.astrainteractive.astrarating.data.exposed.dto.UserRatingDTO
 import ru.astrainteractive.astrarating.data.exposed.model.UserRatingsSort

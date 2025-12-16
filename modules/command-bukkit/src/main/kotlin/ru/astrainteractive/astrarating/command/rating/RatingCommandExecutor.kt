@@ -6,7 +6,6 @@ import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.entity.Player
-import ru.astrainteractive.astralibs.command.api.executor.CommandExecutor
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.kyori.unwrap
 import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissible
@@ -26,8 +25,7 @@ internal class RatingCommandExecutor(
     translationKrate: CachedKrate<AstraRatingTranslation>,
     kyoriKrate: CachedKrate<KyoriComponentSerializer>,
     private val router: GuiRouter
-) : CommandExecutor<RatingCommand.Result>,
-    KyoriComponentSerializer by kyoriKrate.unwrap() {
+) : KyoriComponentSerializer by kyoriKrate.unwrap() {
     private val translation by translationKrate
 
     private fun OfflinePlayer.toPlayerModel(): PlayerModel? {
@@ -117,7 +115,7 @@ internal class RatingCommandExecutor(
         }
     }
 
-    override fun execute(input: RatingCommand.Result) {
+    fun execute(input: RatingCommand.Result) {
         when (input) {
             is RatingCommand.Result.ChangeRating -> {
                 changeRating(input)
