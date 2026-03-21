@@ -18,14 +18,14 @@ import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import ru.astrainteractive.klibs.mikro.core.util.tryCast
 
 class CommandExceptionHandler(
-    translationKrate: CachedKrate<AstraRatingTranslation>,
+    private val multiplatformCommand: MultiplatformCommand,
     kyoriKrate: CachedKrate<KyoriComponentSerializer>,
-    private val multiplatformCommand: MultiplatformCommand<*>,
+    translationKrate: CachedKrate<AstraRatingTranslation>,
 ) : KyoriComponentSerializer by kyoriKrate.unwrap(),
     Logger by JUtiltLogger("AstraRating-CommandExceptionHandler") {
     private val translation by translationKrate
 
-    fun handle(ctx: CommandContext<*>, t: Throwable) {
+    fun handle(ctx: CommandContext<Any>, t: Throwable) {
         val desc = when (t) {
             is StringDescCommandException -> t.stringDesc
             is BadArgumentException -> translation.general.wrongUsage
@@ -40,9 +40,10 @@ class CommandExceptionHandler(
                 translation.general.unknownError
             }
         }
-        multiplatformCommand.commands
-            .getSender(ctx)
-            .tryCast<KAudience>()
-            ?.sendMessage(desc.component)
+        with(multiplatformCommand) {
+            ctx.getSender()
+                .tryCast<KAudience>()
+                ?.sendMessage(desc.component)
+        }
     }
 }

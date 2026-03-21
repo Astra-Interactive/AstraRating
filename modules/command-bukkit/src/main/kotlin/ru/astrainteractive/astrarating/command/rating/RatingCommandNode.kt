@@ -13,8 +13,8 @@ import ru.astrainteractive.astrarating.command.exception.CommandExceptionHandler
 import ru.astrainteractive.astrarating.command.exception.UnknownPlayerCommandException
 import ru.astrainteractive.astrarating.command.exception.UsageCommandException
 
-private fun <S> MultiplatformCommand<S>.openRating(
-    ctx: CommandContext<S>,
+private fun MultiplatformCommand.openRating(
+    ctx: CommandContext<Any>,
     ratingCommandExecutor: RatingCommandExecutor,
 ) {
     val executor = ctx.requirePlayer()
@@ -26,12 +26,12 @@ private fun <S> MultiplatformCommand<S>.openRating(
 }
 
 @Suppress("LongMethod")
-internal fun <S> createRatingCommandNode(
-    ratingCommandExecutor: RatingCommandExecutor,
+internal fun createRatingCommandNode(
     commandExceptionHandler: CommandExceptionHandler,
-    multiplatformCommand: MultiplatformCommand<S>,
+    multiplatformCommand: MultiplatformCommand,
     platformServer: PlatformServer,
-): LiteralArgumentBuilder<S> {
+    ratingCommandExecutor: RatingCommandExecutor,
+): LiteralArgumentBuilder<*> {
     return with(multiplatformCommand) {
         command("arating") {
             literal("player") {

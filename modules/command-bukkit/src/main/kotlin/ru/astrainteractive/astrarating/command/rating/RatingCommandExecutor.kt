@@ -22,9 +22,9 @@ internal class RatingCommandExecutor(
     private val addRatingUseCase: AddRatingUseCase,
     private val coroutineScope: CoroutineScope,
     private val dispatchers: KotlinDispatchers,
-    translationKrate: CachedKrate<AstraRatingTranslation>,
+    private val router: GuiRouter,
     kyoriKrate: CachedKrate<KyoriComponentSerializer>,
-    private val router: GuiRouter
+    translationKrate: CachedKrate<AstraRatingTranslation>,
 ) : KyoriComponentSerializer by kyoriKrate.unwrap() {
     private val translation by translationKrate
 

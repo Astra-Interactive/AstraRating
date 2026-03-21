@@ -15,14 +15,14 @@ import ru.astrainteractive.astrarating.feature.rating.change.di.RatingChangeModu
 
 @Suppress("LongParameterList")
 class CommandsModule(
-    ratingChangeModule: RatingChangeModule,
+    private val commandRegistrarContext: CommandRegistrarContext,
+    private val lifecyclePlugin: Lifecycle,
+    private val multiplatformCommand: MultiplatformCommand,
     bukkitModule: BukkitModule,
     coreModule: CoreModule,
     guiBukkitModule: GuiBukkitModule,
-    private val commandRegistrarContext: CommandRegistrarContext,
-    private val multiplatformCommand: MultiplatformCommand<*>,
-    private val lifecyclePlugin: Lifecycle,
-    platformServer: PlatformServer
+    platformServer: PlatformServer,
+    ratingChangeModule: RatingChangeModule,
 ) {
     private val nodes = listOf(
         createReloadCommandNode(

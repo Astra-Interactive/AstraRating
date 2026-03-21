@@ -11,10 +11,10 @@ import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.klibs.mikro.core.util.tryCast
 
 fun createReloadCommandNode(
-    multiplatformCommand: MultiplatformCommand<*>,
+    kyoriKrate: CachedKrate<KyoriComponentSerializer>,
     lifecyclePlugin: Lifecycle,
+    multiplatformCommand: MultiplatformCommand,
     translationKrate: CachedKrate<AstraRatingTranslation>,
-    kyoriKrate: CachedKrate<KyoriComponentSerializer>
 ): LiteralArgumentBuilder<*> {
     val translation by translationKrate
     val kyori by kyoriKrate
