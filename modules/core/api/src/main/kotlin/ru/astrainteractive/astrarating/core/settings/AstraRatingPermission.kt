@@ -1,6 +1,6 @@
 package ru.astrainteractive.astrarating.core.settings
 
-import ru.astrainteractive.astralibs.permission.Permission
+import ru.astrainteractive.astralibs.server.permission.Permission
 
 sealed class AstraRatingPermission(override val value: String) : Permission {
     data object Reload : AstraRatingPermission("astra_rating.reload")

@@ -11,40 +11,35 @@ plugins {
 }
 
 dependencies {
-    // Kotlin
-    implementation(libs.kotlin.serialization.json)
-
-    // AstraLibs
-    implementation(libs.minecraft.astralibs.core)
-    implementation(libs.minecraft.astralibs.menu.bukkit)
-    implementation(libs.minecraft.astralibs.core.bukkit)
-    implementation(libs.minecraft.astralibs.command)
-    implementation(libs.minecraft.astralibs.command.bukkit)
-    // klibs
-    implementation(libs.klibs.mikro.core)
-    implementation(libs.klibs.kstorage)
-    // Exposed
-    implementation(libs.exposed.core)
-    // Test
-    testImplementation(libs.tests.kotlin.test)
-    // Spigot dependencies
     compileOnly(libs.minecraft.paper.api)
-    implementation(libs.minecraft.bstats)
     compileOnly(libs.minecraft.papi)
     compileOnly(libs.minecraft.vaultapi)
+
+    implementation(libs.exposed.core)
+    implementation(libs.klibs.kstorage)
+    implementation(libs.klibs.mikro.core)
+    implementation(libs.kotlin.serialization.json)
+    implementation(libs.minecraft.astralibs.command)
+    implementation(libs.minecraft.astralibs.command.bukkit)
+    implementation(libs.minecraft.astralibs.core)
+    implementation(libs.minecraft.astralibs.core.bukkit)
+    implementation(libs.minecraft.astralibs.menu.bukkit)
     implementation(libs.minecraft.bstats)
-    // Local
-    implementation(projects.modules.data.exposed)
-    implementation(projects.modules.data.dao)
-    implementation(projects.modules.integrationPapi)
+    implementation(libs.minecraft.bstats)
+
+    implementation(projects.modules.commandBukkit)
     implementation(projects.modules.core.api)
     implementation(projects.modules.core.bukkit)
     implementation(projects.modules.core.guiBukkit)
-    implementation(projects.modules.commandBukkit)
+    implementation(projects.modules.data.dao)
+    implementation(projects.modules.data.exposed)
     implementation(projects.modules.eventBukkit)
+    implementation(projects.modules.integrationPapi)
     implementation(projects.modules.ratingChange.api)
     implementation(projects.modules.ratingPlayer.api)
     implementation(projects.modules.ratingPlayers.api)
+
+    testImplementation(libs.tests.kotlin.test)
 }
 
 minecraftProcessResource {
@@ -74,19 +69,54 @@ shadowJar.configure {
         exclude(dependency(libs.exposed.dao.get()))
     }
     archiveVersion.set(projectInfo.versionString)
-    archiveBaseName.set("${projectInfo.name}-bukkit")
+    archiveBaseName = "${requireProjectInfo.name}-${project.name}"
     destinationDirectory = rootDir.resolve("build")
         .resolve("bukkit")
         .resolve("plugins")
         .takeIf(File::exists)
         ?: File(rootDir, "jars").also(File::mkdirs)
 
+    dependencies {
+        // Dependencies
+        exclude("mozilla/**")
+        exclude("javax/**")
+        exclude("it/unimi/dsi/**")
+        exclude("ch/qos/logback/**")
+        exclude("org/intellij/lang/annotations/**")
+        exclude("org/jetbrains/annotations/**")
+        exclude("org/slf4j/**")
+        exclude("org/apache/xmlgraphics/**")
+        exclude("org/apache/batik/**")
+        exclude("org/apache/commons/logging/**")
+        exclude("com/ibm/icu/**")
+        // Root
+        exclude("_COROUTINE/**")
+        exclude("DebugProbesKt.bin")
+        exclude("jetty-dir.css")
+        exclude("license/**")
+        exclude("licenses/**")
+        exclude("**LICENCE**")
+        exclude("**LICENSE**")
+        // META
+        exclude("META-INF/**.md")
+        exclude("META-INF/**.MD")
+        exclude("META-INF/**.txt**")
+        exclude("META-INF/**LICENCE**")
+        exclude("META-INF/com.android.tools/**")
+        exclude("META-INF/gradle-plugins/**")
+        exclude("META-INF/imports/**")
+        exclude("META-INF/kotlin-reflection.kotlin_module")
+        exclude("META-INF/license/**")
+        exclude("META-INF/maven/**")
+        exclude("META-INF/native-image/**")
+        exclude("META-INF/native/**")
+        exclude("META-INF/proguard/**")
+        exclude("META-INF/rewrite/**")
+        exclude("META-INF/services/kotlin.reflect.**")
+        exclude("META-INF/versions/**")
+    }
     relocate("org.bstats", projectInfo.group)
     listOf(
-        "co.touchlab",
-        "com.mysql",
-        "google.protobuf",
-        "io.github.reactivecircus",
         "ch.qos.logback",
         "com.charleskorn.kaml",
         "com.ibm.icu",
@@ -95,13 +125,11 @@ shadowJar.configure {
         "okio",
         "org.apache",
         "org.intellij",
-        "org.slf4j",
         "org.jetbrains.annotations",
         "ru.astrainteractive.klibs",
         "ru.astrainteractive.astralibs"
     ).forEach { pattern -> relocate(pattern, "${projectInfo.group}.$pattern") }
     listOf(
-        "org.jetbrains.exposed",
         "kotlinx",
     ).forEach { pattern ->
         relocate(pattern, "${projectInfo.group}.$pattern") {

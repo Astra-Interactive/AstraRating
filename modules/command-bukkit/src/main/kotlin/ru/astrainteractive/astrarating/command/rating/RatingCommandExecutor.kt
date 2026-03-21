@@ -2,13 +2,12 @@ package ru.astrainteractive.astrarating.command.rating
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.bukkit.Bukkit
-import org.bukkit.OfflinePlayer
-import org.bukkit.command.ConsoleCommandSender
-import org.bukkit.entity.Player
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.kyori.unwrap
-import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissible
+import ru.astrainteractive.astralibs.server.KCommandDispatcher
+import ru.astrainteractive.astralibs.server.permission.KPermissible
+import ru.astrainteractive.astralibs.server.player.KPlayer
+import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.astrarating.core.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
 import ru.astrainteractive.astrarating.data.exposed.dto.RatingType
@@ -17,32 +16,33 @@ import ru.astrainteractive.astrarating.feature.rating.change.domain.usecase.AddR
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
+import ru.astrainteractive.klibs.mikro.core.util.tryCast
 
 internal class RatingCommandExecutor(
     private val addRatingUseCase: AddRatingUseCase,
     private val coroutineScope: CoroutineScope,
     private val dispatchers: KotlinDispatchers,
-    translationKrate: CachedKrate<AstraRatingTranslation>,
+    private val router: GuiRouter,
     kyoriKrate: CachedKrate<KyoriComponentSerializer>,
-    private val router: GuiRouter
+    translationKrate: CachedKrate<AstraRatingTranslation>,
 ) : KyoriComponentSerializer by kyoriKrate.unwrap() {
     private val translation by translationKrate
 
-    private fun OfflinePlayer.toPlayerModel(): PlayerModel? {
+    private fun KPlayer.toPlayerModel(): PlayerModel? {
         return PlayerModel(
-            uuid = this.uniqueId,
+            uuid = this.uuid,
             name = name ?: return null,
-            permissible = player?.toPermissible(),
-            firstPlayed = firstPlayed
+            permissible = tryCast<KPermissible>(),
+            hasPlayedBefore = hasPlayedBefore()
         )
     }
 
-    private fun Player.toPlayerModel(): PlayerModel {
+    private fun OnlineKPlayer.toPlayerModel(): PlayerModel {
         return PlayerModel(
-            uuid = this.uniqueId,
+            uuid = this.uuid,
             name = name,
-            permissible = toPermissible(),
-            firstPlayed = firstPlayed
+            permissible = this,
+            hasPlayedBefore = hasPlayedBefore()
         )
     }
 
@@ -106,10 +106,7 @@ internal class RatingCommandExecutor(
 
     private fun reload(input: RatingCommand.Result.Reload) {
         when (input.executor) {
-            is Player -> input.executor.performCommand("aratingreload")
-            is ConsoleCommandSender -> {
-                Bukkit.getServer().dispatchCommand(input.executor, "aratingreload")
-            }
+            is KCommandDispatcher -> input.executor.dispatchCommand("aratingreload")
 
             else -> Unit
         }

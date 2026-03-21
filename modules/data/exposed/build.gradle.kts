@@ -5,20 +5,15 @@ plugins {
 }
 
 dependencies {
-    // Kotlin
-    implementation(libs.kotlin.serialization.json)
-
-    // klibs
-    implementation(libs.klibs.mikro.core)
-    implementation(libs.klibs.mikro.extensions)
-    implementation(libs.klibs.kstorage)
-    // AstraLibs
-    implementation(libs.minecraft.astralibs.core)
-    // Exposed
+    implementation(libs.driver.mysql)
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)
     implementation(libs.exposed.jdbc)
-    implementation("mysql:mysql-connector-java:8.0.33")
-    // Local
+    implementation(libs.klibs.kstorage)
+    implementation(libs.klibs.mikro.core)
+    implementation(libs.klibs.mikro.extensions)
+    implementation(libs.kotlin.serialization.json)
+    implementation(libs.minecraft.astralibs.core)
+
     implementation(projects.modules.core.api)
 }

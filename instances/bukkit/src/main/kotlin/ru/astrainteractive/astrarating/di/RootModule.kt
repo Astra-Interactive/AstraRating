@@ -1,8 +1,12 @@
 package ru.astrainteractive.astrarating.di
 
+import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
+import ru.astrainteractive.astralibs.command.api.brigadier.command.PaperMultiplatformCommands
+import ru.astrainteractive.astralibs.command.api.registrar.PaperCommandRegistrarContext
 import ru.astrainteractive.astralibs.coroutines.DefaultBukkitDispatchers
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
+import ru.astrainteractive.astralibs.server.bridge.BukkitPlatformServer
 import ru.astrainteractive.astrarating.command.di.CommandsModule
 import ru.astrainteractive.astrarating.core.di.BukkitModule
 import ru.astrainteractive.astrarating.core.di.CoreModule
@@ -19,11 +23,11 @@ class RootModule(plugin: LifecyclePlugin) {
     private val coreModule: CoreModule by lazy {
         CoreModule(
             dataFolder = plugin.dataFolder,
-            dispatchers = DefaultBukkitDispatchers(plugin)
+            dispatchers = DefaultBukkitDispatchers(plugin),
         )
     }
     private val bukkitModule: BukkitModule by lazy {
-        BukkitModule(plugin, coreModule.mainScope)
+        BukkitModule(plugin)
     }
 
     private val dbRatingModule: DBRatingModule by lazy {
@@ -95,7 +99,14 @@ class RootModule(plugin: LifecyclePlugin) {
             bukkitModule = bukkitModule,
             coreModule = coreModule,
             guiBukkitModule = guiBukkitModule,
-            ratingChangeModule = ratingChangeModule
+            ratingChangeModule = ratingChangeModule,
+            commandRegistrarContext = PaperCommandRegistrarContext(
+                mainScope = coreModule.mainScope,
+                plugin = plugin
+            ),
+            multiplatformCommand = MultiplatformCommand(PaperMultiplatformCommands()),
+            lifecyclePlugin = plugin,
+            platformServer = BukkitPlatformServer()
         )
     }
     private val lifecycles: List<Lifecycle>

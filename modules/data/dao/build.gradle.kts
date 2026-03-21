@@ -5,20 +5,17 @@ plugins {
 }
 
 dependencies {
-    // Kotlin
-    implementation(libs.kotlin.serialization.json)
-    // klibs
-    implementation(libs.klibs.mikro.core)
-    implementation(libs.klibs.mikro.extensions)
-    implementation(libs.minecraft.astralibs.core)
-    implementation(libs.klibs.kstorage)
-    // Exposed
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)
-    // Test
-    testImplementation(libs.tests.kotlin.test)
-    testImplementation(libs.driver.jdbc)
-    // Local
-    implementation(projects.modules.data.exposed)
+    implementation(libs.klibs.kstorage)
+    implementation(libs.klibs.mikro.core)
+    implementation(libs.klibs.mikro.extensions)
+    implementation(libs.kotlin.serialization.json)
+    implementation(libs.minecraft.astralibs.core)
+
     implementation(projects.modules.core.api)
+    implementation(projects.modules.data.exposed)
+
+    testImplementation(libs.driver.jdbc)
+    testImplementation(libs.tests.kotlin.test)
 }

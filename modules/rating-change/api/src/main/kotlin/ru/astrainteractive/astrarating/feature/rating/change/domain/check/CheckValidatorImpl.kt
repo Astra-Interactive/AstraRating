@@ -37,12 +37,14 @@ internal class CheckValidatorImpl(
         return check.playerModel.permissible?.hasPermission(AstraRatingPermission.Vote) ?: false
     }
 
+    @Suppress("FunctionOnlyReturningConstant", "UnusedParameter")
     private fun checkEnoughTime(check: Check.EnoughTime): Boolean {
-        return System.currentTimeMillis() - check.playerModel.firstPlayed > config.minTimeOnServer
+        // Remove this feature
+        return true
     }
 
     private fun checkPlayerExists(check: Check.PlayerExists): Boolean {
-        return check.playerModel.firstPlayed > 0L
+        return check.playerModel.hasPlayedBefore
     }
 
     private fun checkMessageCorrect(check: Check.MessageCorrect): Boolean {

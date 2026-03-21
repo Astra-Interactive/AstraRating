@@ -1,7 +1,7 @@
 package ru.astrainteractive.astrarating.command.exception
 
 import com.mojang.brigadier.context.CommandContext
-import io.papermc.paper.command.brigadier.CommandSourceStack
+import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
 import ru.astrainteractive.astralibs.command.api.exception.ArgumentConverterException
 import ru.astrainteractive.astralibs.command.api.exception.BadArgumentException
 import ru.astrainteractive.astralibs.command.api.exception.NoPermissionException
@@ -9,20 +9,23 @@ import ru.astrainteractive.astralibs.command.api.exception.NoPlayerException
 import ru.astrainteractive.astralibs.command.api.exception.StringDescCommandException
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.kyori.unwrap
+import ru.astrainteractive.astralibs.server.KAudience
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
+import ru.astrainteractive.klibs.mikro.core.util.tryCast
 
 class CommandExceptionHandler(
+    private val multiplatformCommand: MultiplatformCommand,
+    kyoriKrate: CachedKrate<KyoriComponentSerializer>,
     translationKrate: CachedKrate<AstraRatingTranslation>,
-    kyoriKrate: CachedKrate<KyoriComponentSerializer>
 ) : KyoriComponentSerializer by kyoriKrate.unwrap(),
     Logger by JUtiltLogger("AstraRating-CommandExceptionHandler") {
     private val translation by translationKrate
 
-    fun handle(ctx: CommandContext<CommandSourceStack>, t: Throwable) {
+    fun handle(ctx: CommandContext<Any>, t: Throwable) {
         val desc = when (t) {
             is StringDescCommandException -> t.stringDesc
             is BadArgumentException -> translation.general.wrongUsage
@@ -30,12 +33,17 @@ class CommandExceptionHandler(
             is NoPermissionException -> translation.general.noPermission
             is UnknownPlayerCommandException,
             is NoPlayerException -> translation.general.playerNotExist
+
             is OnlyPlayerCommandException -> translation.general.onlyPlayerCommand
             else -> {
                 error(t) { "#handle unhandled exception ${t.message}" }
                 translation.general.unknownError
             }
         }
-        ctx.source.sender.sendMessage(desc.component)
+        with(multiplatformCommand) {
+            ctx.getSender()
+                .tryCast<KAudience>()
+                ?.sendMessage(desc.component)
+        }
     }
 }

@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import net.kyori.adventure.text.Component
-import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.menu.clicker.Click
@@ -14,10 +13,13 @@ import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
 import ru.astrainteractive.astralibs.menu.inventory.PaginatedInventoryMenu
 import ru.astrainteractive.astralibs.menu.inventory.model.InventorySize
 import ru.astrainteractive.astralibs.menu.inventory.model.PageContext
-import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.getIndex
+import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.indexOfSlot
 import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isFirstPage
 import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isLastPage
 import ru.astrainteractive.astralibs.menu.slot.InventorySlot
+import ru.astrainteractive.astralibs.server.player.BukkitOnlineKPlayer
+import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
+import ru.astrainteractive.astralibs.server.util.asOnlineMinecraftPlayer
 import ru.astrainteractive.astrarating.core.gui.loading.GuiLoadingIndicator
 import ru.astrainteractive.astrarating.core.gui.mapping.UsersRatingsSortMapper
 import ru.astrainteractive.astrarating.core.gui.router.GuiRouter
@@ -34,11 +36,12 @@ import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
 import ru.astrainteractive.astrarating.feature.rating.players.presentation.RatingPlayersComponent
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
+import ru.astrainteractive.klibs.mikro.core.util.cast
 import java.util.UUID
 
 @Suppress("LongParameterList")
 internal class RatingsGUI(
-    player: Player,
+    player: OnlineKPlayer,
     private val dispatchers: KotlinDispatchers,
     private val translationKrate: CachedKrate<AstraRatingTranslation>,
     private val configKratre: CachedKrate<AstraRatingConfig>,
@@ -64,7 +67,7 @@ internal class RatingsGUI(
         menu = this
     )
 
-    override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
+    override val playerHolder: PlayerHolder = DefaultPlayerHolder(player.cast<BukkitOnlineKPlayer>().instance)
 
     override var title: Component = kyoriKrate.getValue()
         .toComponent(translationKrate.getValue().gui.ratingsTitle)
@@ -129,7 +132,7 @@ internal class RatingsGUI(
         sortButton.setInventorySlot()
 
         for (i in 0 until pageContext.maxItemsPerPage) {
-            val index = pageContext.getIndex(i)
+            val index = pageContext.indexOfSlot(i)
             val userAndRating = model.userRatings.getOrNull(index) ?: continue
             slotContext.ratingsSlot(
                 index = i,
@@ -140,7 +143,7 @@ internal class RatingsGUI(
                 playerName = userAndRating.userDTO.normalName,
                 click = Click {
                     val route = GuiRouter.Route.PlayerRating(
-                        executor = playerHolder.player,
+                        executor = playerHolder.player.asOnlineMinecraftPlayer(),
                         selectedPlayerName = userAndRating.userDTO.minecraftName,
                         selectedPlayerUUID = userAndRating.userDTO.minecraftUUID.let(UUID::fromString)
                     )
