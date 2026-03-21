@@ -101,8 +101,8 @@ class RootModule(plugin: LifecyclePlugin) {
             guiBukkitModule = guiBukkitModule,
             ratingChangeModule = ratingChangeModule,
             commandRegistrarContext = PaperCommandRegistrarContext(
-                coreModule.mainScope,
-                plugin
+                mainScope = coreModule.mainScope,
+                plugin = plugin
             ),
             multiplatformCommand = MultiplatformCommand(PaperMultiplatformCommands()),
             lifecyclePlugin = plugin,

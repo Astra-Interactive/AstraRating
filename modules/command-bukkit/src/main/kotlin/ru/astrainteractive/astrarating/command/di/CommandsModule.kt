@@ -6,8 +6,8 @@ import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.server.bridge.PlatformServer
 import ru.astrainteractive.astrarating.command.exception.CommandExceptionHandler
 import ru.astrainteractive.astrarating.command.rating.RatingCommandExecutor
-import ru.astrainteractive.astrarating.command.rating.createRatingCommandNode
-import ru.astrainteractive.astrarating.command.reload.createReloadCommandNode
+import ru.astrainteractive.astrarating.command.rating.RatingLiteralArgumentBuilder
+import ru.astrainteractive.astrarating.command.reload.ReloadLiteralArgumentBuilder
 import ru.astrainteractive.astrarating.core.di.BukkitModule
 import ru.astrainteractive.astrarating.core.di.CoreModule
 import ru.astrainteractive.astrarating.core.gui.di.GuiBukkitModule
@@ -25,13 +25,13 @@ class CommandsModule(
     ratingChangeModule: RatingChangeModule,
 ) {
     private val nodes = listOf(
-        createReloadCommandNode(
+        ReloadLiteralArgumentBuilder(
             multiplatformCommand = multiplatformCommand,
             lifecyclePlugin = lifecyclePlugin,
             translationKrate = coreModule.translationKrate,
             kyoriKrate = bukkitModule.kyoriKrate
-        ),
-        createRatingCommandNode(
+        ).create(),
+        RatingLiteralArgumentBuilder(
             commandExceptionHandler = CommandExceptionHandler(
                 translationKrate = coreModule.translationKrate,
                 kyoriKrate = bukkitModule.kyoriKrate,
@@ -47,7 +47,7 @@ class CommandsModule(
             ),
             multiplatformCommand = multiplatformCommand,
             platformServer = platformServer,
-        )
+        ).create()
     )
     val lifecycle: Lifecycle by lazy {
         Lifecycle.Lambda(
