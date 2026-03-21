@@ -5,7 +5,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import net.kyori.adventure.text.Component
-import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
@@ -15,11 +14,13 @@ import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
 import ru.astrainteractive.astralibs.menu.inventory.PaginatedInventoryMenu
 import ru.astrainteractive.astralibs.menu.inventory.model.InventorySize
 import ru.astrainteractive.astralibs.menu.inventory.model.PageContext
-import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.getIndex
+import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.indexOfSlot
 import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isFirstPage
 import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isLastPage
 import ru.astrainteractive.astralibs.menu.slot.InventorySlot
-import ru.astrainteractive.astralibs.permission.BukkitPermissibleExt.toPermissible
+import ru.astrainteractive.astralibs.server.permission.asKPermissible
+import ru.astrainteractive.astralibs.server.player.BukkitOnlineKPlayer
+import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.astralibs.string.replace
 import ru.astrainteractive.astrarating.core.gui.loading.GuiLoadingIndicator
 import ru.astrainteractive.astrarating.core.gui.mapping.UserRatingsSortMapper
@@ -40,11 +41,12 @@ import ru.astrainteractive.astrarating.feature.ratings.player.presentation.Ratin
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
+import ru.astrainteractive.klibs.mikro.core.util.cast
 
 @Suppress("LongParameterList")
 internal class PlayerRatingsGUI(
     selectedPlayerName: String,
-    private val player: Player,
+    private val player: OnlineKPlayer,
     private val ratingPlayerComponent: RatingPlayerComponent,
     private val router: GuiRouter,
     private val translationKrate: CachedKrate<AstraRatingTranslation>,
@@ -71,7 +73,7 @@ internal class PlayerRatingsGUI(
         menu = this
     )
 
-    override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
+    override val playerHolder: PlayerHolder = DefaultPlayerHolder(player.cast<BukkitOnlineKPlayer>().instance)
 
     override var title: Component = kyoriKrate.getValue()
         .toComponent(translation.gui.playerRatingTitle.replace("%player%", selectedPlayerName))
@@ -143,7 +145,7 @@ internal class PlayerRatingsGUI(
         killEventSlot?.setInventorySlot()
         val list = model.userRatings
         for (i in 0 until pageContext.maxItemsPerPage) {
-            val index = pageContext.getIndex(i)
+            val index = pageContext.indexOfSlot(i)
             val userAndRating = list.getOrNull(index) ?: continue
             val color = if (userAndRating.rating > 0) translation.gui.positiveColor else translation.gui.negativeColor
             slotContext.playerRatingsSlot(
@@ -154,11 +156,11 @@ internal class PlayerRatingsGUI(
                 firstPlayed = userAndRating.reportedUser.offlinePlayer.firstPlayed,
                 lastPlayed = userAndRating.reportedUser.offlinePlayer.lastPlayed,
                 canDelete = playerHolder.player
-                    .toPermissible()
+                    .asKPermissible()
                     .hasPermission(AstraRatingPermission.DeleteReport),
                 click = Click { e ->
                     val canDelete = playerHolder.player
-                        .toPermissible()
+                        .asKPermissible()
                         .hasPermission(AstraRatingPermission.DeleteReport)
                     if (!canDelete) return@Click
                     if (e.click != ClickType.LEFT) return@Click

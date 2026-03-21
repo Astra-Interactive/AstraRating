@@ -1,29 +1,36 @@
 package ru.astrainteractive.astrarating.command.reload
 
-import com.mojang.brigadier.tree.LiteralCommandNode
-import io.papermc.paper.command.brigadier.CommandSourceStack
-import ru.astrainteractive.astralibs.command.api.util.command
-import ru.astrainteractive.astralibs.command.api.util.runs
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
-import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
+import ru.astrainteractive.astralibs.lifecycle.Lifecycle
+import ru.astrainteractive.astralibs.server.KAudience
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.util.getValue
+import ru.astrainteractive.klibs.mikro.core.util.tryCast
 
 fun createReloadCommandNode(
-    lifecyclePlugin: LifecyclePlugin,
+    multiplatformCommand: MultiplatformCommand<*>,
+    lifecyclePlugin: Lifecycle,
     translationKrate: CachedKrate<AstraRatingTranslation>,
     kyoriKrate: CachedKrate<KyoriComponentSerializer>
-): LiteralCommandNode<CommandSourceStack> {
+): LiteralArgumentBuilder<*> {
     val translation by translationKrate
     val kyori by kyoriKrate
     return with(kyori) {
-        command("aratingreload") {
-            runs {
-                it.source.sender.sendMessage(translation.general.reload.component)
-                lifecyclePlugin.onReload()
-                it.source.sender.sendMessage(translation.general.reloadComplete.component)
+        with(multiplatformCommand) {
+            command("aratingreload") {
+                runs { ctx ->
+                    ctx.getSender()
+                        .tryCast<KAudience>()
+                        ?.sendMessage(translation.general.reload.component)
+                    lifecyclePlugin.onReload()
+                    ctx.getSender()
+                        .tryCast<KAudience>()
+                        ?.sendMessage(translation.general.reloadComplete.component)
+                }
             }
-        }.build()
+        }
     }
 }
