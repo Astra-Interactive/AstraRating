@@ -3,12 +3,9 @@ package ru.astrainteractive.astrarating.core.di
 import com.google.common.cache.CacheBuilder
 import org.bstats.bukkit.Metrics
 import ru.astrainteractive.astralibs.event.EventListener
-import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
 import ru.astrainteractive.astralibs.menu.event.DefaultInventoryClickEvent
-import ru.astrainteractive.klibs.kstorage.api.impl.DefaultMutableKrate
-import ru.astrainteractive.klibs.kstorage.util.asCachedKrate
 
 class BukkitModule(
     val plugin: LifecyclePlugin,
@@ -19,12 +16,8 @@ class BukkitModule(
         DefaultInventoryClickEvent()
     }
 
-    val kyoriKrate = DefaultMutableKrate<KyoriComponentSerializer>(
-        factory = { KyoriComponentSerializer.Legacy },
-        loader = { KyoriComponentSerializer.Legacy }
-    ).asCachedKrate()
-
     val bstats = {
+        @Suppress("MagicNumber")
         Metrics(plugin, 15801)
     }
 

@@ -27,17 +27,15 @@ dependencies {
     implementation(libs.minecraft.bstats)
     implementation(libs.minecraft.bstats)
 
-    implementation(projects.modules.commandBukkit)
+    implementation(projects.modules.command)
     implementation(projects.modules.core.api)
     implementation(projects.modules.core.bukkit)
-    implementation(projects.modules.core.guiBukkit)
+    implementation(projects.modules.gui.api)
+    implementation(projects.modules.gui.bukkit)
     implementation(projects.modules.data.dao)
     implementation(projects.modules.data.exposed)
     implementation(projects.modules.eventBukkit)
     implementation(projects.modules.integrationPapi)
-    implementation(projects.modules.ratingChange.api)
-    implementation(projects.modules.ratingPlayer.api)
-    implementation(projects.modules.ratingPlayers.api)
 
     testImplementation(libs.tests.kotlin.test)
 }
@@ -114,6 +112,9 @@ shadowJar.configure {
         exclude("META-INF/rewrite/**")
         exclude("META-INF/services/kotlin.reflect.**")
         exclude("META-INF/versions/**")
+        exclude(dependency("mysql:mysql-connector-java"))
+        exclude(dependency("com.mysql:mysql-connector-j"))
+        exclude(dependency("org.xerial:sqlite-jdbc"))
     }
     relocate("org.bstats", projectInfo.group)
     listOf(
@@ -127,7 +128,10 @@ shadowJar.configure {
         "org.intellij",
         "org.jetbrains.annotations",
         "ru.astrainteractive.klibs",
-        "ru.astrainteractive.astralibs"
+        "ru.astrainteractive.astralibs",
+        "io.github.reactivecircus",
+        "co.touchlab.stately",
+        "google.protobuf"
     ).forEach { pattern -> relocate(pattern, "${projectInfo.group}.$pattern") }
     listOf(
         "kotlinx",

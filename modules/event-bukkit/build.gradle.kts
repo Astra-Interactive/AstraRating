@@ -18,7 +18,8 @@ dependencies {
 
     implementation(projects.modules.core.api)
     implementation(projects.modules.core.bukkit)
-    implementation(projects.modules.core.guiBukkit)
+    implementation(projects.modules.gui.api)
+    implementation(projects.modules.gui.bukkit)
     implementation(projects.modules.data.dao)
     implementation(projects.modules.data.exposed)
 }

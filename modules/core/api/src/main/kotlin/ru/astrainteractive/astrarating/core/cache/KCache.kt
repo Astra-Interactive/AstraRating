@@ -38,13 +38,10 @@ class Cache4kCache<K : Any, V : Any>(
     }
 
     private suspend fun refreshAndGet(key: K): V? {
-        val updated = update.invoke(key)
-        return if (updated != null) {
+        return update.invoke(key)?.let { updated ->
             val data = Data(updated)
             cache.put(key, data)
             data.data
-        } else {
-            null
         }
     }
 
