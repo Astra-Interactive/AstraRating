@@ -27,6 +27,7 @@ import ru.astrainteractive.astrarating.data.exposed.model.UserModel
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import java.util.UUID
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 
 @Suppress("TooManyFunctions")
@@ -192,7 +193,7 @@ internal class RatingDaoImpl(
             UserRatingTable.selectAll()
                 .where {
                     UserRatingTable.userCreatedReport.eq(user.id).and {
-                        UserRatingTable.time.greater(System.currentTimeMillis() - 24 * 60 * 60 * 1000)
+                        UserRatingTable.time.greater(System.currentTimeMillis() - 1.days.inWholeMilliseconds)
                     }
                 }.count()
         }

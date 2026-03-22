@@ -5,12 +5,14 @@ import com.charleskorn.kaml.Yaml
 import kotlinx.coroutines.cancel
 import kotlinx.serialization.StringFormat
 import ru.astrainteractive.astralibs.coroutines.withTimings
+import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.util.YamlStringFormat
 import ru.astrainteractive.astralibs.util.parseOrWriteIntoDefault
 import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
 import ru.astrainteractive.klibs.kstorage.api.impl.DefaultMutableKrate
+import ru.astrainteractive.klibs.kstorage.util.asCachedKrate
 import ru.astrainteractive.klibs.kstorage.util.asStateFlowMutableKrate
 import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
@@ -32,6 +34,10 @@ class CoreModule(
             ),
         )
     }
+    val kyoriKrate = DefaultMutableKrate<KyoriComponentSerializer>(
+        factory = { KyoriComponentSerializer.Legacy },
+        loader = { KyoriComponentSerializer.Legacy }
+    ).asCachedKrate()
     val translationKrate = DefaultMutableKrate(
         factory = ::AstraRatingTranslation,
         loader = {

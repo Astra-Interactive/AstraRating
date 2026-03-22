@@ -27,17 +27,15 @@ dependencies {
     implementation(libs.minecraft.bstats)
     implementation(libs.minecraft.bstats)
 
-    implementation(projects.modules.commandBukkit)
+    implementation(projects.modules.command)
     implementation(projects.modules.core.api)
     implementation(projects.modules.core.bukkit)
-    implementation(projects.modules.core.guiBukkit)
+    implementation(projects.modules.gui.api)
+    implementation(projects.modules.gui.bukkit)
     implementation(projects.modules.data.dao)
     implementation(projects.modules.data.exposed)
     implementation(projects.modules.eventBukkit)
     implementation(projects.modules.integrationPapi)
-    implementation(projects.modules.ratingChange.api)
-    implementation(projects.modules.ratingPlayer.api)
-    implementation(projects.modules.ratingPlayers.api)
 
     testImplementation(libs.tests.kotlin.test)
 }
