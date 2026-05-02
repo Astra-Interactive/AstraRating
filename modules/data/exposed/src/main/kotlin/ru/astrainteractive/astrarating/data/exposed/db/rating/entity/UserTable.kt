@@ -1,6 +1,6 @@
 package ru.astrainteractive.astrarating.data.exposed.db.rating.entity
 
-import org.jetbrains.exposed.dao.id.LongIdTable
+import org.jetbrains.exposed.v1.core.dao.id.LongIdTable
 
 object UserTable : LongIdTable("users", "user_id") {
     val minecraftUUID = varchar("minecraft_uuid", MAX_UUID_LENGTH).uniqueIndex()

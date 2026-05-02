@@ -5,7 +5,7 @@ import ru.astrainteractive.astrarating.core.settings.AstraRatingPermission
 import ru.astrainteractive.astrarating.feature.rating.change.data.PlayerOnPlayerCounterRepository
 import ru.astrainteractive.astrarating.feature.rating.change.data.PlayerTotalRatingRepository
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
-import ru.astrainteractive.klibs.kstorage.util.getValue
+import ru.astrainteractive.klibs.kstorage.api.getValue
 
 internal class CheckValidatorImpl(
     private val playerOnPlayerCounterRepository: PlayerOnPlayerCounterRepository,

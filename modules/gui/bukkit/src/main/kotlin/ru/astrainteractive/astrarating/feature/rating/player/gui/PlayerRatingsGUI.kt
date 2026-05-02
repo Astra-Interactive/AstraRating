@@ -39,7 +39,7 @@ import ru.astrainteractive.astrarating.feature.gui.util.normalName
 import ru.astrainteractive.astrarating.feature.gui.util.offlinePlayer
 import ru.astrainteractive.astrarating.feature.ratings.player.presentation.RatingPlayerComponent
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
-import ru.astrainteractive.klibs.kstorage.util.getValue
+import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 @Suppress("LongParameterList")

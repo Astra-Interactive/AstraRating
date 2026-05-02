@@ -3,19 +3,21 @@ package ru.astrainteractive.astrarating.data.dao.impl
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.timeout
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.JoinType
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.alias
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.count
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.max
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.sum
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
+import org.jetbrains.exposed.v1.core.JoinType
+import org.jetbrains.exposed.v1.core.alias
+import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.count
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.greater
+import org.jetbrains.exposed.v1.core.max
+import org.jetbrains.exposed.v1.core.sum
+import org.jetbrains.exposed.v1.jdbc.Database
+import org.jetbrains.exposed.v1.jdbc.deleteWhere
+import org.jetbrains.exposed.v1.jdbc.insertAndGetId
+import org.jetbrains.exposed.v1.jdbc.select
+import org.jetbrains.exposed.v1.jdbc.selectAll
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import org.jetbrains.exposed.v1.jdbc.update
 import ru.astrainteractive.astrarating.data.dao.RatingDao
 import ru.astrainteractive.astrarating.data.exposed.db.rating.entity.UserRatingTable
 import ru.astrainteractive.astrarating.data.exposed.db.rating.entity.UserTable
@@ -109,7 +111,7 @@ internal class RatingDaoImpl(
 
     override suspend fun deleteUserRating(it: UserRatingDTO) = runCatching {
         transaction(requireDatabase()) {
-            UserRatingTable.deleteWhere { _ ->
+            UserRatingTable.deleteWhere {
                 UserRatingTable.id.eq(it.id)
             }
         }

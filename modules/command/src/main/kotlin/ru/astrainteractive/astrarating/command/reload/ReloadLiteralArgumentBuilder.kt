@@ -7,7 +7,7 @@ import ru.astrainteractive.astralibs.kyori.unwrap
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
-import ru.astrainteractive.klibs.kstorage.util.getValue
+import ru.astrainteractive.klibs.kstorage.api.getValue
 
 internal class ReloadLiteralArgumentBuilder(
     private val kyoriKrate: CachedKrate<KyoriComponentSerializer>,

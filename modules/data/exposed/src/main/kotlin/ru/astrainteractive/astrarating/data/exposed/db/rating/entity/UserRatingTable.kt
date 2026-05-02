@@ -1,6 +1,6 @@
 package ru.astrainteractive.astrarating.data.exposed.db.rating.entity
 
-import org.jetbrains.exposed.dao.id.LongIdTable
+import org.jetbrains.exposed.v1.core.dao.id.LongIdTable
 
 object UserRatingTable : LongIdTable("users_ratings", "user_rating_id") {
     val userCreatedReport = reference("user_created_report", UserTable).nullable()

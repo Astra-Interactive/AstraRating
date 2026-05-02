@@ -9,8 +9,8 @@ import ru.astrainteractive.astralibs.util.parseOrWriteIntoDefault
 import ru.astrainteractive.astrarating.data.dao.RatingCachedDao
 import ru.astrainteractive.astrarating.integration.papi.di.factory.PapiFactory
 import ru.astrainteractive.astrarating.integration.papi.model.PapiConfig
+import ru.astrainteractive.klibs.kstorage.api.asStateFlowMutableKrate
 import ru.astrainteractive.klibs.kstorage.api.impl.DefaultMutableKrate
-import ru.astrainteractive.klibs.kstorage.util.asStateFlowMutableKrate
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import java.io.File
