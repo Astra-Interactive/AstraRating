@@ -14,7 +14,7 @@ import ru.astrainteractive.astrarating.data.dao.upsertUser
 import ru.astrainteractive.astrarating.data.exposed.dto.RatingType
 import ru.astrainteractive.astrarating.data.exposed.model.UserModel
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
-import ru.astrainteractive.klibs.kstorage.util.getValue
+import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 internal class KillEventListener(

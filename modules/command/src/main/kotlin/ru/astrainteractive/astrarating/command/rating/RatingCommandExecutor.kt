@@ -14,7 +14,7 @@ import ru.astrainteractive.astrarating.data.exposed.model.PlayerModel
 import ru.astrainteractive.astrarating.feature.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.feature.rating.change.domain.usecase.AddRatingUseCase
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
-import ru.astrainteractive.klibs.kstorage.util.getValue
+import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import ru.astrainteractive.klibs.mikro.core.util.tryCast
 

@@ -3,7 +3,7 @@ package ru.astrainteractive.astrarating.data.dao
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import org.jetbrains.exposed.sql.transactions.TransactionManager
+import org.jetbrains.exposed.v1.jdbc.transactions.TransactionManager
 import ru.astrainteractive.astralibs.util.YamlStringFormat
 import ru.astrainteractive.astrarating.data.dao.di.RatingDaoModule
 import ru.astrainteractive.astrarating.data.exposed.db.rating.di.DBRatingModule
@@ -42,7 +42,7 @@ class RatingDaoTest {
 
     @AfterTest
     fun destroy(): Unit = runBlocking {
-        TransactionManager.Companion.closeAndUnregister(requireModule.databaseFlow.first())
+        TransactionManager.closeAndUnregister(requireModule.databaseFlow.first())
     }
 
     @BeforeTest

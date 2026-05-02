@@ -1,6 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.gradle.kotlin.dsl.named
-import ru.astrainteractive.gradleplugin.property.extension.ModelPropertyValueExt.requireProjectInfo
+import ru.astrainteractive.gradleplugin.property.util.requireProjectInfo
 
 plugins {
     kotlin("jvm")
@@ -16,6 +16,7 @@ dependencies {
     compileOnly(libs.minecraft.vaultapi)
 
     implementation(libs.exposed.core)
+    implementation(libs.exposed.jdbc)
     implementation(libs.klibs.kstorage)
     implementation(libs.klibs.mikro.core)
     implementation(libs.kotlin.serialization.json)

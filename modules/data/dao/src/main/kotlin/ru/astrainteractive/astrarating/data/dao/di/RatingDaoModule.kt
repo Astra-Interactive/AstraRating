@@ -2,7 +2,7 @@ package ru.astrainteractive.astrarating.data.dao.di
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.v1.jdbc.Database
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astrarating.data.dao.RatingCachedDao
 import ru.astrainteractive.astrarating.data.dao.RatingDao

@@ -4,7 +4,7 @@ import ru.astrainteractive.astralibs.string.StringDesc
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
 import ru.astrainteractive.astrarating.data.exposed.model.UserRatingsSort
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
-import ru.astrainteractive.klibs.kstorage.util.getValue
+import ru.astrainteractive.klibs.kstorage.api.getValue
 
 class UserRatingsSortMapper(translationKrate: CachedKrate<AstraRatingTranslation>) {
     private val translation by translationKrate

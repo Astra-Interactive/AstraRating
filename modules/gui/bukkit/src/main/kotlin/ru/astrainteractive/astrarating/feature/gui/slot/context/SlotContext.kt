@@ -6,7 +6,7 @@ import ru.astrainteractive.astralibs.menu.core.Menu
 import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
-import ru.astrainteractive.klibs.kstorage.util.getValue
+import ru.astrainteractive.klibs.kstorage.api.getValue
 
 internal class SlotContext(
     translationKrate: CachedKrate<AstraRatingTranslation>,
