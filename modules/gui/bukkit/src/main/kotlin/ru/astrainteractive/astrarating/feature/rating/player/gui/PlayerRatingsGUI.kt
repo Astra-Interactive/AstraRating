@@ -18,6 +18,7 @@ import ru.astrainteractive.astralibs.menu.inventory.model.PageContext
 import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.indexOfSlot
 import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isFirstPage
 import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isLastPage
+import ru.astrainteractive.astralibs.menu.layout.mapSlotsNotNullIndexed
 import ru.astrainteractive.astralibs.menu.slot.InventorySlot
 import ru.astrainteractive.astralibs.server.permission.asKPermissible
 import ru.astrainteractive.astralibs.server.util.asOnlineMinecraftPlayer
@@ -25,6 +26,8 @@ import ru.astrainteractive.astralibs.string.replace
 import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
 import ru.astrainteractive.astrarating.core.settings.AstraRatingPermission
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
+import ru.astrainteractive.astrarating.feature.gui.layout.DefaultRatingInventoryLayoutFactory
+import ru.astrainteractive.astrarating.feature.gui.layout.RatingSlotKey
 import ru.astrainteractive.astrarating.feature.gui.loading.GuiLoadingIndicator
 import ru.astrainteractive.astrarating.feature.gui.mapping.UserRatingsSortMapper
 import ru.astrainteractive.astrarating.feature.gui.router.GuiRouter
@@ -72,6 +75,8 @@ internal class PlayerRatingsGUI(
         menu = this
     )
 
+    private val inventoryMap by lazy { DefaultRatingInventoryLayoutFactory.create() }
+
     override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
 
     override var title: Component = kyoriKrate.getValue()
@@ -80,30 +85,41 @@ internal class PlayerRatingsGUI(
     override val inventorySize: InventorySize = InventorySize.XL
 
     private val backPageButton: InventorySlot
-        get() = slotContext.backPageSlot {
-            val route = GuiRouter.Route.AllRatings(player.asOnlineMinecraftPlayer())
-            router.navigate(route)
-        }
+        get() = slotContext.backPageSlot(
+            index = inventoryMap.firstIndexOf(RatingSlotKey.BACK),
+            click = {
+                val route = GuiRouter.Route.AllRatings(player.asOnlineMinecraftPlayer())
+                router.navigate(route)
+            }
+        )
 
     override val nextPageButton: InventorySlot
-        get() = slotContext.nextPageSlot
+        get() = slotContext.nextPageSlot(
+            index = inventoryMap.firstIndexOf(RatingSlotKey.NEXT_PAGE)
+        )
 
     override val prevPageButton: InventorySlot
-        get() = slotContext.prevPageSlot
+        get() = slotContext.prevPageSlot(
+            index = inventoryMap.firstIndexOf(RatingSlotKey.PREV_PAGE)
+        )
 
     private val sortButton: InventorySlot
         get() = slotContext.ratingsSortSlot(
+            index = inventoryMap.firstIndexOf(RatingSlotKey.SORT),
             sortType = ratingPlayerComponent.model.value.sort,
             userRatingsSortMapper = userRatingsSortMapper,
             onClick = { ratingPlayerComponent.onSortClicked() }
         )
 
     private val killEventSlot: InventorySlot?
-        get() = slotContext.killEventSlot(ratingPlayerComponent.model.value.killCounts)
+        get() = slotContext.killEventSlot(
+            index = inventoryMap.firstIndexOf(RatingSlotKey.EVENT),
+            killCounts = ratingPlayerComponent.model.value.killCounts
+        )
 
     override var pageContext: PageContext = PageContext(
         page = 0,
-        maxItemsPerPage = 45,
+        maxItemsPerPage = inventoryMap.count(RatingSlotKey.RATING_ITEM),
         maxItems = ratingPlayerComponent.model.value.userRatings.size
     )
 
@@ -135,40 +151,48 @@ internal class PlayerRatingsGUI(
             .launchIn(menuScope)
     }
 
-    @Suppress("CyclomaticComplexMethod", "LongMethod")
+    private val itemSlots: List<InventorySlot>
+        get() {
+            val model: RatingPlayerComponent.Model = ratingPlayerComponent.model.value
+            val list = model.userRatings
+            return inventoryMap.mapSlotsNotNullIndexed(RatingSlotKey.RATING_ITEM) { itemIndex, slotIndex ->
+                val index = pageContext.indexOfSlot(itemIndex)
+                val userAndRating = list.getOrNull(index) ?: return@mapSlotsNotNullIndexed null
+                val color = if (userAndRating.rating > 0) {
+                    translation.gui.positiveColor
+                } else {
+                    translation.gui.negativeColor
+                }
+                slotContext.playerRatingsSlot(
+                    index = slotIndex,
+                    userCreatedReportName = userAndRating.userCreatedReport?.normalName ?: "-",
+                    color = color,
+                    message = userAndRating.message,
+                    firstPlayed = userAndRating.reportedUser.offlinePlayer.firstPlayed,
+                    lastPlayed = userAndRating.reportedUser.offlinePlayer.lastPlayed,
+                    canDelete = playerHolder.player
+                        .asKPermissible()
+                        .hasPermission(AstraRatingPermission.DeleteReport),
+                    click = Click { e ->
+                        val canDelete = playerHolder.player
+                            .asKPermissible()
+                            .hasPermission(AstraRatingPermission.DeleteReport)
+                        if (!canDelete) return@Click
+                        if (e.click != ClickType.LEFT) return@Click
+                        val item = list
+                            .getOrNull(pageContext.maxItemsPerPage * pageContext.page + e.slot)
+                            ?: return@Click
+                        ratingPlayerComponent.onDeleteClicked(item)
+                    }
+                )
+            }
+        }
+
     override fun render() {
-        val model: RatingPlayerComponent.Model = ratingPlayerComponent.model.value
         inventory.clear()
         setManageButtons()
         sortButton.setInventorySlot()
         killEventSlot?.setInventorySlot()
-        val list = model.userRatings
-        for (i in 0 until pageContext.maxItemsPerPage) {
-            val index = pageContext.indexOfSlot(i)
-            val userAndRating = list.getOrNull(index) ?: continue
-            val color = if (userAndRating.rating > 0) translation.gui.positiveColor else translation.gui.negativeColor
-            slotContext.playerRatingsSlot(
-                index = i,
-                userCreatedReportName = userAndRating.userCreatedReport?.normalName ?: "-",
-                color = color,
-                message = userAndRating.message,
-                firstPlayed = userAndRating.reportedUser.offlinePlayer.firstPlayed,
-                lastPlayed = userAndRating.reportedUser.offlinePlayer.lastPlayed,
-                canDelete = playerHolder.player
-                    .asKPermissible()
-                    .hasPermission(AstraRatingPermission.DeleteReport),
-                click = Click { e ->
-                    val canDelete = playerHolder.player
-                        .asKPermissible()
-                        .hasPermission(AstraRatingPermission.DeleteReport)
-                    if (!canDelete) return@Click
-                    if (e.click != ClickType.LEFT) return@Click
-                    val item = model.userRatings
-                        .getOrNull(pageContext.maxItemsPerPage * pageContext.page + e.slot)
-                        ?: return@Click
-                    ratingPlayerComponent.onDeleteClicked(item)
-                }
-            ).setInventorySlot()
-        }
+        itemSlots.forEach { slot -> slot.setInventorySlot() }
     }
 }

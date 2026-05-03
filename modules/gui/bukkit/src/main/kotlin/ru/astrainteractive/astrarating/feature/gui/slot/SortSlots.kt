@@ -18,12 +18,13 @@ import ru.astrainteractive.astrarating.feature.gui.slot.context.SlotContext
 import ru.astrainteractive.astrarating.feature.gui.util.toItemStack
 
 internal fun SlotContext.ratingsSortSlot(
+    index: Int,
     sortType: UserRatingsSort,
     userRatingsSortMapper: UserRatingsSortMapper,
     onClick: () -> Unit
 ): InventorySlot =
     InventorySlot.Builder()
-        .setIndex(index = 50)
+        .setIndex(index = index)
         .setItemStack(config.gui.buttons.sort.toItemStack())
         .setDisplayName(translation.gui.sort.component)
         .apply {
@@ -52,11 +53,12 @@ internal fun SlotContext.ratingsSortSlot(
         .build()
 
 internal fun SlotContext.playerRatingsSortSlot(
+    index: Int,
     sortType: UsersRatingsSort,
     usersRatingsSortMapper: UsersRatingsSortMapper,
     click: Click
 ) = InventorySlot.Builder()
-    .setIndex(index = 50)
+    .setIndex(index = index)
     .setItemStack(config.gui.buttons.sort.toItemStack())
     .setDisplayName(translation.gui.sort.component)
     .apply {

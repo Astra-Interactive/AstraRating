@@ -8,8 +8,8 @@ import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setI
 import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setMaterial
 import ru.astrainteractive.astrarating.feature.gui.slot.context.SlotContext
 
-internal fun SlotContext.killEventSlot(killCounts: Int) = InventorySlot.Builder()
-    .setIndex(index = 46)
+internal fun SlotContext.killEventSlot(index: Int, killCounts: Int) = InventorySlot.Builder()
+    .setIndex(index = index)
     .setMaterial(Material.NETHERITE_SWORD)
     .editMeta {
         translation.gui.eventsTitle

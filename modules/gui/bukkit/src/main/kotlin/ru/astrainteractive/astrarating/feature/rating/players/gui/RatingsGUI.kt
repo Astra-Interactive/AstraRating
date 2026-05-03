@@ -17,10 +17,13 @@ import ru.astrainteractive.astralibs.menu.inventory.model.PageContext
 import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.indexOfSlot
 import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isFirstPage
 import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isLastPage
+import ru.astrainteractive.astralibs.menu.layout.mapSlotsNotNullIndexed
 import ru.astrainteractive.astralibs.menu.slot.InventorySlot
 import ru.astrainteractive.astralibs.server.util.asOnlineMinecraftPlayer
 import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
+import ru.astrainteractive.astrarating.feature.gui.layout.DefaultRatingInventoryLayoutFactory
+import ru.astrainteractive.astrarating.feature.gui.layout.RatingSlotKey
 import ru.astrainteractive.astrarating.feature.gui.loading.GuiLoadingIndicator
 import ru.astrainteractive.astrarating.feature.gui.mapping.UsersRatingsSortMapper
 import ru.astrainteractive.astrarating.feature.gui.router.GuiRouter
@@ -35,7 +38,7 @@ import ru.astrainteractive.astrarating.feature.gui.util.offlinePlayer
 import ru.astrainteractive.astrarating.feature.rating.players.presentation.RatingPlayersComponent
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
-import java.util.UUID
+import java.util.*
 
 @Suppress("LongParameterList")
 internal class RatingsGUI(
@@ -65,6 +68,8 @@ internal class RatingsGUI(
         menu = this
     )
 
+    private val inventoryMap by lazy { DefaultRatingInventoryLayoutFactory.create() }
+
     override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
 
     override var title: Component = kyoriKrate.getValue()
@@ -72,24 +77,32 @@ internal class RatingsGUI(
 
     override val inventorySize: InventorySize = InventorySize.XL
 
-    private val backPageButton
-        get() = slotContext.backPageSlot { inventory.close() }
+    private val backPageButton: InventorySlot
+        get() = slotContext.backPageSlot(
+            index = inventoryMap.firstIndexOf(RatingSlotKey.BACK),
+            click = { inventory.close() }
+        )
 
-    override val nextPageButton
-        get() = slotContext.nextPageSlot
+    override val nextPageButton: InventorySlot
+        get() = slotContext.nextPageSlot(
+            index = inventoryMap.firstIndexOf(RatingSlotKey.NEXT_PAGE)
+        )
 
-    override val prevPageButton
-        get() = slotContext.prevPageSlot
+    override val prevPageButton: InventorySlot
+        get() = slotContext.prevPageSlot(
+            index = inventoryMap.firstIndexOf(RatingSlotKey.PREV_PAGE)
+        )
 
     private val sortButton: InventorySlot
         get() = slotContext.playerRatingsSortSlot(
+            index = inventoryMap.firstIndexOf(RatingSlotKey.SORT),
             sortType = ratingPlayersComponent.model.value.sort,
             click = { ratingPlayersComponent.onSortClicked() },
             usersRatingsSortMapper = usersRatingsSortMapper
         )
 
     override var pageContext: PageContext = PageContext(
-        maxItemsPerPage = 45,
+        maxItemsPerPage = inventoryMap.count(RatingSlotKey.RATING_ITEM),
         page = 0,
         maxItems = ratingPlayersComponent.model.value.userRatings.size
     )
@@ -122,32 +135,35 @@ internal class RatingsGUI(
             .launchIn(menuScope)
     }
 
-    @Suppress("LongMethod")
+    private val itemSlots: List<InventorySlot>
+        get() {
+            val model = ratingPlayersComponent.model.value
+            return inventoryMap.mapSlotsNotNullIndexed(RatingSlotKey.RATING_ITEM) { itemIndex, slotIndex ->
+                val index = pageContext.indexOfSlot(itemIndex)
+                val userAndRating = model.userRatings.getOrNull(index) ?: return@mapSlotsNotNullIndexed null
+                slotContext.ratingsSlot(
+                    index = slotIndex,
+                    firstPlayed = userAndRating.userDTO.offlinePlayer.firstPlayed,
+                    lastPlayed = userAndRating.userDTO.offlinePlayer.lastPlayed,
+                    ratingTotal = userAndRating.ratingTotal,
+                    ratingCounts = userAndRating.ratingCounts,
+                    playerName = userAndRating.userDTO.normalName,
+                    click = Click {
+                        val route = GuiRouter.Route.PlayerRating(
+                            executor = playerHolder.player.asOnlineMinecraftPlayer(),
+                            selectedPlayerName = userAndRating.userDTO.minecraftName,
+                            selectedPlayerUUID = userAndRating.userDTO.minecraftUUID.let(UUID::fromString)
+                        )
+                        router.navigate(route)
+                    }
+                )
+            }
+        }
+
     override fun render() {
-        val model: RatingPlayersComponent.Model = ratingPlayersComponent.model.value
         inventory.clear()
         setManageButtons()
         sortButton.setInventorySlot()
-
-        for (i in 0 until pageContext.maxItemsPerPage) {
-            val index = pageContext.indexOfSlot(i)
-            val userAndRating = model.userRatings.getOrNull(index) ?: continue
-            slotContext.ratingsSlot(
-                index = i,
-                firstPlayed = userAndRating.userDTO.offlinePlayer.firstPlayed,
-                lastPlayed = userAndRating.userDTO.offlinePlayer.lastPlayed,
-                ratingTotal = userAndRating.ratingTotal,
-                ratingCounts = userAndRating.ratingCounts,
-                playerName = userAndRating.userDTO.normalName,
-                click = Click {
-                    val route = GuiRouter.Route.PlayerRating(
-                        executor = playerHolder.player.asOnlineMinecraftPlayer(),
-                        selectedPlayerName = userAndRating.userDTO.minecraftName,
-                        selectedPlayerUUID = userAndRating.userDTO.minecraftUUID.let(UUID::fromString)
-                    )
-                    router.navigate(route)
-                }
-            ).setInventorySlot()
-        }
+        itemSlots.forEach { slot -> slot.setInventorySlot() }
     }
 }

@@ -18,28 +18,26 @@ import ru.astrainteractive.astrarating.feature.gui.util.normalName
 import ru.astrainteractive.astrarating.feature.gui.util.offlinePlayer
 import ru.astrainteractive.astrarating.feature.gui.util.toItemStack
 
-internal fun SlotContext.backPageSlot(click: Click) = InventorySlot.Builder()
-    .setIndex(index = 49)
+internal fun SlotContext.backPageSlot(index: Int, click: Click) = InventorySlot.Builder()
+    .setIndex(index = index)
     .setItemStack(config.gui.buttons.back.toItemStack())
     .editMeta { displayName(translation.gui.menuClose.component) }
     .setOnClickListener(click)
     .build()
 
-internal val SlotContext.nextPageSlot: InventorySlot
-    get() = InventorySlot.Builder()
-        .setIndex(index = 53)
-        .setItemStack(config.gui.buttons.next.toItemStack())
-        .editMeta { displayName(translation.gui.menuNextPage.component) }
-        .setOnClickListener { (menu as PaginatedInventoryMenu).showNextPage() }
-        .build()
+internal fun SlotContext.nextPageSlot(index: Int): InventorySlot = InventorySlot.Builder()
+    .setIndex(index = index)
+    .setItemStack(config.gui.buttons.next.toItemStack())
+    .editMeta { displayName(translation.gui.menuNextPage.component) }
+    .setOnClickListener { (menu as PaginatedInventoryMenu).showNextPage() }
+    .build()
 
-internal val SlotContext.prevPageSlot: InventorySlot
-    get() = InventorySlot.Builder()
-        .setIndex(index = 45)
-        .setItemStack(config.gui.buttons.prev.toItemStack())
-        .editMeta { displayName(translation.gui.menuPrevPage.component) }
-        .setOnClickListener { (menu as PaginatedInventoryMenu).showPrevPage() }
-        .build()
+internal fun SlotContext.prevPageSlot(index: Int): InventorySlot = InventorySlot.Builder()
+    .setIndex(index = index)
+    .setItemStack(config.gui.buttons.prev.toItemStack())
+    .editMeta { displayName(translation.gui.menuPrevPage.component) }
+    .setOnClickListener { (menu as PaginatedInventoryMenu).showPrevPage() }
+    .build()
 
 internal fun SlotContext.ratingsPlayerSlot(
     i: Int,
