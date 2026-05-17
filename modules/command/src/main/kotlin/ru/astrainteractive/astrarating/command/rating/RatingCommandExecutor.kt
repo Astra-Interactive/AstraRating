@@ -125,7 +125,7 @@ internal class RatingCommandExecutor(
 
             is RatingCommand.Result.OpenPlayerRatingGui -> {
                 val route = GuiRouter.Route.PlayerRating(
-                    executor = input.player,
+                    inventoryOwner = input.player,
                     selectedPlayerName = input.selectedPlayerName,
                     selectedPlayerUUID = input.selectedPlayerUUID
                 )

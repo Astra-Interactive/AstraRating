@@ -25,11 +25,12 @@ internal class GuiRouterImpl(
 
     override fun navigate(route: GuiRouter.Route) {
         scope.launch(dispatchers.IO) {
-            val gui = when (route) {
+            val player = route.inventoryOwner.tryCast<BukkitOnlineKPlayer>()
+                ?.instance
+                ?: error("Could not cast player to BukkitOnlineKPlayer")
+            val inventory = when (route) {
                 is GuiRouter.Route.AllRatings -> RatingsGUI(
-                    player = route.executor.tryCast<BukkitOnlineKPlayer>()
-                        ?.instance
-                        ?: error("Could not cast player to BukkitOnlineKPlayer"),
+                    player = player,
                     ratingPlayersComponent = ratingPlayersModule.createAllRatingsComponent(),
                     router = this@GuiRouterImpl,
                     configKratre = coreModule.configKrate,
@@ -37,13 +38,11 @@ internal class GuiRouterImpl(
                     kyoriKrate = translationContext,
                     dispatchers = coreModule.dispatchers,
                     usersRatingsSortMapper = UsersRatingsSortMapper(coreModule.translationKrate)
-                )
+                ).inventory
 
                 is GuiRouter.Route.PlayerRating -> PlayerRatingsGUI(
                     selectedPlayerName = route.selectedPlayerName,
-                    player = route.executor.tryCast<BukkitOnlineKPlayer>()
-                        ?.instance
-                        ?: error("Could not cast player to BukkitOnlineKPlayer"),
+                    player = player,
                     ratingPlayerComponent = ratingPlayerModule.createPlayerRatingsComponent(
                         playerName = route.selectedPlayerName,
                         playerUUID = route.selectedPlayerUUID
@@ -54,10 +53,10 @@ internal class GuiRouterImpl(
                     kyoriKrate = translationContext,
                     dispatchers = coreModule.dispatchers,
                     userRatingsSortMapper = UserRatingsSortMapper(coreModule.translationKrate)
-                )
+                ).inventory
             }
             withContext(dispatchers.Main) {
-                gui.open()
+                player.openInventory(inventory)
             }
         }
     }
