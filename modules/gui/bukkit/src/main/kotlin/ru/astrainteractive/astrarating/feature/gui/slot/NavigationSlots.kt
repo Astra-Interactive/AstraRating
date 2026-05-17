@@ -7,12 +7,7 @@ import ru.astrainteractive.astralibs.menu.slot.setIndex
 import ru.astrainteractive.astralibs.menu.slot.setItemStack
 import ru.astrainteractive.astralibs.menu.slot.setOnClickListener
 import ru.astrainteractive.astralibs.string.plus
-import ru.astrainteractive.astrarating.data.exposed.dto.RatedUserDTO
 import ru.astrainteractive.astrarating.feature.gui.slot.context.SlotContext
-import ru.astrainteractive.astrarating.feature.gui.util.PlayerHeadUtil
-import ru.astrainteractive.astrarating.feature.gui.util.TimeUtility
-import ru.astrainteractive.astrarating.feature.gui.util.normalName
-import ru.astrainteractive.astrarating.feature.gui.util.offlinePlayer
 import ru.astrainteractive.astrarating.feature.gui.util.toItemStack
 
 internal fun SlotContext.backPageSlot(index: Int, click: Click) = InventorySlot.Builder()

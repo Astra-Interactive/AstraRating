@@ -9,10 +9,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.bukkit.Material
-import org.bukkit.inventory.ItemStack
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.menu.core.Menu
+import ru.astrainteractive.astralibs.menu.core.setInventorySlot
+import ru.astrainteractive.astralibs.menu.layout.slotInventoryLayout
+import ru.astrainteractive.astralibs.menu.slot.InventorySlot
+import ru.astrainteractive.astralibs.menu.slot.editMeta
+import ru.astrainteractive.astralibs.menu.slot.setIndex
+import ru.astrainteractive.astralibs.menu.slot.setMaterial
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
+import kotlin.time.Duration.Companion.milliseconds
 
 internal class GuiLoadingIndicator(
     private val menu: Menu,
@@ -20,20 +26,28 @@ internal class GuiLoadingIndicator(
     kyori: KyoriComponentSerializer
 ) : KyoriComponentSerializer by kyori {
 
-    private companion object {
-        const val ROW_SIZE = 9
-        const val START_ROW = 2
-        const val ROWS = 2
+    private enum class SlotKey { EMPTY, LOADING }
 
-        const val FRAME_DELAY = 100L
+    @Suppress("MagicNumber")
+    private val layout = slotInventoryLayout<SlotKey> {
+        row(9, SlotKey.LOADING)
+        repeat(3) {
+            row(
+                SlotKey.LOADING,
+                SlotKey.EMPTY,
+                SlotKey.EMPTY,
+                SlotKey.EMPTY,
+                SlotKey.EMPTY,
+                SlotKey.EMPTY,
+                SlotKey.EMPTY,
+                SlotKey.EMPTY,
+                SlotKey.LOADING
+            )
+        }
+        row(9, SlotKey.LOADING)
     }
 
-    private val startSlot = START_ROW * ROW_SIZE
-    private val slotCount = ROWS * ROW_SIZE
-    private val slots = (startSlot until startSlot + slotCount)
-
-    private val mutex = Mutex()
-    private var job: Job? = null
+    private val slots = layout.indicesOf(SlotKey.LOADING)
 
     private val materials = listOf(
         Material.BLACK_STAINED_GLASS,
@@ -45,42 +59,29 @@ internal class GuiLoadingIndicator(
         Material.RED_STAINED_GLASS,
     )
 
-    private val frames: List<List<ItemStack>> = let {
-        materials.indices.map { offset ->
-            slots.map { slotIndex ->
-                val material = materials[(slotIndex + offset) % materials.size]
-                createItem(material)
-            }
+    private val frames: List<List<InventorySlot>> = materials.indices.map { offset ->
+        slots.map { slotIndex ->
+            InventorySlot.Builder()
+                .setMaterial(materials[(slotIndex + offset) % materials.size])
+                .setIndex(slotIndex)
+                .editMeta { displayName(translation.gui.loading.component) }
+                .build()
         }
     }
 
-    private fun createItem(material: Material): ItemStack {
-        return ItemStack(material).apply {
-            editMeta { itemMeta ->
-                itemMeta.displayName(translation.gui.loading.component)
-            }
-        }
-    }
+    private val mutex = Mutex()
+    private var job: Job? = null
 
-    private fun render(frame: List<ItemStack>) {
-        slots.forEachIndexed { i, slot ->
-            menu.inventory.setItem(slot, frame[i])
-        }
-    }
-
-    suspend fun display(scope: CoroutineScope) {
+    suspend fun display(menuScope: CoroutineScope) {
         stop()
         mutex.withLock {
-            job = scope.launch {
+            job?.cancelAndJoin()
+            job = menuScope.launch {
+                var index = 0
                 while (isActive) {
-                    var index = 0
-
-                    while (isActive) {
-                        render(frames[index])
-
-                        index = (index + 1) % frames.size
-                        delay(FRAME_DELAY)
-                    }
+                    menu.setInventorySlot(frames[index])
+                    index = (index + 1) % frames.size
+                    delay(FRAME_DELAY)
                 }
             }
         }
@@ -91,5 +92,9 @@ internal class GuiLoadingIndicator(
             job?.cancelAndJoin()
             job = null
         }
+    }
+
+    companion object {
+        private val FRAME_DELAY = 100L.milliseconds
     }
 }
