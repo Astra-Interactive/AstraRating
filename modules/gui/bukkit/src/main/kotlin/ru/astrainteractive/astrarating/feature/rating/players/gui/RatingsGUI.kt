@@ -1,26 +1,38 @@
 package ru.astrainteractive.astrarating.feature.rating.players.gui
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.withContext
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.event.inventory.InventoryOpenEvent
+import ru.astrainteractive.astralibs.coroutines.withTimings
 import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.menu.clicker.Click
+import ru.astrainteractive.astralibs.menu.core.clear
+import ru.astrainteractive.astralibs.menu.core.setInventorySlot
 import ru.astrainteractive.astralibs.menu.holder.DefaultPlayerHolder
-import ru.astrainteractive.astralibs.menu.holder.PlayerHolder
-import ru.astrainteractive.astralibs.menu.inventory.PaginatedInventoryMenu
+import ru.astrainteractive.astralibs.menu.inventory.api.InventoryMenu
 import ru.astrainteractive.astralibs.menu.inventory.model.InventorySize
-import ru.astrainteractive.astralibs.menu.inventory.model.PageContext
-import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.indexOfSlot
-import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isFirstPage
-import ru.astrainteractive.astralibs.menu.inventory.util.PageContextExt.isLastPage
+import ru.astrainteractive.astralibs.menu.layout.mapSlotsNotNullIndexed
+import ru.astrainteractive.astralibs.menu.paginator.api.DefaultPaginator
+import ru.astrainteractive.astralibs.menu.paginator.api.context
+import ru.astrainteractive.astralibs.menu.paginator.api.openNextPage
+import ru.astrainteractive.astralibs.menu.paginator.api.openPrevPage
+import ru.astrainteractive.astralibs.menu.paginator.api.setMaxItems
+import ru.astrainteractive.astralibs.menu.paginator.model.indexOfSlot
+import ru.astrainteractive.astralibs.menu.paginator.model.isFirstPage
+import ru.astrainteractive.astralibs.menu.paginator.model.isLastPage
 import ru.astrainteractive.astralibs.menu.slot.InventorySlot
 import ru.astrainteractive.astralibs.server.util.asOnlineMinecraftPlayer
 import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
+import ru.astrainteractive.astrarating.feature.gui.layout.DefaultRatingInventoryLayoutFactory
+import ru.astrainteractive.astrarating.feature.gui.layout.RatingSlotKey
 import ru.astrainteractive.astrarating.feature.gui.loading.GuiLoadingIndicator
 import ru.astrainteractive.astrarating.feature.gui.mapping.UsersRatingsSortMapper
 import ru.astrainteractive.astrarating.feature.gui.router.GuiRouter
@@ -34,6 +46,7 @@ import ru.astrainteractive.astrarating.feature.gui.util.normalName
 import ru.astrainteractive.astrarating.feature.gui.util.offlinePlayer
 import ru.astrainteractive.astrarating.feature.rating.players.presentation.RatingPlayersComponent
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
+import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import java.util.UUID
 
@@ -47,10 +60,14 @@ internal class RatingsGUI(
     private val ratingPlayersComponent: RatingPlayersComponent,
     private val router: GuiRouter,
     private val usersRatingsSortMapper: UsersRatingsSortMapper
-) : PaginatedInventoryMenu() {
+) : InventoryMenu() {
 
     override val childComponents: List<CoroutineScope>
         get() = listOf(ratingPlayersComponent)
+
+    override val menuScope = CoroutineFeature
+        .Default(dispatchers.Main)
+        .withTimings()
 
     private val guiLoadingIndicator = GuiLoadingIndicator(
         menu = this,
@@ -65,52 +82,62 @@ internal class RatingsGUI(
         menu = this
     )
 
-    override val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
+    private val inventoryMap by lazy { DefaultRatingInventoryLayoutFactory.create() }
+
+    private val playerHolder = DefaultPlayerHolder(player)
 
     override var title: Component = kyoriKrate.getValue()
         .toComponent(translationKrate.getValue().gui.ratingsTitle)
 
     override val inventorySize: InventorySize = InventorySize.XL
 
-    private val backPageButton
-        get() = slotContext.backPageSlot { inventory.close() }
+    private val paginator = DefaultPaginator(
+        maxItemsPerPage = inventoryMap.count(RatingSlotKey.RATING_ITEM)
+    )
 
-    override val nextPageButton
-        get() = slotContext.nextPageSlot
+    private val backPageButton: InventorySlot
+        get() = slotContext.backPageSlot(
+            index = inventoryMap.firstIndexOf(RatingSlotKey.BACK),
+            click = { playerHolder.player.closeInventory() }
+        )
 
-    override val prevPageButton
-        get() = slotContext.prevPageSlot
+    private val nextPageButton: InventorySlot
+        get() = slotContext.nextPageSlot(
+            index = inventoryMap.firstIndexOf(RatingSlotKey.NEXT_PAGE),
+            click = { paginator.openNextPage() }
+        )
+
+    private val prevPageButton: InventorySlot
+        get() = slotContext.prevPageSlot(
+            index = inventoryMap.firstIndexOf(RatingSlotKey.PREV_PAGE),
+            click = { paginator.openPrevPage() }
+        )
 
     private val sortButton: InventorySlot
         get() = slotContext.playerRatingsSortSlot(
+            index = inventoryMap.firstIndexOf(RatingSlotKey.SORT),
             sortType = ratingPlayersComponent.model.value.sort,
             click = { ratingPlayersComponent.onSortClicked() },
             usersRatingsSortMapper = usersRatingsSortMapper
         )
 
-    override var pageContext: PageContext = PageContext(
-        maxItemsPerPage = 45,
-        page = 0,
-        maxItems = ratingPlayersComponent.model.value.userRatings.size
-    )
-
-    override fun onInventoryClicked(e: InventoryClickEvent) {
-        super.onInventoryClicked(e)
+    override fun onInventoryClickEvent(e: InventoryClickEvent) {
+        super.onInventoryClickEvent(e)
         e.isCancelled = true
     }
 
     private fun setManageButtons() {
-        if (!pageContext.isFirstPage) prevPageButton.setInventorySlot()
-        if (!pageContext.isLastPage) nextPageButton.setInventorySlot()
-        backPageButton.setInventorySlot()
+        if (!paginator.context.isFirstPage) setInventorySlot(prevPageButton)
+        if (!paginator.context.isLastPage) setInventorySlot(nextPageButton)
+        setInventorySlot(backPageButton)
     }
 
-    override fun onInventoryCreated() {
+    override fun onInventoryOpenEvent(e: InventoryOpenEvent) {
         ratingPlayersComponent.model
             .onEach {
-                pageContext = pageContext.copy(maxItems = it.userRatings.size)
+                paginator.setMaxItems(it.userRatings.size)
                 if (it.isLoading) {
-                    inventory.clear()
+                    clear()
                     setManageButtons()
                     guiLoadingIndicator.display(menuScope)
                 } else {
@@ -120,34 +147,42 @@ internal class RatingsGUI(
             }
             .flowOn(dispatchers.Main)
             .launchIn(menuScope)
+
+        paginator.paginatorContextStateFlow
+            .drop(1)
+            .onEach { withContext(dispatchers.Main) { render() } }
+            .launchIn(menuScope)
     }
 
-    @Suppress("LongMethod")
-    override fun render() {
-        val model: RatingPlayersComponent.Model = ratingPlayersComponent.model.value
-        inventory.clear()
-        setManageButtons()
-        sortButton.setInventorySlot()
-
-        for (i in 0 until pageContext.maxItemsPerPage) {
-            val index = pageContext.indexOfSlot(i)
-            val userAndRating = model.userRatings.getOrNull(index) ?: continue
-            slotContext.ratingsSlot(
-                index = i,
-                firstPlayed = userAndRating.userDTO.offlinePlayer.firstPlayed,
-                lastPlayed = userAndRating.userDTO.offlinePlayer.lastPlayed,
-                ratingTotal = userAndRating.ratingTotal,
-                ratingCounts = userAndRating.ratingCounts,
-                playerName = userAndRating.userDTO.normalName,
-                click = Click {
-                    val route = GuiRouter.Route.PlayerRating(
-                        executor = playerHolder.player.asOnlineMinecraftPlayer(),
-                        selectedPlayerName = userAndRating.userDTO.minecraftName,
-                        selectedPlayerUUID = userAndRating.userDTO.minecraftUUID.let(UUID::fromString)
-                    )
-                    router.navigate(route)
-                }
-            ).setInventorySlot()
+    private val itemSlots: List<InventorySlot>
+        get() {
+            val model = ratingPlayersComponent.model.value
+            return inventoryMap.mapSlotsNotNullIndexed(RatingSlotKey.RATING_ITEM) { itemIndex, slotIndex ->
+                val index = paginator.context.indexOfSlot(itemIndex)
+                val userAndRating = model.userRatings.getOrNull(index) ?: return@mapSlotsNotNullIndexed null
+                slotContext.ratingsSlot(
+                    index = slotIndex,
+                    firstPlayed = userAndRating.userDTO.offlinePlayer.firstPlayed,
+                    lastPlayed = userAndRating.userDTO.offlinePlayer.lastPlayed,
+                    ratingTotal = userAndRating.ratingTotal,
+                    ratingCounts = userAndRating.ratingCounts,
+                    playerName = userAndRating.userDTO.normalName,
+                    click = Click {
+                        val route = GuiRouter.Route.PlayerRating(
+                            inventoryOwner = playerHolder.player.asOnlineMinecraftPlayer(),
+                            selectedPlayerName = userAndRating.userDTO.minecraftName,
+                            selectedPlayerUUID = userAndRating.userDTO.minecraftUUID.let(UUID::fromString)
+                        )
+                        router.navigate(route)
+                    }
+                )
+            }
         }
+
+    override fun render() {
+        super.render()
+        setManageButtons()
+        setInventorySlot(sortButton)
+        setInventorySlot(itemSlots)
     }
 }

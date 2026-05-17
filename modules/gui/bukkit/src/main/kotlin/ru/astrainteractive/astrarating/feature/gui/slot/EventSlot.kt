@@ -2,14 +2,14 @@ package ru.astrainteractive.astrarating.feature.gui.slot
 
 import org.bukkit.Material
 import ru.astrainteractive.astralibs.menu.slot.InventorySlot
-import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.addLore
-import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.editMeta
-import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setIndex
-import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setMaterial
+import ru.astrainteractive.astralibs.menu.slot.addLore
+import ru.astrainteractive.astralibs.menu.slot.editMeta
+import ru.astrainteractive.astralibs.menu.slot.setIndex
+import ru.astrainteractive.astralibs.menu.slot.setMaterial
 import ru.astrainteractive.astrarating.feature.gui.slot.context.SlotContext
 
-internal fun SlotContext.killEventSlot(killCounts: Int) = InventorySlot.Builder()
-    .setIndex(index = 46)
+internal fun SlotContext.killEventSlot(index: Int, killCounts: Int) = InventorySlot.Builder()
+    .setIndex(index = index)
     .setMaterial(Material.NETHERITE_SWORD)
     .editMeta {
         translation.gui.eventsTitle

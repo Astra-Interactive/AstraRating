@@ -2,11 +2,11 @@ package ru.astrainteractive.astrarating.feature.gui.slot
 
 import ru.astrainteractive.astralibs.menu.clicker.Click
 import ru.astrainteractive.astralibs.menu.slot.InventorySlot
-import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.addLore
-import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setDisplayName
-import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setIndex
-import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setItemStack
-import ru.astrainteractive.astralibs.menu.slot.util.InventorySlotBuilderExt.setOnClickListener
+import ru.astrainteractive.astralibs.menu.slot.addLore
+import ru.astrainteractive.astralibs.menu.slot.setDisplayName
+import ru.astrainteractive.astralibs.menu.slot.setIndex
+import ru.astrainteractive.astralibs.menu.slot.setItemStack
+import ru.astrainteractive.astralibs.menu.slot.setOnClickListener
 import ru.astrainteractive.astralibs.string.or
 import ru.astrainteractive.astralibs.string.orEmpty
 import ru.astrainteractive.astralibs.string.plus
@@ -18,12 +18,13 @@ import ru.astrainteractive.astrarating.feature.gui.slot.context.SlotContext
 import ru.astrainteractive.astrarating.feature.gui.util.toItemStack
 
 internal fun SlotContext.ratingsSortSlot(
+    index: Int,
     sortType: UserRatingsSort,
     userRatingsSortMapper: UserRatingsSortMapper,
     onClick: () -> Unit
 ): InventorySlot =
     InventorySlot.Builder()
-        .setIndex(index = 50)
+        .setIndex(index = index)
         .setItemStack(config.gui.buttons.sort.toItemStack())
         .setDisplayName(translation.gui.sort.component)
         .apply {
@@ -52,11 +53,12 @@ internal fun SlotContext.ratingsSortSlot(
         .build()
 
 internal fun SlotContext.playerRatingsSortSlot(
+    index: Int,
     sortType: UsersRatingsSort,
     usersRatingsSortMapper: UsersRatingsSortMapper,
     click: Click
 ) = InventorySlot.Builder()
-    .setIndex(index = 50)
+    .setIndex(index = index)
     .setItemStack(config.gui.buttons.sort.toItemStack())
     .setDisplayName(translation.gui.sort.component)
     .apply {

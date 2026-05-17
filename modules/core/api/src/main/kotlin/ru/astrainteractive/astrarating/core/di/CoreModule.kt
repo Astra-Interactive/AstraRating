@@ -9,6 +9,7 @@ import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.util.YamlStringFormat
 import ru.astrainteractive.astralibs.util.parseOrWriteIntoDefault
+import ru.astrainteractive.astrarating.core.migration.ConfigSnakeCaseMigration
 import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
 import ru.astrainteractive.klibs.kstorage.api.asCachedKrate
@@ -52,8 +53,10 @@ class CoreModule(
     val configKrate = DefaultMutableKrate(
         factory = ::AstraRatingConfig,
         loader = {
+            val configFile = dataFolder.resolve("config.yml")
+            ConfigSnakeCaseMigration.migrate(configFile)
             yamlStringFormat.parseOrWriteIntoDefault(
-                file = dataFolder.resolve("config.yml"),
+                file = configFile,
                 default = ::AstraRatingConfig,
                 logger = this
             )

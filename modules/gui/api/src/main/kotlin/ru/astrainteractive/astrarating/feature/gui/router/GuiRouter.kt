@@ -5,9 +5,10 @@ import java.util.UUID
 
 interface GuiRouter {
     sealed interface Route {
-        class AllRatings(val executor: OnlineKPlayer) : Route
+        val inventoryOwner: OnlineKPlayer
+        class AllRatings(override val inventoryOwner: OnlineKPlayer) : Route
         class PlayerRating(
-            val executor: OnlineKPlayer,
+            override val inventoryOwner: OnlineKPlayer,
             val selectedPlayerName: String,
             val selectedPlayerUUID: UUID
         ) : Route
