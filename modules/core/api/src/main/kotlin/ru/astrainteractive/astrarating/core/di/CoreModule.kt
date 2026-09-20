@@ -64,6 +64,7 @@ class CoreModule(
     ).asStateFlowMutableKrate()
     val ioScope = CoroutineFeature.IO.withTimings()
     val mainScope = CoroutineFeature.Default(dispatchers.Main)
+    val unconfinedScope = CoroutineFeature.Unconfined.withTimings()
     val lifecycle: Lifecycle by lazy {
         Lifecycle.Lambda(
             onReload = {
@@ -71,6 +72,7 @@ class CoreModule(
                 translationKrate.getValue()
             },
             onDisable = {
+                unconfinedScope.cancel()
                 ioScope.cancel()
             }
         )
