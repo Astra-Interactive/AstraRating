@@ -2,6 +2,7 @@ package ru.astrainteractive.astrarating.command.di
 
 import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
 import ru.astrainteractive.astralibs.command.api.registrar.CommandRegistrarContext
+import ru.astrainteractive.astralibs.command.api.registrar.registerWhenReady
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.server.bridge.PlatformServer
 import ru.astrainteractive.astrarating.command.exception.CommandExceptionHandler
@@ -17,7 +18,7 @@ class CommandsModule(
     private val commandRegistrarContext: CommandRegistrarContext,
     private val lifecyclePlugin: Lifecycle,
     private val multiplatformCommand: MultiplatformCommand,
-    coreModule: CoreModule,
+    private val coreModule: CoreModule,
     guiModule: GuiModule,
     platformServer: PlatformServer,
     ratingChangeModule: RatingChangeModule,
@@ -50,7 +51,7 @@ class CommandsModule(
     val lifecycle: Lifecycle by lazy {
         Lifecycle.Lambda(
             onEnable = {
-                nodes.forEach(commandRegistrarContext::registerWhenReady)
+                commandRegistrarContext.registerWhenReady(nodes, coreModule.unconfinedScope)
             }
         )
     }
