@@ -18,9 +18,9 @@ internal class ReloadLiteralArgumentBuilder(
         return with(multiplatformCommand) {
             command("aratingreload") {
                 runs { ctx ->
-                    ctx.getSender().sendMessage(translation.general.reload)
+                    ctx.getSender().sendMessage(translation.reload.started)
                     lifecyclePlugin.onReload()
-                    ctx.getSender().sendMessage(translation.general.reloadComplete)
+                    ctx.getSender().sendMessage(translation.reload.completed)
                 }
             }
         }

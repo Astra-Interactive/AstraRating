@@ -23,7 +23,7 @@ internal fun SlotContext.ratingsSlot(
     .setIndex(index)
     .setItemStack(PlayerHeadUtil.getHead(playerName))
     .editMeta {
-        displayName(translation.gui.playerName(playerName).toComponent(locale))
+        displayName(translation.menu.playerName(playerName).toComponent(locale))
         buildList {
             if (config.gui.showFirstConnection) {
                 val timeFormatted = TimeUtility.formatToString(
@@ -31,7 +31,7 @@ internal fun SlotContext.ratingsSlot(
                     format = config.gui.format
                 ).orEmpty()
                 if (timeFormatted.isNotBlank() && firstPlayed != 0L) {
-                    add(translation.gui.firstConnection(timeFormatted).toComponent(locale))
+                    add(translation.menu.firstConnection(timeFormatted).toComponent(locale))
                 }
             }
             if (config.gui.showLastConnection) {
@@ -40,12 +40,12 @@ internal fun SlotContext.ratingsSlot(
                     format = config.gui.format
                 ).orEmpty()
                 if (timeFormatted.isNotBlank() && lastPlayed != 0L) {
-                    add(translation.gui.lastConnection(timeFormatted).toComponent(locale))
+                    add(translation.menu.lastConnection(timeFormatted).toComponent(locale))
                 }
             }
-            val rating = translation.gui.ratingValue(isPositive = ratingTotal > 0, text = "$ratingTotal")
-            add(translation.gui.ratingTotal(rating).toComponent(locale))
-            add(translation.gui.ratingCounts(ratingCounts).toComponent(locale))
+            val rating = translation.menu.ratingValue(isPositive = ratingTotal > 0, text = "$ratingTotal")
+            add(translation.ratingsMenu.total(rating).toComponent(locale))
+            add(translation.ratingsMenu.count(ratingCounts).toComponent(locale))
         }.run(::lore)
     }
     .setOnClickListener(click)

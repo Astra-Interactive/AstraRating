@@ -86,7 +86,7 @@ internal class RatingsGUI(
 
     private val playerHolder = DefaultPlayerHolder(player)
 
-    override var title: Component = translationKrate.getValue().gui.ratingsTitle.toComponent(locale)
+    override var title: Component = translationKrate.getValue().ratingsMenu.title.toComponent(locale)
 
     override val inventorySize: InventorySize = InventorySize.XL
 

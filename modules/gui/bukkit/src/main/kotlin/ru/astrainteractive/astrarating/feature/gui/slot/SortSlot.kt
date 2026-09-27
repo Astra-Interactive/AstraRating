@@ -23,14 +23,14 @@ internal fun SlotContext.ratingsSortSlot(
     InventorySlot.Builder()
         .setIndex(index = index)
         .setItemStack(config.gui.buttons.sort.toItemStack())
-        .setDisplayName(translation.gui.sort.toComponent(locale))
+        .setDisplayName(translation.sort.title.toComponent(locale))
         .apply {
             listOf(
                 UserRatingsSort.Rating(false),
                 UserRatingsSort.Player(false),
                 UserRatingsSort.Date(false),
             ).forEach { entry ->
-                val option = translation.gui.sortOption(
+                val option = translation.sort.option(
                     sort = userRatingsSortMapper.toText(entry),
                     isSelected = sortType::class == entry::class,
                     isAscending = sortType.isAsc
@@ -49,12 +49,12 @@ internal fun SlotContext.playerRatingsSortSlot(
 ) = InventorySlot.Builder()
     .setIndex(index = index)
     .setItemStack(config.gui.buttons.sort.toItemStack())
-    .setDisplayName(translation.gui.sort.toComponent(locale))
+    .setDisplayName(translation.sort.title.toComponent(locale))
     .apply {
         listOf(
             UsersRatingsSort.TotalRating(false),
         ).forEach { entry ->
-            val option = translation.gui.sortOption(
+            val option = translation.sort.option(
                 sort = usersRatingsSortMapper.toText(entry),
                 isSelected = sortType::class == entry::class,
                 isAscending = sortType.isAsc

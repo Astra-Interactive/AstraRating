@@ -64,7 +64,7 @@ internal class GuiLoadingIndicator(
             InventorySlot.Builder()
                 .setMaterial(materials[(slotIndex + offset) % materials.size])
                 .setIndex(slotIndex)
-                .editMeta { displayName(translation.gui.loading.toComponent(locale)) }
+                .editMeta { displayName(translation.menu.loading.toComponent(locale)) }
                 .build()
         }
     }

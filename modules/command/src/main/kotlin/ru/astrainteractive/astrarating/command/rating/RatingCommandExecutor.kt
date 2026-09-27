@@ -53,47 +53,47 @@ internal class RatingCommandExecutor(
         )
         val result = runCatching { addRatingUseCase.invoke(useCaseInput) }
         result.onFailure {
-            input.executor.sendMessage(translation.general.unknownError)
+            input.executor.sendMessage(translation.commandError.unknownError)
             it.printStackTrace()
         }
         result.onSuccess {
             when (it) {
                 AddRatingUseCase.Output.AlreadyMaxDayVotes -> {
-                    input.executor.sendMessage(translation.messages.alreadyMaxDayVotes)
+                    input.executor.sendMessage(translation.ratingChange.dailyLimit)
                 }
 
                 AddRatingUseCase.Output.AlreadyMaxVotesOnPlayer -> {
-                    input.executor.sendMessage(translation.messages.alreadyMaxPlayerVoted)
+                    input.executor.sendMessage(translation.ratingChange.playerLimit)
                 }
 
                 AddRatingUseCase.Output.MessageNotCorrect -> {
-                    input.executor.sendMessage(translation.messages.wrongMessageLen)
+                    input.executor.sendMessage(translation.ratingChange.wrongMessageLength)
                 }
 
                 AddRatingUseCase.Output.NoPermission -> {
-                    input.executor.sendMessage(translation.general.noPermission)
+                    input.executor.sendMessage(translation.commandError.noPermission)
                 }
 
                 AddRatingUseCase.Output.NotEnoughOnServer -> {
-                    input.executor.sendMessage(translation.messages.notEnoughOnServer)
+                    input.executor.sendMessage(translation.ratingChange.notEnoughPlaytime)
                 }
 
                 AddRatingUseCase.Output.PlayerNotExists -> {
-                    input.executor.sendMessage(translation.general.playerNotExist)
+                    input.executor.sendMessage(translation.commandError.playerNotFound)
                 }
 
                 AddRatingUseCase.Output.SamePlayer -> {
-                    input.executor.sendMessage(translation.messages.cantRateSelf)
+                    input.executor.sendMessage(translation.ratingChange.cannotRateSelf)
                 }
 
                 AddRatingUseCase.Output.Success -> {
                     if (input.value > 0) {
                         input.executor.sendMessage(
-                            translation.messages.likedUser(input.ratedPlayer.name ?: "-")
+                            translation.ratingChange.liked(input.ratedPlayer.name ?: "-")
                         )
                     } else {
                         input.executor.sendMessage(
-                            translation.messages.dislikedUser(input.ratedPlayer.name ?: "-")
+                            translation.ratingChange.disliked(input.ratedPlayer.name ?: "-")
                         )
                     }
                 }

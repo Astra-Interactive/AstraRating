@@ -11,7 +11,7 @@ class UsersRatingsSortMapper(translationKrate: CachedKrate<AstraRatingTranslatio
 
     fun toText(sort: UsersRatingsSort): LocalizedText {
         return when (sort) {
-            is UsersRatingsSort.TotalRating -> translation.gui.sortRating
+            is UsersRatingsSort.TotalRating -> translation.sort.rating
         }
     }
 }

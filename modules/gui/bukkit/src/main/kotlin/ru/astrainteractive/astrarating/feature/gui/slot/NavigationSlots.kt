@@ -12,20 +12,20 @@ import ru.astrainteractive.astrarating.feature.gui.util.toItemStack
 internal fun SlotContext.backPageSlot(index: Int, click: Click) = InventorySlot.Builder()
     .setIndex(index = index)
     .setItemStack(config.gui.buttons.back.toItemStack())
-    .editMeta { displayName(translation.gui.menuClose.toComponent(locale)) }
+    .editMeta { displayName(translation.menu.close.toComponent(locale)) }
     .setOnClickListener(click)
     .build()
 
 internal fun SlotContext.nextPageSlot(index: Int, click: Click): InventorySlot = InventorySlot.Builder()
     .setIndex(index = index)
     .setItemStack(config.gui.buttons.next.toItemStack())
-    .editMeta { displayName(translation.gui.menuNextPage.toComponent(locale)) }
+    .editMeta { displayName(translation.menu.nextPage.toComponent(locale)) }
     .setOnClickListener(click)
     .build()
 
 internal fun SlotContext.prevPageSlot(index: Int, click: Click): InventorySlot = InventorySlot.Builder()
     .setIndex(index = index)
     .setItemStack(config.gui.buttons.prev.toItemStack())
-    .editMeta { displayName(translation.gui.menuPrevPage.toComponent(locale)) }
+    .editMeta { displayName(translation.menu.previousPage.toComponent(locale)) }
     .setOnClickListener(click)
     .build()

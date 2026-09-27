@@ -93,7 +93,7 @@ internal class PlayerRatingsGUI(
 
     private val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
 
-    override var title: Component = translation.gui.playerRatingTitle(selectedPlayerName).toComponent(locale)
+    override var title: Component = translation.playerRatingsMenu.title(selectedPlayerName).toComponent(locale)
 
     override val inventorySize: InventorySize = InventorySize.XL
 

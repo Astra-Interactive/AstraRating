@@ -30,7 +30,7 @@ internal class KillEventListener(
 
     /** The reason is stored once and read by everyone, so it keeps the default language and no markup. */
     private fun killReason(killedPlayerName: String): String {
-        val component = translation.gui.killedPlayer(killedPlayerName).toComponent(Locale.ROOT)
+        val component = translation.playerKill.reason(killedPlayerName).toComponent(Locale.ROOT)
         return PlainTextComponentSerializer.plainText().serialize(component)
     }
 
@@ -60,7 +60,7 @@ internal class KillEventListener(
                 type = RatingType.PLAYER_KILL,
                 ratingValue = config.events.killPlayer.changeBy
             )
-            killerPlayer.asKAudience().sendMessage(translation.messages.youKilledPlayer(killedPlayer.name))
+            killerPlayer.asKAudience().sendMessage(translation.playerKill.ratingLowered(killedPlayer.name))
         }
     }
 }

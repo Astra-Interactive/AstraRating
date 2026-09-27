@@ -25,7 +25,7 @@ internal fun SlotContext.playerRatingsSlot(
     .setIndex(index)
     .setItemStack(PlayerHeadUtil.getHead(userCreatedReportName))
     .editMeta {
-        displayName(translation.gui.playerName(userCreatedReportName).toComponent(locale))
+        displayName(translation.menu.playerName(userCreatedReportName).toComponent(locale))
         buildList {
             // The rating message is typed by a player, so it goes in as plain text, one lore line per part
             subListFromString(
@@ -33,8 +33,8 @@ internal fun SlotContext.playerRatingsSlot(
                 config.trimMessageAfter,
                 config.cutWords
             ).forEachIndexed { lineIndex, messagePart ->
-                val line = translation.gui.ratingValue(isPositive = isPositive, text = messagePart)
-                val labeledLine = if (lineIndex == 0) translation.gui.message(line) else line
+                val line = translation.menu.ratingValue(isPositive = isPositive, text = messagePart)
+                val labeledLine = if (lineIndex == 0) translation.playerRatingsMenu.message(line) else line
                 add(labeledLine.toComponent(locale))
             }
 
@@ -44,7 +44,7 @@ internal fun SlotContext.playerRatingsSlot(
                     format = config.gui.format
                 ).orEmpty()
                 if (time.isNotBlank() && firstPlayed != 0L) {
-                    add(translation.gui.firstConnection(time).toComponent(locale))
+                    add(translation.menu.firstConnection(time).toComponent(locale))
                 }
             }
             if (config.gui.showLastConnection) {
@@ -53,11 +53,11 @@ internal fun SlotContext.playerRatingsSlot(
                     format = config.gui.format
                 ).orEmpty()
                 if (time.isNotBlank() && lastPlayed != 0L) {
-                    add(translation.gui.lastConnection(time).toComponent(locale))
+                    add(translation.menu.lastConnection(time).toComponent(locale))
                 }
             }
             if (canDelete && config.gui.showDeleteReport) {
-                add(translation.gui.clickToDeleteReport.toComponent(locale))
+                add(translation.playerRatingsMenu.clickToDelete.toComponent(locale))
             }
         }.run(::lore)
     }

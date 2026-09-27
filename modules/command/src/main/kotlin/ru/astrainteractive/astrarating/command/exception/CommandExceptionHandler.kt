@@ -23,16 +23,16 @@ internal class CommandExceptionHandler(
     fun handle(ctx: CommandContext<Any>, t: Throwable) {
         val message: LocalizableComponent = when (t) {
             is LocalizableComponentCommandException -> t.localizableComponent
-            is BadArgumentException -> translation.general.wrongUsage
-            is ArgumentConverterException -> translation.general.wrongUsage
-            is NoPermissionException -> translation.general.noPermission
+            is BadArgumentException -> translation.commandError.wrongUsage
+            is ArgumentConverterException -> translation.commandError.wrongUsage
+            is NoPermissionException -> translation.commandError.noPermission
             is UnknownPlayerCommandException,
-            is NoPlayerException -> translation.general.playerNotExist
+            is NoPlayerException -> translation.commandError.playerNotFound
 
-            is OnlyPlayerCommandException -> translation.general.onlyPlayerCommand
+            is OnlyPlayerCommandException -> translation.commandError.playersOnly
             else -> {
                 error(t) { "#handle unhandled exception ${t.message}" }
-                translation.general.unknownError
+                translation.commandError.unknownError
             }
         }
         with(multiplatformCommand) {
