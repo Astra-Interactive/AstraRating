@@ -4,10 +4,10 @@ package ru.astrainteractive.astrarating.core.settings
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import ru.astrainteractive.astralibs.string.StringDesc
-import ru.astrainteractive.astralibs.string.plus
-import ru.astrainteractive.astralibs.string.replace
-import ru.astrainteractive.astralibs.string.toRaw
+import ru.astrainteractive.astralibs.localization.component.LocalizableComponent
+import ru.astrainteractive.astralibs.localization.component.replace
+import ru.astrainteractive.astralibs.localization.locale.MinecraftLocales
+import ru.astrainteractive.astralibs.localization.text.LocalizedText
 
 @Serializable
 class AstraRatingTranslation(
@@ -21,137 +21,278 @@ class AstraRatingTranslation(
     @Serializable
     data class General(
         @SerialName("unknown_error")
-        val unknownError: StringDesc.Raw = StringDesc.Raw("&4Неизвестная ошибка"),
+        val unknownError: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "&4Неизвестная ошибка")
+            translation(MinecraftLocales.EN_US, "&4Unknown error")
+        },
         @SerialName("wrong_usage")
-        val wrongUsage: StringDesc.Raw = PREFIX
-            .plus("&3Неверное использование команды")
-            .toRaw(),
+        val wrongUsage: LocalizedText = PREFIX.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&3Неверное использование команды")
+                translation(MinecraftLocales.EN_US, "&3Wrong command usage")
+            }
+        ),
         @SerialName("reload")
-        val reload: StringDesc.Raw = PREFIX
-            .plus("&3Перезагрузка плагина")
-            .toRaw(),
+        val reload: LocalizedText = PREFIX.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&3Перезагрузка плагина")
+                translation(MinecraftLocales.EN_US, "&3Reloading the plugin")
+            }
+        ),
         @SerialName("reload_complete")
-        val reloadComplete: StringDesc.Raw = PREFIX
-            .plus("&3Перезагрузка успешно завершена")
-            .toRaw(),
+        val reloadComplete: LocalizedText = PREFIX.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&3Перезагрузка успешно завершена")
+                translation(MinecraftLocales.EN_US, "&3Reload complete")
+            }
+        ),
         @SerialName("no_permission")
-        val noPermission: StringDesc.Raw = PREFIX
-            .plus("&4У вас нет прав!")
-            .toRaw(),
+        val noPermission: LocalizedText = PREFIX.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&4У вас нет прав!")
+                translation(MinecraftLocales.EN_US, "&4You don't have permission!")
+            }
+        ),
         @SerialName("only_player_command")
-        val onlyPlayerCommand: StringDesc.Raw = PREFIX
-            .plus("&4Команда доступна только игрокам!")
-            .toRaw(),
+        val onlyPlayerCommand: LocalizedText = PREFIX.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&4Команда доступна только игрокам!")
+                translation(MinecraftLocales.EN_US, "&4Only players can use this command!")
+            }
+        ),
         @SerialName("player_not_exist")
-        val playerNotExist: StringDesc.Raw = PREFIX
-            .plus("&4Такого игрока нет!")
-            .toRaw(),
+        val playerNotExist: LocalizedText = PREFIX.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&4Такого игрока нет!")
+                translation(MinecraftLocales.EN_US, "&4There is no such player!")
+            }
+        ),
     )
 
     @Serializable
     data class Messages(
         @SerialName("cant_rate_self")
-        val cantRateSelf: StringDesc.Raw = PREFIX
-            .plus("&4Вы не можете поставить рейтинг самому себe!")
-            .toRaw(),
+        val cantRateSelf: LocalizedText = PREFIX.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&4Вы не можете поставить рейтинг самому себe!")
+                translation(MinecraftLocales.EN_US, "&4You can't rate yourself!")
+            }
+        ),
         @SerialName("wrong_message_len")
-        val wrongMessageLen: StringDesc.Raw = PREFIX
-            .plus("&4Длина причина рейтинга должна быть в диапазоне [5;30]")
-            .toRaw(),
+        val wrongMessageLen: LocalizedText = PREFIX.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&4Длина причина рейтинга должна быть в диапазоне [5;30]")
+                translation(MinecraftLocales.EN_US, "&4The rating reason must be [5;30] characters long")
+            }
+        ),
         @SerialName("liked_user")
-        private val likedUser: StringDesc.Raw = PREFIX
-            .plus("&3Вы повысили рейтинг игрока %player%")
-            .toRaw(),
+        private val likedUser: LocalizedText = PREFIX.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&3Вы повысили рейтинг игрока %player%")
+                translation(MinecraftLocales.EN_US, "&3You raised the rating of %player%")
+            }
+        ),
         @SerialName("disliked_user")
-        private val dislikedUser: StringDesc.Raw = PREFIX
-            .plus("&4Вы понизили рейтинг игрока %player%")
-            .toRaw(),
+        private val dislikedUser: LocalizedText = PREFIX.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&4Вы понизили рейтинг игрока %player%")
+                translation(MinecraftLocales.EN_US, "&4You lowered the rating of %player%")
+            }
+        ),
         @SerialName("already_max_day_voted")
-        val alreadyMaxDayVotes: StringDesc.Raw = PREFIX
-            .plus("&4Вы уже проголосовали максимальное количество раз за день")
-            .toRaw(),
+        val alreadyMaxDayVotes: LocalizedText = PREFIX.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&4Вы уже проголосовали максимальное количество раз за день")
+                translation(MinecraftLocales.EN_US, "&4You have already voted the maximum number of times today")
+            }
+        ),
         @SerialName("already_max_player_voted")
-        val alreadyMaxPlayerVoted: StringDesc.Raw = PREFIX
-            .plus("&4Сегодня вы выдали максимальное возможное количество голосов этому игроку")
-            .toRaw(),
+        val alreadyMaxPlayerVoted: LocalizedText = PREFIX.concat(
+            LocalizedText.build {
+                translation(
+                    MinecraftLocales.RU_RU,
+                    "&4Сегодня вы выдали максимальное возможное количество голосов этому игроку"
+                )
+                translation(
+                    MinecraftLocales.EN_US,
+                    "&4You have already given this player the maximum number of votes today"
+                )
+            }
+        ),
         @SerialName("not_enough_on_server")
-        val notEnoughOnServer: StringDesc.Raw = PREFIX
-            .plus("&4Вы недостаточно долго были на сервере")
-            .toRaw(),
+        val notEnoughOnServer: LocalizedText = PREFIX.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&4Вы недостаточно долго были на сервере")
+                translation(MinecraftLocales.EN_US, "&4You haven't played on the server long enough")
+            }
+        ),
         @SerialName("you_killed_player")
-        private val youKilledPlayer: StringDesc.Raw = PREFIX
-            .plus("&7Вы убили игрока %killed_player%, ваш рейтинг был понижен")
-            .toRaw()
+        private val youKilledPlayer: LocalizedText = PREFIX.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.RU_RU, "&7Вы убили игрока %killed_player%, ваш рейтинг был понижен")
+                translation(MinecraftLocales.EN_US, "&7You killed %killed_player%, your rating was lowered")
+            }
+        )
     ) {
-        fun likedUser(playerName: String) = likedUser.replace("%player%", playerName)
-        fun dislikedUser(playerName: String) = dislikedUser.replace("%player%", playerName)
-        fun youKilledPlayer(playerName: String) = youKilledPlayer.replace("%killed_player%", playerName)
+        fun likedUser(playerName: String): LocalizableComponent = likedUser.replace("%player%", playerName)
+
+        fun dislikedUser(playerName: String): LocalizableComponent = dislikedUser.replace("%player%", playerName)
+
+        fun youKilledPlayer(playerName: String): LocalizableComponent {
+            return youKilledPlayer.replace("%killed_player%", playerName)
+        }
     }
 
     @Serializable
     data class Gui(
         @SerialName("click_to_delete_report")
-        val clickToDeleteReport: StringDesc.Raw = StringDesc.Raw("&4Нажмите ЛКМ чтобы удалить"),
-        @SerialName("player_name_color")
-        val playerNameColor: StringDesc.Raw = StringDesc.Raw("&2"),
-        @SerialName("positive_color")
-        val positiveColor: StringDesc.Raw = StringDesc.Raw("&2"),
-        @SerialName("negative_color")
-        val negativeColor: StringDesc.Raw = StringDesc.Raw("&4"),
+        val clickToDeleteReport: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "&4Нажмите ЛКМ чтобы удалить")
+            translation(MinecraftLocales.EN_US, "&4Left-click to delete")
+        },
+        @SerialName("player_name")
+        private val playerName: LocalizedText = LocalizedText.shared("&2%player%"),
+        @SerialName("positive_value")
+        private val positiveValue: LocalizedText = LocalizedText.shared("&2%value%"),
+        @SerialName("negative_value")
+        private val negativeValue: LocalizedText = LocalizedText.shared("&4%value%"),
         @SerialName("first_connection")
-        private val firstConnection: StringDesc.Raw = StringDesc.Raw("&7Впервые зашёл: %time%"),
+        private val firstConnection: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "&7Впервые зашёл: %time%")
+            translation(MinecraftLocales.EN_US, "&7First joined: %time%")
+        },
         @SerialName("last_connection")
-        private val lastConnection: StringDesc.Raw = StringDesc.Raw("&7Был в сети: %time%"),
+        private val lastConnection: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "&7Был в сети: %time%")
+            translation(MinecraftLocales.EN_US, "&7Last seen: %time%")
+        },
         @SerialName("ratings_title")
-        val ratingsTitle: StringDesc.Raw = StringDesc.Raw("&2Рейтинг"),
+        val ratingsTitle: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "&2Рейтинг")
+            translation(MinecraftLocales.EN_US, "&2Rating")
+        },
         @SerialName("player_rating_title")
-        val playerRatingTitle: StringDesc.Raw = StringDesc.Raw("&2Рейтинг игрока %player%"),
+        private val playerRatingTitle: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "&2Рейтинг игрока %player%")
+            translation(MinecraftLocales.EN_US, "&2Rating of %player%")
+        },
         @SerialName("prev_page")
-        val menuPrevPage: StringDesc.Raw = StringDesc.Raw("&7Пред. страницы"),
+        val menuPrevPage: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "&7Пред. страницы")
+            translation(MinecraftLocales.EN_US, "&7Previous page")
+        },
         @SerialName("next_page")
-        val menuNextPage: StringDesc.Raw = StringDesc.Raw("&7След. страница"),
+        val menuNextPage: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "&7След. страница")
+            translation(MinecraftLocales.EN_US, "&7Next page")
+        },
         @SerialName("close")
-        val menuClose: StringDesc.Raw = StringDesc.Raw("&7Закрыть"),
+        val menuClose: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "&7Закрыть")
+            translation(MinecraftLocales.EN_US, "&7Close")
+        },
         @SerialName("sort.player")
-        val sortPlayer: StringDesc.Raw = StringDesc.Raw("Игроки"),
+        val sortPlayer: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "Игроки")
+            translation(MinecraftLocales.EN_US, "Players")
+        },
         @SerialName("sort.date")
-        val sortDate: StringDesc.Raw = StringDesc.Raw("Дата"),
+        val sortDate: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "Дата")
+            translation(MinecraftLocales.EN_US, "Date")
+        },
         @SerialName("sort.rating")
-        val sortRating: StringDesc.Raw = StringDesc.Raw("Рейтинг"),
+        val sortRating: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "Рейтинг")
+            translation(MinecraftLocales.EN_US, "Rating")
+        },
         @SerialName("sort.sort")
-        val sort: StringDesc.Raw = StringDesc.Raw("&7Сортировка"),
-        @SerialName("sort.asc")
-        val sortAscSymbol: StringDesc.Raw = StringDesc.Raw(" &6&l↓"),
-        @SerialName("sort.desc")
-        val sortDescSymbol: StringDesc.Raw = StringDesc.Raw(" &6&l↑"),
-        @SerialName("enabled_color")
-        val enabledColor: StringDesc.Raw = StringDesc.Raw("&6"),
-        @SerialName("disabled_color")
-        val disabledColor: StringDesc.Raw = StringDesc.Raw("&f"),
+        val sort: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "&7Сортировка")
+            translation(MinecraftLocales.EN_US, "&7Sort")
+        },
+        @SerialName("sort.option")
+        private val sortOption: LocalizedText = LocalizedText.shared("&f%sort%"),
+        @SerialName("sort.selected_asc")
+        private val sortSelectedAsc: LocalizedText = LocalizedText.shared("&6%sort% &6&l↓"),
+        @SerialName("sort.selected_desc")
+        private val sortSelectedDesc: LocalizedText = LocalizedText.shared("&6%sort% &6&l↑"),
         @SerialName("rating")
-        private val ratingTotal: StringDesc.Raw = StringDesc.Raw("&7Рейтинг: %rating%"),
+        private val ratingTotal: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "&7Рейтинг: %rating%")
+            translation(MinecraftLocales.EN_US, "&7Rating: %rating%")
+        },
         @SerialName("rating_counts")
-        val ratingCounts: StringDesc.Raw = StringDesc.Raw("&7Рейтингов"),
+        private val ratingCounts: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "&7Рейтингов: %count%")
+            translation(MinecraftLocales.EN_US, "&7Ratings: %count%")
+        },
         @SerialName("message")
-        private val message: StringDesc.Raw = StringDesc.Raw("&7Сообщение: %message%"),
+        private val message: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "&7Сообщение: %message%")
+            translation(MinecraftLocales.EN_US, "&7Message: %message%")
+        },
         @SerialName("loading")
-        val loading: StringDesc.Raw = StringDesc.Raw("&7Загрузка..."),
+        val loading: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "&7Загрузка...")
+            translation(MinecraftLocales.EN_US, "&7Loading...")
+        },
         @SerialName("title")
-        val eventsTitle: StringDesc.Raw = StringDesc.Raw("&7Остальное"),
+        val eventsTitle: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "&7Остальное")
+            translation(MinecraftLocales.EN_US, "&7Other")
+        },
         @SerialName("kill.amount")
-        private val eventKillAmount: StringDesc.Raw = StringDesc.Raw("&7Количество убийств: &2%kills%"),
+        private val eventKillAmount: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "&7Количество убийств: &2%kills%")
+            translation(MinecraftLocales.EN_US, "&7Kills: &2%kills%")
+        },
         @SerialName("kill_player")
-        private val killedPlayer: StringDesc.Raw = StringDesc.Raw("&7Убил игрока &2%killed_player%"),
+        private val killedPlayer: LocalizedText = LocalizedText.build {
+            translation(MinecraftLocales.RU_RU, "&7Убил игрока &2%killed_player%")
+            translation(MinecraftLocales.EN_US, "&7Killed &2%killed_player%")
+        },
     ) {
-        fun killedPlayer(playerName: String) = killedPlayer.replace("%killed_player%", playerName)
-        fun eventKillAmount(count: Int) = eventKillAmount.replace("%kills%", count.toString())
-        fun message(text: String) = message.replace("%message%", text)
-        fun firstConnection(time: String) = firstConnection.replace("%time%", time)
-        fun lastConnection(time: String) = lastConnection.replace("%time%", time)
-        fun ratingTotal(formatted: String) = ratingTotal.replace("%rating%", formatted)
+        fun playerName(name: String): LocalizableComponent = playerName.replace("%player%", name)
+
+        /** Colors [text] by the sign of the rating it belongs to. */
+        fun ratingValue(isPositive: Boolean, text: String): LocalizableComponent {
+            val template = if (isPositive) positiveValue else negativeValue
+            return template.replace("%value%", text)
+        }
+
+        fun firstConnection(time: String): LocalizableComponent = firstConnection.replace("%time%", time)
+
+        fun lastConnection(time: String): LocalizableComponent = lastConnection.replace("%time%", time)
+
+        fun playerRatingTitle(playerName: String): LocalizableComponent {
+            return playerRatingTitle.replace("%player%", playerName)
+        }
+
+        /** A line of the sort button: only the selected [sort] shows its direction. */
+        fun sortOption(sort: LocalizableComponent, isSelected: Boolean, isAscending: Boolean): LocalizableComponent {
+            val template = when {
+                !isSelected -> sortOption
+                isAscending -> sortSelectedAsc
+                else -> sortSelectedDesc
+            }
+            return template.replace("%sort%", sort)
+        }
+
+        fun ratingTotal(rating: LocalizableComponent): LocalizableComponent = ratingTotal.replace("%rating%", rating)
+
+        fun ratingCounts(count: Long): LocalizableComponent = ratingCounts.replace("%count%", count.toString())
+
+        fun message(text: LocalizableComponent): LocalizableComponent = message.replace("%message%", text)
+
+        fun eventKillAmount(count: Int): LocalizableComponent = eventKillAmount.replace("%kills%", count.toString())
+
+        fun killedPlayer(playerName: String): LocalizableComponent {
+            return killedPlayer.replace("%killed_player%", playerName)
+        }
     }
 
     companion object {
-        private val PREFIX = StringDesc.Raw("&6[AR] ")
+        private val PREFIX = LocalizedText.shared("&6[AR] ")
     }
 }

@@ -17,7 +17,6 @@ class EventModule(
         KillEventListener(
             configKrate = coreModule.configKrate,
             translationKrate = coreModule.translationKrate,
-            kyoriKrate = coreModule.kyoriKrate,
             ratingDao = ratingDaoModule.ratingDao,
             scope = coreModule.ioScope,
             dispatchers = coreModule.dispatchers

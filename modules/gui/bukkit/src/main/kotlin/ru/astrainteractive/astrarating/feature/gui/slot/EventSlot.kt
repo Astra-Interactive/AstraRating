@@ -13,9 +13,9 @@ internal fun SlotContext.killEventSlot(index: Int, killCounts: Int) = InventoryS
     .setMaterial(Material.NETHERITE_SWORD)
     .editMeta {
         translation.gui.eventsTitle
-            .component
+            .toComponent(locale)
             .run(::displayName)
     }
-    .addLore(translation.gui.eventKillAmount(killCounts).component)
+    .addLore(translation.gui.eventKillAmount(killCounts).toComponent(locale))
     .build()
     .takeIf { killCounts > 0 }

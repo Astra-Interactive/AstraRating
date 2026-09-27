@@ -4,11 +4,10 @@ import com.mojang.brigadier.context.CommandContext
 import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
 import ru.astrainteractive.astralibs.command.api.exception.ArgumentConverterException
 import ru.astrainteractive.astralibs.command.api.exception.BadArgumentException
+import ru.astrainteractive.astralibs.command.api.exception.LocalizableComponentCommandException
 import ru.astrainteractive.astralibs.command.api.exception.NoPermissionException
 import ru.astrainteractive.astralibs.command.api.exception.NoPlayerException
-import ru.astrainteractive.astralibs.command.api.exception.StringDescCommandException
-import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
-import ru.astrainteractive.astralibs.kyori.unwrap
+import ru.astrainteractive.astralibs.localization.component.LocalizableComponent
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
@@ -17,15 +16,13 @@ import ru.astrainteractive.klibs.mikro.core.logging.Logger
 
 internal class CommandExceptionHandler(
     private val multiplatformCommand: MultiplatformCommand,
-    kyoriKrate: CachedKrate<KyoriComponentSerializer>,
     translationKrate: CachedKrate<AstraRatingTranslation>,
-) : KyoriComponentSerializer by kyoriKrate.unwrap(),
-    Logger by JUtiltLogger("AstraRating-CommandExceptionHandler") {
+) : Logger by JUtiltLogger("AstraRating-CommandExceptionHandler") {
     private val translation by translationKrate
 
     fun handle(ctx: CommandContext<Any>, t: Throwable) {
-        val desc = when (t) {
-            is StringDescCommandException -> t.stringDesc
+        val message: LocalizableComponent = when (t) {
+            is LocalizableComponentCommandException -> t.localizableComponent
             is BadArgumentException -> translation.general.wrongUsage
             is ArgumentConverterException -> translation.general.wrongUsage
             is NoPermissionException -> translation.general.noPermission
@@ -39,7 +36,7 @@ internal class CommandExceptionHandler(
             }
         }
         with(multiplatformCommand) {
-            ctx.getSender().sendMessage(desc.component)
+            ctx.getSender().sendMessage(message)
         }
     }
 }

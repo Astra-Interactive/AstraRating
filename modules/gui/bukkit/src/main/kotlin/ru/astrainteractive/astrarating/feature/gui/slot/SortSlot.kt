@@ -7,9 +7,6 @@ import ru.astrainteractive.astralibs.menu.slot.setDisplayName
 import ru.astrainteractive.astralibs.menu.slot.setIndex
 import ru.astrainteractive.astralibs.menu.slot.setItemStack
 import ru.astrainteractive.astralibs.menu.slot.setOnClickListener
-import ru.astrainteractive.astralibs.string.or
-import ru.astrainteractive.astralibs.string.orEmpty
-import ru.astrainteractive.astralibs.string.plus
 import ru.astrainteractive.astrarating.data.exposed.model.UserRatingsSort
 import ru.astrainteractive.astrarating.data.exposed.model.UsersRatingsSort
 import ru.astrainteractive.astrarating.feature.gui.mapping.UserRatingsSortMapper
@@ -26,27 +23,19 @@ internal fun SlotContext.ratingsSortSlot(
     InventorySlot.Builder()
         .setIndex(index = index)
         .setItemStack(config.gui.buttons.sort.toItemStack())
-        .setDisplayName(translation.gui.sort.component)
+        .setDisplayName(translation.gui.sort.toComponent(locale))
         .apply {
             listOf(
                 UserRatingsSort.Rating(false),
                 UserRatingsSort.Player(false),
                 UserRatingsSort.Date(false),
             ).forEach { entry ->
-                val symbol = translation.gui.sortAscSymbol
-                    .takeIf { sortType.isAsc }
-                    .or { translation.gui.sortDescSymbol }
-                    .takeIf { sortType::class == entry::class }
-                    .orEmpty()
-
-                addLore(
-                    translation.gui.enabledColor
-                        .takeIf { sortType::class == entry::class }
-                        .or { translation.gui.disabledColor }
-                        .plus(userRatingsSortMapper.toStringDesc(entry))
-                        .plus(symbol)
-                        .component
+                val option = translation.gui.sortOption(
+                    sort = userRatingsSortMapper.toText(entry),
+                    isSelected = sortType::class == entry::class,
+                    isAscending = sortType.isAsc
                 )
+                addLore(option.toComponent(locale))
             }
         }
         .setOnClickListener { onClick.invoke() }
@@ -60,25 +49,17 @@ internal fun SlotContext.playerRatingsSortSlot(
 ) = InventorySlot.Builder()
     .setIndex(index = index)
     .setItemStack(config.gui.buttons.sort.toItemStack())
-    .setDisplayName(translation.gui.sort.component)
+    .setDisplayName(translation.gui.sort.toComponent(locale))
     .apply {
         listOf(
             UsersRatingsSort.TotalRating(false),
         ).forEach { entry ->
-            val symbol = translation.gui.sortAscSymbol
-                .takeIf { sortType.isAsc }
-                .or { translation.gui.sortDescSymbol }
-                .takeIf { sortType::class == entry::class }
-                .orEmpty()
-
-            addLore(
-                translation.gui.enabledColor
-                    .takeIf { sortType::class == entry::class }
-                    .or { translation.gui.disabledColor }
-                    .plus(usersRatingsSortMapper.toStringDesc(entry))
-                    .plus(symbol)
-                    .component
+            val option = translation.gui.sortOption(
+                sort = usersRatingsSortMapper.toText(entry),
+                isSelected = sortType::class == entry::class,
+                isAscending = sortType.isAsc
             )
+            addLore(option.toComponent(locale))
         }
     }
     .setOnClickListener(click)
