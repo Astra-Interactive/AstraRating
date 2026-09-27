@@ -1,5 +1,6 @@
 package ru.astrainteractive.astrarating.feature.gui.slot
 
+import net.kyori.adventure.text.minimessage.MiniMessage
 import ru.astrainteractive.astralibs.menu.clicker.Click
 import ru.astrainteractive.astralibs.menu.slot.InventorySlot
 import ru.astrainteractive.astralibs.menu.slot.editMeta
@@ -29,8 +30,10 @@ internal fun SlotContext.playerRatingsSlot(
     .editMeta {
         displayName(translation.gui.playerNameColor.plus(userCreatedReportName).component)
         buildList {
+            // The rating message is typed by a player, so its MiniMessage tags must stay text
+            val escapedMessage = MiniMessage.miniMessage().escapeTags(message)
             subListFromString(
-                translation.gui.message(color.plus(message).raw).raw,
+                translation.gui.message(color.plus(escapedMessage).raw).raw,
                 config.trimMessageAfter,
                 config.cutWords
             ).forEachIndexed { _, messagePart -> add(color.plus(messagePart).component) }
