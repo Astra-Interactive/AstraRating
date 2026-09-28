@@ -4,6 +4,7 @@ import com.charleskorn.kaml.PolymorphismStyle
 import com.charleskorn.kaml.Yaml
 import kotlinx.coroutines.cancel
 import kotlinx.serialization.StringFormat
+import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
 import ru.astrainteractive.astralibs.coroutines.withTimings
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.util.YamlStringFormat
@@ -22,6 +23,7 @@ import java.io.File
 class CoreModule(
     dataFolder: File,
     val dispatchers: KotlinDispatchers,
+    val multiplatformCommand: MultiplatformCommand,
 ) : Logger by JUtiltLogger("AstraRating-CoreModule") {
 
     val yamlStringFormat: StringFormat by lazy {
