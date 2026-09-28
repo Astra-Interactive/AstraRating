@@ -6,7 +6,6 @@ import ru.astrainteractive.astralibs.localization.component.LocalizableComponent
 import ru.astrainteractive.astralibs.server.permission.Permission
 import java.util.Locale
 
-/** A console that holds only [grantedPermissions] and keeps every message sent to it. */
 class RecordingConsoleKCommandSender(
     private val grantedPermissions: Set<Permission>
 ) : ConsoleKCommandSender {
