@@ -81,7 +81,6 @@ class RootModule(plugin: LifecyclePlugin) {
     private val guiModule: GuiModule by lazy {
         GuiBukkitModule(
             coreModule = coreModule,
-            translationContext = coreModule.kyoriKrate,
             ratingPlayerModule = ratingPlayerModule,
             ratingPlayersModule = ratingPlayersModule
         )

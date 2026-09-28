@@ -2,11 +2,11 @@ package ru.astrainteractive.astrarating.event.kill
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.PlayerDeathEvent
 import ru.astrainteractive.astralibs.event.EventListener
-import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
-import ru.astrainteractive.astralibs.kyori.unwrap
+import ru.astrainteractive.astralibs.server.util.asKAudience
 import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
 import ru.astrainteractive.astrarating.data.dao.RatingDao
@@ -16,17 +16,23 @@ import ru.astrainteractive.astrarating.data.exposed.model.UserModel
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
+import java.util.Locale
 
 internal class KillEventListener(
     configKrate: CachedKrate<AstraRatingConfig>,
     translationKrate: CachedKrate<AstraRatingTranslation>,
-    val kyoriKrate: CachedKrate<KyoriComponentSerializer>,
     val ratingDao: RatingDao,
     val scope: CoroutineScope,
     val dispatchers: KotlinDispatchers
-) : EventListener, KyoriComponentSerializer by kyoriKrate.unwrap() {
+) : EventListener {
     private val config by configKrate
     private val translation by translationKrate
+
+    /** The reason is stored once and read by everyone, so it keeps the default language and no markup. */
+    private fun killReason(killedPlayerName: String): String {
+        val component = translation.playerKill.reason(killedPlayerName).toComponent(Locale.ROOT)
+        return PlainTextComponentSerializer.plainText().serialize(component)
+    }
 
     @EventHandler
     fun onPlayerKilledPlayer(e: PlayerDeathEvent) {
@@ -37,7 +43,7 @@ internal class KillEventListener(
 
         scope.launch(dispatchers.IO) {
             val killedPlayerRating = ratingDao.fetchUsersTotalRating().getOrNull().orEmpty()
-                .firstOrNull { it.userDTO.minecraftUUID == killedPlayer.uniqueId.toString() }
+                .firstOrNull { userRating -> userRating.userDTO.minecraftUUID == killedPlayer.uniqueId.toString() }
                 ?.ratingTotal
                 ?: error("Could not fetch rating of ${killedPlayer.name}")
             if (killedPlayerRating <= 0) return@launch
@@ -50,13 +56,11 @@ internal class KillEventListener(
                         minecraftName = killerPlayer.name
                     )
                 ),
-                message = translation.gui.killedPlayer(killedPlayer.name).raw,
+                message = killReason(killedPlayer.name),
                 type = RatingType.PLAYER_KILL,
                 ratingValue = config.events.killPlayer.changeBy
             )
-            translation.messages.youKilledPlayer(killedPlayer.name)
-                .component
-                .run(killerPlayer::sendMessage)
+            killerPlayer.asKAudience().sendMessage(translation.playerKill.ratingLowered(killedPlayer.name))
         }
     }
 }

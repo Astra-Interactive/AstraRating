@@ -11,7 +11,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
 import ru.astrainteractive.astralibs.coroutines.withTimings
-import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.menu.clicker.Click
 import ru.astrainteractive.astralibs.menu.core.clear
 import ru.astrainteractive.astralibs.menu.core.setInventorySlot
@@ -56,7 +55,6 @@ internal class RatingsGUI(
     private val dispatchers: KotlinDispatchers,
     private val translationKrate: CachedKrate<AstraRatingTranslation>,
     private val configKratre: CachedKrate<AstraRatingConfig>,
-    private val kyoriKrate: CachedKrate<KyoriComponentSerializer>,
     private val ratingPlayersComponent: RatingPlayersComponent,
     private val router: GuiRouter,
     private val usersRatingsSortMapper: UsersRatingsSortMapper
@@ -69,25 +67,26 @@ internal class RatingsGUI(
         .Default(dispatchers.Main)
         .withTimings()
 
+    private val locale = player.locale()
+
     private val guiLoadingIndicator = GuiLoadingIndicator(
         menu = this,
         translation = translationKrate.getValue(),
-        kyori = kyoriKrate.getValue()
+        locale = locale
     )
 
     private val slotContext = SlotContext(
         translationKrate = translationKrate,
         configKrate = configKratre,
-        kyoriKrate = kyoriKrate,
-        menu = this
+        menu = this,
+        locale = locale
     )
 
     private val inventoryMap by lazy { DefaultRatingInventoryLayoutFactory.create() }
 
     private val playerHolder = DefaultPlayerHolder(player)
 
-    override var title: Component = kyoriKrate.getValue()
-        .toComponent(translationKrate.getValue().gui.ratingsTitle)
+    override var title: Component = translationKrate.getValue().ratingsMenu.title.toComponent(locale)
 
     override val inventorySize: InventorySize = InventorySize.XL
 

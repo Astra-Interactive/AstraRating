@@ -27,13 +27,11 @@ class CommandsModule(
         ReloadLiteralArgumentBuilder(
             multiplatformCommand = multiplatformCommand,
             lifecyclePlugin = lifecyclePlugin,
-            translationKrate = coreModule.translationKrate,
-            kyoriKrate = coreModule.kyoriKrate
+            translationKrate = coreModule.translationKrate
         ).create(),
         RatingLiteralArgumentBuilder(
             commandExceptionHandler = CommandExceptionHandler(
                 translationKrate = coreModule.translationKrate,
-                kyoriKrate = coreModule.kyoriKrate,
                 multiplatformCommand = multiplatformCommand
             ),
             ratingCommandExecutor = RatingCommandExecutor(
@@ -41,7 +39,6 @@ class CommandsModule(
                 translationKrate = coreModule.translationKrate,
                 coroutineScope = coreModule.ioScope,
                 dispatchers = coreModule.dispatchers,
-                kyoriKrate = coreModule.kyoriKrate,
                 router = guiModule.router
             ),
             multiplatformCommand = multiplatformCommand,

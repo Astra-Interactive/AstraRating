@@ -6,7 +6,6 @@ import ru.astrainteractive.astralibs.menu.slot.editMeta
 import ru.astrainteractive.astralibs.menu.slot.setIndex
 import ru.astrainteractive.astralibs.menu.slot.setItemStack
 import ru.astrainteractive.astralibs.menu.slot.setOnClickListener
-import ru.astrainteractive.astralibs.string.plus
 import ru.astrainteractive.astrarating.feature.gui.slot.context.SlotContext
 import ru.astrainteractive.astrarating.feature.gui.util.PlayerHeadUtil
 import ru.astrainteractive.astrarating.feature.gui.util.TimeUtility
@@ -24,11 +23,7 @@ internal fun SlotContext.ratingsSlot(
     .setIndex(index)
     .setItemStack(PlayerHeadUtil.getHead(playerName))
     .editMeta {
-        val color = when {
-            ratingTotal > 0 -> translation.gui.positiveColor.raw
-            else -> translation.gui.negativeColor.raw
-        }
-        displayName(translation.gui.playerNameColor.plus(playerName).component)
+        displayName(translation.menu.playerName(playerName).toComponent(locale))
         buildList {
             if (config.gui.showFirstConnection) {
                 val timeFormatted = TimeUtility.formatToString(
@@ -36,7 +31,7 @@ internal fun SlotContext.ratingsSlot(
                     format = config.gui.format
                 ).orEmpty()
                 if (timeFormatted.isNotBlank() && firstPlayed != 0L) {
-                    add(translation.gui.firstConnection(timeFormatted).component)
+                    add(translation.menu.firstConnection(timeFormatted).toComponent(locale))
                 }
             }
             if (config.gui.showLastConnection) {
@@ -45,11 +40,12 @@ internal fun SlotContext.ratingsSlot(
                     format = config.gui.format
                 ).orEmpty()
                 if (timeFormatted.isNotBlank() && lastPlayed != 0L) {
-                    add(translation.gui.lastConnection(timeFormatted).component)
+                    add(translation.menu.lastConnection(timeFormatted).toComponent(locale))
                 }
             }
-            translation.gui.ratingTotal(color.plus("$ratingTotal")).component.run(::add)
-            translation.gui.ratingCounts.plus(": ").plus("$ratingCounts").component.run(::add)
+            val rating = translation.menu.ratingValue(isPositive = ratingTotal > 0, text = "$ratingTotal")
+            add(translation.ratingsMenu.total(rating).toComponent(locale))
+            add(translation.ratingsMenu.count(ratingCounts).toComponent(locale))
         }.run(::lore)
     }
     .setOnClickListener(click)

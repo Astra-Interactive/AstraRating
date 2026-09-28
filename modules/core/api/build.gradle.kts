@@ -13,5 +13,9 @@ dependencies {
     implementation(libs.kotlin.serialization.kaml)
     implementation(libs.minecraft.astralibs.core)
 
+    testImplementation(libs.minecraft.kyori.api)
+    testImplementation(libs.minecraft.kyori.legacy)
+    testImplementation(libs.minecraft.kyori.minimessage)
+    testImplementation(libs.minecraft.kyori.plain)
     testImplementation(libs.tests.kotlin.test)
 }

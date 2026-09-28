@@ -9,7 +9,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.bukkit.Material
-import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.menu.core.Menu
 import ru.astrainteractive.astralibs.menu.core.setInventorySlot
 import ru.astrainteractive.astralibs.menu.layout.slotInventoryLayout
@@ -18,13 +17,14 @@ import ru.astrainteractive.astralibs.menu.slot.editMeta
 import ru.astrainteractive.astralibs.menu.slot.setIndex
 import ru.astrainteractive.astralibs.menu.slot.setMaterial
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
+import java.util.Locale
 import kotlin.time.Duration.Companion.milliseconds
 
 internal class GuiLoadingIndicator(
     private val menu: Menu,
     private val translation: AstraRatingTranslation,
-    kyori: KyoriComponentSerializer
-) : KyoriComponentSerializer by kyori {
+    private val locale: Locale
+) {
 
     private enum class SlotKey { EMPTY, LOADING }
 
@@ -64,7 +64,7 @@ internal class GuiLoadingIndicator(
             InventorySlot.Builder()
                 .setMaterial(materials[(slotIndex + offset) % materials.size])
                 .setIndex(slotIndex)
-                .editMeta { displayName(translation.gui.loading.component) }
+                .editMeta { displayName(translation.menu.loading.toComponent(locale)) }
                 .build()
         }
     }

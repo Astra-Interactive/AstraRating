@@ -12,7 +12,6 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryOpenEvent
 import ru.astrainteractive.astralibs.coroutines.withTimings
-import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
 import ru.astrainteractive.astralibs.menu.clicker.Click
 import ru.astrainteractive.astralibs.menu.core.clear
 import ru.astrainteractive.astralibs.menu.core.setInventorySlot
@@ -32,7 +31,6 @@ import ru.astrainteractive.astralibs.menu.paginator.model.isLastPage
 import ru.astrainteractive.astralibs.menu.slot.InventorySlot
 import ru.astrainteractive.astralibs.server.permission.asKPermissible
 import ru.astrainteractive.astralibs.server.util.asOnlineMinecraftPlayer
-import ru.astrainteractive.astralibs.string.replace
 import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
 import ru.astrainteractive.astrarating.core.settings.AstraRatingPermission
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
@@ -64,7 +62,6 @@ internal class PlayerRatingsGUI(
     private val router: GuiRouter,
     private val translationKrate: CachedKrate<AstraRatingTranslation>,
     private val configKratre: CachedKrate<AstraRatingConfig>,
-    private val kyoriKrate: CachedKrate<KyoriComponentSerializer>,
     private val dispatchers: KotlinDispatchers,
     private val userRatingsSortMapper: UserRatingsSortMapper
 ) : InventoryMenu() {
@@ -77,25 +74,26 @@ internal class PlayerRatingsGUI(
 
     private val translation by translationKrate
 
+    private val locale = player.locale()
+
     private val guiLoadingIndicator = GuiLoadingIndicator(
         menu = this,
         translation = translationKrate.getValue(),
-        kyori = kyoriKrate.getValue()
+        locale = locale
     )
 
     private val slotContext = SlotContext(
         translationKrate = translationKrate,
         configKrate = configKratre,
-        kyoriKrate = kyoriKrate,
-        menu = this
+        menu = this,
+        locale = locale
     )
 
     private val inventoryMap by lazy { DefaultRatingInventoryLayoutFactory.create() }
 
     private val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
 
-    override var title: Component = kyoriKrate.getValue()
-        .toComponent(translation.gui.playerRatingTitle.replace("%player%", selectedPlayerName))
+    override var title: Component = translation.playerRatingsMenu.title(selectedPlayerName).toComponent(locale)
 
     override val inventorySize: InventorySize = InventorySize.XL
 
@@ -178,15 +176,10 @@ internal class PlayerRatingsGUI(
             return inventoryMap.mapSlotsNotNullIndexed(RatingSlotKey.RATING_ITEM) { itemIndex, slotIndex ->
                 val index = paginator.context.indexOfSlot(itemIndex)
                 val userAndRating = list.getOrNull(index) ?: return@mapSlotsNotNullIndexed null
-                val color = if (userAndRating.rating > 0) {
-                    translation.gui.positiveColor
-                } else {
-                    translation.gui.negativeColor
-                }
                 slotContext.playerRatingsSlot(
                     index = slotIndex,
                     userCreatedReportName = userAndRating.userCreatedReport?.normalName ?: "-",
-                    color = color,
+                    isPositive = userAndRating.rating > 0,
                     message = userAndRating.message,
                     firstPlayed = userAndRating.reportedUser.offlinePlayer.firstPlayed,
                     lastPlayed = userAndRating.reportedUser.offlinePlayer.lastPlayed,

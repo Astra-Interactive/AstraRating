@@ -2,8 +2,6 @@ package ru.astrainteractive.astrarating.command.rating
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import ru.astrainteractive.astralibs.kyori.KyoriComponentSerializer
-import ru.astrainteractive.astralibs.kyori.unwrap
 import ru.astrainteractive.astralibs.server.KCommandDispatcher
 import ru.astrainteractive.astralibs.server.permission.KPermissible
 import ru.astrainteractive.astralibs.server.player.KPlayer
@@ -23,9 +21,8 @@ internal class RatingCommandExecutor(
     private val coroutineScope: CoroutineScope,
     private val dispatchers: KotlinDispatchers,
     private val router: GuiRouter,
-    kyoriKrate: CachedKrate<KyoriComponentSerializer>,
     translationKrate: CachedKrate<AstraRatingTranslation>,
-) : KyoriComponentSerializer by kyoriKrate.unwrap() {
+) {
     private val translation by translationKrate
 
     private fun KPlayer.toPlayerModel(): PlayerModel? {
@@ -56,47 +53,47 @@ internal class RatingCommandExecutor(
         )
         val result = runCatching { addRatingUseCase.invoke(useCaseInput) }
         result.onFailure {
-            input.executor.sendMessage(translation.general.unknownError.component)
+            input.executor.sendMessage(translation.commandError.unknownError)
             it.printStackTrace()
         }
         result.onSuccess {
             when (it) {
                 AddRatingUseCase.Output.AlreadyMaxDayVotes -> {
-                    input.executor.sendMessage(translation.messages.alreadyMaxDayVotes.component)
+                    input.executor.sendMessage(translation.ratingChange.dailyLimit)
                 }
 
                 AddRatingUseCase.Output.AlreadyMaxVotesOnPlayer -> {
-                    input.executor.sendMessage(translation.messages.alreadyMaxPlayerVoted.component)
+                    input.executor.sendMessage(translation.ratingChange.playerLimit)
                 }
 
                 AddRatingUseCase.Output.MessageNotCorrect -> {
-                    input.executor.sendMessage(translation.messages.wrongMessageLen.component)
+                    input.executor.sendMessage(translation.ratingChange.wrongMessageLength)
                 }
 
                 AddRatingUseCase.Output.NoPermission -> {
-                    input.executor.sendMessage(translation.general.noPermission.component)
+                    input.executor.sendMessage(translation.commandError.noPermission)
                 }
 
                 AddRatingUseCase.Output.NotEnoughOnServer -> {
-                    input.executor.sendMessage(translation.messages.notEnoughOnServer.component)
+                    input.executor.sendMessage(translation.ratingChange.notEnoughPlaytime)
                 }
 
                 AddRatingUseCase.Output.PlayerNotExists -> {
-                    input.executor.sendMessage(translation.general.playerNotExist.component)
+                    input.executor.sendMessage(translation.commandError.playerNotFound)
                 }
 
                 AddRatingUseCase.Output.SamePlayer -> {
-                    input.executor.sendMessage(translation.messages.cantRateSelf.component)
+                    input.executor.sendMessage(translation.ratingChange.cannotRateSelf)
                 }
 
                 AddRatingUseCase.Output.Success -> {
                     if (input.value > 0) {
                         input.executor.sendMessage(
-                            translation.messages.likedUser(input.ratedPlayer.name ?: "-").component
+                            translation.ratingChange.liked(input.ratedPlayer.name ?: "-")
                         )
                     } else {
                         input.executor.sendMessage(
-                            translation.messages.dislikedUser(input.ratedPlayer.name ?: "-").component
+                            translation.ratingChange.disliked(input.ratedPlayer.name ?: "-")
                         )
                     }
                 }
