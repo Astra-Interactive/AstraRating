@@ -34,35 +34,35 @@ data class AstraRatingTranslation(
     data class CommandError(
         @SerialName("unknown_error")
         val unknownError: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "&4Неизвестная ошибка")
             translation(MinecraftLocales.EN_US, "&4Unknown error")
+            translation(MinecraftLocales.RU_RU, "&4Неизвестная ошибка")
         },
         @SerialName("wrong_usage")
         val wrongUsage: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&3Неверное использование команды")
                 translation(MinecraftLocales.EN_US, "&3Wrong command usage")
+                translation(MinecraftLocales.RU_RU, "&3Неверное использование команды")
             }
         ),
         @SerialName("no_permission")
         val noPermission: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&4У вас нет прав!")
                 translation(MinecraftLocales.EN_US, "&4You don't have permission!")
+                translation(MinecraftLocales.RU_RU, "&4У вас нет прав!")
             }
         ),
         @SerialName("players_only")
         val playersOnly: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&4Команда доступна только игрокам!")
                 translation(MinecraftLocales.EN_US, "&4Only players can use this command!")
+                translation(MinecraftLocales.RU_RU, "&4Команда доступна только игрокам!")
             }
         ),
         @SerialName("player_not_found")
         val playerNotFound: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&4Такого игрока нет!")
                 translation(MinecraftLocales.EN_US, "&4There is no such player!")
+                translation(MinecraftLocales.RU_RU, "&4Такого игрока нет!")
             }
         )
     )
@@ -72,15 +72,15 @@ data class AstraRatingTranslation(
         @SerialName("started")
         val started: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&3Перезагрузка плагина")
                 translation(MinecraftLocales.EN_US, "&3Reloading the plugin")
+                translation(MinecraftLocales.RU_RU, "&3Перезагрузка плагина")
             }
         ),
         @SerialName("completed")
         val completed: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&3Перезагрузка успешно завершена")
                 translation(MinecraftLocales.EN_US, "&3Reload complete")
+                translation(MinecraftLocales.RU_RU, "&3Перезагрузка успешно завершена")
             }
         )
     )
@@ -91,56 +91,56 @@ data class AstraRatingTranslation(
         @SerialName("liked")
         private val liked: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&3Вы повысили рейтинг игрока %player%")
                 translation(MinecraftLocales.EN_US, "&3You raised the rating of %player%")
+                translation(MinecraftLocales.RU_RU, "&3Вы повысили рейтинг игрока %player%")
             }
         ),
         @SerialName("disliked")
         private val disliked: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&4Вы понизили рейтинг игрока %player%")
                 translation(MinecraftLocales.EN_US, "&4You lowered the rating of %player%")
+                translation(MinecraftLocales.RU_RU, "&4Вы понизили рейтинг игрока %player%")
             }
         ),
         @SerialName("cannot_rate_self")
         val cannotRateSelf: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&4Вы не можете поставить рейтинг самому себе!")
                 translation(MinecraftLocales.EN_US, "&4You can't rate yourself!")
+                translation(MinecraftLocales.RU_RU, "&4Вы не можете поставить рейтинг самому себе!")
             }
         ),
         @SerialName("wrong_message_length")
         val wrongMessageLength: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&4Длина причины рейтинга должна быть в диапазоне [5;30]")
                 translation(MinecraftLocales.EN_US, "&4The rating reason must be [5;30] characters long")
+                translation(MinecraftLocales.RU_RU, "&4Длина причины рейтинга должна быть в диапазоне [5;30]")
             }
         ),
         @SerialName("daily_limit")
         val dailyLimit: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&4Вы уже проголосовали максимальное количество раз за день")
                 translation(MinecraftLocales.EN_US, "&4You have already voted the maximum number of times today")
+                translation(MinecraftLocales.RU_RU, "&4Вы уже проголосовали максимальное количество раз за день")
             }
         ),
         @SerialName("player_limit")
         val playerLimit: LocalizedText = PREFIX.concat(
             LocalizedText.build {
                 translation(
-                    MinecraftLocales.RU_RU,
-                    "&4Сегодня вы выдали максимальное возможное количество голосов этому игроку"
-                )
-                translation(
                     MinecraftLocales.EN_US,
                     "&4You have already given this player the maximum number of votes today"
+                )
+                translation(
+                    MinecraftLocales.RU_RU,
+                    "&4Сегодня вы выдали максимальное возможное количество голосов этому игроку"
                 )
             }
         ),
         @SerialName("not_enough_playtime")
         val notEnoughPlaytime: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&4Вы недостаточно долго были на сервере")
                 translation(MinecraftLocales.EN_US, "&4You haven't played on the server long enough")
+                translation(MinecraftLocales.RU_RU, "&4Вы недостаточно долго были на сервере")
             }
         )
     ) {
@@ -154,14 +154,14 @@ data class AstraRatingTranslation(
         @SerialName("rating_lowered")
         private val ratingLowered: LocalizedText = PREFIX.concat(
             LocalizedText.build {
-                translation(MinecraftLocales.RU_RU, "&7Вы убили игрока %killed_player%, ваш рейтинг был понижен")
                 translation(MinecraftLocales.EN_US, "&7You killed %killed_player%, your rating was lowered")
+                translation(MinecraftLocales.RU_RU, "&7Вы убили игрока %killed_player%, ваш рейтинг был понижен")
             }
         ),
         @SerialName("reason")
         private val reason: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "&7Убил игрока &2%killed_player%")
             translation(MinecraftLocales.EN_US, "&7Killed &2%killed_player%")
+            translation(MinecraftLocales.RU_RU, "&7Убил игрока &2%killed_player%")
         }
     ) {
         fun ratingLowered(playerName: String): LocalizableComponent {
@@ -177,35 +177,35 @@ data class AstraRatingTranslation(
     data class Menu(
         @SerialName("loading")
         val loading: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "&7Загрузка...")
             translation(MinecraftLocales.EN_US, "&7Loading...")
+            translation(MinecraftLocales.RU_RU, "&7Загрузка...")
         },
         @SerialName("previous_page")
         val previousPage: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "&7Пред. страница")
             translation(MinecraftLocales.EN_US, "&7Previous page")
+            translation(MinecraftLocales.RU_RU, "&7Пред. страница")
         },
         @SerialName("next_page")
         val nextPage: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "&7След. страница")
             translation(MinecraftLocales.EN_US, "&7Next page")
+            translation(MinecraftLocales.RU_RU, "&7След. страница")
         },
         @SerialName("close")
         val close: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "&7Закрыть")
             translation(MinecraftLocales.EN_US, "&7Close")
+            translation(MinecraftLocales.RU_RU, "&7Закрыть")
         },
         @SerialName("player_name")
         private val playerName: LocalizedText = LocalizedText.shared("&2%player%"),
         @SerialName("first_connection")
         private val firstConnection: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "&7Впервые зашёл: %time%")
             translation(MinecraftLocales.EN_US, "&7First joined: %time%")
+            translation(MinecraftLocales.RU_RU, "&7Впервые зашёл: %time%")
         },
         @SerialName("last_connection")
         private val lastConnection: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "&7Был в сети: %time%")
             translation(MinecraftLocales.EN_US, "&7Last seen: %time%")
+            translation(MinecraftLocales.RU_RU, "&7Был в сети: %time%")
         },
         @SerialName("positive_value")
         private val positiveValue: LocalizedText = LocalizedText.shared("&2%value%"),
@@ -230,18 +230,18 @@ data class AstraRatingTranslation(
     data class RatingsMenu(
         @SerialName("title")
         val title: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "&2Рейтинг")
             translation(MinecraftLocales.EN_US, "&2Rating")
+            translation(MinecraftLocales.RU_RU, "&2Рейтинг")
         },
         @SerialName("total")
         private val total: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "&7Рейтинг: %rating%")
             translation(MinecraftLocales.EN_US, "&7Rating: %rating%")
+            translation(MinecraftLocales.RU_RU, "&7Рейтинг: %rating%")
         },
         @SerialName("count")
         private val count: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "&7Рейтингов: %count%")
             translation(MinecraftLocales.EN_US, "&7Ratings: %count%")
+            translation(MinecraftLocales.RU_RU, "&7Рейтингов: %count%")
         }
     ) {
         fun total(rating: LocalizableComponent): LocalizableComponent = total.replace("%rating%", rating)
@@ -254,28 +254,28 @@ data class AstraRatingTranslation(
     data class PlayerRatingsMenu(
         @SerialName("title")
         private val title: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "&2Рейтинг игрока %player%")
             translation(MinecraftLocales.EN_US, "&2Rating of %player%")
+            translation(MinecraftLocales.RU_RU, "&2Рейтинг игрока %player%")
         },
         @SerialName("message")
         private val message: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "&7Сообщение: %message%")
             translation(MinecraftLocales.EN_US, "&7Message: %message%")
+            translation(MinecraftLocales.RU_RU, "&7Сообщение: %message%")
         },
         @SerialName("click_to_delete")
         val clickToDelete: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "&4Нажмите ЛКМ чтобы удалить")
             translation(MinecraftLocales.EN_US, "&4Left-click to delete")
+            translation(MinecraftLocales.RU_RU, "&4Нажмите ЛКМ чтобы удалить")
         },
         @SerialName("events_title")
         val eventsTitle: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "&7Остальное")
             translation(MinecraftLocales.EN_US, "&7Other")
+            translation(MinecraftLocales.RU_RU, "&7Остальное")
         },
         @SerialName("kill_count")
         private val killCount: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "&7Количество убийств: &2%kills%")
             translation(MinecraftLocales.EN_US, "&7Kills: &2%kills%")
+            translation(MinecraftLocales.RU_RU, "&7Количество убийств: &2%kills%")
         }
     ) {
         fun title(playerName: String): LocalizableComponent = title.replace("%player%", playerName)
@@ -289,23 +289,23 @@ data class AstraRatingTranslation(
     data class Sort(
         @SerialName("title")
         val title: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "&7Сортировка")
             translation(MinecraftLocales.EN_US, "&7Sort")
+            translation(MinecraftLocales.RU_RU, "&7Сортировка")
         },
         @SerialName("player")
         val player: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "Игроки")
             translation(MinecraftLocales.EN_US, "Players")
+            translation(MinecraftLocales.RU_RU, "Игроки")
         },
         @SerialName("date")
         val date: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "Дата")
             translation(MinecraftLocales.EN_US, "Date")
+            translation(MinecraftLocales.RU_RU, "Дата")
         },
         @SerialName("rating")
         val rating: LocalizedText = LocalizedText.build {
-            translation(MinecraftLocales.RU_RU, "Рейтинг")
             translation(MinecraftLocales.EN_US, "Rating")
+            translation(MinecraftLocales.RU_RU, "Рейтинг")
         },
         @SerialName("option")
         private val option: LocalizedText = LocalizedText.shared("&f%sort%"),
