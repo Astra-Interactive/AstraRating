@@ -7,12 +7,12 @@ import ru.astrainteractive.astralibs.command.api.argumenttype.KPlayerArgumentCon
 import ru.astrainteractive.astralibs.command.api.argumenttype.OnlineKPlayerArgumentConverter
 import ru.astrainteractive.astralibs.command.api.argumenttype.StringArgumentConverter
 import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
+import ru.astrainteractive.astralibs.command.api.exception.NoPlayerException
 import ru.astrainteractive.astralibs.server.bridge.PlatformServer
 import ru.astrainteractive.astralibs.server.player.KPlayer
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
-import ru.astrainteractive.astrarating.command.exception.CommandExceptionHandler
-import ru.astrainteractive.astrarating.command.exception.UnknownPlayerCommandException
 import ru.astrainteractive.astrarating.command.exception.UsageCommandException
+import ru.astrainteractive.astrarating.core.command.CommandExceptionHandler
 
 internal class RatingLiteralArgumentBuilder(
     private val commandExceptionHandler: CommandExceptionHandler,
@@ -35,7 +35,7 @@ internal class RatingLiteralArgumentBuilder(
                 OnlineKPlayerArgumentConverter(platformServer)
             )
         }
-        if (!player.hasPlayedBefore()) throw UnknownPlayerCommandException()
+        if (!player.hasPlayedBefore()) throw NoPlayerException(player.name)
         return player
     }
 
@@ -79,7 +79,7 @@ internal class RatingLiteralArgumentBuilder(
                 KPlayerArgumentConverter(platformServer)
             )
         }
-        if (!player.hasPlayedBefore()) throw UnknownPlayerCommandException()
+        if (!player.hasPlayedBefore()) throw NoPlayerException(player.name ?: "${player.uuid}")
         return player
     }
 

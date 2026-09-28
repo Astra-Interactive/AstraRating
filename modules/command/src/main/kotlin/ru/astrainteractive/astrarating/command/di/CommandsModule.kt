@@ -1,11 +1,9 @@
 package ru.astrainteractive.astrarating.command.di
 
-import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
 import ru.astrainteractive.astralibs.command.api.registrar.CommandRegistrarContext
 import ru.astrainteractive.astralibs.command.api.registrar.registerWhenReady
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.server.bridge.PlatformServer
-import ru.astrainteractive.astrarating.command.exception.CommandExceptionHandler
 import ru.astrainteractive.astrarating.command.rating.RatingCommandExecutor
 import ru.astrainteractive.astrarating.command.rating.RatingLiteralArgumentBuilder
 import ru.astrainteractive.astrarating.command.reload.ReloadLiteralArgumentBuilder
@@ -17,7 +15,6 @@ import ru.astrainteractive.astrarating.feature.rating.change.di.RatingChangeModu
 class CommandsModule(
     private val commandRegistrarContext: CommandRegistrarContext,
     private val lifecyclePlugin: Lifecycle,
-    private val multiplatformCommand: MultiplatformCommand,
     private val coreModule: CoreModule,
     guiModule: GuiModule,
     platformServer: PlatformServer,
@@ -25,15 +22,13 @@ class CommandsModule(
 ) {
     private val nodes = listOf(
         ReloadLiteralArgumentBuilder(
-            multiplatformCommand = multiplatformCommand,
+            multiplatformCommand = coreModule.multiplatformCommand,
+            commandExceptionHandler = coreModule.commandExceptionHandler,
             lifecyclePlugin = lifecyclePlugin,
             translationKrate = coreModule.translationKrate
         ).create(),
         RatingLiteralArgumentBuilder(
-            commandExceptionHandler = CommandExceptionHandler(
-                translationKrate = coreModule.translationKrate,
-                multiplatformCommand = multiplatformCommand
-            ),
+            commandExceptionHandler = coreModule.commandExceptionHandler,
             ratingCommandExecutor = RatingCommandExecutor(
                 addRatingUseCase = ratingChangeModule.addRatingUseCase,
                 translationKrate = coreModule.translationKrate,
@@ -41,7 +36,7 @@ class CommandsModule(
                 dispatchers = coreModule.dispatchers,
                 router = guiModule.router
             ),
-            multiplatformCommand = multiplatformCommand,
+            multiplatformCommand = coreModule.multiplatformCommand,
             platformServer = platformServer,
         ).create()
     )

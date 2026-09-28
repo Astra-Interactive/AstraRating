@@ -25,6 +25,7 @@ class RootModule(plugin: LifecyclePlugin) {
         CoreModule(
             dataFolder = plugin.dataFolder,
             dispatchers = DefaultBukkitDispatchers(plugin),
+            multiplatformCommand = MultiplatformCommand(PaperMultiplatformCommands()),
         )
     }
     private val bukkitModule: BukkitModule by lazy {
@@ -103,7 +104,6 @@ class RootModule(plugin: LifecyclePlugin) {
                 mainScope = coreModule.unconfinedScope,
                 plugin = plugin
             ),
-            multiplatformCommand = MultiplatformCommand(PaperMultiplatformCommands()),
             lifecyclePlugin = plugin,
             platformServer = BukkitPlatformServer()
         )

@@ -4,10 +4,12 @@ import com.charleskorn.kaml.PolymorphismStyle
 import com.charleskorn.kaml.Yaml
 import kotlinx.coroutines.cancel
 import kotlinx.serialization.StringFormat
+import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
 import ru.astrainteractive.astralibs.coroutines.withTimings
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.util.YamlStringFormat
 import ru.astrainteractive.astralibs.util.parseOrWriteIntoDefault
+import ru.astrainteractive.astrarating.core.command.CommandExceptionHandler
 import ru.astrainteractive.astrarating.core.migration.ConfigSnakeCaseMigration
 import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
@@ -22,6 +24,7 @@ import java.io.File
 class CoreModule(
     dataFolder: File,
     val dispatchers: KotlinDispatchers,
+    val multiplatformCommand: MultiplatformCommand,
 ) : Logger by JUtiltLogger("AstraRating-CoreModule") {
 
     val yamlStringFormat: StringFormat by lazy {
@@ -43,6 +46,11 @@ class CoreModule(
             )
         }
     ).asStateFlowMutableKrate()
+
+    val commandExceptionHandler = CommandExceptionHandler(
+        multiplatformCommand = multiplatformCommand,
+        translationKrate = translationKrate
+    )
 
     val configKrate = DefaultMutableKrate(
         factory = ::AstraRatingConfig,
