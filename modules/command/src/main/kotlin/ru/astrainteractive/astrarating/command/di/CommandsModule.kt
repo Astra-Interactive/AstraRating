@@ -4,7 +4,6 @@ import ru.astrainteractive.astralibs.command.api.registrar.CommandRegistrarConte
 import ru.astrainteractive.astralibs.command.api.registrar.registerWhenReady
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.server.bridge.PlatformServer
-import ru.astrainteractive.astrarating.command.exception.CommandExceptionHandler
 import ru.astrainteractive.astrarating.command.rating.RatingCommandExecutor
 import ru.astrainteractive.astrarating.command.rating.RatingLiteralArgumentBuilder
 import ru.astrainteractive.astrarating.command.reload.ReloadLiteralArgumentBuilder
@@ -28,10 +27,7 @@ class CommandsModule(
             translationKrate = coreModule.translationKrate
         ).create(),
         RatingLiteralArgumentBuilder(
-            commandExceptionHandler = CommandExceptionHandler(
-                translationKrate = coreModule.translationKrate,
-                multiplatformCommand = coreModule.multiplatformCommand
-            ),
+            commandExceptionHandler = coreModule.commandExceptionHandler,
             ratingCommandExecutor = RatingCommandExecutor(
                 addRatingUseCase = ratingChangeModule.addRatingUseCase,
                 translationKrate = coreModule.translationKrate,

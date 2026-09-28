@@ -1,4 +1,4 @@
-package ru.astrainteractive.astrarating.command.exception
+package ru.astrainteractive.astrarating.core.command
 
 import com.mojang.brigadier.context.CommandContext
 import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand
@@ -14,7 +14,7 @@ import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 
-internal class CommandExceptionHandler(
+class CommandExceptionHandler(
     private val multiplatformCommand: MultiplatformCommand,
     translationKrate: CachedKrate<AstraRatingTranslation>,
 ) : Logger by JUtiltLogger("AstraRating-CommandExceptionHandler") {

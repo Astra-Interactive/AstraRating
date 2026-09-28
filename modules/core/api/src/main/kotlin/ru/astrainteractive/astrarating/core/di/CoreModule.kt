@@ -9,6 +9,7 @@ import ru.astrainteractive.astralibs.coroutines.withTimings
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.util.YamlStringFormat
 import ru.astrainteractive.astralibs.util.parseOrWriteIntoDefault
+import ru.astrainteractive.astrarating.core.command.CommandExceptionHandler
 import ru.astrainteractive.astrarating.core.migration.ConfigSnakeCaseMigration
 import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
@@ -45,6 +46,11 @@ class CoreModule(
             )
         }
     ).asStateFlowMutableKrate()
+
+    val commandExceptionHandler = CommandExceptionHandler(
+        multiplatformCommand = multiplatformCommand,
+        translationKrate = translationKrate
+    )
 
     val configKrate = DefaultMutableKrate(
         factory = ::AstraRatingConfig,
