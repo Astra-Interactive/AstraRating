@@ -26,10 +26,7 @@ internal class CommandExceptionHandler(
             is BadArgumentException -> translation.commandError.wrongUsage
             is ArgumentConverterException -> translation.commandError.wrongUsage
             is NoPermissionException -> translation.commandError.noPermission
-            is UnknownPlayerCommandException,
             is NoPlayerException -> translation.commandError.playerNotFound
-
-            is OnlyPlayerCommandException -> translation.commandError.playersOnly
             else -> {
                 error(t) { "#handle unhandled exception ${t.message}" }
                 translation.commandError.unknownError
