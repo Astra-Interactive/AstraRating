@@ -11,7 +11,7 @@ import ru.astrainteractive.astralibs.command.api.brigadier.sender.KCommandSender
  * Builds plain Brigadier nodes and attributes every command to [sender]. A `null` [sender] fails like a platform
  * that cannot wrap the source, e.g. a command block.
  */
-internal class FakeMultiplatformCommands(
+class FakeMultiplatformCommands(
     private val sender: KCommandSender?
 ) : MultiplatformCommands {
     override fun literal(literal: String): LiteralArgumentBuilder<Any> {

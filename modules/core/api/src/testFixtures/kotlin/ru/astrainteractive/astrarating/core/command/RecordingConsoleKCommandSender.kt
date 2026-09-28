@@ -6,8 +6,10 @@ import ru.astrainteractive.astralibs.localization.component.LocalizableComponent
 import ru.astrainteractive.astralibs.server.permission.Permission
 import java.util.Locale
 
-/** A console without any permission that keeps every message sent to it. */
-internal class RecordingConsoleKCommandSender : ConsoleKCommandSender {
+/** A console that holds only [grantedPermissions] and keeps every message sent to it. */
+class RecordingConsoleKCommandSender(
+    private val grantedPermissions: Set<Permission>
+) : ConsoleKCommandSender {
     val messages = mutableListOf<LocalizableComponent>()
 
     override val locale: Locale = Locale.ROOT
@@ -20,7 +22,7 @@ internal class RecordingConsoleKCommandSender : ConsoleKCommandSender {
         messages.add(message)
     }
 
-    override fun hasPermission(permission: Permission): Boolean = false
+    override fun hasPermission(permission: Permission): Boolean = permission in grantedPermissions
 
     override fun maxPermissionSize(permission: Permission): Int? = null
 

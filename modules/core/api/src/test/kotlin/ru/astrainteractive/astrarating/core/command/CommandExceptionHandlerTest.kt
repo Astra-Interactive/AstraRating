@@ -23,7 +23,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class CommandExceptionHandlerTest {
-    private val sender = RecordingConsoleKCommandSender()
+    private val sender = RecordingConsoleKCommandSender(grantedPermissions = emptySet())
     private val multiplatformCommand = MultiplatformCommand(FakeMultiplatformCommands(sender))
     private val translationKrate = DefaultMutableKrate(
         factory = ::AstraRatingTranslation,
