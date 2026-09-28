@@ -64,6 +64,13 @@ data class AstraRatingTranslation(
                 translation(MinecraftLocales.EN_US, "&4There is no such player!")
                 translation(MinecraftLocales.RU_RU, "&4Такого игрока нет!")
             }
+        ),
+        @SerialName("invalid_argument")
+        val invalidArgument: LocalizedText = PREFIX.concat(
+            LocalizedText.build {
+                translation(MinecraftLocales.EN_US, "&4Invalid argument value!")
+                translation(MinecraftLocales.RU_RU, "&4Неверное значение аргумента!")
+            }
         )
     )
 

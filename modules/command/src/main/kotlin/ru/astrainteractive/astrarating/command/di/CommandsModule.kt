@@ -23,6 +23,7 @@ class CommandsModule(
     private val nodes = listOf(
         ReloadLiteralArgumentBuilder(
             multiplatformCommand = coreModule.multiplatformCommand,
+            commandExceptionHandler = coreModule.commandExceptionHandler,
             lifecyclePlugin = lifecyclePlugin,
             translationKrate = coreModule.translationKrate
         ).create(),
