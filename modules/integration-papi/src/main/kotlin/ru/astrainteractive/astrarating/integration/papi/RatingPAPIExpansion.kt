@@ -21,6 +21,13 @@ internal class RatingPAPIExpansion(
     )
 
     /**
+     * The plugin registers this expansion itself, so `/papi reload` must keep it:
+     * PlaceholderAPI unregisters every expansion that does not persist and only loads
+     * the ones from its expansions folder again.
+     */
+    override fun persist(): Boolean = true
+
+    /**
      * erating_RomaRoman
      * erating_rating
      */
