@@ -2,7 +2,6 @@
 
 package ru.astrainteractive.astrarating.integration.papi
 
-import kotlinx.coroutines.test.TestScope
 import ru.astrainteractive.astrarating.data.dao.fake.FakeRatingCachedDao
 import ru.astrainteractive.astrarating.integration.papi.di.PapiDependencies
 import ru.astrainteractive.astrarating.integration.papi.model.PapiConfig
@@ -16,8 +15,7 @@ internal class RatingPAPIExpansionTest {
         val expansion = RatingPAPIExpansion(
             dependencies = PapiDependencies.Default(
                 ratingCachedDao = FakeRatingCachedDao(ratings = emptyMap()),
-                getPapiConfiguration = { PapiConfig(colorings = emptyList()) },
-                scope = TestScope()
+                getPapiConfiguration = { PapiConfig(colorings = emptyList()) }
             )
         )
 
@@ -29,8 +27,7 @@ internal class RatingPAPIExpansionTest {
         val expansion = RatingPAPIExpansion(
             dependencies = PapiDependencies.Default(
                 ratingCachedDao = FakeRatingCachedDao(ratings = emptyMap()),
-                getPapiConfiguration = { PapiConfig(colorings = emptyList()) },
-                scope = TestScope()
+                getPapiConfiguration = { PapiConfig(colorings = emptyList()) }
             )
         )
 
