@@ -11,6 +11,8 @@ interface KCache<K : Any, V : Any> {
 
     fun getIfPresent(key: K): V?
 
+    fun refresh(key: K)
+
     fun invalidate(key: K)
 
     fun invalidateAll()
@@ -47,8 +49,10 @@ class Cache4kCache<K : Any, V : Any>(
         }
     }
 
-    private fun refresh(key: K) = coroutineScope.launch {
-        refreshAndGet(key)
+    override fun refresh(key: K) {
+        coroutineScope.launch {
+            refreshAndGet(key)
+        }
     }
 
     override suspend fun get(key: K): V? {
