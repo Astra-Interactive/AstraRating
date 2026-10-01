@@ -7,7 +7,7 @@ import ru.astrainteractive.astrarating.core.di.BukkitModule
 import ru.astrainteractive.astrarating.core.di.CoreModule
 import ru.astrainteractive.astrarating.data.dao.di.RatingDaoModule
 import ru.astrainteractive.astrarating.event.kill.KillEventListener
-import ru.astrainteractive.astrarating.event.login.LoginEventListener
+import ru.astrainteractive.astrarating.event.login.LoginEvent
 
 class EventModule(
     coreModule: CoreModule,
@@ -24,15 +24,15 @@ class EventModule(
         )
     }
 
-    private val loginEvent by lazy {
-        LoginEventListener(
-            ratingCachedDao = ratingDaoModule.ratingCachedDao,
-            scope = coreModule.ioScope
-        )
-    }
+    @Suppress("UnusedPrivateProperty")
+    private val loginEvent = LoginEvent(
+        plugin = bukkitModule.plugin,
+        ratingCachedDao = ratingDaoModule.ratingCachedDao,
+        mainScope = coreModule.mainScope
+    )
 
     private val events: List<EventListener>
-        get() = listOf(killEvent, loginEvent)
+        get() = listOf(killEvent)
 
     val lifecycle: Lifecycle by lazy {
         Lifecycle.Lambda(
