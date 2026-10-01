@@ -13,13 +13,9 @@ interface RatingCachedDao {
      */
     fun getPlayerRating(name: String, uuid: UUID): Int
 
-    /**
-     * Loads the rating of an online player and keeps it until [release], so reading it never misses the cache.
-     * A player who is not kept is dropped after a short idle time.
-     */
-    fun keep(uuid: UUID)
+    fun markOnline(uuid: UUID)
 
-    fun release(uuid: UUID)
+    fun markOffline(uuid: UUID)
 
     fun clear()
 }

@@ -46,7 +46,7 @@ internal class RatingCachedDaoImplTest {
         ratingDao.setRatings(tester, listOf(rating(5, RatingType.USER_RATING), rating(-2, RatingType.PLAYER_KILL)))
         val dao = createDao()
 
-        dao.keep(tester)
+        dao.markOnline(tester)
         runCurrent()
 
         assertEquals(3, dao.getPlayerRating("Tester", tester))
@@ -56,7 +56,7 @@ internal class RatingCachedDaoImplTest {
     fun GIVEN_online_player_missing_from_database_WHEN_rating_is_read_THEN_returns_zero() = runTest {
         val dao = createDao()
 
-        dao.keep(tester)
+        dao.markOnline(tester)
         runCurrent()
 
         assertEquals(0, dao.getPlayerRating("Tester", tester))
@@ -66,12 +66,12 @@ internal class RatingCachedDaoImplTest {
     fun GIVEN_player_left_and_rating_changed_WHEN_player_joins_again_THEN_returns_new_rating() = runTest {
         ratingDao.setRatings(tester, listOf(rating(3, RatingType.USER_RATING)))
         val dao = createDao()
-        dao.keep(tester)
+        dao.markOnline(tester)
         runCurrent()
-        dao.release(tester)
+        dao.markOffline(tester)
         ratingDao.setRatings(tester, listOf(rating(7, RatingType.USER_RATING)))
 
-        dao.keep(tester)
+        dao.markOnline(tester)
         runCurrent()
 
         assertEquals(7, dao.getPlayerRating("Tester", tester))
@@ -81,12 +81,12 @@ internal class RatingCachedDaoImplTest {
     fun GIVEN_player_left_before_rating_loaded_WHEN_player_joins_again_THEN_returns_new_rating() = runTest {
         ratingDao.setRatings(tester, listOf(rating(3, RatingType.USER_RATING)))
         val dao = createDao()
-        dao.keep(tester)
-        dao.release(tester)
+        dao.markOnline(tester)
+        dao.markOffline(tester)
         runCurrent()
         ratingDao.setRatings(tester, listOf(rating(7, RatingType.USER_RATING)))
 
-        dao.keep(tester)
+        dao.markOnline(tester)
         runCurrent()
 
         assertEquals(7, dao.getPlayerRating("Tester", tester))

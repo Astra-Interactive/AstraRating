@@ -7,23 +7,21 @@ import org.bukkit.plugin.Plugin
 import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.astrarating.data.dao.RatingCachedDao
 
-/** Keeps the cached rating of every online player, so the rating placeholder never shows a cold 0 for them. */
 internal class PlayerPresenceListener(
     private val ratingCachedDao: RatingCachedDao
 ) : EventListener {
     override fun onEnable(plugin: Plugin) {
         super.onEnable(plugin)
-        // Players who are online when the plugin enables never send a join event
-        plugin.server.onlinePlayers.forEach { player -> ratingCachedDao.keep(player.uniqueId) }
+        plugin.server.onlinePlayers.forEach { player -> ratingCachedDao.markOnline(player.uniqueId) }
     }
 
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
-        ratingCachedDao.keep(event.player.uniqueId)
+        ratingCachedDao.markOnline(event.player.uniqueId)
     }
 
     @EventHandler
     fun onPlayerQuit(event: PlayerQuitEvent) {
-        ratingCachedDao.release(event.player.uniqueId)
+        ratingCachedDao.markOffline(event.player.uniqueId)
     }
 }

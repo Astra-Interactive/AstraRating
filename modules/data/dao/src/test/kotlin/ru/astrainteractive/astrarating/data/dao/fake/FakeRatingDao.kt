@@ -8,7 +8,6 @@ import ru.astrainteractive.astrarating.data.exposed.dto.UserRatingDTO
 import ru.astrainteractive.astrarating.data.exposed.model.UserModel
 import java.util.UUID
 
-/** Answers only the ratings of a player; the cached rating reads nothing else. */
 internal class FakeRatingDao : RatingDao {
     private val ratingsByPlayer = mutableMapOf<UUID, List<UserRatingDTO>>()
 

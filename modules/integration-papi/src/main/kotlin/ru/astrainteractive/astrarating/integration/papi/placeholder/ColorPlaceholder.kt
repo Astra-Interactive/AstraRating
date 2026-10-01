@@ -23,7 +23,7 @@ internal class ColorPlaceholder(
             name ?: return@Cache4kCache ""
             val rating = ratingCachedDao.getPlayerRating(name, uuid)
 
-            ColoringUtil.getColoringByRating(
+            ColoringUtil.findColoringByRating(
                 colorings = papiConfiguration.colorings,
                 rating = rating
             )?.color.orEmpty()

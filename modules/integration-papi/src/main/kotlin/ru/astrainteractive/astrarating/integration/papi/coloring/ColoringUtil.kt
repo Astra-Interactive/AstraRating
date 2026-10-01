@@ -1,10 +1,7 @@
 package ru.astrainteractive.astrarating.integration.papi.coloring
 
 internal object ColoringUtil {
-    /**
-     * @return null when no coloring covers [rating], as with the default empty `papi.yml`
-     */
-    fun getColoringByRating(colorings: Collection<Coloring>, rating: Int): Coloring? {
+    fun findColoringByRating(colorings: Collection<Coloring>, rating: Int): Coloring? {
         val sorted = colorings.filter {
             when (it) {
                 is Coloring.Equals -> it.value == rating

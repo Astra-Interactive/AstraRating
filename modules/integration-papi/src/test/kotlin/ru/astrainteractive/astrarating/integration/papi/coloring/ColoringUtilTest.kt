@@ -8,7 +8,7 @@ import kotlin.test.assertNull
 internal class ColoringUtilTest {
     @Test
     fun GIVEN_no_colorings_WHEN_coloring_is_chosen_THEN_none_is_returned() {
-        val coloring = ColoringUtil.getColoringByRating(colorings = emptyList(), rating = 0)
+        val coloring = ColoringUtil.findColoringByRating(colorings = emptyList(), rating = 0)
 
         assertNull(coloring)
     }
@@ -20,7 +20,7 @@ internal class ColoringUtilTest {
             Coloring.More(value = 0, color = "#00FF00")
         )
 
-        val coloring = ColoringUtil.getColoringByRating(colorings = colorings, rating = 0)
+        val coloring = ColoringUtil.findColoringByRating(colorings = colorings, rating = 0)
 
         assertNull(coloring)
     }
