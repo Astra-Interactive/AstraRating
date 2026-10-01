@@ -30,8 +30,11 @@ internal class RatingPAPIExpansion(
     /**
      * erating_RomaRoman
      * erating_rating
+     *
+     * @return null without a player, so PlaceholderAPI leaves the placeholder as it is: every value belongs to a player
      */
-    override fun onRequest(player: OfflinePlayer, params: String): String {
+    override fun onRequest(player: OfflinePlayer?, params: String): String? {
+        player ?: return null
         val placeholder = placeholders.firstOrNull { it.key == params }
         return placeholder?.asPlaceholder(player).orEmpty()
     }
