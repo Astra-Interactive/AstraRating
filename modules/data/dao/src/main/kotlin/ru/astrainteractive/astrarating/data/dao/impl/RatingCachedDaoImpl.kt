@@ -11,34 +11,22 @@ internal class RatingCachedDaoImpl(
     private val databaseApi: RatingDao,
     scope: CoroutineScope
 ) : RatingCachedDao {
-    private val jcache = Cache4kCache<PlayerData, RatingData>(
-        expiresAfterAccess = 30.seconds,
+    private val ratings = Cache4kCache<UUID, Int>(
+        maximumSize = 1_000L,
         updateAfterAccess = 10.seconds,
-        maximumSize = 100L,
         coroutineScope = scope,
-        update = { playerData ->
-            val rating = databaseApi.fetchUserRatings(playerData.uuid)
-                .getOrNull()
-                ?.sumOf { userRatingDTO -> userRatingDTO.rating }
-                ?: 0
-            RatingData(rating)
-        }
+        update = { uuid -> databaseApi.fetchUserTotalRating(uuid).getOrNull() }
     )
 
-    @JvmInline
-    private value class RatingData(val rating: Int)
-    private data class PlayerData(val name: String, val uuid: UUID)
+    override fun getPlayerRating(uuid: UUID): Int {
+        return ratings.getIfPresent(uuid) ?: 0
+    }
 
-    override fun getPlayerRating(name: String, uuid: UUID): Int {
-        return jcache.getIfPresent(
-            PlayerData(
-                name,
-                uuid
-            )
-        )?.rating ?: 0
+    override suspend fun loadPlayerRating(uuid: UUID) {
+        ratings.refresh(uuid).join()
     }
 
     override fun clear() {
-        jcache.invalidateAll()
+        ratings.invalidateAll()
     }
 }

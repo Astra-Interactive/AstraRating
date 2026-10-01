@@ -2,6 +2,7 @@ package ru.astrainteractive.astrarating.core.cache
 
 import io.github.reactivecircus.cache4k.Cache
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -10,6 +11,8 @@ interface KCache<K : Any, V : Any> {
     suspend fun get(key: K): V?
 
     fun getIfPresent(key: K): V?
+
+    fun refresh(key: K): Job
 
     fun invalidateAll()
 }
@@ -45,7 +48,7 @@ class Cache4kCache<K : Any, V : Any>(
         }
     }
 
-    private fun refresh(key: K) = coroutineScope.launch {
+    override fun refresh(key: K): Job = coroutineScope.launch {
         refreshAndGet(key)
     }
 

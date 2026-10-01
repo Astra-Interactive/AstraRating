@@ -7,11 +7,12 @@ import java.util.UUID
  */
 interface RatingCachedDao {
     /**
-     * @param name - name of the player
      * @param uuid - uuid of the player
      * @return rating of player or 0 if it's not cached
      */
-    fun getPlayerRating(name: String, uuid: UUID): Int
+    fun getPlayerRating(uuid: UUID): Int
+
+    suspend fun loadPlayerRating(uuid: UUID)
 
     fun clear()
 }

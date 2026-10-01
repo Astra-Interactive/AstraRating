@@ -1,8 +1,7 @@
 package ru.astrainteractive.astrarating.integration.papi.coloring
 
 internal object ColoringUtil {
-    fun getColoringByRating(colorings: Collection<Coloring>, rating: Int): Coloring {
-        check(colorings.isNotEmpty()) { "coloring is empty" }
+    fun findColoringByRating(colorings: Collection<Coloring>, rating: Int): Coloring? {
         val sorted = colorings.filter {
             when (it) {
                 is Coloring.Equals -> it.value == rating
@@ -11,9 +10,9 @@ internal object ColoringUtil {
             }
         }.sortedBy { it.value }
         return if (rating < 0) {
-            sorted.first()
+            sorted.firstOrNull()
         } else {
-            sorted.last()
+            sorted.lastOrNull()
         }
     }
 }

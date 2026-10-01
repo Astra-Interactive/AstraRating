@@ -126,20 +126,22 @@ internal class RatingDaoImpl(
                     otherTable = UserTable,
                     onColumn = UserRatingTable.userCreatedReport,
                     otherColumn = UserTable.id,
-                    joinType = JoinType.INNER,
+                    joinType = JoinType.LEFT,
                 )
                 .selectAll()
                 .where { UserRatingTable.reportedUser.eq(reportedUser.id) }
                 .map {
                     UserRatingDTO(
-                        id = it[UserTable.id].value,
+                        id = it[UserRatingTable.id].value,
                         reportedUser = reportedUser,
-                        userCreatedReport = UserDTO(
-                            id = it[UserTable.id].value,
-                            minecraftName = it[UserTable.minecraftName],
-                            minecraftUUID = it[UserTable.minecraftUUID],
-                            lastUpdated = it[UserTable.lastUpdated]
-                        ),
+                        userCreatedReport = it[UserRatingTable.userCreatedReport]?.let { reporterId ->
+                            UserDTO(
+                                id = reporterId.value,
+                                minecraftName = it[UserTable.minecraftName],
+                                minecraftUUID = it[UserTable.minecraftUUID],
+                                lastUpdated = it[UserTable.lastUpdated]
+                            )
+                        },
                         time = it[UserRatingTable.time],
                         rating = it[UserRatingTable.rating],
                         ratingType = RatingType.entries
@@ -149,6 +151,25 @@ internal class RatingDaoImpl(
 
                     )
                 }
+        }
+    }.logFailure()
+
+    override suspend fun fetchUserTotalRating(playerUUID: UUID) = runCatching {
+        transaction(requireDatabase()) {
+            val ratingsSum = UserRatingTable.rating.sum()
+
+            UserRatingTable
+                .join(
+                    otherTable = UserTable,
+                    onColumn = UserRatingTable.reportedUser,
+                    otherColumn = UserTable.id,
+                    joinType = JoinType.INNER,
+                )
+                .select(ratingsSum)
+                .where { UserTable.minecraftUUID.eq(playerUUID.toString()) }
+                .firstOrNull()
+                ?.get(ratingsSum)
+                ?: 0
         }
     }.logFailure()
 

@@ -50,7 +50,6 @@ class RootModule(plugin: LifecyclePlugin) {
     private val papiModule: PapiModule by lazy {
         PapiModule(
             ratingCachedDao = ratingDaoModule.ratingCachedDao,
-            scope = coreModule.ioScope,
             dataFolder = bukkitModule.plugin.dataFolder,
             yamlStringFormat = coreModule.yamlStringFormat
         )

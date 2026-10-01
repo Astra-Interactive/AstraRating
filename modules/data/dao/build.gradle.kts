@@ -19,5 +19,6 @@ dependencies {
     implementation(projects.modules.data.exposed)
 
     testImplementation(libs.driver.jdbc)
+    testImplementation(libs.kotlin.coroutines.test)
     testImplementation(libs.tests.kotlin.test)
 }

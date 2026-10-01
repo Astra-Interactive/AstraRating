@@ -31,7 +31,8 @@ internal class RatingPAPIExpansion(
      * erating_RomaRoman
      * erating_rating
      */
-    override fun onRequest(player: OfflinePlayer, params: String): String {
+    override fun onRequest(player: OfflinePlayer?, params: String): String? {
+        player ?: return null
         val placeholder = placeholders.firstOrNull { it.key == params }
         return placeholder?.asPlaceholder(player).orEmpty()
     }

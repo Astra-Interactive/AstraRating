@@ -1,6 +1,5 @@
 package ru.astrainteractive.astrarating.integration.papi.di
 
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.StringFormat
 import org.bukkit.Bukkit
 import ru.astrainteractive.astralibs.expansion.PlaceholderExpansionFacade
@@ -17,7 +16,6 @@ import java.io.File
 
 class PapiModule(
     ratingCachedDao: RatingCachedDao,
-    scope: CoroutineScope,
     dataFolder: File,
     yamlStringFormat: StringFormat
 ) : Logger by JUtiltLogger("AstraRating-PapiModule") {
@@ -38,7 +36,6 @@ class PapiModule(
         PapiFactory(
             dependencies = PapiDependencies.Default(
                 ratingCachedDao = ratingCachedDao,
-                scope = scope,
                 getPapiConfiguration = { papiConfiguration.cachedValue }
             )
         ).create()

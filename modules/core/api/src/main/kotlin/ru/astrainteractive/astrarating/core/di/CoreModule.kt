@@ -76,6 +76,7 @@ class CoreModule(
             onDisable = {
                 unconfinedScope.cancel()
                 ioScope.cancel()
+                mainScope.cancel()
             }
         )
     }
