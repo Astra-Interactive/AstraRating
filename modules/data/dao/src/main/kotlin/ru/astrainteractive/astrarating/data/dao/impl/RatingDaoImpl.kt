@@ -132,7 +132,7 @@ internal class RatingDaoImpl(
                 .where { UserRatingTable.reportedUser.eq(reportedUser.id) }
                 .map {
                     UserRatingDTO(
-                        id = it[UserTable.id].value,
+                        id = it[UserRatingTable.id].value,
                         reportedUser = reportedUser,
                         userCreatedReport = UserDTO(
                             id = it[UserTable.id].value,

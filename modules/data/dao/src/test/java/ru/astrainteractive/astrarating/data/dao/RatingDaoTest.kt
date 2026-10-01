@@ -11,6 +11,7 @@ import ru.astrainteractive.astrarating.data.dao.di.RatingDaoModule
 import ru.astrainteractive.astrarating.data.exposed.db.rating.di.DBRatingModule
 import ru.astrainteractive.astrarating.data.exposed.db.rating.model.DbRatingConfiguration
 import ru.astrainteractive.astrarating.data.exposed.dto.RatingType
+import ru.astrainteractive.astrarating.data.exposed.dto.UserDTO
 import ru.astrainteractive.astrarating.data.exposed.model.UserModel
 import ru.astrainteractive.klibs.mikro.exposed.model.DatabaseConfiguration
 import java.nio.file.Files
@@ -41,6 +42,12 @@ class RatingDaoTest {
         )
 
     private fun getTempFolder() = Files.createTempDirectory("dir").toFile()
+
+    private suspend fun insertRandomUser(): UserDTO {
+        val user = randomUser
+        api.insertUser(user).getOrThrow()
+        return api.selectUser(user.minecraftUUID).getOrThrow()
+    }
 
     @AfterTest
     fun destroy(): Unit = runBlocking {
@@ -133,14 +140,8 @@ class RatingDaoTest {
 
     @Test
     fun GIVEN_rating_without_reporter_WHEN_total_ratings_are_fetched_THEN_it_is_counted(): Unit = runBlocking {
-        val killer = randomUser.let { user ->
-            api.insertUser(user).getOrThrow()
-            api.selectUser(user.minecraftUUID).getOrThrow()
-        }
-        val reporter = randomUser.let { user ->
-            api.insertUser(user).getOrThrow()
-            api.selectUser(user.minecraftUUID).getOrThrow()
-        }
+        val killer = insertRandomUser()
+        val reporter = insertRandomUser()
         api.insertUserRating(
             reporter = reporter,
             reported = killer,
@@ -162,4 +163,35 @@ class RatingDaoTest {
 
         assertEquals(3, killerRating.ratingTotal)
     }
+
+    @Test
+    fun GIVEN_ratings_from_two_reporters_WHEN_one_fetched_rating_is_deleted_THEN_only_it_is_removed(): Unit =
+        runBlocking {
+            val reportedUser = insertRandomUser()
+            api.insertUserRating(
+                reporter = insertRandomUser(),
+                reported = reportedUser,
+                message = "first",
+                type = RatingType.USER_RATING,
+                ratingValue = 1
+            ).getOrThrow()
+            api.insertUserRating(
+                reporter = insertRandomUser(),
+                reported = reportedUser,
+                message = "second",
+                type = RatingType.USER_RATING,
+                ratingValue = -1
+            ).getOrThrow()
+            val reportedUuid = UUID.fromString(reportedUser.minecraftUUID)
+
+            val firstRating = api.fetchUserRatings(reportedUuid)
+                .getOrThrow()
+                .single { rating -> rating.message == "first" }
+            api.deleteUserRating(firstRating).getOrThrow()
+
+            val remainingMessages = api.fetchUserRatings(reportedUuid)
+                .getOrThrow()
+                .map { rating -> rating.message }
+            assertEquals(listOf("second"), remainingMessages)
+        }
 }
