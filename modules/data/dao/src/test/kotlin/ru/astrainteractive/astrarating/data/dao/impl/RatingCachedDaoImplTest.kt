@@ -6,71 +6,99 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import ru.astrainteractive.astrarating.data.dao.fake.FakeRatingDao
-import ru.astrainteractive.astrarating.data.exposed.dto.RatedUserDTO
+import ru.astrainteractive.astrarating.data.exposed.dto.RatingType
 import ru.astrainteractive.astrarating.data.exposed.dto.UserDTO
+import ru.astrainteractive.astrarating.data.exposed.dto.UserRatingDTO
 import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 internal class RatingCachedDaoImplTest {
     private val tester = UUID.fromString("f3d28cb0-7225-3cb1-baeb-2dadd2be89ae")
-    private val reporter = UUID.fromString("00000000-0000-0000-0000-000000000001")
+    private val ratingDao = FakeRatingDao()
 
-    private fun ratedUser(uuid: UUID, name: String, ratingTotal: Int): RatedUserDTO {
-        return RatedUserDTO(
-            userDTO = UserDTO(
+    private fun rating(value: Int, type: RatingType): UserRatingDTO {
+        return UserRatingDTO(
+            id = 1L,
+            userCreatedReport = null,
+            reportedUser = UserDTO(
                 id = 1L,
-                minecraftUUID = uuid.toString(),
-                minecraftName = name,
+                minecraftUUID = tester.toString(),
+                minecraftName = "Tester",
                 lastUpdated = 0L
             ),
-            ratingTotal = ratingTotal,
-            ratingCounts = 1L
+            rating = value,
+            message = "",
+            ratingType = type,
+            time = 0L
         )
     }
 
-    private fun TestScope.createLoadedDao(usersTotalRating: Result<List<RatedUserDTO>>): RatingCachedDaoImpl {
-        val dao = RatingCachedDaoImpl(
-            databaseApi = FakeRatingDao(usersTotalRating),
+    private fun TestScope.createDao(): RatingCachedDaoImpl {
+        return RatingCachedDaoImpl(
+            databaseApi = ratingDao,
             scope = backgroundScope
         )
+    }
+
+    @Test
+    fun GIVEN_online_player_WHEN_rating_is_read_for_the_first_time_THEN_returns_sum_of_ratings() = runTest {
+        ratingDao.setRatings(tester, listOf(rating(5, RatingType.USER_RATING), rating(-2, RatingType.PLAYER_KILL)))
+        val dao = createDao()
+
+        dao.keep(tester)
         runCurrent()
-        return dao
-    }
-
-    @Test
-    fun GIVEN_rated_player_WHEN_rating_is_read_for_the_first_time_THEN_returns_total_rating() = runTest {
-        val dao = createLoadedDao(Result.success(listOf(ratedUser(tester, "Tester", 3))))
 
         assertEquals(3, dao.getPlayerRating("Tester", tester))
     }
 
     @Test
-    fun GIVEN_several_rated_players_WHEN_ratings_are_read_THEN_each_player_gets_own_total() = runTest {
-        val dao = createLoadedDao(
-            Result.success(
-                listOf(
-                    ratedUser(tester, "Tester", 3),
-                    ratedUser(reporter, "Reporter", -4)
-                )
-            )
-        )
+    fun GIVEN_online_player_missing_from_database_WHEN_rating_is_read_THEN_returns_zero() = runTest {
+        val dao = createDao()
 
-        assertEquals(3, dao.getPlayerRating("Tester", tester))
-        assertEquals(-4, dao.getPlayerRating("Reporter", reporter))
-    }
-
-    @Test
-    fun GIVEN_empty_database_WHEN_rating_is_read_THEN_returns_zero() = runTest {
-        val dao = createLoadedDao(Result.success(emptyList()))
+        dao.keep(tester)
+        runCurrent()
 
         assertEquals(0, dao.getPlayerRating("Tester", tester))
     }
 
     @Test
-    fun GIVEN_database_failure_WHEN_rating_is_read_THEN_returns_zero() = runTest {
-        val dao = createLoadedDao(Result.failure(IllegalStateException("Database is unavailable")))
+    fun GIVEN_player_left_and_rating_changed_WHEN_player_joins_again_THEN_returns_new_rating() = runTest {
+        ratingDao.setRatings(tester, listOf(rating(3, RatingType.USER_RATING)))
+        val dao = createDao()
+        dao.keep(tester)
+        runCurrent()
+        dao.release(tester)
+        ratingDao.setRatings(tester, listOf(rating(7, RatingType.USER_RATING)))
 
-        assertEquals(0, dao.getPlayerRating("Tester", tester))
+        dao.keep(tester)
+        runCurrent()
+
+        assertEquals(7, dao.getPlayerRating("Tester", tester))
+    }
+
+    @Test
+    fun GIVEN_player_left_before_rating_loaded_WHEN_player_joins_again_THEN_returns_new_rating() = runTest {
+        ratingDao.setRatings(tester, listOf(rating(3, RatingType.USER_RATING)))
+        val dao = createDao()
+        dao.keep(tester)
+        dao.release(tester)
+        runCurrent()
+        ratingDao.setRatings(tester, listOf(rating(7, RatingType.USER_RATING)))
+
+        dao.keep(tester)
+        runCurrent()
+
+        assertEquals(7, dao.getPlayerRating("Tester", tester))
+    }
+
+    @Test
+    fun GIVEN_offline_player_WHEN_rating_was_requested_before_THEN_returns_sum_of_ratings() = runTest {
+        ratingDao.setRatings(tester, listOf(rating(4, RatingType.USER_RATING)))
+        val dao = createDao()
+        dao.getPlayerRating("Tester", tester)
+        runCurrent()
+
+        assertEquals(4, dao.getPlayerRating("Tester", tester))
     }
 }

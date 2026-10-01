@@ -8,11 +8,15 @@ import ru.astrainteractive.astrarating.data.exposed.dto.UserRatingDTO
 import ru.astrainteractive.astrarating.data.exposed.model.UserModel
 import java.util.UUID
 
-/** Answers only the total ratings; the cached rating reads nothing else. */
-internal class FakeRatingDao(
-    private val usersTotalRating: Result<List<RatedUserDTO>>
-) : RatingDao {
+/** Answers only the ratings of a player; the cached rating reads nothing else. */
+internal class FakeRatingDao : RatingDao {
+    private val ratingsByPlayer = mutableMapOf<UUID, List<UserRatingDTO>>()
+
     private fun notUsed(): Nothing = error("The cached rating does not call this")
+
+    fun setRatings(playerUUID: UUID, ratings: List<UserRatingDTO>) {
+        ratingsByPlayer[playerUUID] = ratings
+    }
 
     override suspend fun selectUser(playerUUID: UUID): Result<UserDTO> = notUsed()
 
@@ -30,9 +34,13 @@ internal class FakeRatingDao(
 
     override suspend fun deleteUserRating(it: UserRatingDTO): Result<*> = notUsed()
 
-    override suspend fun fetchUserRatings(playerUUID: UUID): Result<List<UserRatingDTO>> = notUsed()
+    override suspend fun fetchUserRatings(playerUUID: UUID): Result<List<UserRatingDTO>> {
+        val ratings = ratingsByPlayer[playerUUID]
+            ?: return Result.failure(IllegalStateException("Could not find user with uuid $playerUUID"))
+        return Result.success(ratings)
+    }
 
-    override suspend fun fetchUsersTotalRating(): Result<List<RatedUserDTO>> = usersTotalRating
+    override suspend fun fetchUsersTotalRating(): Result<List<RatedUserDTO>> = notUsed()
 
     override suspend fun countPlayerTotalDayRated(playerUUID: UUID): Result<Long> = notUsed()
 
