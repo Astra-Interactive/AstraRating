@@ -19,12 +19,6 @@ internal class LoginEvent(
     mainScope: CoroutineScope,
     ioScope: CoroutineScope
 ) {
-    val onlinePlayersRatingLoad: Job = mainScope.launch {
-        plugin.server.onlinePlayers.forEach { player ->
-            ioScope.launch { ratingCachedDao.loadPlayerRating(player.uniqueId) }
-        }
-    }
-
     val playerPreLoginEvent: Job = flowEvent<AsyncPlayerPreLoginEvent>(
         plugin = plugin,
         eventPriority = EventPriority.MONITOR
