@@ -126,7 +126,7 @@ internal class RatingDaoImpl(
                     otherTable = UserTable,
                     onColumn = UserRatingTable.userCreatedReport,
                     otherColumn = UserTable.id,
-                    joinType = JoinType.INNER,
+                    joinType = JoinType.LEFT,
                 )
                 .selectAll()
                 .where { UserRatingTable.reportedUser.eq(reportedUser.id) }
@@ -134,12 +134,14 @@ internal class RatingDaoImpl(
                     UserRatingDTO(
                         id = it[UserRatingTable.id].value,
                         reportedUser = reportedUser,
-                        userCreatedReport = UserDTO(
-                            id = it[UserTable.id].value,
-                            minecraftName = it[UserTable.minecraftName],
-                            minecraftUUID = it[UserTable.minecraftUUID],
-                            lastUpdated = it[UserTable.lastUpdated]
-                        ),
+                        userCreatedReport = it[UserRatingTable.userCreatedReport]?.let { reporterId ->
+                            UserDTO(
+                                id = reporterId.value,
+                                minecraftName = it[UserTable.minecraftName],
+                                minecraftUUID = it[UserTable.minecraftUUID],
+                                lastUpdated = it[UserTable.lastUpdated]
+                            )
+                        },
                         time = it[UserRatingTable.time],
                         rating = it[UserRatingTable.rating],
                         ratingType = RatingType.entries

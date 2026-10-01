@@ -21,6 +21,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 class RatingDaoTest {
 
@@ -194,4 +195,31 @@ class RatingDaoTest {
                 .map { rating -> rating.message }
             assertEquals(listOf("second"), remainingMessages)
         }
+
+    @Test
+    fun GIVEN_kill_rating_WHEN_player_ratings_are_fetched_THEN_it_is_listed_without_reporter(): Unit = runBlocking {
+        val killer = insertRandomUser()
+        val reporter = insertRandomUser()
+        api.insertUserRating(
+            reporter = reporter,
+            reported = killer,
+            message = "like",
+            type = RatingType.USER_RATING,
+            ratingValue = 1
+        ).getOrThrow()
+        api.insertUserRating(
+            reporter = null,
+            reported = killer,
+            message = "kill",
+            type = RatingType.PLAYER_KILL,
+            ratingValue = -1
+        ).getOrThrow()
+
+        val ratings = api.fetchUserRatings(UUID.fromString(killer.minecraftUUID)).getOrThrow()
+
+        val killRating = ratings.single { rating -> rating.ratingType == RatingType.PLAYER_KILL }
+        val userRating = ratings.single { rating -> rating.ratingType == RatingType.USER_RATING }
+        assertNull(killRating.userCreatedReport)
+        assertEquals(reporter.id, userRating.userCreatedReport?.id)
+    }
 }
