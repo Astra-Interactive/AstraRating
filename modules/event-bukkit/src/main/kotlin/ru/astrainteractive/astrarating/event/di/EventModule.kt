@@ -28,7 +28,8 @@ class EventModule(
     private val loginEvent = LoginEvent(
         plugin = bukkitModule.plugin,
         ratingCachedDao = ratingDaoModule.ratingCachedDao,
-        mainScope = coreModule.mainScope
+        mainScope = coreModule.mainScope,
+        ioScope = coreModule.ioScope
     )
 
     private val events: List<EventListener>

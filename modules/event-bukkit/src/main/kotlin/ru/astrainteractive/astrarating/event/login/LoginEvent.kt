@@ -16,10 +16,13 @@ import ru.astrainteractive.astrarating.data.dao.RatingCachedDao
 internal class LoginEvent(
     plugin: Plugin,
     ratingCachedDao: RatingCachedDao,
-    mainScope: CoroutineScope
+    mainScope: CoroutineScope,
+    ioScope: CoroutineScope
 ) {
     val onlinePlayersRatingLoad: Job = mainScope.launch {
-        plugin.server.onlinePlayers.forEach { player -> ratingCachedDao.loadPlayerRating(player.uniqueId) }
+        plugin.server.onlinePlayers.forEach { player ->
+            ioScope.launch { ratingCachedDao.loadPlayerRating(player.uniqueId) }
+        }
     }
 
     val playerPreLoginEvent: Job = flowEvent<AsyncPlayerPreLoginEvent>(
@@ -28,6 +31,6 @@ internal class LoginEvent(
     )
         .filterIsInstance<AsyncPlayerPreLoginEvent>()
         .filter { event -> event.loginResult == AsyncPlayerPreLoginEvent.Result.ALLOWED }
-        .onEach { event -> ratingCachedDao.loadPlayerRating(event.uniqueId) }
+        .onEach { event -> ioScope.launch { ratingCachedDao.loadPlayerRating(event.uniqueId) } }
         .launchIn(mainScope)
 }
