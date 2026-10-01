@@ -6,6 +6,7 @@ import org.jetbrains.exposed.v1.jdbc.Database
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astrarating.data.dao.RatingCachedDao
 import ru.astrainteractive.astrarating.data.dao.RatingDao
+import ru.astrainteractive.astrarating.data.dao.impl.CacheRefreshingRatingDao
 import ru.astrainteractive.astrarating.data.dao.impl.RatingCachedDaoImpl
 import ru.astrainteractive.astrarating.data.dao.impl.RatingDaoImpl
 
@@ -15,7 +16,7 @@ class RatingDaoModule(
     isDebugProvider: () -> Boolean
 ) {
 
-    val ratingDao: RatingDao by lazy {
+    private val databaseRatingDao: RatingDao by lazy {
         RatingDaoImpl(
             databaseFlow = databaseFlow,
             isDebugProvider = isDebugProvider
@@ -24,8 +25,15 @@ class RatingDaoModule(
 
     val ratingCachedDao: RatingCachedDao by lazy {
         RatingCachedDaoImpl(
-            databaseApi = ratingDao,
+            databaseApi = databaseRatingDao,
             scope = coroutineScope
+        )
+    }
+
+    val ratingDao: RatingDao by lazy {
+        CacheRefreshingRatingDao(
+            ratingDao = databaseRatingDao,
+            ratingCachedDao = ratingCachedDao
         )
     }
 
