@@ -26,7 +26,7 @@ internal class ColorPlaceholder(
             ColoringUtil.getColoringByRating(
                 colorings = papiConfiguration.colorings,
                 rating = rating
-            ).color
+            )?.color.orEmpty()
         }
     )
 
