@@ -6,11 +6,9 @@ import java.util.UUID
 class FakeRatingCachedDao(ratings: Map<UUID, Int>) : RatingCachedDao {
     private val cachedRatings = ratings.toMutableMap()
 
-    override fun getPlayerRating(name: String, uuid: UUID): Int = cachedRatings[uuid] ?: 0
+    override fun getPlayerRating(uuid: UUID): Int = cachedRatings[uuid] ?: 0
 
-    override fun markOnline(uuid: UUID) = Unit
-
-    override fun markOffline(uuid: UUID) = Unit
+    override suspend fun loadPlayerRating(uuid: UUID) = Unit
 
     override fun clear() {
         cachedRatings.clear()

@@ -54,6 +54,8 @@ interface RatingDao {
      */
     suspend fun fetchUserRatings(playerUUID: UUID): Result<List<UserRatingDTO>>
 
+    suspend fun fetchUserTotalRating(playerUUID: UUID): Result<Int>
+
     /**
      * Fetch users overall ratings
      */

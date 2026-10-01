@@ -1,6 +1,5 @@
 package ru.astrainteractive.astrarating.integration.papi.placeholder
 
-import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import ru.astrainteractive.astrarating.core.cache.Cache4kCache
 import ru.astrainteractive.astrarating.integration.papi.coloring.ColoringUtil
@@ -19,9 +18,7 @@ internal class ColorPlaceholder(
         maximumSize = 100L,
         coroutineScope = scope,
         update = { uuid ->
-            val name = Bukkit.getOfflinePlayer(uuid).name ?: Bukkit.getPlayer(uuid)?.name
-            name ?: return@Cache4kCache ""
-            val rating = ratingCachedDao.getPlayerRating(name, uuid)
+            val rating = ratingCachedDao.getPlayerRating(uuid)
 
             ColoringUtil.findColoringByRating(
                 colorings = papiConfiguration.colorings,

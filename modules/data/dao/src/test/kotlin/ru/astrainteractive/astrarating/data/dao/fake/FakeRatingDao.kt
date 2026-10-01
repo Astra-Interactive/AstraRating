@@ -9,12 +9,18 @@ import ru.astrainteractive.astrarating.data.exposed.model.UserModel
 import java.util.UUID
 
 internal class FakeRatingDao : RatingDao {
-    private val ratingsByPlayer = mutableMapOf<UUID, List<UserRatingDTO>>()
+    private val totalsByPlayer = mutableMapOf<UUID, Int>()
 
-    private fun notUsed(): Nothing = error("The cached rating does not call this")
+    var isAvailable: Boolean = true
 
-    fun setRatings(playerUUID: UUID, ratings: List<UserRatingDTO>) {
-        ratingsByPlayer[playerUUID] = ratings
+    private fun notUsed(): Nothing = error("The tests do not call this")
+
+    private fun addRating(user: UserDTO, ratingValue: Int) {
+        totalsByPlayer.merge(UUID.fromString(user.minecraftUUID), ratingValue, Int::plus)
+    }
+
+    fun setTotalRating(playerUUID: UUID, total: Int) {
+        totalsByPlayer[playerUUID] = total
     }
 
     override suspend fun selectUser(playerUUID: UUID): Result<UserDTO> = notUsed()
@@ -29,14 +35,21 @@ internal class FakeRatingDao : RatingDao {
         message: String,
         type: RatingType,
         ratingValue: Int
-    ): Result<Long> = notUsed()
+    ): Result<Long> {
+        addRating(reported, ratingValue)
+        return Result.success(1L)
+    }
 
-    override suspend fun deleteUserRating(it: UserRatingDTO): Result<*> = notUsed()
+    override suspend fun deleteUserRating(it: UserRatingDTO): Result<*> {
+        addRating(it.reportedUser, -it.rating)
+        return Result.success(Unit)
+    }
 
-    override suspend fun fetchUserRatings(playerUUID: UUID): Result<List<UserRatingDTO>> {
-        val ratings = ratingsByPlayer[playerUUID]
-            ?: return Result.failure(IllegalStateException("Could not find user with uuid $playerUUID"))
-        return Result.success(ratings)
+    override suspend fun fetchUserRatings(playerUUID: UUID): Result<List<UserRatingDTO>> = notUsed()
+
+    override suspend fun fetchUserTotalRating(playerUUID: UUID): Result<Int> {
+        if (!isAvailable) return Result.failure(IllegalStateException("The database is unavailable"))
+        return Result.success(totalsByPlayer[playerUUID] ?: 0)
     }
 
     override suspend fun fetchUsersTotalRating(): Result<List<RatedUserDTO>> = notUsed()

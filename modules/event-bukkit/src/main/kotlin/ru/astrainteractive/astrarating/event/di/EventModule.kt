@@ -7,7 +7,7 @@ import ru.astrainteractive.astrarating.core.di.BukkitModule
 import ru.astrainteractive.astrarating.core.di.CoreModule
 import ru.astrainteractive.astrarating.data.dao.di.RatingDaoModule
 import ru.astrainteractive.astrarating.event.kill.KillEventListener
-import ru.astrainteractive.astrarating.event.presence.PlayerPresenceListener
+import ru.astrainteractive.astrarating.event.login.LoginEventListener
 
 class EventModule(
     coreModule: CoreModule,
@@ -24,12 +24,15 @@ class EventModule(
         )
     }
 
-    private val presenceEvent by lazy {
-        PlayerPresenceListener(ratingCachedDao = ratingDaoModule.ratingCachedDao)
+    private val loginEvent by lazy {
+        LoginEventListener(
+            ratingCachedDao = ratingDaoModule.ratingCachedDao,
+            scope = coreModule.ioScope
+        )
     }
 
     private val events: List<EventListener>
-        get() = listOf(killEvent, presenceEvent)
+        get() = listOf(killEvent, loginEvent)
 
     val lifecycle: Lifecycle by lazy {
         Lifecycle.Lambda(

@@ -196,4 +196,34 @@ class RatingDaoTest {
         assertNull(killRating.userCreatedReport)
         assertEquals(reporter.id, userRating.userCreatedReport?.id)
     }
+
+    @Test
+    fun GIVEN_user_and_kill_ratings_WHEN_total_is_fetched_THEN_both_are_summed(): Unit = runBlocking {
+        val killer = insertRandomUser()
+        api.insertUserRating(
+            reporter = insertRandomUser(),
+            reported = killer,
+            message = "like",
+            type = RatingType.USER_RATING,
+            ratingValue = 3
+        ).getOrThrow()
+        api.insertUserRating(
+            reporter = null,
+            reported = killer,
+            message = "kill",
+            type = RatingType.PLAYER_KILL,
+            ratingValue = -1
+        ).getOrThrow()
+
+        val total = api.fetchUserTotalRating(UUID.fromString(killer.minecraftUUID)).getOrThrow()
+
+        assertEquals(2, total)
+    }
+
+    @Test
+    fun GIVEN_empty_database_WHEN_total_is_fetched_THEN_returns_zero(): Unit = runBlocking {
+        val total = api.fetchUserTotalRating(UUID.randomUUID()).getOrThrow()
+
+        assertEquals(0, total)
+    }
 }

@@ -154,6 +154,25 @@ internal class RatingDaoImpl(
         }
     }.logFailure()
 
+    override suspend fun fetchUserTotalRating(playerUUID: UUID) = runCatching {
+        transaction(requireDatabase()) {
+            val ratingsSum = UserRatingTable.rating.sum()
+
+            UserRatingTable
+                .join(
+                    otherTable = UserTable,
+                    onColumn = UserRatingTable.reportedUser,
+                    otherColumn = UserTable.id,
+                    joinType = JoinType.INNER,
+                )
+                .select(ratingsSum)
+                .where { UserTable.minecraftUUID.eq(playerUUID.toString()) }
+                .firstOrNull()
+                ?.get(ratingsSum)
+                ?: 0
+        }
+    }.logFailure()
+
     override suspend fun fetchUsersTotalRating() = runCatching {
         transaction(requireDatabase()) {
             val ratingsSum = UserRatingTable.rating.sum().alias("rating_total")

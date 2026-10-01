@@ -6,9 +6,6 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import ru.astrainteractive.astrarating.data.dao.fake.FakeRatingDao
-import ru.astrainteractive.astrarating.data.exposed.dto.RatingType
-import ru.astrainteractive.astrarating.data.exposed.dto.UserDTO
-import ru.astrainteractive.astrarating.data.exposed.dto.UserRatingDTO
 import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -16,23 +13,6 @@ import kotlin.test.assertEquals
 internal class RatingCachedDaoImplTest {
     private val tester = UUID.fromString("f3d28cb0-7225-3cb1-baeb-2dadd2be89ae")
     private val ratingDao = FakeRatingDao()
-
-    private fun rating(value: Int, type: RatingType): UserRatingDTO {
-        return UserRatingDTO(
-            id = 1L,
-            userCreatedReport = null,
-            reportedUser = UserDTO(
-                id = 1L,
-                minecraftUUID = tester.toString(),
-                minecraftName = "Tester",
-                lastUpdated = 0L
-            ),
-            rating = value,
-            message = "",
-            ratingType = type,
-            time = 0L
-        )
-    }
 
     private fun TestScope.createDao(): RatingCachedDaoImpl {
         return RatingCachedDaoImpl(
@@ -42,63 +22,50 @@ internal class RatingCachedDaoImplTest {
     }
 
     @Test
-    fun GIVEN_online_player_WHEN_rating_is_read_for_the_first_time_THEN_returns_sum_of_ratings() = runTest {
-        ratingDao.setRatings(tester, listOf(rating(5, RatingType.USER_RATING), rating(-2, RatingType.PLAYER_KILL)))
+    fun GIVEN_rating_not_loaded_WHEN_rating_is_read_THEN_returns_zero_until_it_is_loaded() = runTest {
+        ratingDao.setTotalRating(tester, 3)
         val dao = createDao()
 
-        dao.markOnline(tester)
+        val notLoadedRating = dao.getPlayerRating(tester)
         runCurrent()
 
-        assertEquals(3, dao.getPlayerRating("Tester", tester))
+        assertEquals(0, notLoadedRating)
+        assertEquals(3, dao.getPlayerRating(tester))
     }
 
     @Test
-    fun GIVEN_online_player_missing_from_database_WHEN_rating_is_read_THEN_returns_zero() = runTest {
+    fun GIVEN_rating_loaded_WHEN_rating_is_read_THEN_returns_total() = runTest {
+        ratingDao.setTotalRating(tester, 3)
         val dao = createDao()
 
-        dao.markOnline(tester)
-        runCurrent()
+        dao.loadPlayerRating(tester)
 
-        assertEquals(0, dao.getPlayerRating("Tester", tester))
+        assertEquals(3, dao.getPlayerRating(tester))
     }
 
     @Test
-    fun GIVEN_player_left_and_rating_changed_WHEN_player_joins_again_THEN_returns_new_rating() = runTest {
-        ratingDao.setRatings(tester, listOf(rating(3, RatingType.USER_RATING)))
+    fun GIVEN_rating_changed_WHEN_rating_is_loaded_again_THEN_returns_new_total() = runTest {
+        ratingDao.setTotalRating(tester, 3)
         val dao = createDao()
-        dao.markOnline(tester)
-        runCurrent()
-        dao.markOffline(tester)
-        ratingDao.setRatings(tester, listOf(rating(7, RatingType.USER_RATING)))
+        dao.loadPlayerRating(tester)
+        ratingDao.setTotalRating(tester, 7)
 
-        dao.markOnline(tester)
-        runCurrent()
+        dao.loadPlayerRating(tester)
 
-        assertEquals(7, dao.getPlayerRating("Tester", tester))
+        assertEquals(7, dao.getPlayerRating(tester))
     }
 
     @Test
-    fun GIVEN_player_left_before_rating_loaded_WHEN_player_joins_again_THEN_returns_new_rating() = runTest {
-        ratingDao.setRatings(tester, listOf(rating(3, RatingType.USER_RATING)))
+    fun GIVEN_database_was_unavailable_WHEN_rating_is_read_again_THEN_it_is_loaded() = runTest {
+        ratingDao.setTotalRating(tester, 3)
+        ratingDao.isAvailable = false
         val dao = createDao()
-        dao.markOnline(tester)
-        dao.markOffline(tester)
-        runCurrent()
-        ratingDao.setRatings(tester, listOf(rating(7, RatingType.USER_RATING)))
+        dao.loadPlayerRating(tester)
+        ratingDao.isAvailable = true
 
-        dao.markOnline(tester)
+        dao.getPlayerRating(tester)
         runCurrent()
 
-        assertEquals(7, dao.getPlayerRating("Tester", tester))
-    }
-
-    @Test
-    fun GIVEN_offline_player_WHEN_rating_was_requested_before_THEN_returns_sum_of_ratings() = runTest {
-        ratingDao.setRatings(tester, listOf(rating(4, RatingType.USER_RATING)))
-        val dao = createDao()
-        dao.getPlayerRating("Tester", tester)
-        runCurrent()
-
-        assertEquals(4, dao.getPlayerRating("Tester", tester))
+        assertEquals(3, dao.getPlayerRating(tester))
     }
 }
