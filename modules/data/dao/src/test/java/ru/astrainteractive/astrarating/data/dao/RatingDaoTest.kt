@@ -1,3 +1,5 @@
+@file:Suppress("FunctionNaming")
+
 package ru.astrainteractive.astrarating.data.dao
 
 import kotlinx.coroutines.GlobalScope
@@ -127,5 +129,37 @@ class RatingDaoTest {
 
             assertEquals(2, rating.ratingTotal)
         }
+    }
+
+    @Test
+    fun GIVEN_rating_without_reporter_WHEN_total_ratings_are_fetched_THEN_it_is_counted(): Unit = runBlocking {
+        val killer = randomUser.let { user ->
+            api.insertUser(user).getOrThrow()
+            api.selectUser(user.minecraftUUID).getOrThrow()
+        }
+        val reporter = randomUser.let { user ->
+            api.insertUser(user).getOrThrow()
+            api.selectUser(user.minecraftUUID).getOrThrow()
+        }
+        api.insertUserRating(
+            reporter = reporter,
+            reported = killer,
+            message = "",
+            type = RatingType.USER_RATING,
+            ratingValue = 5
+        ).getOrThrow()
+        api.insertUserRating(
+            reporter = null,
+            reported = killer,
+            message = "",
+            type = RatingType.PLAYER_KILL,
+            ratingValue = -2
+        ).getOrThrow()
+
+        val killerRating = api.fetchUsersTotalRating()
+            .getOrThrow()
+            .single { ratedUser -> ratedUser.userDTO.id == killer.id }
+
+        assertEquals(3, killerRating.ratingTotal)
     }
 }
