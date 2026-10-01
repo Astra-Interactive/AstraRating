@@ -11,6 +11,8 @@ interface KCache<K : Any, V : Any> {
 
     fun getIfPresent(key: K): V?
 
+    fun invalidate(key: K)
+
     fun invalidateAll()
 }
 
@@ -57,6 +59,10 @@ class Cache4kCache<K : Any, V : Any>(
         val cacheData = cache.get(key)
         if (cacheData == null || cacheData.needUpdate(updateAfterAccess)) refresh(key)
         return cacheData?.data
+    }
+
+    override fun invalidate(key: K) {
+        cache.invalidate(key)
     }
 
     override fun invalidateAll() {
