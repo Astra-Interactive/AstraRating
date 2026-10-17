@@ -45,10 +45,9 @@ import ru.astrainteractive.astrarating.gui.bukkit.slot.nextPageSlot
 import ru.astrainteractive.astrarating.gui.bukkit.slot.playerRatingsSlot
 import ru.astrainteractive.astrarating.gui.bukkit.slot.prevPageSlot
 import ru.astrainteractive.astrarating.gui.bukkit.slot.ratingsSortSlot
-import ru.astrainteractive.astrarating.gui.bukkit.util.DefaultRatingInventoryLayoutFactory
-import ru.astrainteractive.astrarating.gui.bukkit.util.UserRatingsSortMapper
 import ru.astrainteractive.astrarating.gui.bukkit.util.normalName
 import ru.astrainteractive.astrarating.gui.bukkit.util.offlinePlayer
+import ru.astrainteractive.astrarating.gui.bukkit.util.ratingInventoryLayout
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
@@ -61,9 +60,8 @@ internal class PlayerRatingsGUI(
     private val ratingPlayerComponent: RatingPlayerComponent,
     private val router: GuiRouter,
     private val translationKrate: CachedKrate<AstraRatingTranslation>,
-    private val configKratre: CachedKrate<AstraRatingConfig>,
-    private val dispatchers: KotlinDispatchers,
-    private val userRatingsSortMapper: UserRatingsSortMapper
+    private val configKrate: CachedKrate<AstraRatingConfig>,
+    private val dispatchers: KotlinDispatchers
 ) : InventoryMenu() {
     override val childComponents: List<CoroutineScope>
         get() = listOf(ratingPlayerComponent)
@@ -84,12 +82,12 @@ internal class PlayerRatingsGUI(
 
     private val slotContext = SlotContext(
         translationKrate = translationKrate,
-        configKrate = configKratre,
+        configKrate = configKrate,
         menu = this,
         locale = locale
     )
 
-    private val inventoryMap by lazy { DefaultRatingInventoryLayoutFactory.create() }
+    private val inventoryMap by lazy { ratingInventoryLayout() }
 
     private val playerHolder: PlayerHolder = DefaultPlayerHolder(player)
 
@@ -126,7 +124,6 @@ internal class PlayerRatingsGUI(
         get() = slotContext.ratingsSortSlot(
             index = inventoryMap.firstIndexOf(RatingSlotKey.SORT),
             sortType = ratingPlayerComponent.model.value.sort,
-            userRatingsSortMapper = userRatingsSortMapper,
             onClick = { ratingPlayerComponent.onSortClicked() }
         )
 
@@ -135,6 +132,36 @@ internal class PlayerRatingsGUI(
             index = inventoryMap.firstIndexOf(RatingSlotKey.EVENT),
             killCounts = ratingPlayerComponent.model.value.killCounts
         )
+
+    private val canDelete: Boolean
+        get() = playerHolder.player
+            .asKPermissible()
+            .hasPermission(AstraRatingPermission.DeleteReport)
+
+    private val itemSlots: List<InventorySlot>
+        get() {
+            val ratings = ratingPlayerComponent.model.value.userRatings
+            return inventoryMap.mapSlotsNotNullIndexed(RatingSlotKey.RATING_ITEM) { itemIndex, slotIndex ->
+                val index = paginator.context.indexOfSlot(itemIndex)
+                val userAndRating = ratings.getOrNull(index) ?: return@mapSlotsNotNullIndexed null
+                slotContext.playerRatingsSlot(
+                    index = slotIndex,
+                    userCreatedReportName = userAndRating.userCreatedReport?.normalName ?: "-",
+                    isPositive = userAndRating.rating > 0,
+                    message = userAndRating.message,
+                    ratedPlayer = userAndRating.reportedUser.offlinePlayer,
+                    canDelete = canDelete,
+                    click = Click { clickEvent ->
+                        if (!canDelete) return@Click
+                        if (clickEvent.click != ClickType.LEFT) return@Click
+                        val item = ratings
+                            .getOrNull(paginator.context.maxItemsPerPage * paginator.context.page + clickEvent.slot)
+                            ?: return@Click
+                        ratingPlayerComponent.onDeleteClicked(item)
+                    }
+                )
+            }
+        }
 
     override fun onInventoryClickEvent(e: InventoryClickEvent) {
         super.onInventoryClickEvent(e)
@@ -147,11 +174,19 @@ internal class PlayerRatingsGUI(
         setInventorySlot(backPageButton)
     }
 
+    override fun render() {
+        super.render()
+        setManageButtons()
+        setInventorySlot(sortButton)
+        killEventSlot?.let { slot -> setInventorySlot(slot) }
+        setInventorySlot(itemSlots)
+    }
+
     override fun onInventoryOpenEvent(e: InventoryOpenEvent) {
         ratingPlayerComponent.model
-            .onEach {
-                paginator.setMaxItems(it.userRatings.size)
-                if (it.isLoading) {
+            .onEach { model ->
+                paginator.setMaxItems(model.userRatings.size)
+                if (model.isLoading) {
                     clear()
                     setManageButtons()
                     guiLoadingIndicator.display(menuScope)
@@ -167,45 +202,5 @@ internal class PlayerRatingsGUI(
             .drop(1)
             .onEach { withContext(dispatchers.Main) { render() } }
             .launchIn(menuScope)
-    }
-
-    private val itemSlots: List<InventorySlot>
-        get() {
-            val model: RatingPlayerComponent.Model = ratingPlayerComponent.model.value
-            val list = model.userRatings
-            return inventoryMap.mapSlotsNotNullIndexed(RatingSlotKey.RATING_ITEM) { itemIndex, slotIndex ->
-                val index = paginator.context.indexOfSlot(itemIndex)
-                val userAndRating = list.getOrNull(index) ?: return@mapSlotsNotNullIndexed null
-                slotContext.playerRatingsSlot(
-                    index = slotIndex,
-                    userCreatedReportName = userAndRating.userCreatedReport?.normalName ?: "-",
-                    isPositive = userAndRating.rating > 0,
-                    message = userAndRating.message,
-                    firstPlayed = userAndRating.reportedUser.offlinePlayer.firstPlayed,
-                    lastPlayed = userAndRating.reportedUser.offlinePlayer.lastPlayed,
-                    canDelete = playerHolder.player
-                        .asKPermissible()
-                        .hasPermission(AstraRatingPermission.DeleteReport),
-                    click = Click { e ->
-                        val canDelete = playerHolder.player
-                            .asKPermissible()
-                            .hasPermission(AstraRatingPermission.DeleteReport)
-                        if (!canDelete) return@Click
-                        if (e.click != ClickType.LEFT) return@Click
-                        val item = list
-                            .getOrNull(paginator.context.maxItemsPerPage * paginator.context.page + e.slot)
-                            ?: return@Click
-                        ratingPlayerComponent.onDeleteClicked(item)
-                    }
-                )
-            }
-        }
-
-    override fun render() {
-        super.render()
-        setManageButtons()
-        setInventorySlot(sortButton)
-        killEventSlot?.let { setInventorySlot(it) }
-        setInventorySlot(itemSlots)
     }
 }

@@ -40,10 +40,9 @@ import ru.astrainteractive.astrarating.gui.bukkit.slot.nextPageSlot
 import ru.astrainteractive.astrarating.gui.bukkit.slot.playerRatingsSortSlot
 import ru.astrainteractive.astrarating.gui.bukkit.slot.prevPageSlot
 import ru.astrainteractive.astrarating.gui.bukkit.slot.ratingsSlot
-import ru.astrainteractive.astrarating.gui.bukkit.util.DefaultRatingInventoryLayoutFactory
-import ru.astrainteractive.astrarating.gui.bukkit.util.UsersRatingsSortMapper
 import ru.astrainteractive.astrarating.gui.bukkit.util.normalName
 import ru.astrainteractive.astrarating.gui.bukkit.util.offlinePlayer
+import ru.astrainteractive.astrarating.gui.bukkit.util.ratingInventoryLayout
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
@@ -54,10 +53,9 @@ internal class RatingsGUI(
     player: Player,
     private val dispatchers: KotlinDispatchers,
     private val translationKrate: CachedKrate<AstraRatingTranslation>,
-    private val configKratre: CachedKrate<AstraRatingConfig>,
+    private val configKrate: CachedKrate<AstraRatingConfig>,
     private val ratingPlayersComponent: RatingPlayersComponent,
-    private val router: GuiRouter,
-    private val usersRatingsSortMapper: UsersRatingsSortMapper
+    private val router: GuiRouter
 ) : InventoryMenu() {
 
     override val childComponents: List<CoroutineScope>
@@ -77,12 +75,12 @@ internal class RatingsGUI(
 
     private val slotContext = SlotContext(
         translationKrate = translationKrate,
-        configKrate = configKratre,
+        configKrate = configKrate,
         menu = this,
         locale = locale
     )
 
-    private val inventoryMap by lazy { DefaultRatingInventoryLayoutFactory.create() }
+    private val inventoryMap by lazy { ratingInventoryLayout() }
 
     private val playerHolder = DefaultPlayerHolder(player)
 
@@ -116,42 +114,8 @@ internal class RatingsGUI(
         get() = slotContext.playerRatingsSortSlot(
             index = inventoryMap.firstIndexOf(RatingSlotKey.SORT),
             sortType = ratingPlayersComponent.model.value.sort,
-            click = { ratingPlayersComponent.onSortClicked() },
-            usersRatingsSortMapper = usersRatingsSortMapper
+            click = { ratingPlayersComponent.onSortClicked() }
         )
-
-    override fun onInventoryClickEvent(e: InventoryClickEvent) {
-        super.onInventoryClickEvent(e)
-        e.isCancelled = true
-    }
-
-    private fun setManageButtons() {
-        if (!paginator.context.isFirstPage) setInventorySlot(prevPageButton)
-        if (!paginator.context.isLastPage) setInventorySlot(nextPageButton)
-        setInventorySlot(backPageButton)
-    }
-
-    override fun onInventoryOpenEvent(e: InventoryOpenEvent) {
-        ratingPlayersComponent.model
-            .onEach {
-                paginator.setMaxItems(it.userRatings.size)
-                if (it.isLoading) {
-                    clear()
-                    setManageButtons()
-                    guiLoadingIndicator.display(menuScope)
-                } else {
-                    guiLoadingIndicator.stop()
-                    render()
-                }
-            }
-            .flowOn(dispatchers.Main)
-            .launchIn(menuScope)
-
-        paginator.paginatorContextStateFlow
-            .drop(1)
-            .onEach { withContext(dispatchers.Main) { render() } }
-            .launchIn(menuScope)
-    }
 
     private val itemSlots: List<InventorySlot>
         get() {
@@ -161,8 +125,7 @@ internal class RatingsGUI(
                 val userAndRating = model.userRatings.getOrNull(index) ?: return@mapSlotsNotNullIndexed null
                 slotContext.ratingsSlot(
                     index = slotIndex,
-                    firstPlayed = userAndRating.user.offlinePlayer.firstPlayed,
-                    lastPlayed = userAndRating.user.offlinePlayer.lastPlayed,
+                    player = userAndRating.user.offlinePlayer,
                     ratingTotal = userAndRating.ratingTotal,
                     ratingCounts = userAndRating.ratingCounts,
                     playerName = userAndRating.user.normalName,
@@ -178,10 +141,43 @@ internal class RatingsGUI(
             }
         }
 
+    override fun onInventoryClickEvent(e: InventoryClickEvent) {
+        super.onInventoryClickEvent(e)
+        e.isCancelled = true
+    }
+
+    private fun setManageButtons() {
+        if (!paginator.context.isFirstPage) setInventorySlot(prevPageButton)
+        if (!paginator.context.isLastPage) setInventorySlot(nextPageButton)
+        setInventorySlot(backPageButton)
+    }
+
     override fun render() {
         super.render()
         setManageButtons()
         setInventorySlot(sortButton)
         setInventorySlot(itemSlots)
+    }
+
+    override fun onInventoryOpenEvent(e: InventoryOpenEvent) {
+        ratingPlayersComponent.model
+            .onEach { model ->
+                paginator.setMaxItems(model.userRatings.size)
+                if (model.isLoading) {
+                    clear()
+                    setManageButtons()
+                    guiLoadingIndicator.display(menuScope)
+                } else {
+                    guiLoadingIndicator.stop()
+                    render()
+                }
+            }
+            .flowOn(dispatchers.Main)
+            .launchIn(menuScope)
+
+        paginator.paginatorContextStateFlow
+            .drop(1)
+            .onEach { withContext(dispatchers.Main) { render() } }
+            .launchIn(menuScope)
     }
 }

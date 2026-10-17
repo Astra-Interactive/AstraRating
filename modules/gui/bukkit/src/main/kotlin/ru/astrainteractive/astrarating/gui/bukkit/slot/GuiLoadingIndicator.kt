@@ -72,6 +72,13 @@ internal class GuiLoadingIndicator(
     private val mutex = Mutex()
     private var job: Job? = null
 
+    suspend fun stop() {
+        mutex.withLock {
+            job?.cancelAndJoin()
+            job = null
+        }
+    }
+
     suspend fun display(menuScope: CoroutineScope) {
         stop()
         mutex.withLock {
@@ -84,13 +91,6 @@ internal class GuiLoadingIndicator(
                     delay(FRAME_DELAY)
                 }
             }
-        }
-    }
-
-    suspend fun stop() {
-        mutex.withLock {
-            job?.cancelAndJoin()
-            job = null
         }
     }
 

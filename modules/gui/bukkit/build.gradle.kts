@@ -19,4 +19,6 @@ dependencies {
     implementation(projects.modules.core.api)
     implementation(projects.modules.gui.api)
     implementation(projects.modules.data.dao)
+
+    testImplementation(libs.tests.kotlin.test)
 }

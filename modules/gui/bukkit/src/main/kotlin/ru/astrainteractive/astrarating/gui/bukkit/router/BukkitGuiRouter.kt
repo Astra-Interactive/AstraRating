@@ -9,8 +9,6 @@ import ru.astrainteractive.astrarating.gui.api.rating.players.di.RatingPlayersMo
 import ru.astrainteractive.astrarating.gui.api.router.api.GuiRouter
 import ru.astrainteractive.astrarating.gui.bukkit.rating.player.gui.PlayerRatingsGUI
 import ru.astrainteractive.astrarating.gui.bukkit.rating.players.gui.RatingsGUI
-import ru.astrainteractive.astrarating.gui.bukkit.util.UserRatingsSortMapper
-import ru.astrainteractive.astrarating.gui.bukkit.util.UsersRatingsSortMapper
 import ru.astrainteractive.klibs.mikro.core.util.tryCast
 
 internal class BukkitGuiRouter(
@@ -31,10 +29,9 @@ internal class BukkitGuiRouter(
                     player = player,
                     ratingPlayersComponent = ratingPlayersModule.createAllRatingsComponent(),
                     router = this@BukkitGuiRouter,
-                    configKratre = coreModule.configKrate,
+                    configKrate = coreModule.configKrate,
                     translationKrate = coreModule.translationKrate,
-                    dispatchers = coreModule.dispatchers,
-                    usersRatingsSortMapper = UsersRatingsSortMapper(coreModule.translationKrate)
+                    dispatchers = coreModule.dispatchers
                 ).inventory
 
                 is GuiRouter.Route.PlayerRating -> PlayerRatingsGUI(
@@ -45,10 +42,9 @@ internal class BukkitGuiRouter(
                         playerUUID = route.selectedPlayerUUID
                     ),
                     router = this@BukkitGuiRouter,
-                    configKratre = coreModule.configKrate,
+                    configKrate = coreModule.configKrate,
                     translationKrate = coreModule.translationKrate,
-                    dispatchers = coreModule.dispatchers,
-                    userRatingsSortMapper = UserRatingsSortMapper(coreModule.translationKrate)
+                    dispatchers = coreModule.dispatchers
                 ).inventory
             }
             withContext(dispatchers.Main) {

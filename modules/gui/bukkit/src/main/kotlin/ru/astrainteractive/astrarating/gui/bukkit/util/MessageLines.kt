@@ -1,16 +1,10 @@
-@file:Suppress("Filename")
-
 package ru.astrainteractive.astrarating.gui.bukkit.util
 
 import kotlin.math.max
 
-internal fun subListFromString(text: String, threshold: Int, cutWords: Boolean): List<String> {
-    val res = if (cutWords) {
-        text.chunked(threshold)
-    } else {
-        text.split(" ").chunked(max(1, (text.length) / threshold)).map {
-            it.joinToString(" ")
-        }
-    }
-    return res
+internal fun splitMessageLines(text: String, threshold: Int, cutWords: Boolean): List<String> {
+    if (cutWords) return text.chunked(threshold)
+    return text.split(" ")
+        .chunked(max(1, text.length / threshold))
+        .map { words -> words.joinToString(" ") }
 }
