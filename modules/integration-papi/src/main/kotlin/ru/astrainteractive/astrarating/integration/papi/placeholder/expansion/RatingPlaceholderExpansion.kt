@@ -22,6 +22,6 @@ internal class RatingPlaceholderExpansion(
     override fun onRequest(player: OfflinePlayer?, params: String): String? {
         player ?: return null
         val placeholder = placeholders.firstOrNull { ratingPlaceholder -> ratingPlaceholder.key == params }
-        return placeholder?.asPlaceholder(player).orEmpty()
+        return placeholder?.asPlaceholder(player.uniqueId).orEmpty()
     }
 }

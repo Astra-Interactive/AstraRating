@@ -1,12 +1,12 @@
 package ru.astrainteractive.astrarating.integration.papi.placeholder.expansion
 
-import org.bukkit.OfflinePlayer
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingCache
 import ru.astrainteractive.astrarating.integration.papi.placeholder.api.RatingPlaceholder
 import ru.astrainteractive.astrarating.integration.papi.placeholder.model.PapiConfig
 import ru.astrainteractive.astrarating.integration.papi.placeholder.model.findByRating
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
+import java.util.UUID
 
 internal class ColorPlaceholder(
     private val ratingCache: RatingCache,
@@ -16,8 +16,8 @@ internal class ColorPlaceholder(
 
     override val key: String = "color"
 
-    override fun asPlaceholder(param: OfflinePlayer): String {
-        val rating = ratingCache.getPlayerRating(param.uniqueId)
+    override fun asPlaceholder(playerUUID: UUID): String {
+        val rating = ratingCache.getPlayerRating(playerUUID)
         return papiConfig.colorings.findByRating(rating)?.color.orEmpty()
     }
 }
