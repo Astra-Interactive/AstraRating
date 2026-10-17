@@ -1,4 +1,4 @@
-package ru.astrainteractive.astrarating.core.settings.util
+package ru.astrainteractive.astrarating.core.settings.migration
 
 import java.io.File
 

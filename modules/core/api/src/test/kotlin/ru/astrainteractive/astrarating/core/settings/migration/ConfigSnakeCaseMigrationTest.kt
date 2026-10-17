@@ -1,6 +1,6 @@
 @file:Suppress("FunctionNaming")
 
-package ru.astrainteractive.astrarating.core.settings.util
+package ru.astrainteractive.astrarating.core.settings.migration
 
 import java.nio.file.Files
 import kotlin.test.Test
