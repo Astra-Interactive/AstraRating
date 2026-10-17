@@ -5,6 +5,7 @@ plugins {
 }
 
 dependencies {
+    implementation(libs.cache4k)
     implementation(libs.driver.mysql)
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)

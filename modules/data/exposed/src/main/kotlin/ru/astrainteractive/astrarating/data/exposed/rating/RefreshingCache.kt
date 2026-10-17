@@ -1,4 +1,4 @@
-package ru.astrainteractive.astrarating.core.cache.util
+package ru.astrainteractive.astrarating.data.exposed.rating
 
 import io.github.reactivecircus.cache4k.Cache
 import kotlinx.coroutines.CoroutineScope
@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration
 import kotlin.time.TimeSource
 
-class RefreshingCache<K : Any, V : Any>(
+internal class RefreshingCache<K : Any, V : Any>(
     expiresAfterAccess: Duration = Duration.INFINITE,
     expireAfterWrite: Duration = Duration.INFINITE,
     maximumSize: Long = Long.MAX_VALUE,

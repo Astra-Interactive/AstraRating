@@ -7,7 +7,6 @@ plugins {
 dependencies {
     compileOnly(libs.minecraft.brigadier)
 
-    implementation(libs.cache4k)
     implementation(libs.klibs.kstorage)
     implementation(libs.klibs.mikro.core)
     implementation(libs.kotlin.coroutines.core)

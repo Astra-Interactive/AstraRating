@@ -1,7 +1,6 @@
 package ru.astrainteractive.astrarating.data.exposed.rating
 
 import kotlinx.coroutines.CoroutineScope
-import ru.astrainteractive.astrarating.core.cache.util.RefreshingCache
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatedUsersCache
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
 import ru.astrainteractive.astrarating.data.dao.rating.model.RatedUser

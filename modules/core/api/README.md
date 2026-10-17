@@ -1,1 +1,1 @@
-Holds the platform-free config, translations, permissions, coroutine scopes and helpers every module shares.
+Holds the platform-free config, translations, permissions and coroutine scopes every module shares.
