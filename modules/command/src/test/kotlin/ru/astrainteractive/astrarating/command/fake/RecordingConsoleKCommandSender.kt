@@ -1,4 +1,4 @@
-package ru.astrainteractive.astrarating.core.command.fake
+package ru.astrainteractive.astrarating.command.fake
 
 import net.kyori.adventure.text.Component
 import ru.astrainteractive.astralibs.command.api.brigadier.sender.ConsoleKCommandSender
@@ -6,7 +6,7 @@ import ru.astrainteractive.astralibs.localization.component.LocalizableComponent
 import ru.astrainteractive.astralibs.server.permission.Permission
 import java.util.Locale
 
-class RecordingConsoleKCommandSender(
+internal class RecordingConsoleKCommandSender(
     private val grantedPermissions: Set<Permission>
 ) : ConsoleKCommandSender {
     val messages = mutableListOf<LocalizableComponent>()

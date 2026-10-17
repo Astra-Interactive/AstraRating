@@ -1,4 +1,4 @@
-package ru.astrainteractive.astrarating.core.command.fake
+package ru.astrainteractive.astrarating.command.fake
 
 import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
@@ -7,7 +7,7 @@ import com.mojang.brigadier.context.CommandContext
 import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommands
 import ru.astrainteractive.astralibs.command.api.brigadier.sender.KCommandSender
 
-class FakeMultiplatformCommands(
+internal class FakeMultiplatformCommands(
     private val sender: KCommandSender?
 ) : MultiplatformCommands {
     override fun literal(literal: String): LiteralArgumentBuilder<Any> {

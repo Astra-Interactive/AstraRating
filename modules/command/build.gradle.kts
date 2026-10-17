@@ -21,5 +21,4 @@ dependencies {
     testImplementation(libs.minecraft.brigadier)
     testImplementation(libs.minecraft.kyori.api)
     testImplementation(libs.tests.kotlin.test)
-    testImplementation(testFixtures(projects.modules.core.api))
 }

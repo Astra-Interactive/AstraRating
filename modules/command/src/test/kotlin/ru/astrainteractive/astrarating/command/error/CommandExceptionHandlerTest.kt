@@ -1,6 +1,6 @@
 @file:Suppress("FunctionNaming")
 
-package ru.astrainteractive.astrarating.core.command.util
+package ru.astrainteractive.astrarating.command.error
 
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.CommandDispatcher
@@ -15,8 +15,8 @@ import ru.astrainteractive.astralibs.command.api.exception.NoPlayerException
 import ru.astrainteractive.astralibs.command.api.exception.NoPotionEffectTypeException
 import ru.astrainteractive.astralibs.localization.component.LocalizableComponent
 import ru.astrainteractive.astralibs.localization.text.LocalizedText
-import ru.astrainteractive.astrarating.core.command.fake.FakeMultiplatformCommands
-import ru.astrainteractive.astrarating.core.command.fake.RecordingConsoleKCommandSender
+import ru.astrainteractive.astrarating.command.fake.FakeMultiplatformCommands
+import ru.astrainteractive.astrarating.command.fake.RecordingConsoleKCommandSender
 import ru.astrainteractive.astrarating.core.settings.model.AstraRatingPermission
 import ru.astrainteractive.astrarating.core.settings.model.AstraRatingTranslation
 import ru.astrainteractive.klibs.kstorage.api.asCachedMutableKrate

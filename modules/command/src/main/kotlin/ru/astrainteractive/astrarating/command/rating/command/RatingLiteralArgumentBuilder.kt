@@ -11,9 +11,9 @@ import ru.astrainteractive.astralibs.command.api.exception.NoPlayerException
 import ru.astrainteractive.astralibs.server.bridge.PlatformServer
 import ru.astrainteractive.astralibs.server.player.KPlayer
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
+import ru.astrainteractive.astrarating.command.error.CommandExceptionHandler
 import ru.astrainteractive.astrarating.command.model.UsageCommandException
 import ru.astrainteractive.astrarating.command.rating.model.RatingCommand
-import ru.astrainteractive.astrarating.core.command.util.CommandExceptionHandler
 
 internal class RatingLiteralArgumentBuilder(
     private val commandExceptionHandler: CommandExceptionHandler,
