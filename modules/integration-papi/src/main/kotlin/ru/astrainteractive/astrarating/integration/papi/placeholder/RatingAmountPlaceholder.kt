@@ -10,7 +10,7 @@ internal class RatingAmountPlaceholder(
 
     override val key: String = "rating"
     override fun asPlaceholder(param: OfflinePlayer): String {
-        val rating = ratingCachedDao.getPlayerRating(param.uniqueId)
+        val rating = ratingCache.getPlayerRating(param.uniqueId)
         return "$rating"
     }
 }

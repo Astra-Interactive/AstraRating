@@ -4,10 +4,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.astrainteractive.astralibs.coroutines.withTimings
-import ru.astrainteractive.astrarating.data.dao.RatingDao
-import ru.astrainteractive.astrarating.data.exposed.dto.UserRatingDTO
-import ru.astrainteractive.astrarating.data.exposed.model.UserRatingsSort
+import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
+import ru.astrainteractive.astrarating.data.dao.rating.model.UserRating
 import ru.astrainteractive.astrarating.feature.ratings.player.domain.RatingSortUseCase
+import ru.astrainteractive.astrarating.feature.ratings.player.model.UserRatingsSort
 import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import java.util.UUID
@@ -16,7 +16,7 @@ import kotlin.math.absoluteValue
 internal class DefaultRatingPlayerComponent(
     playerName: String,
     playerUUID: UUID,
-    private val dbApi: RatingDao,
+    private val dbApi: RatingRepository,
     private val dispatchers: KotlinDispatchers,
     private val ratingSortUseCase: RatingSortUseCase
 ) : RatingPlayerComponent,
@@ -62,7 +62,7 @@ internal class DefaultRatingPlayerComponent(
         }
     }
 
-    override fun onDeleteClicked(item: UserRatingDTO) {
+    override fun onDeleteClicked(item: UserRating) {
         launch(dispatchers.IO) {
             model.update { it.copy(isLoading = true) }
             dbApi.deleteUserRating(item)

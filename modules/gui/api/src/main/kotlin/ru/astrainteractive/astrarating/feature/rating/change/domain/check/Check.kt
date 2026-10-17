@@ -1,13 +1,13 @@
 package ru.astrainteractive.astrarating.feature.rating.change.domain.check
 
-import ru.astrainteractive.astrarating.data.exposed.model.PlayerModel
+import ru.astrainteractive.astrarating.feature.rating.change.model.RatingPlayer
 
 internal sealed interface Check {
-    class CanVoteOnPlayer(val creator: PlayerModel, val rated: PlayerModel?) : Check
-    class CanVoteToday(val playerModel: PlayerModel) : Check
-    class CanVote(val playerModel: PlayerModel) : Check
-    class EnoughTime(val playerModel: PlayerModel) : Check
-    class PlayerExists(val playerModel: PlayerModel) : Check
+    class CanVoteOnPlayer(val creator: RatingPlayer, val rated: RatingPlayer?) : Check
+    class CanVoteToday(val playerModel: RatingPlayer) : Check
+    class CanVote(val playerModel: RatingPlayer) : Check
+    class EnoughTime(val playerModel: RatingPlayer) : Check
+    class PlayerExists(val playerModel: RatingPlayer) : Check
     class MessageCorrect(val message: String) : Check
-    class NotSamePlayer(val first: PlayerModel, val second: PlayerModel) : Check
+    class NotSamePlayer(val first: RatingPlayer, val second: RatingPlayer) : Check
 }

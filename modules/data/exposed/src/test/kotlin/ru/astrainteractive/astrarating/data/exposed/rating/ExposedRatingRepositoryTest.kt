@@ -1,0 +1,230 @@
+@file:Suppress("FunctionNaming")
+
+package ru.astrainteractive.astrarating.data.exposed.rating
+
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import org.jetbrains.exposed.v1.jdbc.transactions.TransactionManager
+import ru.astrainteractive.astralibs.util.YamlStringFormat
+import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
+import ru.astrainteractive.astrarating.data.dao.rating.model.NewUser
+import ru.astrainteractive.astrarating.data.dao.rating.model.RatingType
+import ru.astrainteractive.astrarating.data.dao.rating.model.User
+import ru.astrainteractive.astrarating.data.exposed.di.ExposedModule
+import ru.astrainteractive.astrarating.data.exposed.model.DbRatingConfiguration
+import ru.astrainteractive.astrarating.data.exposed.rating.di.RatingStorageModule
+import ru.astrainteractive.klibs.mikro.exposed.model.DatabaseConfiguration
+import java.nio.file.Files
+import java.util.UUID
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+
+class ExposedRatingRepositoryTest {
+
+    private var module: ExposedModule? = null
+    private val requireModule: ExposedModule
+        get() = module ?: error("The module is null")
+
+    private val api: RatingRepository
+        get() = RatingStorageModule(
+            databaseFlow = requireModule.databaseFlow,
+            coroutineScope = GlobalScope,
+            isDebugProvider = { false }
+        ).ratingRepository
+
+    val randomUser: NewUser
+        get() = NewUser(
+            minecraftUUID = UUID.randomUUID(),
+            minecraftName = UUID.randomUUID().toString(),
+        )
+
+    private fun getTempFolder() = Files.createTempDirectory("dir").toFile()
+
+    private suspend fun insertRandomUser(): User {
+        val user = randomUser
+        api.insertUser(user).getOrThrow()
+        return api.selectUser(user.minecraftUUID).getOrThrow()
+    }
+
+    @AfterTest
+    fun destroy(): Unit = runBlocking {
+        TransactionManager.closeAndUnregister(requireModule.databaseFlow.first())
+    }
+
+    @BeforeTest
+    fun setup(): Unit = runBlocking {
+        val folder = getTempFolder()
+        module = ExposedModule(
+            stringFormat = YamlStringFormat(),
+            defaultConfig = {
+                val configuration = folder
+                    .resolve("dbfile")
+                    .absolutePath
+                    .let(DatabaseConfiguration::SQLite)
+                DbRatingConfiguration(databaseConfiguration = configuration)
+            },
+            dataFolder = folder
+        )
+    }
+
+    @Test
+    fun `Insert and select`(): Unit = runBlocking {
+        val user = randomUser
+        // Insert and select user
+        val id = api.insertUser(user).getOrThrow()
+        api.selectUser(user.minecraftUUID).getOrThrow().also { selectedUser ->
+            assertNotNull(selectedUser)
+            assertEquals(id, selectedUser.id)
+            assertEquals(user.minecraftUUID.toString(), selectedUser.minecraftUUID)
+        }
+    }
+
+    @Test
+    fun `Rate user on user`(): Unit = runBlocking {
+        val reportedUser = randomUser.let {
+            api.insertUser(it).getOrThrow()
+            api.selectUser(it.minecraftUUID).getOrThrow()
+        }
+        val userCreatedReport = randomUser.let {
+            api.insertUser(it).getOrThrow()
+            api.selectUser(it.minecraftUUID).getOrThrow()
+        }
+        api.insertUserRating(
+            reporter = userCreatedReport,
+            reported = reportedUser,
+            message = "",
+            type = RatingType.USER_RATING,
+            ratingValue = 1
+        ).getOrThrow()
+        api.fetchUserRatings(reportedUser.minecraftUUID.let(UUID::fromString)).getOrThrow().also { reportsOnUser ->
+            assertNotNull(reportsOnUser)
+            assertEquals(1, reportsOnUser.size)
+        }
+        api.countPlayerOnPlayerDayRated(
+            userCreatedReport.minecraftUUID.let(UUID::fromString),
+            reportedUser.minecraftUUID.let(UUID::fromString)
+        ).getOrThrow()
+            .also { count ->
+                assertNotNull(count)
+                assertEquals(1, count)
+            }
+        api.countPlayerTotalDayRated(userCreatedReport.minecraftUUID.let(UUID::fromString)).getOrThrow().also { count ->
+            assertNotNull(count)
+            assertEquals(1, count)
+        }
+        api.fetchUsersTotalRating().getOrThrow().also { ratings ->
+            assertNotNull(ratings)
+            assertEquals(1, ratings.size)
+        }
+        api.insertUserRating(
+            reporter = userCreatedReport,
+            reported = reportedUser,
+            message = "",
+            type = RatingType.USER_RATING,
+            ratingValue = 1
+        ).getOrThrow()
+        api.fetchUserRatings(reportedUser.minecraftUUID.let(UUID::fromString)).getOrThrow().also { userRatings ->
+            assertNotNull(userRatings)
+            assertEquals(2, userRatings.size)
+        }
+        api.fetchUsersTotalRating().getOrThrow().also { ratings ->
+            assertNotNull(ratings)
+            val rating = assertNotNull(ratings.firstOrNull())
+
+            assertEquals(2, rating.ratingTotal)
+        }
+    }
+
+    @Test
+    fun GIVEN_ratings_from_two_reporters_WHEN_one_fetched_rating_is_deleted_THEN_only_it_is_removed(): Unit =
+        runBlocking {
+            val reportedUser = insertRandomUser()
+            api.insertUserRating(
+                reporter = insertRandomUser(),
+                reported = reportedUser,
+                message = "first",
+                type = RatingType.USER_RATING,
+                ratingValue = 1
+            ).getOrThrow()
+            api.insertUserRating(
+                reporter = insertRandomUser(),
+                reported = reportedUser,
+                message = "second",
+                type = RatingType.USER_RATING,
+                ratingValue = -1
+            ).getOrThrow()
+            val reportedUuid = UUID.fromString(reportedUser.minecraftUUID)
+
+            val firstRating = api.fetchUserRatings(reportedUuid)
+                .getOrThrow()
+                .single { rating -> rating.message == "first" }
+            api.deleteUserRating(firstRating).getOrThrow()
+
+            val remainingMessages = api.fetchUserRatings(reportedUuid)
+                .getOrThrow()
+                .map { rating -> rating.message }
+            assertEquals(listOf("second"), remainingMessages)
+        }
+
+    @Test
+    fun GIVEN_kill_rating_WHEN_player_ratings_are_fetched_THEN_it_is_listed_without_reporter(): Unit = runBlocking {
+        val killer = insertRandomUser()
+        val reporter = insertRandomUser()
+        api.insertUserRating(
+            reporter = reporter,
+            reported = killer,
+            message = "like",
+            type = RatingType.USER_RATING,
+            ratingValue = 1
+        ).getOrThrow()
+        api.insertUserRating(
+            reporter = null,
+            reported = killer,
+            message = "kill",
+            type = RatingType.PLAYER_KILL,
+            ratingValue = -1
+        ).getOrThrow()
+
+        val ratings = api.fetchUserRatings(UUID.fromString(killer.minecraftUUID)).getOrThrow()
+
+        val killRating = ratings.single { rating -> rating.ratingType == RatingType.PLAYER_KILL }
+        val userRating = ratings.single { rating -> rating.ratingType == RatingType.USER_RATING }
+        assertNull(killRating.userCreatedReport)
+        assertEquals(reporter.id, userRating.userCreatedReport?.id)
+    }
+
+    @Test
+    fun GIVEN_user_and_kill_ratings_WHEN_total_is_fetched_THEN_both_are_summed(): Unit = runBlocking {
+        val killer = insertRandomUser()
+        api.insertUserRating(
+            reporter = insertRandomUser(),
+            reported = killer,
+            message = "like",
+            type = RatingType.USER_RATING,
+            ratingValue = 3
+        ).getOrThrow()
+        api.insertUserRating(
+            reporter = null,
+            reported = killer,
+            message = "kill",
+            type = RatingType.PLAYER_KILL,
+            ratingValue = -1
+        ).getOrThrow()
+
+        val total = api.fetchUserTotalRating(UUID.fromString(killer.minecraftUUID)).getOrThrow()
+
+        assertEquals(2, total)
+    }
+
+    @Test
+    fun GIVEN_empty_database_WHEN_total_is_fetched_THEN_returns_zero(): Unit = runBlocking {
+        val total = api.fetchUserTotalRating(UUID.randomUUID()).getOrThrow()
+
+        assertEquals(0, total)
+    }
+}

@@ -1,21 +1,21 @@
 package ru.astrainteractive.astrarating.feature.rating.change.domain.usecase
 
-import ru.astrainteractive.astrarating.data.exposed.dto.UserDTO
-import ru.astrainteractive.astrarating.data.exposed.model.PlayerModel
-import ru.astrainteractive.astrarating.data.exposed.model.UserModel
+import ru.astrainteractive.astrarating.data.dao.rating.model.NewUser
+import ru.astrainteractive.astrarating.data.dao.rating.model.User
 import ru.astrainteractive.astrarating.feature.rating.change.data.InsertUserRepository
 import ru.astrainteractive.astrarating.feature.rating.change.domain.usecase.InsertUserUseCase.Input
 import ru.astrainteractive.astrarating.feature.rating.change.domain.usecase.InsertUserUseCase.Output
+import ru.astrainteractive.astrarating.feature.rating.change.model.RatingPlayer
 
 interface InsertUserUseCase {
     @JvmInline
-    value class Input(val playerModel: PlayerModel)
+    value class Input(val playerModel: RatingPlayer)
 
     @JvmInline
-    value class Output(val playerDTO: UserDTO)
+    value class Output(val playerDTO: User)
 
     suspend operator fun invoke(input: Input): Output
-    suspend operator fun invoke(playerModel: PlayerModel) = invoke(Input(playerModel))
+    suspend operator fun invoke(playerModel: RatingPlayer) = invoke(Input(playerModel))
 }
 
 internal class InsertUserUseCaseImpl(
@@ -23,9 +23,9 @@ internal class InsertUserUseCaseImpl(
 ) : InsertUserUseCase {
     override suspend fun invoke(input: Input): Output {
         val existedUserOutput = insertUserRepository.selectUser(input.playerModel.uuid)
-            .map(UserDTO::id)
+            .map(User::id)
             .map { id ->
-                UserDTO(
+                User(
                     id = id,
                     minecraftName = input.playerModel.name,
                     minecraftUUID = input.playerModel.uuid.toString()
@@ -34,13 +34,13 @@ internal class InsertUserUseCaseImpl(
             .map(::Output)
             .getOrNull()
         if (existedUserOutput != null) return existedUserOutput
-        val userModel = UserModel(
+        val newUser = NewUser(
             minecraftUUID = input.playerModel.uuid,
             minecraftName = input.playerModel.name
         )
-        return insertUserRepository.insertUser(userModel)
+        return insertUserRepository.insertUser(newUser)
             .map { id ->
-                UserDTO(
+                User(
                     id = id,
                     minecraftName = input.playerModel.name,
                     minecraftUUID = input.playerModel.uuid.toString()

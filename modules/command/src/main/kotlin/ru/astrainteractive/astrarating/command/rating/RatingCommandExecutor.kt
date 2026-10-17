@@ -7,10 +7,10 @@ import ru.astrainteractive.astralibs.server.permission.KPermissible
 import ru.astrainteractive.astralibs.server.player.KPlayer
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
-import ru.astrainteractive.astrarating.data.exposed.dto.RatingType
-import ru.astrainteractive.astrarating.data.exposed.model.PlayerModel
+import ru.astrainteractive.astrarating.data.dao.rating.model.RatingType
 import ru.astrainteractive.astrarating.feature.gui.router.GuiRouter
 import ru.astrainteractive.astrarating.feature.rating.change.domain.usecase.AddRatingUseCase
+import ru.astrainteractive.astrarating.feature.rating.change.model.RatingPlayer
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
@@ -25,8 +25,8 @@ internal class RatingCommandExecutor(
 ) {
     private val translation by translationKrate
 
-    private fun KPlayer.toPlayerModel(): PlayerModel? {
-        return PlayerModel(
+    private fun KPlayer.toPlayerModel(): RatingPlayer? {
+        return RatingPlayer(
             uuid = this.uuid,
             name = name ?: return null,
             permissible = tryCast<KPermissible>(),
@@ -34,8 +34,8 @@ internal class RatingCommandExecutor(
         )
     }
 
-    private fun OnlineKPlayer.toPlayerModel(): PlayerModel {
-        return PlayerModel(
+    private fun OnlineKPlayer.toPlayerModel(): RatingPlayer {
+        return RatingPlayer(
             uuid = this.uuid,
             name = name,
             permissible = this,

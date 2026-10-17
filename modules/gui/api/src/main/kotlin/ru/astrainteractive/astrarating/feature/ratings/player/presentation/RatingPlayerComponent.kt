@@ -2,23 +2,23 @@ package ru.astrainteractive.astrarating.feature.ratings.player.presentation
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
-import ru.astrainteractive.astrarating.data.exposed.dto.RatingType
-import ru.astrainteractive.astrarating.data.exposed.dto.UserRatingDTO
-import ru.astrainteractive.astrarating.data.exposed.model.UserRatingsSort
+import ru.astrainteractive.astrarating.data.dao.rating.model.RatingType
+import ru.astrainteractive.astrarating.data.dao.rating.model.UserRating
+import ru.astrainteractive.astrarating.feature.ratings.player.model.UserRatingsSort
 import java.util.UUID
 
 interface RatingPlayerComponent : CoroutineScope {
     val model: StateFlow<Model>
     fun onSortClicked(isRightClick: Boolean = false)
-    fun onDeleteClicked(item: UserRatingDTO)
+    fun onDeleteClicked(item: UserRating)
     data class Model(
         val playerName: String,
         val playerUUID: UUID,
-        val allRatings: List<UserRatingDTO> = emptyList(),
+        val allRatings: List<UserRating> = emptyList(),
         val sort: UserRatingsSort = UserRatingsSort.Rating(true),
         val isLoading: Boolean = false
     ) {
-        val userRatings: List<UserRatingDTO>
+        val userRatings: List<UserRating>
             get() = allRatings.filter { it.userCreatedReport != null }
 
         val killCounts: Int

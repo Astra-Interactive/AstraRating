@@ -4,12 +4,12 @@ package ru.astrainteractive.astrarating.feature.gui.util
 
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
-import ru.astrainteractive.astrarating.data.exposed.dto.UserDTO
+import ru.astrainteractive.astrarating.data.dao.rating.model.User
 import java.util.UUID
 
-internal val UserDTO.offlinePlayer: OfflinePlayer
+internal val User.offlinePlayer: OfflinePlayer
     get() = Bukkit.getOfflinePlayer(UUID.fromString(minecraftUUID))
 
-internal val UserDTO.normalName: String
+internal val User.normalName: String
     get() = Bukkit.getOfflinePlayer(UUID.fromString(minecraftUUID)).name
         ?: Bukkit.getOfflinePlayer(minecraftName)?.name ?: minecraftName

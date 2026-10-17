@@ -1,7 +1,7 @@
 package ru.astrainteractive.astrarating.feature.rating.change.di
 
 import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
-import ru.astrainteractive.astrarating.data.dao.RatingDao
+import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
 import ru.astrainteractive.astrarating.feature.rating.change.data.InsertRatingRepositoryImpl
 import ru.astrainteractive.astrarating.feature.rating.change.data.InsertUserRepositoryImpl
 import ru.astrainteractive.astrarating.feature.rating.change.data.PlayerOnPlayerCounterRepositoryImpl
@@ -14,7 +14,7 @@ import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 class RatingChangeModule(
-    dbApi: RatingDao,
+    dbApi: RatingRepository,
     astraRatingConfigKrate: CachedKrate<AstraRatingConfig>,
     dispatchers: KotlinDispatchers,
 ) {

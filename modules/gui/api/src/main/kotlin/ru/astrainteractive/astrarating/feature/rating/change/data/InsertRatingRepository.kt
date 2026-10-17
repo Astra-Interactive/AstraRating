@@ -1,15 +1,15 @@
 package ru.astrainteractive.astrarating.feature.rating.change.data
 
 import kotlinx.coroutines.withContext
-import ru.astrainteractive.astrarating.data.dao.RatingDao
-import ru.astrainteractive.astrarating.data.exposed.dto.RatingType
-import ru.astrainteractive.astrarating.data.exposed.dto.UserDTO
+import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
+import ru.astrainteractive.astrarating.data.dao.rating.model.RatingType
+import ru.astrainteractive.astrarating.data.dao.rating.model.User
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 internal interface InsertRatingRepository {
     suspend fun insertUserRating(
-        reporter: UserDTO?,
-        reported: UserDTO,
+        reporter: User?,
+        reported: User,
         message: String,
         type: RatingType,
         ratingValue: Int
@@ -17,12 +17,12 @@ internal interface InsertRatingRepository {
 }
 
 internal class InsertRatingRepositoryImpl(
-    private val dbApi: RatingDao,
+    private val dbApi: RatingRepository,
     private val dispatchers: KotlinDispatchers
 ) : InsertRatingRepository {
     override suspend fun insertUserRating(
-        reporter: UserDTO?,
-        reported: UserDTO,
+        reporter: User?,
+        reported: User,
         message: String,
         type: RatingType,
         ratingValue: Int

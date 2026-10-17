@@ -22,5 +22,4 @@ dependencies {
     testImplementation(libs.minecraft.paper.api)
     testImplementation(libs.minecraft.papi)
     testImplementation(libs.tests.kotlin.test)
-    testImplementation(testFixtures(projects.modules.data.dao))
 }

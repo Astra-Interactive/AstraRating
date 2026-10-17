@@ -11,11 +11,11 @@ import org.bukkit.event.EventPriority
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.plugin.Plugin
 import ru.astrainteractive.astralibs.event.flowEvent
-import ru.astrainteractive.astrarating.data.dao.RatingCachedDao
+import ru.astrainteractive.astrarating.data.dao.rating.api.RatingCache
 
 internal class LoginEvent(
     plugin: Plugin,
-    ratingCachedDao: RatingCachedDao,
+    ratingCache: RatingCache,
     mainScope: CoroutineScope,
     ioScope: CoroutineScope
 ) {
@@ -25,6 +25,6 @@ internal class LoginEvent(
     )
         .filterIsInstance<AsyncPlayerPreLoginEvent>()
         .filter { event -> event.loginResult == AsyncPlayerPreLoginEvent.Result.ALLOWED }
-        .onEach { event -> ioScope.launch { ratingCachedDao.loadPlayerRating(event.uniqueId) } }
+        .onEach { event -> ioScope.launch { ratingCache.loadPlayerRating(event.uniqueId) } }
         .launchIn(mainScope)
 }

@@ -3,17 +3,17 @@ package ru.astrainteractive.astrarating.feature.rating.players.data
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import ru.astrainteractive.astrarating.core.cache.Cache4kCache
-import ru.astrainteractive.astrarating.data.dao.RatingDao
-import ru.astrainteractive.astrarating.data.exposed.dto.RatedUserDTO
+import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
+import ru.astrainteractive.astrarating.data.dao.rating.model.RatedUser
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import kotlin.time.Duration.Companion.seconds
 
 internal class RatingPlayersCachedRepositoryImpl(
-    private val dbApi: RatingDao,
+    private val dbApi: RatingRepository,
     private val coroutineScope: CoroutineScope,
     private val dispatchers: KotlinDispatchers
 ) : RatingPlayersCachedRepository {
-    private val jcache = Cache4kCache<Unit, List<RatedUserDTO>>(
+    private val jcache = Cache4kCache<Unit, List<RatedUser>>(
         expiresAfterAccess = 30.seconds,
         updateAfterAccess = 10.seconds,
         maximumSize = 1L,
@@ -23,7 +23,7 @@ internal class RatingPlayersCachedRepositoryImpl(
         }
     )
 
-    override suspend fun fetchUsersTotalRating(): List<RatedUserDTO> {
+    override suspend fun fetchUsersTotalRating(): List<RatedUser> {
         return withContext(dispatchers.IO) {
             jcache.get(Unit).orEmpty()
         }

@@ -161,16 +161,16 @@ internal class RatingsGUI(
                 val userAndRating = model.userRatings.getOrNull(index) ?: return@mapSlotsNotNullIndexed null
                 slotContext.ratingsSlot(
                     index = slotIndex,
-                    firstPlayed = userAndRating.userDTO.offlinePlayer.firstPlayed,
-                    lastPlayed = userAndRating.userDTO.offlinePlayer.lastPlayed,
+                    firstPlayed = userAndRating.user.offlinePlayer.firstPlayed,
+                    lastPlayed = userAndRating.user.offlinePlayer.lastPlayed,
                     ratingTotal = userAndRating.ratingTotal,
                     ratingCounts = userAndRating.ratingCounts,
-                    playerName = userAndRating.userDTO.normalName,
+                    playerName = userAndRating.user.normalName,
                     click = Click {
                         val route = GuiRouter.Route.PlayerRating(
                             inventoryOwner = playerHolder.player.asOnlineMinecraftPlayer(),
-                            selectedPlayerName = userAndRating.userDTO.minecraftName,
-                            selectedPlayerUUID = userAndRating.userDTO.minecraftUUID.let(UUID::fromString)
+                            selectedPlayerName = userAndRating.user.minecraftName,
+                            selectedPlayerUUID = userAndRating.user.minecraftUUID.let(UUID::fromString)
                         )
                         router.navigate(route)
                     }

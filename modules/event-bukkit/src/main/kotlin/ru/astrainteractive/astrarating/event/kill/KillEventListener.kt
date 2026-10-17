@@ -9,10 +9,10 @@ import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.astralibs.server.util.asKAudience
 import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
-import ru.astrainteractive.astrarating.data.dao.RatingDao
-import ru.astrainteractive.astrarating.data.dao.upsertUser
-import ru.astrainteractive.astrarating.data.exposed.dto.RatingType
-import ru.astrainteractive.astrarating.data.exposed.model.UserModel
+import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
+import ru.astrainteractive.astrarating.data.dao.rating.model.NewUser
+import ru.astrainteractive.astrarating.data.dao.rating.model.RatingType
+import ru.astrainteractive.astrarating.data.dao.rating.util.upsertUser
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
@@ -21,7 +21,7 @@ import java.util.Locale
 internal class KillEventListener(
     configKrate: CachedKrate<AstraRatingConfig>,
     translationKrate: CachedKrate<AstraRatingTranslation>,
-    val ratingDao: RatingDao,
+    val ratingRepository: RatingRepository,
     val scope: CoroutineScope,
     val dispatchers: KotlinDispatchers
 ) : EventListener {
@@ -42,16 +42,16 @@ internal class KillEventListener(
         val killerPlayer = killedPlayer.killer ?: return
 
         scope.launch(dispatchers.IO) {
-            val killedPlayerRating = ratingDao.fetchUsersTotalRating().getOrNull().orEmpty()
-                .firstOrNull { userRating -> userRating.userDTO.minecraftUUID == killedPlayer.uniqueId.toString() }
+            val killedPlayerRating = ratingRepository.fetchUsersTotalRating().getOrNull().orEmpty()
+                .firstOrNull { userRating -> userRating.user.minecraftUUID == killedPlayer.uniqueId.toString() }
                 ?.ratingTotal
                 ?: error("Could not fetch rating of ${killedPlayer.name}")
             if (killedPlayerRating <= 0) return@launch
 
-            ratingDao.insertUserRating(
+            ratingRepository.insertUserRating(
                 reporter = null,
-                reported = ratingDao.upsertUser(
-                    userModel = UserModel(
+                reported = ratingRepository.upsertUser(
+                    newUser = NewUser(
                         minecraftUUID = killerPlayer.uniqueId,
                         minecraftName = killerPlayer.name
                     )

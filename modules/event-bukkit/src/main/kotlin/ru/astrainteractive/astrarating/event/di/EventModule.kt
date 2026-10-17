@@ -5,21 +5,23 @@ import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astrarating.core.di.BukkitModule
 import ru.astrainteractive.astrarating.core.di.CoreModule
-import ru.astrainteractive.astrarating.data.dao.di.RatingDaoModule
+import ru.astrainteractive.astrarating.data.dao.rating.api.RatingCache
+import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
 import ru.astrainteractive.astrarating.event.kill.KillEventListener
 import ru.astrainteractive.astrarating.event.login.LoginEvent
 import ru.astrainteractive.astrarating.event.login.RatingCacheWarmUp
 
 class EventModule(
     coreModule: CoreModule,
-    ratingDaoModule: RatingDaoModule,
+    ratingRepository: RatingRepository,
+    ratingCache: RatingCache,
     bukkitModule: BukkitModule
 ) {
     private val killEvent by lazy {
         KillEventListener(
             configKrate = coreModule.configKrate,
             translationKrate = coreModule.translationKrate,
-            ratingDao = ratingDaoModule.ratingDao,
+            ratingRepository = ratingRepository,
             scope = coreModule.ioScope,
             dispatchers = coreModule.dispatchers
         )
@@ -28,7 +30,7 @@ class EventModule(
     @Suppress("UnusedPrivateProperty")
     private val loginEvent = LoginEvent(
         plugin = bukkitModule.plugin,
-        ratingCachedDao = ratingDaoModule.ratingCachedDao,
+        ratingCache = ratingCache,
         mainScope = coreModule.mainScope,
         ioScope = coreModule.ioScope
     )
@@ -36,7 +38,7 @@ class EventModule(
     private val ratingCacheWarmUp by lazy {
         RatingCacheWarmUp(
             plugin = bukkitModule.plugin,
-            ratingCachedDao = ratingDaoModule.ratingCachedDao,
+            ratingCache = ratingCache,
             ioScope = coreModule.ioScope
         )
     }

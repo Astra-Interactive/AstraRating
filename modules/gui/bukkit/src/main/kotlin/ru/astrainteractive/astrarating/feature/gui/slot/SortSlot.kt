@@ -7,12 +7,12 @@ import ru.astrainteractive.astralibs.menu.slot.setDisplayName
 import ru.astrainteractive.astralibs.menu.slot.setIndex
 import ru.astrainteractive.astralibs.menu.slot.setItemStack
 import ru.astrainteractive.astralibs.menu.slot.setOnClickListener
-import ru.astrainteractive.astrarating.data.exposed.model.UserRatingsSort
-import ru.astrainteractive.astrarating.data.exposed.model.UsersRatingsSort
 import ru.astrainteractive.astrarating.feature.gui.mapping.UserRatingsSortMapper
 import ru.astrainteractive.astrarating.feature.gui.mapping.UsersRatingsSortMapper
 import ru.astrainteractive.astrarating.feature.gui.slot.context.SlotContext
 import ru.astrainteractive.astrarating.feature.gui.util.toItemStack
+import ru.astrainteractive.astrarating.feature.rating.players.model.UsersRatingsSort
+import ru.astrainteractive.astrarating.feature.ratings.player.model.UserRatingsSort
 
 internal fun SlotContext.ratingsSortSlot(
     index: Int,

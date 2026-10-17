@@ -10,8 +10,8 @@ import ru.astrainteractive.astralibs.server.bridge.BukkitPlatformServer
 import ru.astrainteractive.astrarating.command.di.CommandsModule
 import ru.astrainteractive.astrarating.core.di.BukkitModule
 import ru.astrainteractive.astrarating.core.di.CoreModule
-import ru.astrainteractive.astrarating.data.dao.di.RatingDaoModule
-import ru.astrainteractive.astrarating.data.exposed.db.rating.di.DBRatingModule
+import ru.astrainteractive.astrarating.data.exposed.di.ExposedModule
+import ru.astrainteractive.astrarating.data.exposed.rating.di.RatingStorageModule
 import ru.astrainteractive.astrarating.event.di.EventModule
 import ru.astrainteractive.astrarating.feature.gui.di.GuiBukkitModule
 import ru.astrainteractive.astrarating.feature.gui.di.GuiModule
@@ -32,16 +32,16 @@ class RootModule(plugin: LifecyclePlugin) {
         BukkitModule(plugin)
     }
 
-    private val dbRatingModule: DBRatingModule by lazy {
-        DBRatingModule(
+    private val exposedModule: ExposedModule by lazy {
+        ExposedModule(
             stringFormat = coreModule.yamlStringFormat,
             dataFolder = bukkitModule.plugin.dataFolder,
         )
     }
 
-    private val ratingDaoModule: RatingDaoModule by lazy {
-        RatingDaoModule(
-            databaseFlow = dbRatingModule.databaseFlow,
+    private val ratingStorageModule: RatingStorageModule by lazy {
+        RatingStorageModule(
+            databaseFlow = exposedModule.databaseFlow,
             coroutineScope = coreModule.ioScope,
             isDebugProvider = { coreModule.configKrate.cachedValue.debug }
         )
@@ -49,7 +49,7 @@ class RootModule(plugin: LifecyclePlugin) {
 
     private val papiModule: PapiModule by lazy {
         PapiModule(
-            ratingCachedDao = ratingDaoModule.ratingCachedDao,
+            ratingCache = ratingStorageModule.ratingCache,
             dataFolder = bukkitModule.plugin.dataFolder,
             yamlStringFormat = coreModule.yamlStringFormat
         )
@@ -59,20 +59,20 @@ class RootModule(plugin: LifecyclePlugin) {
         RatingChangeModule(
             dispatchers = coreModule.dispatchers,
             astraRatingConfigKrate = coreModule.configKrate,
-            dbApi = ratingDaoModule.ratingDao
+            dbApi = ratingStorageModule.ratingRepository
         )
     }
 
     private val ratingPlayerModule: RatingPlayerModule by lazy {
         RatingPlayerModule(
-            ratingDaoModule = ratingDaoModule,
+            ratingRepository = ratingStorageModule.ratingRepository,
             dispatchers = coreModule.dispatchers,
         )
     }
 
     private val ratingPlayersModule: RatingPlayersModule by lazy {
         RatingPlayersModule(
-            ratingDaoModule = ratingDaoModule,
+            ratingRepository = ratingStorageModule.ratingRepository,
             dispatchers = coreModule.dispatchers,
             coroutineScope = coreModule.ioScope
         )
@@ -89,7 +89,8 @@ class RootModule(plugin: LifecyclePlugin) {
     private val eventModule: EventModule by lazy {
         EventModule(
             coreModule = coreModule,
-            ratingDaoModule = ratingDaoModule,
+            ratingRepository = ratingStorageModule.ratingRepository,
+            ratingCache = ratingStorageModule.ratingCache,
             bukkitModule = bukkitModule
         )
     }
@@ -111,8 +112,8 @@ class RootModule(plugin: LifecyclePlugin) {
         get() = listOfNotNull(
             coreModule.lifecycle,
             bukkitModule.lifecycle,
-            dbRatingModule.lifecycle,
-            ratingDaoModule.lifecycle,
+            exposedModule.lifecycle,
+            ratingStorageModule.lifecycle,
             ratingPlayersModule.lifecycle,
             commandsModule.lifecycle,
             eventModule.lifecycle,

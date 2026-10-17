@@ -1,21 +1,21 @@
 package ru.astrainteractive.astrarating.feature.rating.change.domain.usecase
 
-import ru.astrainteractive.astrarating.data.exposed.dto.RatingType
-import ru.astrainteractive.astrarating.data.exposed.model.PlayerModel
+import ru.astrainteractive.astrarating.data.dao.rating.model.RatingType
 import ru.astrainteractive.astrarating.feature.rating.change.data.InsertRatingRepository
 import ru.astrainteractive.astrarating.feature.rating.change.domain.check.Check
 import ru.astrainteractive.astrarating.feature.rating.change.domain.check.CheckValidator
 import ru.astrainteractive.astrarating.feature.rating.change.domain.usecase.AddRatingUseCase.Input
 import ru.astrainteractive.astrarating.feature.rating.change.domain.usecase.AddRatingUseCase.Output
+import ru.astrainteractive.astrarating.feature.rating.change.model.RatingPlayer
 
 /**
  * This UseCase will try to add rating from player to another player
  */
 interface AddRatingUseCase {
     class Input(
-        val creator: PlayerModel,
+        val creator: RatingPlayer,
         val message: String,
-        val ratedPlayerModel: PlayerModel?,
+        val ratedPlayerModel: RatingPlayer?,
         val rating: Int,
         val type: RatingType
     )

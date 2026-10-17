@@ -19,5 +19,4 @@ dependencies {
     implementation(projects.modules.core.api)
     implementation(projects.modules.gui.api)
     implementation(projects.modules.data.dao)
-    implementation(projects.modules.data.exposed)
 }

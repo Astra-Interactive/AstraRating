@@ -5,8 +5,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.astrainteractive.astralibs.coroutines.withTimings
 import ru.astrainteractive.astrarating.core.util.sortedBy
-import ru.astrainteractive.astrarating.data.exposed.model.UsersRatingsSort
 import ru.astrainteractive.astrarating.feature.rating.players.data.RatingPlayersCachedRepository
+import ru.astrainteractive.astrarating.feature.rating.players.model.UsersRatingsSort
 import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import kotlin.math.absoluteValue

@@ -1,14 +1,14 @@
 package ru.astrainteractive.astrarating.integration.papi.di
 
-import ru.astrainteractive.astrarating.data.dao.RatingCachedDao
+import ru.astrainteractive.astrarating.data.dao.rating.api.RatingCache
 import ru.astrainteractive.astrarating.integration.papi.model.PapiConfig
 
 internal interface PapiDependencies {
-    val ratingCachedDao: RatingCachedDao
+    val ratingCache: RatingCache
     val papiConfiguration: PapiConfig
 
     class Default(
-        override val ratingCachedDao: RatingCachedDao,
+        override val ratingCache: RatingCache,
         private val getPapiConfiguration: () -> PapiConfig
     ) : PapiDependencies {
         override val papiConfiguration: PapiConfig

@@ -1,14 +1,14 @@
 package ru.astrainteractive.astrarating.feature.ratings.player.domain
 
 import ru.astrainteractive.astrarating.core.util.sortedBy
-import ru.astrainteractive.astrarating.data.exposed.dto.UserRatingDTO
-import ru.astrainteractive.astrarating.data.exposed.model.UserRatingsSort
+import ru.astrainteractive.astrarating.data.dao.rating.model.UserRating
 import ru.astrainteractive.astrarating.feature.ratings.player.domain.RatingSortUseCase.Input
 import ru.astrainteractive.astrarating.feature.ratings.player.domain.RatingSortUseCase.Output
+import ru.astrainteractive.astrarating.feature.ratings.player.model.UserRatingsSort
 
 internal interface RatingSortUseCase {
-    class Input(val ratings: List<UserRatingDTO>, val sort: UserRatingsSort)
-    class Output(val ratings: List<UserRatingDTO>)
+    class Input(val ratings: List<UserRating>, val sort: UserRatingsSort)
+    class Output(val ratings: List<UserRating>)
 
     suspend fun invoke(input: Input): Output
 }

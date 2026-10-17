@@ -1,7 +1,7 @@
 package ru.astrainteractive.astrarating.feature.rating.change.data
 
 import kotlinx.coroutines.withContext
-import ru.astrainteractive.astrarating.data.dao.RatingDao
+import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import java.util.UUID
 
@@ -10,7 +10,7 @@ internal fun interface PlayerTotalRatingRepository {
 }
 
 internal class PlayerTotalRatingRepositoryImpl(
-    private val dbApi: RatingDao,
+    private val dbApi: RatingRepository,
     private val dispatchers: KotlinDispatchers
 ) : PlayerTotalRatingRepository {
     override suspend fun countPlayerTotalDayRated(uuid: UUID): Long {

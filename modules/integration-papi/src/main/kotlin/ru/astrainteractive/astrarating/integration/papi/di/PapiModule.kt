@@ -5,7 +5,7 @@ import org.bukkit.Bukkit
 import ru.astrainteractive.astralibs.expansion.PlaceholderExpansionFacade
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.util.parseOrWriteIntoDefault
-import ru.astrainteractive.astrarating.data.dao.RatingCachedDao
+import ru.astrainteractive.astrarating.data.dao.rating.api.RatingCache
 import ru.astrainteractive.astrarating.integration.papi.di.factory.PapiFactory
 import ru.astrainteractive.astrarating.integration.papi.model.PapiConfig
 import ru.astrainteractive.klibs.kstorage.api.asStateFlowMutableKrate
@@ -15,7 +15,7 @@ import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import java.io.File
 
 class PapiModule(
-    ratingCachedDao: RatingCachedDao,
+    ratingCache: RatingCache,
     dataFolder: File,
     yamlStringFormat: StringFormat
 ) : Logger by JUtiltLogger("AstraRating-PapiModule") {
@@ -35,7 +35,7 @@ class PapiModule(
     private val placeholderFacade: PlaceholderExpansionFacade by lazy {
         PapiFactory(
             dependencies = PapiDependencies.Default(
-                ratingCachedDao = ratingCachedDao,
+                ratingCache = ratingCache,
                 getPapiConfiguration = { papiConfiguration.cachedValue }
             )
         ).create()
