@@ -11,6 +11,7 @@ import ru.astrainteractive.astrarating.command.di.CommandsModule
 import ru.astrainteractive.astrarating.core.di.BukkitModule
 import ru.astrainteractive.astrarating.core.di.CoreModule
 import ru.astrainteractive.astrarating.data.exposed.di.ExposedModule
+import ru.astrainteractive.astrarating.data.exposed.model.DbRatingConfiguration
 import ru.astrainteractive.astrarating.data.exposed.rating.di.RatingStorageModule
 import ru.astrainteractive.astrarating.event.di.EventModule
 import ru.astrainteractive.astrarating.gui.api.di.GuiModule
@@ -36,6 +37,7 @@ class RootModule(plugin: LifecyclePlugin) {
         ExposedModule(
             stringFormat = coreModule.yamlStringFormat,
             dataFolder = bukkitModule.plugin.dataFolder,
+            defaultConfig = ::DbRatingConfiguration
         )
     }
 

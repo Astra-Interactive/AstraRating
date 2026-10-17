@@ -3,9 +3,6 @@ package ru.astrainteractive.astrarating.core.settings.model
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-/**
- * Example config file with 3 types of initialization
- */
 @Serializable
 data class AstraRatingConfig(
     // Maximum rating player can give players in total

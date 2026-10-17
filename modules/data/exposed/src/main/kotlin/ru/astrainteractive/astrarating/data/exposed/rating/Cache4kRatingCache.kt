@@ -8,14 +8,14 @@ import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
 internal class Cache4kRatingCache(
-    private val databaseApi: RatingRepository,
+    private val ratingRepository: RatingRepository,
     scope: CoroutineScope
 ) : RatingCache {
     private val ratings = RefreshingCache<UUID, Int>(
         maximumSize = 1_000L,
         updateAfterAccess = 10.seconds,
         coroutineScope = scope,
-        update = { uuid -> databaseApi.fetchUserTotalRating(uuid).getOrNull() }
+        update = { uuid -> ratingRepository.fetchUserTotalRating(uuid).getOrNull() }
     )
 
     override fun getPlayerRating(uuid: UUID): Int {

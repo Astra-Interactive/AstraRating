@@ -16,7 +16,7 @@ internal class Cache4kRatingCacheTest {
 
     private fun TestScope.createDao(): Cache4kRatingCache {
         return Cache4kRatingCache(
-            databaseApi = ratingRepository,
+            ratingRepository = ratingRepository,
             scope = backgroundScope
         )
     }

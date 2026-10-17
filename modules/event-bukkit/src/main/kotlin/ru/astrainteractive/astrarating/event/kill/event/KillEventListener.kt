@@ -21,9 +21,9 @@ import java.util.Locale
 internal class KillEventListener(
     configKrate: CachedKrate<AstraRatingConfig>,
     translationKrate: CachedKrate<AstraRatingTranslation>,
-    val ratingRepository: RatingRepository,
-    val scope: CoroutineScope,
-    val dispatchers: KotlinDispatchers
+    private val ratingRepository: RatingRepository,
+    private val scope: CoroutineScope,
+    private val dispatchers: KotlinDispatchers
 ) : EventListener {
     private val config by configKrate
     private val translation by translationKrate
@@ -35,10 +35,10 @@ internal class KillEventListener(
     }
 
     @EventHandler
-    fun onPlayerKilledPlayer(e: PlayerDeathEvent) {
+    fun onPlayerKilledPlayer(event: PlayerDeathEvent) {
         if (!config.events.killPlayer.enabled) return
         if (config.events.killPlayer.changeBy == 0) return
-        val killedPlayer = e.entity
+        val killedPlayer = event.entity
         val killerPlayer = killedPlayer.killer ?: return
 
         scope.launch(dispatchers.IO) {

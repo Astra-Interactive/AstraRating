@@ -32,7 +32,7 @@ import java.sql.Connection
 class ExposedModule(
     stringFormat: StringFormat,
     private val dataFolder: File,
-    defaultConfig: ValueFactory<DbRatingConfiguration> = ValueFactory { DbRatingConfiguration() }
+    defaultConfig: ValueFactory<DbRatingConfiguration>
 ) : Logger by JUtiltLogger("AstraRating-ExposedModule") {
     private val coroutineScope = CoroutineFeature.IO.withTimings()
 
@@ -49,7 +49,7 @@ class ExposedModule(
 
     val databaseFlow: Flow<Database> = dbConfigurationConfig
         .cachedStateFlow
-        .distinctUntilChangedBy { it.databaseConfiguration }
+        .distinctUntilChangedBy { configuration -> configuration.databaseConfiguration }
         .mapCached(coroutineScope) { dbConfig, oldDatabase ->
             oldDatabase?.run(TransactionManager::closeAndUnregister)
             val database = dbConfig.databaseConfiguration.connect()
@@ -66,7 +66,6 @@ class ExposedModule(
 
     val lifecycle: Lifecycle by lazy {
         Lifecycle.Lambda(
-            onEnable = {},
             onDisable = {
                 GlobalScope.launch {
                     databaseFlow.first().run(TransactionManager::closeAndUnregister)

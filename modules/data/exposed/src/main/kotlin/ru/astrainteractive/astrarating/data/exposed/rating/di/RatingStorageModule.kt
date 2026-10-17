@@ -27,7 +27,7 @@ class RatingStorageModule(
 
     val ratingCache: RatingCache by lazy {
         Cache4kRatingCache(
-            databaseApi = exposedRatingRepository,
+            ratingRepository = exposedRatingRepository,
             scope = coroutineScope
         )
     }
