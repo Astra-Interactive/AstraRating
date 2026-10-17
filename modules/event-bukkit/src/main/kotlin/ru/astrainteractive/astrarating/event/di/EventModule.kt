@@ -8,6 +8,7 @@ import ru.astrainteractive.astrarating.core.di.CoreModule
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingCache
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
 import ru.astrainteractive.astrarating.event.kill.event.KillEventListener
+import ru.astrainteractive.astrarating.event.kill.usecase.LowerKillerRatingUseCase
 import ru.astrainteractive.astrarating.event.login.event.LoginEvent
 
 class EventModule(
@@ -16,11 +17,17 @@ class EventModule(
     ratingCache: RatingCache,
     bukkitModule: BukkitModule
 ) {
+    private val lowerKillerRatingUseCase by lazy {
+        LowerKillerRatingUseCase(
+            ratingRepository = ratingRepository,
+            configKrate = coreModule.configKrate
+        )
+    }
+
     private val killEvent by lazy {
         KillEventListener(
-            configKrate = coreModule.configKrate,
             translationKrate = coreModule.translationKrate,
-            ratingRepository = ratingRepository,
+            lowerKillerRatingUseCase = lowerKillerRatingUseCase,
             scope = coreModule.ioScope,
             dispatchers = coreModule.dispatchers
         )

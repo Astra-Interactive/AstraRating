@@ -7,25 +7,21 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.PlayerDeathEvent
 import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.astralibs.server.util.asKAudience
-import ru.astrainteractive.astrarating.core.settings.model.AstraRatingConfig
 import ru.astrainteractive.astrarating.core.settings.model.AstraRatingTranslation
-import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
 import ru.astrainteractive.astrarating.data.dao.rating.model.NewUser
-import ru.astrainteractive.astrarating.data.dao.rating.model.RatingType
-import ru.astrainteractive.astrarating.data.dao.rating.util.upsertUser
+import ru.astrainteractive.astrarating.event.kill.model.LowerKillerRatingResult
+import ru.astrainteractive.astrarating.event.kill.usecase.LowerKillerRatingUseCase
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import java.util.Locale
 
 internal class KillEventListener(
-    configKrate: CachedKrate<AstraRatingConfig>,
     translationKrate: CachedKrate<AstraRatingTranslation>,
-    private val ratingRepository: RatingRepository,
+    private val lowerKillerRatingUseCase: LowerKillerRatingUseCase,
     private val scope: CoroutineScope,
     private val dispatchers: KotlinDispatchers
 ) : EventListener {
-    private val config by configKrate
     private val translation by translationKrate
 
     /** The reason is stored once and read by everyone, so it keeps the default language and no markup. */
@@ -36,28 +32,19 @@ internal class KillEventListener(
 
     @EventHandler
     fun onPlayerKilledPlayer(event: PlayerDeathEvent) {
-        if (!config.events.killPlayer.enabled) return
-        if (config.events.killPlayer.changeBy == 0) return
         val killedPlayer = event.entity
         val killerPlayer = killedPlayer.killer ?: return
 
         scope.launch(dispatchers.IO) {
-            val killedPlayerRating = ratingRepository.fetchUserTotalRating(killedPlayer.uniqueId)
-                .getOrElse { return@launch }
-            if (killedPlayerRating <= 0) return@launch
-            val killer = ratingRepository.upsertUser(
-                newUser = NewUser(
+            val result = lowerKillerRatingUseCase(
+                killer = NewUser(
                     minecraftUUID = killerPlayer.uniqueId,
                     minecraftName = killerPlayer.name
-                )
-            ).getOrElse { return@launch }
-            ratingRepository.insertUserRating(
-                reporter = null,
-                reported = killer,
-                message = killReason(killedPlayer.name),
-                type = RatingType.PLAYER_KILL,
-                ratingValue = config.events.killPlayer.changeBy
-            ).onSuccess { _ ->
+                ),
+                killedPlayerUUID = killedPlayer.uniqueId,
+                reason = killReason(killedPlayer.name)
+            )
+            if (result == LowerKillerRatingResult.Lowered) {
                 killerPlayer.asKAudience().sendMessage(translation.playerKill.ratingLowered(killedPlayer.name))
             }
         }
