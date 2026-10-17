@@ -6,7 +6,9 @@ import ru.astrainteractive.astralibs.expansion.PlaceholderExpansionFacade
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.util.parseOrWriteIntoDefault
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingCache
-import ru.astrainteractive.astrarating.integration.papi.di.factory.PapiFactory
+import ru.astrainteractive.astrarating.integration.papi.placeholder.expansion.ColorPlaceholder
+import ru.astrainteractive.astrarating.integration.papi.placeholder.expansion.RatingAmountPlaceholder
+import ru.astrainteractive.astrarating.integration.papi.placeholder.expansion.RatingPlaceholderExpansion
 import ru.astrainteractive.astrarating.integration.papi.placeholder.model.PapiConfig
 import ru.astrainteractive.klibs.kstorage.api.asStateFlowMutableKrate
 import ru.astrainteractive.klibs.kstorage.api.impl.DefaultMutableKrate
@@ -33,13 +35,14 @@ class PapiModule(
         }
     ).asStateFlowMutableKrate()
     private val placeholderFacade: PlaceholderExpansionFacade by lazy {
-        PapiFactory(
-            dependencies = PapiDependencies.Default(
-                ratingCache = ratingCache,
-                getPapiConfiguration = { papiConfiguration.cachedValue }
+        RatingPlaceholderExpansion(
+            placeholders = listOf(
+                RatingAmountPlaceholder(ratingCache = ratingCache),
+                ColorPlaceholder(ratingCache = ratingCache, papiConfigKrate = papiConfiguration)
             )
-        ).create()
+        )
     }
+
     val lifecycle: Lifecycle = Lifecycle.Lambda(
         onEnable = {
             if (isPapiEnabled) {

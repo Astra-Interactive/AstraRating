@@ -3,21 +3,15 @@ package ru.astrainteractive.astrarating.integration.papi.placeholder.expansion
 import org.bukkit.OfflinePlayer
 import ru.astrainteractive.astralibs.expansion.KPlaceholderExpansion
 import ru.astrainteractive.astralibs.expansion.PlaceholderExpansionFacade
-import ru.astrainteractive.astrarating.integration.papi.di.PapiDependencies
 import ru.astrainteractive.astrarating.integration.papi.placeholder.api.RatingPlaceholder
 
 internal class RatingPlaceholderExpansion(
-    dependencies: PapiDependencies
+    private val placeholders: List<RatingPlaceholder>
 ) : PlaceholderExpansionFacade, KPlaceholderExpansion(
     "erating",
     "RomanMakeev",
     "1.0.0"
 ) {
-    private val placeholders = listOf<RatingPlaceholder>(
-        RatingAmountPlaceholder(dependencies),
-        ColorPlaceholder(dependencies)
-    )
-
     /**
      * The plugin registers this expansion itself, so `/papi reload` must keep it:
      * PlaceholderAPI unregisters every expansion that does not persist and only loads
@@ -25,13 +19,9 @@ internal class RatingPlaceholderExpansion(
      */
     override fun persist(): Boolean = true
 
-    /**
-     * erating_RomaRoman
-     * erating_rating
-     */
     override fun onRequest(player: OfflinePlayer?, params: String): String? {
         player ?: return null
-        val placeholder = placeholders.firstOrNull { it.key == params }
+        val placeholder = placeholders.firstOrNull { ratingPlaceholder -> ratingPlaceholder.key == params }
         return placeholder?.asPlaceholder(player).orEmpty()
     }
 }
