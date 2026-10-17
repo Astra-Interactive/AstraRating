@@ -9,7 +9,7 @@ import ru.astrainteractive.astrarating.command.rating.RatingLiteralArgumentBuild
 import ru.astrainteractive.astrarating.command.reload.ReloadLiteralArgumentBuilder
 import ru.astrainteractive.astrarating.core.di.CoreModule
 import ru.astrainteractive.astrarating.feature.gui.di.GuiModule
-import ru.astrainteractive.astrarating.feature.rating.change.di.RatingChangeModule
+import ru.astrainteractive.astrarating.gui.api.rating.change.di.RatingChangeModule
 
 @Suppress("LongParameterList")
 class CommandsModule(

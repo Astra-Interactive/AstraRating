@@ -18,12 +18,14 @@ class FakeRatingRepository : RatingRepository {
 
     val insertedRatings = mutableListOf<InsertedRating>()
 
+    val failingCalls = mutableSetOf<Call>()
+
     var isAvailable: Boolean = true
 
     private fun notUsed(): Nothing = error("The tests do not call this")
 
-    private fun <T> whenAvailable(value: () -> T): Result<T> {
-        if (!isAvailable) return Result.failure(RatingStorageError.DatabaseUnavailable())
+    private fun <T> whenAvailable(call: Call, value: () -> T): Result<T> {
+        if (!isAvailable || call in failingCalls) return Result.failure(RatingStorageError.DatabaseUnavailable())
         return Result.success(value())
     }
 
@@ -47,11 +49,13 @@ class FakeRatingRepository : RatingRepository {
         usersByPlayer[UUID.fromString(user.minecraftUUID)] = user
     }
 
-    override suspend fun findUser(playerUUID: UUID): Result<User?> = whenAvailable { usersByPlayer[playerUUID] }
+    override suspend fun findUser(playerUUID: UUID): Result<User?> = whenAvailable(Call.FIND_USER) {
+        usersByPlayer[playerUUID]
+    }
 
-    override suspend fun updateUser(user: User): Result<Unit> = whenAvailable { storeUser(user) }
+    override suspend fun updateUser(user: User): Result<Unit> = whenAvailable(Call.UPDATE_USER) { storeUser(user) }
 
-    override suspend fun insertUser(user: NewUser): Result<User> = whenAvailable {
+    override suspend fun insertUser(user: NewUser): Result<User> = whenAvailable(Call.INSERT_USER) {
         val insertedUser = User(
             id = usersByPlayer.size + 1L,
             minecraftUUID = user.minecraftUUID.toString(),
@@ -68,30 +72,45 @@ class FakeRatingRepository : RatingRepository {
         message: String,
         type: RatingType,
         ratingValue: Int
-    ): Result<Long> = whenAvailable {
+    ): Result<Long> = whenAvailable(Call.INSERT_RATING) {
         addRating(reported, ratingValue)
         insertedRatings += InsertedRating(reporter, reported, message, type, ratingValue)
         insertedRatings.size.toLong()
     }
 
-    override suspend fun deleteUserRating(rating: UserRating): Result<Unit> = whenAvailable {
+    override suspend fun deleteUserRating(rating: UserRating): Result<Unit> = whenAvailable(Call.DELETE_RATING) {
         addRating(rating.reportedUser, -rating.rating)
     }
 
     override suspend fun fetchUserRatings(playerUUID: UUID): Result<List<UserRating>> = notUsed()
 
-    override suspend fun fetchUserTotalRating(playerUUID: UUID): Result<Int> = whenAvailable {
-        totalsByPlayer[playerUUID] ?: 0
-    }
+    override suspend fun fetchUserTotalRating(playerUUID: UUID): Result<Int> =
+        whenAvailable(Call.FETCH_TOTAL_RATING) {
+            totalsByPlayer[playerUUID] ?: 0
+        }
 
     override suspend fun fetchUsersTotalRating(): Result<List<RatedUser>> = notUsed()
 
-    override suspend fun countPlayerTotalDayRated(playerUUID: UUID): Result<Long> = whenAvailable {
-        dayVotesByPlayer[playerUUID] ?: 0L
-    }
+    override suspend fun countPlayerTotalDayRated(playerUUID: UUID): Result<Long> =
+        whenAvailable(Call.COUNT_DAY_VOTES) {
+            dayVotesByPlayer[playerUUID] ?: 0L
+        }
 
     override suspend fun countPlayerOnPlayerDayRated(playerUUID: UUID, ratedPlayerUUID: UUID): Result<Long> =
-        whenAvailable { dayVotesOnPlayer[Vote(playerUUID, ratedPlayerUUID)] ?: 0L }
+        whenAvailable(Call.COUNT_DAY_VOTES_ON_PLAYER) {
+            dayVotesOnPlayer[Vote(playerUUID, ratedPlayerUUID)] ?: 0L
+        }
+
+    enum class Call {
+        FIND_USER,
+        UPDATE_USER,
+        INSERT_USER,
+        INSERT_RATING,
+        DELETE_RATING,
+        FETCH_TOTAL_RATING,
+        COUNT_DAY_VOTES,
+        COUNT_DAY_VOTES_ON_PLAYER
+    }
 
     private data class Vote(val playerUUID: UUID, val ratedPlayerUUID: UUID)
 

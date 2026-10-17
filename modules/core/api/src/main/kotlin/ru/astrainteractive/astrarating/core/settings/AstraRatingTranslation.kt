@@ -142,13 +142,6 @@ data class AstraRatingTranslation(
                     "&4Сегодня вы выдали максимальное возможное количество голосов этому игроку"
                 )
             }
-        ),
-        @SerialName("not_enough_playtime")
-        val notEnoughPlaytime: LocalizedText = PREFIX.concat(
-            LocalizedText.build {
-                translation(MinecraftLocales.EN_US, "&4You haven't played on the server long enough")
-                translation(MinecraftLocales.RU_RU, "&4Вы недостаточно долго были на сервере")
-            }
         )
     ) {
         fun liked(playerName: String): LocalizableComponent = liked.replace("%player%", playerName)

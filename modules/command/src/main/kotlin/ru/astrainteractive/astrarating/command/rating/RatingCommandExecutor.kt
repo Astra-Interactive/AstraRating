@@ -2,6 +2,7 @@ package ru.astrainteractive.astrarating.command.rating
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import ru.astrainteractive.astralibs.localization.component.LocalizableComponent
 import ru.astrainteractive.astralibs.server.KCommandDispatcher
 import ru.astrainteractive.astralibs.server.permission.KPermissible
 import ru.astrainteractive.astralibs.server.player.KPlayer
@@ -9,8 +10,9 @@ import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
 import ru.astrainteractive.astrarating.data.dao.rating.model.RatingType
 import ru.astrainteractive.astrarating.feature.gui.router.GuiRouter
-import ru.astrainteractive.astrarating.feature.rating.change.domain.usecase.AddRatingUseCase
-import ru.astrainteractive.astrarating.feature.rating.change.model.RatingPlayer
+import ru.astrainteractive.astrarating.gui.api.rating.change.model.AddRatingResult
+import ru.astrainteractive.astrarating.gui.api.rating.change.model.RatingPlayer
+import ru.astrainteractive.astrarating.gui.api.rating.change.usecase.AddRatingUseCase
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
@@ -25,7 +27,7 @@ internal class RatingCommandExecutor(
 ) {
     private val translation by translationKrate
 
-    private fun KPlayer.toPlayerModel(): RatingPlayer? {
+    private fun KPlayer.toRatingPlayer(): RatingPlayer? {
         return RatingPlayer(
             uuid = this.uuid,
             name = name ?: return null,
@@ -34,7 +36,7 @@ internal class RatingCommandExecutor(
         )
     }
 
-    private fun OnlineKPlayer.toPlayerModel(): RatingPlayer {
+    private fun OnlineKPlayer.toRatingPlayer(): RatingPlayer {
         return RatingPlayer(
             uuid = this.uuid,
             name = name,
@@ -43,62 +45,33 @@ internal class RatingCommandExecutor(
         )
     }
 
+    private fun messageOf(result: AddRatingResult, input: RatingCommand.Result.ChangeRating): LocalizableComponent {
+        val ratedPlayerName = input.ratedPlayer.name ?: "-"
+        return when (result) {
+            AddRatingResult.AlreadyMaxDayVotes -> translation.ratingChange.dailyLimit
+            AddRatingResult.AlreadyMaxVotesOnPlayer -> translation.ratingChange.playerLimit
+            AddRatingResult.MessageNotCorrect -> translation.ratingChange.wrongMessageLength
+            AddRatingResult.NoPermission -> translation.commandError.noPermission
+            AddRatingResult.PlayerNotExists -> translation.commandError.playerNotFound
+            AddRatingResult.SamePlayer -> translation.ratingChange.cannotRateSelf
+            AddRatingResult.StorageFailed -> translation.commandError.unknownError
+            AddRatingResult.Success -> if (input.value > 0) {
+                translation.ratingChange.liked(ratedPlayerName)
+            } else {
+                translation.ratingChange.disliked(ratedPlayerName)
+            }
+        }
+    }
+
     private fun changeRating(input: RatingCommand.Result.ChangeRating) = coroutineScope.launch(dispatchers.IO) {
-        val useCaseInput = AddRatingUseCase.Input(
-            creator = input.executor.toPlayerModel(),
-            ratedPlayerModel = input.ratedPlayer.toPlayerModel(),
+        val result = addRatingUseCase(
+            creator = input.executor.toRatingPlayer(),
+            ratedPlayer = input.ratedPlayer.toRatingPlayer(),
             message = input.message,
             rating = input.value,
             type = RatingType.USER_RATING
         )
-        val result = runCatching { addRatingUseCase.invoke(useCaseInput) }
-        result.onFailure {
-            input.executor.sendMessage(translation.commandError.unknownError)
-            it.printStackTrace()
-        }
-        result.onSuccess {
-            when (it) {
-                AddRatingUseCase.Output.AlreadyMaxDayVotes -> {
-                    input.executor.sendMessage(translation.ratingChange.dailyLimit)
-                }
-
-                AddRatingUseCase.Output.AlreadyMaxVotesOnPlayer -> {
-                    input.executor.sendMessage(translation.ratingChange.playerLimit)
-                }
-
-                AddRatingUseCase.Output.MessageNotCorrect -> {
-                    input.executor.sendMessage(translation.ratingChange.wrongMessageLength)
-                }
-
-                AddRatingUseCase.Output.NoPermission -> {
-                    input.executor.sendMessage(translation.commandError.noPermission)
-                }
-
-                AddRatingUseCase.Output.NotEnoughOnServer -> {
-                    input.executor.sendMessage(translation.ratingChange.notEnoughPlaytime)
-                }
-
-                AddRatingUseCase.Output.PlayerNotExists -> {
-                    input.executor.sendMessage(translation.commandError.playerNotFound)
-                }
-
-                AddRatingUseCase.Output.SamePlayer -> {
-                    input.executor.sendMessage(translation.ratingChange.cannotRateSelf)
-                }
-
-                AddRatingUseCase.Output.Success -> {
-                    if (input.value > 0) {
-                        input.executor.sendMessage(
-                            translation.ratingChange.liked(input.ratedPlayer.name ?: "-")
-                        )
-                    } else {
-                        input.executor.sendMessage(
-                            translation.ratingChange.disliked(input.ratedPlayer.name ?: "-")
-                        )
-                    }
-                }
-            }
-        }
+        input.executor.sendMessage(messageOf(result, input))
     }
 
     private fun reload(input: RatingCommand.Result.Reload) {

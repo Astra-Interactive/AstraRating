@@ -15,9 +15,9 @@ import ru.astrainteractive.astrarating.data.exposed.rating.di.RatingStorageModul
 import ru.astrainteractive.astrarating.event.di.EventModule
 import ru.astrainteractive.astrarating.feature.gui.di.GuiBukkitModule
 import ru.astrainteractive.astrarating.feature.gui.di.GuiModule
-import ru.astrainteractive.astrarating.feature.rating.change.di.RatingChangeModule
 import ru.astrainteractive.astrarating.feature.rating.players.di.RatingPlayersModule
 import ru.astrainteractive.astrarating.feature.ratings.player.di.RatingPlayerModule
+import ru.astrainteractive.astrarating.gui.api.rating.change.di.RatingChangeModule
 import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
 
 class RootModule(plugin: LifecyclePlugin) {
@@ -57,9 +57,8 @@ class RootModule(plugin: LifecyclePlugin) {
 
     private val ratingChangeModule: RatingChangeModule by lazy {
         RatingChangeModule(
-            dispatchers = coreModule.dispatchers,
-            astraRatingConfigKrate = coreModule.configKrate,
-            dbApi = ratingStorageModule.ratingRepository
+            ratingRepository = ratingStorageModule.ratingRepository,
+            astraRatingConfigKrate = coreModule.configKrate
         )
     }
 
