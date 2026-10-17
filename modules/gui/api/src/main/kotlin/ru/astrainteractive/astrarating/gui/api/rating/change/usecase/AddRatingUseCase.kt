@@ -6,7 +6,7 @@ import ru.astrainteractive.astrarating.data.dao.rating.model.RatingType
 import ru.astrainteractive.astrarating.data.dao.rating.util.upsertUser
 import ru.astrainteractive.astrarating.gui.api.rating.change.model.AddRatingResult
 import ru.astrainteractive.astrarating.gui.api.rating.change.model.RatingPlayer
-import ru.astrainteractive.astrarating.gui.api.rating.change.model.isRatingMessageLengthAllowed
+import ru.astrainteractive.astrarating.gui.api.rating.change.util.isRatingMessageLengthAllowed
 import ru.astrainteractive.klibs.kstorage.api.CachedKrate
 import ru.astrainteractive.klibs.kstorage.api.getValue
 
@@ -64,7 +64,7 @@ class AddRatingUseCase(
         if (ratedPlayer.isSamePlayer(creator)) return AddRatingResult.SamePlayer
         val voteLimitReached = findVoteLimitReached(creator, ratedPlayer)
         if (voteLimitReached != null) return voteLimitReached
-        if (!isRatingMessageLengthAllowed(message, config)) return AddRatingResult.MessageNotCorrect
+        if (!config.isRatingMessageLengthAllowed(message)) return AddRatingResult.MessageNotCorrect
         return insertRating(creator, ratedPlayer, message, rating, type)
     }
 }
