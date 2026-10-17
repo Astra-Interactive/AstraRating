@@ -7,6 +7,7 @@ import ru.astrainteractive.astralibs.coroutines.DefaultBukkitDispatchers
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin
 import ru.astrainteractive.astralibs.server.bridge.BukkitPlatformServer
+import ru.astrainteractive.astralibs.server.bridge.PlatformServer
 import ru.astrainteractive.astrarating.command.di.CommandsModule
 import ru.astrainteractive.astrarating.core.di.BukkitModule
 import ru.astrainteractive.astrarating.core.di.CoreModule
@@ -22,6 +23,8 @@ import ru.astrainteractive.astrarating.gui.bukkit.di.GuiBukkitModule
 import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
 
 class RootModule(plugin: LifecyclePlugin) {
+    private val platformServer: PlatformServer by lazy { BukkitPlatformServer() }
+
     private val coreModule: CoreModule by lazy {
         CoreModule(
             dataFolder = plugin.dataFolder,
@@ -45,6 +48,7 @@ class RootModule(plugin: LifecyclePlugin) {
         RatingStorageModule(
             databaseFlow = exposedModule.databaseFlow,
             coroutineScope = coreModule.ioScope,
+            platformServer = platformServer,
             isDebugProvider = { coreModule.configKrate.cachedValue.debug }
         )
     }
@@ -105,7 +109,7 @@ class RootModule(plugin: LifecyclePlugin) {
                 plugin = plugin
             ),
             lifecyclePlugin = plugin,
-            platformServer = BukkitPlatformServer()
+            platformServer = platformServer
         )
     }
     private val lifecycles: List<Lifecycle>

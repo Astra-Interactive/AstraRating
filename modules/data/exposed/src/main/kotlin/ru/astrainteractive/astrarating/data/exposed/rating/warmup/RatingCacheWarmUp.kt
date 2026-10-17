@@ -1,19 +1,19 @@
-package ru.astrainteractive.astrarating.event.login.event
+package ru.astrainteractive.astrarating.data.exposed.rating.warmup
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.bukkit.plugin.Plugin
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
+import ru.astrainteractive.astralibs.server.bridge.PlatformServer
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingCache
 
 internal class RatingCacheWarmUp(
-    private val plugin: Plugin,
+    private val platformServer: PlatformServer,
     private val ratingCache: RatingCache,
     private val ioScope: CoroutineScope
 ) : Lifecycle {
     override fun onEnable() {
-        plugin.server.onlinePlayers.forEach { player ->
-            ioScope.launch { ratingCache.loadPlayerRating(player.uniqueId) }
+        platformServer.getOnlinePlayers().forEach { player ->
+            ioScope.launch { ratingCache.loadPlayerRating(player.uuid) }
         }
     }
 }

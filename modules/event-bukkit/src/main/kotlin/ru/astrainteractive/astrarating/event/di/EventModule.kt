@@ -9,7 +9,6 @@ import ru.astrainteractive.astrarating.data.dao.rating.api.RatingCache
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
 import ru.astrainteractive.astrarating.event.kill.event.KillEventListener
 import ru.astrainteractive.astrarating.event.login.event.LoginEvent
-import ru.astrainteractive.astrarating.event.login.event.RatingCacheWarmUp
 
 class EventModule(
     coreModule: CoreModule,
@@ -35,14 +34,6 @@ class EventModule(
         ioScope = coreModule.ioScope
     )
 
-    private val ratingCacheWarmUp by lazy {
-        RatingCacheWarmUp(
-            plugin = bukkitModule.plugin,
-            ratingCache = ratingCache,
-            ioScope = coreModule.ioScope
-        )
-    }
-
     private val events: List<EventListener>
         get() = listOf(killEvent)
 
@@ -50,7 +41,6 @@ class EventModule(
         Lifecycle.Lambda(
             onEnable = {
                 events.forEach { event -> event.onEnable(bukkitModule.plugin) }
-                ratingCacheWarmUp.onEnable()
             },
             onDisable = {
                 events.forEach(EventListener::onDisable)
