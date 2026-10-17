@@ -17,6 +17,11 @@ class UserRatingsSortExtTest {
         minecraftName = "Reported",
         lastUpdated = Instant.fromEpochMilliseconds(0L)
     )
+    private val ratings = listOf(
+        rating(id = 1L, reporterName = "Bob", value = 1, time = Instant.fromEpochMilliseconds(30L)),
+        rating(id = 2L, reporterName = "Alice", value = -1, time = Instant.fromEpochMilliseconds(10L)),
+        rating(id = 3L, reporterName = "Carol", value = 3, time = Instant.fromEpochMilliseconds(20L))
+    )
 
     private fun rating(id: Long, reporterName: String, value: Int, time: Instant): UserRating = UserRating(
         id = id,
@@ -31,12 +36,6 @@ class UserRatingsSortExtTest {
         message = "message",
         ratingType = RatingType.USER_RATING,
         time = time
-    )
-
-    private val ratings = listOf(
-        rating(id = 1L, reporterName = "Bob", value = 1, time = Instant.fromEpochMilliseconds(30L)),
-        rating(id = 2L, reporterName = "Alice", value = -1, time = Instant.fromEpochMilliseconds(10L)),
-        rating(id = 3L, reporterName = "Carol", value = 3, time = Instant.fromEpochMilliseconds(20L))
     )
 
     private fun List<UserRating>.ids(): List<Long> = map { rating -> rating.id }

@@ -36,7 +36,7 @@ data class AstraRatingConfig(
 ) {
 
     @Serializable
-    class Events(
+    data class Events(
         @SerialName("kill_player")
         val killPlayer: Event = Event()
     ) {
