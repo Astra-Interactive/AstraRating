@@ -1,7 +1,7 @@
 package ru.astrainteractive.astrarating.data.exposed.rating
 
 import kotlinx.coroutines.CoroutineScope
-import ru.astrainteractive.astrarating.core.cache.util.Cache4kCache
+import ru.astrainteractive.astrarating.core.cache.util.RefreshingCache
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingCache
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
 import java.util.UUID
@@ -11,7 +11,7 @@ internal class Cache4kRatingCache(
     private val databaseApi: RatingRepository,
     scope: CoroutineScope
 ) : RatingCache {
-    private val ratings = Cache4kCache<UUID, Int>(
+    private val ratings = RefreshingCache<UUID, Int>(
         maximumSize = 1_000L,
         updateAfterAccess = 10.seconds,
         coroutineScope = scope,

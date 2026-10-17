@@ -12,7 +12,7 @@ import ru.astrainteractive.astralibs.util.parseOrWriteIntoDefault
 import ru.astrainteractive.astrarating.core.command.util.CommandExceptionHandler
 import ru.astrainteractive.astrarating.core.settings.model.AstraRatingConfig
 import ru.astrainteractive.astrarating.core.settings.model.AstraRatingTranslation
-import ru.astrainteractive.astrarating.core.settings.util.ConfigSnakeCaseMigration
+import ru.astrainteractive.astrarating.core.settings.util.migrateConfigToSnakeCase
 import ru.astrainteractive.klibs.kstorage.api.asStateFlowMutableKrate
 import ru.astrainteractive.klibs.kstorage.api.impl.DefaultMutableKrate
 import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
@@ -56,7 +56,7 @@ class CoreModule(
         factory = ::AstraRatingConfig,
         loader = {
             val configFile = dataFolder.resolve("config.yml")
-            ConfigSnakeCaseMigration.migrate(configFile)
+            migrateConfigToSnakeCase(configFile)
             yamlStringFormat.parseOrWriteIntoDefault(
                 file = configFile,
                 default = ::AstraRatingConfig,
