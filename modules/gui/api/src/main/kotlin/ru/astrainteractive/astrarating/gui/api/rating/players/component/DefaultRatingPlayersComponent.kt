@@ -4,10 +4,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.astrainteractive.astralibs.coroutines.withTimings
-import ru.astrainteractive.astrarating.core.util.sortedBy
 import ru.astrainteractive.astrarating.gui.api.rating.players.model.UsersRatingsSort
 import ru.astrainteractive.astrarating.gui.api.rating.players.util.RatedUsersCache
 import ru.astrainteractive.astrarating.gui.api.util.nextAfter
+import ru.astrainteractive.astrarating.gui.api.util.sortedBy
 import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 

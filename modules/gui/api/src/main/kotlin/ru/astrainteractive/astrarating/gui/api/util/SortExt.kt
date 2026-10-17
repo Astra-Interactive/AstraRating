@@ -1,6 +1,6 @@
-package ru.astrainteractive.astrarating.core.util
+package ru.astrainteractive.astrarating.gui.api.util
 
-inline fun <T, R : Comparable<R>> Iterable<T>.sortedBy(
+internal inline fun <T, R : Comparable<R>> Iterable<T>.sortedBy(
     isAsc: Boolean,
     crossinline selector: (T) -> R?
 ): List<T> {
