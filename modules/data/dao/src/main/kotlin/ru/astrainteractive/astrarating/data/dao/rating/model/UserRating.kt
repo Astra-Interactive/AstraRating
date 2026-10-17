@@ -7,5 +7,5 @@ data class UserRating(
     val rating: Int,
     val message: String,
     val ratingType: RatingType,
-    val time: Long = System.currentTimeMillis(),
+    val time: Long,
 )

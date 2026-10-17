@@ -42,25 +42,24 @@ internal class KillEventListener(
         val killerPlayer = killedPlayer.killer ?: return
 
         scope.launch(dispatchers.IO) {
-            val killedPlayerRating = ratingRepository.fetchUsersTotalRating().getOrNull().orEmpty()
-                .firstOrNull { userRating -> userRating.user.minecraftUUID == killedPlayer.uniqueId.toString() }
-                ?.ratingTotal
-                ?: error("Could not fetch rating of ${killedPlayer.name}")
+            val killedPlayerRating = ratingRepository.fetchUserTotalRating(killedPlayer.uniqueId)
+                .getOrElse { return@launch }
             if (killedPlayerRating <= 0) return@launch
-
+            val killer = ratingRepository.upsertUser(
+                newUser = NewUser(
+                    minecraftUUID = killerPlayer.uniqueId,
+                    minecraftName = killerPlayer.name
+                )
+            ).getOrElse { return@launch }
             ratingRepository.insertUserRating(
                 reporter = null,
-                reported = ratingRepository.upsertUser(
-                    newUser = NewUser(
-                        minecraftUUID = killerPlayer.uniqueId,
-                        minecraftName = killerPlayer.name
-                    )
-                ),
+                reported = killer,
                 message = killReason(killedPlayer.name),
                 type = RatingType.PLAYER_KILL,
                 ratingValue = config.events.killPlayer.changeBy
-            )
-            killerPlayer.asKAudience().sendMessage(translation.playerKill.ratingLowered(killedPlayer.name))
+            ).onSuccess { _ ->
+                killerPlayer.asKAudience().sendMessage(translation.playerKill.ratingLowered(killedPlayer.name))
+            }
         }
     }
 }

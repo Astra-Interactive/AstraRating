@@ -4,27 +4,20 @@ import kotlinx.coroutines.withContext
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
 import ru.astrainteractive.astrarating.data.dao.rating.model.NewUser
 import ru.astrainteractive.astrarating.data.dao.rating.model.User
+import ru.astrainteractive.astrarating.data.dao.rating.util.upsertUser
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
-import java.util.UUID
 
 internal interface InsertUserRepository {
-    suspend fun selectUser(uuid: UUID): Result<User>
-    suspend fun insertUser(newUser: NewUser): Result<Long>
+    suspend fun upsertUser(newUser: NewUser): Result<User>
 }
 
 internal class InsertUserRepositoryImpl(
     private val dbApi: RatingRepository,
     private val dispatchers: KotlinDispatchers
 ) : InsertUserRepository {
-    override suspend fun selectUser(uuid: UUID): Result<User> {
+    override suspend fun upsertUser(newUser: NewUser): Result<User> {
         return withContext(dispatchers.IO) {
-            dbApi.selectUser(uuid)
-        }
-    }
-
-    override suspend fun insertUser(newUser: NewUser): Result<Long> {
-        return withContext(dispatchers.IO) {
-            dbApi.insertUser(newUser)
+            dbApi.upsertUser(newUser)
         }
     }
 }

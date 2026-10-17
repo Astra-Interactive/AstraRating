@@ -3,3 +3,8 @@ plugins {
     alias(libs.plugins.klibs.gradle.java.version)
     `java-test-fixtures`
 }
+
+dependencies {
+    testImplementation(libs.kotlin.coroutines.test)
+    testImplementation(libs.tests.kotlin.test)
+}

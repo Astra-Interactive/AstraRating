@@ -2,12 +2,8 @@ package ru.astrainteractive.astrarating.data.dao.rating.api
 
 import java.util.UUID
 
-/**
- * Api for cached rating data
- */
 interface RatingCache {
     /**
-     * @param uuid - uuid of the player
      * @return rating of player or 0 if it's not cached
      */
     fun getPlayerRating(uuid: UUID): Int

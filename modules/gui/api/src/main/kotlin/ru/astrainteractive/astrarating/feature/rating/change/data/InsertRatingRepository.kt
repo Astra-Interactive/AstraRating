@@ -28,10 +28,6 @@ internal class InsertRatingRepositoryImpl(
         ratingValue: Int
     ): Result<Long> {
         return withContext(dispatchers.IO) {
-            dbApi.updateUser(reported)
-            if (reporter != null) {
-                dbApi.updateUser(reporter)
-            }
             dbApi.insertUserRating(
                 reporter = reporter,
                 reported = reported,

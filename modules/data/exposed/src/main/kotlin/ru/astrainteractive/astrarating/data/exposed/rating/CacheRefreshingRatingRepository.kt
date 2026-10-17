@@ -28,9 +28,9 @@ internal class CacheRefreshingRatingRepository(
         return result
     }
 
-    override suspend fun deleteUserRating(it: UserRating): Result<*> {
-        val result = ratingRepository.deleteUserRating(it)
-        if (result.isSuccess) reloadRatingOf(it.reportedUser)
+    override suspend fun deleteUserRating(rating: UserRating): Result<Unit> {
+        val result = ratingRepository.deleteUserRating(rating)
+        if (result.isSuccess) reloadRatingOf(rating.reportedUser)
         return result
     }
 }

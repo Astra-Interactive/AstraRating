@@ -3,6 +3,7 @@ package ru.astrainteractive.astrarating.data.dao.rating.fake
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
 import ru.astrainteractive.astrarating.data.dao.rating.model.NewUser
 import ru.astrainteractive.astrarating.data.dao.rating.model.RatedUser
+import ru.astrainteractive.astrarating.data.dao.rating.model.RatingStorageError
 import ru.astrainteractive.astrarating.data.dao.rating.model.RatingType
 import ru.astrainteractive.astrarating.data.dao.rating.model.User
 import ru.astrainteractive.astrarating.data.dao.rating.model.UserRating
@@ -10,11 +11,21 @@ import java.util.UUID
 
 @Suppress("TooManyFunctions")
 class FakeRatingRepository : RatingRepository {
+    private val usersByPlayer = mutableMapOf<UUID, User>()
     private val totalsByPlayer = mutableMapOf<UUID, Int>()
+    private val dayVotesByPlayer = mutableMapOf<UUID, Long>()
+    private val dayVotesOnPlayer = mutableMapOf<Vote, Long>()
+
+    val insertedRatings = mutableListOf<InsertedRating>()
 
     var isAvailable: Boolean = true
 
     private fun notUsed(): Nothing = error("The tests do not call this")
+
+    private fun <T> whenAvailable(value: () -> T): Result<T> {
+        if (!isAvailable) return Result.failure(RatingStorageError.DatabaseUnavailable())
+        return Result.success(value())
+    }
 
     private fun addRating(user: User, ratingValue: Int) {
         totalsByPlayer.merge(UUID.fromString(user.minecraftUUID), ratingValue, Int::plus)
@@ -24,11 +35,32 @@ class FakeRatingRepository : RatingRepository {
         totalsByPlayer[playerUUID] = total
     }
 
-    override suspend fun selectUser(playerUUID: UUID): Result<User> = notUsed()
+    fun setDayVotes(playerUUID: UUID, count: Long) {
+        dayVotesByPlayer[playerUUID] = count
+    }
 
-    override suspend fun updateUser(user: User): Result<*> = notUsed()
+    fun setDayVotesOnPlayer(playerUUID: UUID, ratedPlayerUUID: UUID, count: Long) {
+        dayVotesOnPlayer[Vote(playerUUID, ratedPlayerUUID)] = count
+    }
 
-    override suspend fun insertUser(user: NewUser): Result<Long> = notUsed()
+    fun storeUser(user: User) {
+        usersByPlayer[UUID.fromString(user.minecraftUUID)] = user
+    }
+
+    override suspend fun findUser(playerUUID: UUID): Result<User?> = whenAvailable { usersByPlayer[playerUUID] }
+
+    override suspend fun updateUser(user: User): Result<Unit> = whenAvailable { storeUser(user) }
+
+    override suspend fun insertUser(user: NewUser): Result<User> = whenAvailable {
+        val insertedUser = User(
+            id = usersByPlayer.size + 1L,
+            minecraftUUID = user.minecraftUUID.toString(),
+            minecraftName = user.minecraftName,
+            lastUpdated = 0L
+        )
+        storeUser(insertedUser)
+        insertedUser
+    }
 
     override suspend fun insertUserRating(
         reporter: User?,
@@ -36,27 +68,38 @@ class FakeRatingRepository : RatingRepository {
         message: String,
         type: RatingType,
         ratingValue: Int
-    ): Result<Long> {
+    ): Result<Long> = whenAvailable {
         addRating(reported, ratingValue)
-        return Result.success(1L)
+        insertedRatings += InsertedRating(reporter, reported, message, type, ratingValue)
+        insertedRatings.size.toLong()
     }
 
-    override suspend fun deleteUserRating(it: UserRating): Result<*> {
-        addRating(it.reportedUser, -it.rating)
-        return Result.success(Unit)
+    override suspend fun deleteUserRating(rating: UserRating): Result<Unit> = whenAvailable {
+        addRating(rating.reportedUser, -rating.rating)
     }
 
     override suspend fun fetchUserRatings(playerUUID: UUID): Result<List<UserRating>> = notUsed()
 
-    override suspend fun fetchUserTotalRating(playerUUID: UUID): Result<Int> {
-        if (!isAvailable) return Result.failure(IllegalStateException("The database is unavailable"))
-        return Result.success(totalsByPlayer[playerUUID] ?: 0)
+    override suspend fun fetchUserTotalRating(playerUUID: UUID): Result<Int> = whenAvailable {
+        totalsByPlayer[playerUUID] ?: 0
     }
 
     override suspend fun fetchUsersTotalRating(): Result<List<RatedUser>> = notUsed()
 
-    override suspend fun countPlayerTotalDayRated(playerUUID: UUID): Result<Long> = notUsed()
+    override suspend fun countPlayerTotalDayRated(playerUUID: UUID): Result<Long> = whenAvailable {
+        dayVotesByPlayer[playerUUID] ?: 0L
+    }
 
     override suspend fun countPlayerOnPlayerDayRated(playerUUID: UUID, ratedPlayerUUID: UUID): Result<Long> =
-        notUsed()
+        whenAvailable { dayVotesOnPlayer[Vote(playerUUID, ratedPlayerUUID)] ?: 0L }
+
+    private data class Vote(val playerUUID: UUID, val ratedPlayerUUID: UUID)
+
+    data class InsertedRating(
+        val reporter: User?,
+        val reported: User,
+        val message: String,
+        val type: RatingType,
+        val ratingValue: Int
+    )
 }
