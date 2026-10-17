@@ -3,7 +3,6 @@ package ru.astrainteractive.astrarating.command.rating.command
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.astrainteractive.astralibs.localization.component.LocalizableComponent
-import ru.astrainteractive.astralibs.server.KCommandDispatcher
 import ru.astrainteractive.astrarating.command.rating.model.RatingCommand
 import ru.astrainteractive.astrarating.command.rating.util.toRatingPlayer
 import ru.astrainteractive.astrarating.core.settings.model.AstraRatingTranslation
@@ -53,14 +52,6 @@ internal class RatingCommandExecutor(
         input.executor.sendMessage(messageOf(result, input))
     }
 
-    private fun reload(input: RatingCommand.Reload) {
-        when (input.executor) {
-            is KCommandDispatcher -> input.executor.dispatchCommand("aratingreload")
-
-            else -> Unit
-        }
-    }
-
     fun execute(input: RatingCommand) {
         when (input) {
             is RatingCommand.ChangeRating -> {
@@ -79,10 +70,6 @@ internal class RatingCommandExecutor(
                     selectedPlayerUUID = input.selectedPlayerUUID
                 )
                 router.navigate(route)
-            }
-
-            is RatingCommand.Reload -> {
-                reload(input)
             }
         }
     }

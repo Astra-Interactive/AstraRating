@@ -1,6 +1,5 @@
 package ru.astrainteractive.astrarating.command.rating.model
 
-import ru.astrainteractive.astralibs.command.api.brigadier.sender.KCommandSender
 import ru.astrainteractive.astralibs.server.player.KPlayer
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import java.util.UUID
@@ -20,6 +19,4 @@ internal sealed interface RatingCommand {
     ) : RatingCommand
 
     class OpenRatingsGui(val executor: OnlineKPlayer) : RatingCommand
-
-    class Reload(val executor: KCommandSender) : RatingCommand
 }
