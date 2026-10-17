@@ -51,7 +51,7 @@ internal class RatingLiteralArgumentBuilder(
                         val target = ctx.requireOnlinePlayer(playerArg)
 
                         ratingCommandExecutor.execute(
-                            RatingCommand.Result.OpenPlayerRatingGui(
+                            RatingCommand.OpenPlayerRatingGui(
                                 player = executor,
                                 selectedPlayerName = target.name,
                                 selectedPlayerUUID = target.uuid
@@ -69,7 +69,7 @@ internal class RatingLiteralArgumentBuilder(
         val playerCommandExecutor = with(multiplatformCommand) {
             ctx.requirePlayer()
         }
-        val result = RatingCommand.Result.OpenRatingsGui(playerCommandExecutor)
+        val result = RatingCommand.OpenRatingsGui(playerCommandExecutor)
         ratingCommandExecutor.execute(result)
     }
 
@@ -115,7 +115,7 @@ internal class RatingLiteralArgumentBuilder(
                                 val ratedPlayer = ctx.requireOfflinePlayer(playerArg)
 
                                 ratingCommandExecutor.execute(
-                                    RatingCommand.Result.ChangeRating(
+                                    RatingCommand.ChangeRating(
                                         value = value,
                                         message = ctx.requireArgument(messageArg, StringArgumentConverter),
                                         executor = executor,
