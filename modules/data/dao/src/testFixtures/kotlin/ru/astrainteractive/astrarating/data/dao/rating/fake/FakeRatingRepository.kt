@@ -16,6 +16,7 @@ class FakeRatingRepository : RatingRepository {
     private val totalsByPlayer = mutableMapOf<UUID, Int>()
     private val dayVotesByPlayer = mutableMapOf<UUID, Long>()
     private val dayVotesOnPlayer = mutableMapOf<Vote, Long>()
+    private var ratedUsers = emptyList<RatedUser>()
 
     val insertedRatings = mutableListOf<InsertedRating>()
 
@@ -44,6 +45,10 @@ class FakeRatingRepository : RatingRepository {
 
     fun setDayVotesOnPlayer(playerUUID: UUID, ratedPlayerUUID: UUID, count: Long) {
         dayVotesOnPlayer[Vote(playerUUID, ratedPlayerUUID)] = count
+    }
+
+    fun setRatedUsers(users: List<RatedUser>) {
+        ratedUsers = users
     }
 
     fun storeUser(user: User) {
@@ -90,7 +95,8 @@ class FakeRatingRepository : RatingRepository {
             totalsByPlayer[playerUUID] ?: 0
         }
 
-    override suspend fun fetchUsersTotalRating(): Result<List<RatedUser>> = notUsed()
+    override suspend fun fetchUsersTotalRating(): Result<List<RatedUser>> =
+        whenAvailable(Call.FETCH_USERS_TOTAL_RATING) { ratedUsers }
 
     override suspend fun countPlayerTotalDayRated(playerUUID: UUID): Result<Long> =
         whenAvailable(Call.COUNT_DAY_VOTES) {
@@ -109,6 +115,7 @@ class FakeRatingRepository : RatingRepository {
         INSERT_RATING,
         DELETE_RATING,
         FETCH_TOTAL_RATING,
+        FETCH_USERS_TOTAL_RATING,
         COUNT_DAY_VOTES,
         COUNT_DAY_VOTES_ON_PLAYER
     }

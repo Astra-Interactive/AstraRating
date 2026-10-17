@@ -1,18 +1,16 @@
-package ru.astrainteractive.astrarating.gui.api.rating.players.util
+package ru.astrainteractive.astrarating.data.exposed.rating
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.withContext
 import ru.astrainteractive.astrarating.core.cache.util.RefreshingCache
+import ru.astrainteractive.astrarating.data.dao.rating.api.RatedUsersCache
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
 import ru.astrainteractive.astrarating.data.dao.rating.model.RatedUser
-import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import kotlin.time.Duration.Companion.seconds
 
-internal class RatedUsersCache(
+internal class Cache4kRatedUsersCache(
     private val ratingRepository: RatingRepository,
-    private val dispatchers: KotlinDispatchers,
     coroutineScope: CoroutineScope
-) {
+) : RatedUsersCache {
     private val cache = RefreshingCache<Unit, List<RatedUser>>(
         expiresAfterAccess = 30.seconds,
         updateAfterAccess = 10.seconds,
@@ -21,13 +19,11 @@ internal class RatedUsersCache(
         update = { _ -> ratingRepository.fetchUsersTotalRating().getOrNull() }
     )
 
-    suspend fun fetchUsersTotalRating(): List<RatedUser> {
-        return withContext(dispatchers.IO) {
-            cache.get(Unit).orEmpty()
-        }
+    override suspend fun fetchUsersTotalRating(): List<RatedUser> {
+        return cache.get(Unit).orEmpty()
     }
 
-    fun clear() {
+    override fun clear() {
         cache.invalidateAll()
     }
 }

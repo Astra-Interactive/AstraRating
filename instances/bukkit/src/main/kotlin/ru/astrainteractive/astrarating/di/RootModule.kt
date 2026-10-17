@@ -73,9 +73,8 @@ class RootModule(plugin: LifecyclePlugin) {
 
     private val ratingPlayersModule: RatingPlayersModule by lazy {
         RatingPlayersModule(
-            ratingRepository = ratingStorageModule.ratingRepository,
-            dispatchers = coreModule.dispatchers,
-            coroutineScope = coreModule.ioScope
+            ratedUsersCache = ratingStorageModule.ratedUsersCache,
+            dispatchers = coreModule.dispatchers
         )
     }
 
@@ -115,7 +114,6 @@ class RootModule(plugin: LifecyclePlugin) {
             bukkitModule.lifecycle,
             exposedModule.lifecycle,
             ratingStorageModule.lifecycle,
-            ratingPlayersModule.lifecycle,
             commandsModule.lifecycle,
             eventModule.lifecycle,
             papiModule.lifecycle,

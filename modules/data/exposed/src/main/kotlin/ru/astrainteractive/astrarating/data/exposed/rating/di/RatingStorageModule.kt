@@ -4,8 +4,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import org.jetbrains.exposed.v1.jdbc.Database
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
+import ru.astrainteractive.astrarating.data.dao.rating.api.RatedUsersCache
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingCache
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
+import ru.astrainteractive.astrarating.data.exposed.rating.Cache4kRatedUsersCache
 import ru.astrainteractive.astrarating.data.exposed.rating.Cache4kRatingCache
 import ru.astrainteractive.astrarating.data.exposed.rating.CacheRefreshingRatingRepository
 import ru.astrainteractive.astrarating.data.exposed.rating.ExposedRatingRepository
@@ -32,6 +34,13 @@ class RatingStorageModule(
         )
     }
 
+    val ratedUsersCache: RatedUsersCache by lazy {
+        Cache4kRatedUsersCache(
+            ratingRepository = exposedRatingRepository,
+            coroutineScope = coroutineScope
+        )
+    }
+
     val ratingRepository: RatingRepository by lazy {
         CacheRefreshingRatingRepository(
             ratingRepository = exposedRatingRepository,
@@ -42,6 +51,7 @@ class RatingStorageModule(
     val lifecycle: Lifecycle = Lifecycle.Lambda(
         onDisable = {
             ratingCache.clear()
+            ratedUsersCache.clear()
         }
     )
 }
