@@ -11,6 +11,7 @@ import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.time.Instant
 
 class RatingRepositoryExtTest {
     private val repository = FakeRatingRepository()
@@ -19,7 +20,7 @@ class RatingRepositoryExtTest {
         id = 7L,
         minecraftUUID = playerUUID.toString(),
         minecraftName = "Tester",
-        lastUpdated = 0L
+        lastUpdated = Instant.fromEpochMilliseconds(0L)
     )
 
     @Test

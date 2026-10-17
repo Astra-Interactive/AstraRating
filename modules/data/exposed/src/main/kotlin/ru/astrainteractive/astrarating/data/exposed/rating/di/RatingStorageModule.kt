@@ -9,6 +9,7 @@ import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
 import ru.astrainteractive.astrarating.data.exposed.rating.Cache4kRatingCache
 import ru.astrainteractive.astrarating.data.exposed.rating.CacheRefreshingRatingRepository
 import ru.astrainteractive.astrarating.data.exposed.rating.ExposedRatingRepository
+import kotlin.time.Clock
 
 class RatingStorageModule(
     databaseFlow: Flow<Database>,
@@ -19,6 +20,7 @@ class RatingStorageModule(
     private val exposedRatingRepository: RatingRepository by lazy {
         ExposedRatingRepository(
             databaseFlow = databaseFlow,
+            clock = Clock.System,
             isDebugProvider = isDebugProvider
         )
     }

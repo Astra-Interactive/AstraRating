@@ -8,6 +8,7 @@ import ru.astrainteractive.astrarating.data.dao.rating.model.RatingType
 import ru.astrainteractive.astrarating.data.dao.rating.model.User
 import ru.astrainteractive.astrarating.data.dao.rating.model.UserRating
 import java.util.UUID
+import kotlin.time.Instant
 
 @Suppress("TooManyFunctions")
 class FakeRatingRepository : RatingRepository {
@@ -60,7 +61,7 @@ class FakeRatingRepository : RatingRepository {
             id = usersByPlayer.size + 1L,
             minecraftUUID = user.minecraftUUID.toString(),
             minecraftName = user.minecraftName,
-            lastUpdated = 0L
+            lastUpdated = Instant.fromEpochMilliseconds(0L)
         )
         storeUser(insertedUser)
         insertedUser

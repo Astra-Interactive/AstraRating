@@ -33,12 +33,15 @@ import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import java.util.UUID
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 @Suppress("TooManyFunctions")
 internal class ExposedRatingRepository(
     private val databaseFlow: Flow<Database>,
+    private val clock: Clock,
     private val isDebugProvider: () -> Boolean
 ) : RatingRepository, Logger by JUtiltLogger("AstraRating-RatingDBApi") {
     private fun <T> Result<T>.logFailure(): Result<T> {
@@ -64,7 +67,7 @@ internal class ExposedRatingRepository(
             id = row[UserTable.id].value,
             minecraftUUID = row[UserTable.minecraftUUID],
             minecraftName = row[UserTable.minecraftName],
-            lastUpdated = row[UserTable.lastUpdated]
+            lastUpdated = Instant.fromEpochMilliseconds(row[UserTable.lastUpdated])
         )
     }
 
@@ -77,10 +80,10 @@ internal class ExposedRatingRepository(
                     id = reporterId.value,
                     minecraftName = row[UserTable.minecraftName],
                     minecraftUUID = row[UserTable.minecraftUUID],
-                    lastUpdated = row[UserTable.lastUpdated]
+                    lastUpdated = Instant.fromEpochMilliseconds(row[UserTable.lastUpdated])
                 )
             },
-            time = row[UserRatingTable.time],
+            time = Instant.fromEpochMilliseconds(row[UserRatingTable.time]),
             rating = row[UserRatingTable.rating],
             ratingType = RatingType.entries
                 .getOrNull(row[UserRatingTable.ratingTypeIndex])
@@ -102,16 +105,16 @@ internal class ExposedRatingRepository(
             where = { UserTable.minecraftUUID.eq(user.minecraftUUID) },
             body = { statement ->
                 statement[UserTable.minecraftName] = user.minecraftName
-                statement[UserTable.lastUpdated] = user.lastUpdated
+                statement[UserTable.lastUpdated] = user.lastUpdated.toEpochMilliseconds()
             }
         )
     }.map { _ -> }
 
     override suspend fun insertUser(user: NewUser): Result<User> {
-        val lastUpdated = System.currentTimeMillis()
+        val lastUpdated = Instant.fromEpochMilliseconds(clock.now().toEpochMilliseconds())
         return query {
             UserTable.insertAndGetId { statement ->
-                statement[UserTable.lastUpdated] = lastUpdated
+                statement[UserTable.lastUpdated] = lastUpdated.toEpochMilliseconds()
                 statement[UserTable.minecraftUUID] = user.minecraftUUID.toString()
                 statement[UserTable.minecraftName] = user.minecraftName
             }.value
@@ -137,7 +140,7 @@ internal class ExposedRatingRepository(
             statement[UserRatingTable.reportedUser] = reported.id
             statement[UserRatingTable.rating] = ratingValue
             statement[UserRatingTable.message] = message
-            statement[UserRatingTable.time] = System.currentTimeMillis()
+            statement[UserRatingTable.time] = clock.now().toEpochMilliseconds()
             statement[UserRatingTable.ratingTypeIndex] = type.ordinal
         }.value
     }
@@ -207,7 +210,7 @@ internal class ExposedRatingRepository(
                         id = row[UserTable.id].value,
                         minecraftUUID = row[UserTable.minecraftUUID],
                         minecraftName = row[UserTable.minecraftName],
-                        lastUpdated = row[lastUpdated] ?: 0L,
+                        lastUpdated = Instant.fromEpochMilliseconds(row[lastUpdated] ?: 0L),
                     ),
                     ratingTotal = row[ratingsSum] ?: 0,
                     ratingCounts = row[ratingsCount]
@@ -222,7 +225,7 @@ internal class ExposedRatingRepository(
             UserRatingTable.selectAll()
                 .where {
                     UserRatingTable.userCreatedReport.eq(user.id).and {
-                        UserRatingTable.time.greater(System.currentTimeMillis() - 1.days.inWholeMilliseconds)
+                        UserRatingTable.time.greater((clock.now() - 1.days).toEpochMilliseconds())
                     }
                 }.count()
         }

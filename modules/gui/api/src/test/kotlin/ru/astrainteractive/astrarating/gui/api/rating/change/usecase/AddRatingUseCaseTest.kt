@@ -17,6 +17,7 @@ import ru.astrainteractive.klibs.kstorage.api.impl.DefaultMutableKrate
 import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Instant
 
 class AddRatingUseCaseTest {
     private val repository = FakeRatingRepository()
@@ -51,7 +52,12 @@ class AddRatingUseCaseTest {
     )
 
     private fun storedUser(player: RatingPlayer): User {
-        val user = User(id = 10L, minecraftUUID = player.uuid.toString(), minecraftName = player.name, lastUpdated = 0L)
+        val user = User(
+            id = 10L,
+            minecraftUUID = player.uuid.toString(),
+            minecraftName = player.name,
+            lastUpdated = Instant.fromEpochMilliseconds(0L)
+        )
         repository.storeUser(user)
         return user
     }

@@ -8,17 +8,23 @@ import ru.astrainteractive.astrarating.data.dao.rating.model.UserRating
 import ru.astrainteractive.astrarating.gui.api.rating.player.model.UserRatingsSort
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Instant
 
 class UserRatingsSortExtTest {
-    private val reported = User(id = 1L, minecraftUUID = "reported", minecraftName = "Reported", lastUpdated = 0L)
+    private val reported = User(
+        id = 1L,
+        minecraftUUID = "reported",
+        minecraftName = "Reported",
+        lastUpdated = Instant.fromEpochMilliseconds(0L)
+    )
 
-    private fun rating(id: Long, reporterName: String, value: Int, time: Long): UserRating = UserRating(
+    private fun rating(id: Long, reporterName: String, value: Int, time: Instant): UserRating = UserRating(
         id = id,
         userCreatedReport = User(
             id = id + 1,
             minecraftUUID = reporterName,
             minecraftName = reporterName,
-            lastUpdated = 0L
+            lastUpdated = Instant.fromEpochMilliseconds(0L)
         ),
         reportedUser = reported,
         rating = value,
@@ -28,9 +34,9 @@ class UserRatingsSortExtTest {
     )
 
     private val ratings = listOf(
-        rating(id = 1L, reporterName = "Bob", value = 1, time = 30L),
-        rating(id = 2L, reporterName = "Alice", value = -1, time = 10L),
-        rating(id = 3L, reporterName = "Carol", value = 3, time = 20L)
+        rating(id = 1L, reporterName = "Bob", value = 1, time = Instant.fromEpochMilliseconds(30L)),
+        rating(id = 2L, reporterName = "Alice", value = -1, time = Instant.fromEpochMilliseconds(10L)),
+        rating(id = 3L, reporterName = "Carol", value = 3, time = Instant.fromEpochMilliseconds(20L))
     )
 
     private fun List<UserRating>.ids(): List<Long> = map { rating -> rating.id }

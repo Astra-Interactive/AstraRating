@@ -11,13 +11,14 @@ import ru.astrainteractive.astrarating.data.dao.rating.model.UserRating
 import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Instant
 
 internal class CacheRefreshingRatingRepositoryTest {
     private val tester = User(
         id = 1L,
         minecraftUUID = "f3d28cb0-7225-3cb1-baeb-2dadd2be89ae",
         minecraftName = "Tester",
-        lastUpdated = 0L
+        lastUpdated = Instant.fromEpochMilliseconds(0L)
     )
     private val testerUuid = UUID.fromString(tester.minecraftUUID)
     private val exposedRatingRepository = FakeRatingRepository()
@@ -68,7 +69,7 @@ internal class CacheRefreshingRatingRepositoryTest {
                 rating = 1,
                 message = "like",
                 ratingType = RatingType.USER_RATING,
-                time = 0L
+                time = Instant.fromEpochMilliseconds(0L)
             )
         )
 

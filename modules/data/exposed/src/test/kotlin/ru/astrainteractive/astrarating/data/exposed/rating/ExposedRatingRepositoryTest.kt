@@ -28,6 +28,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
+import kotlin.time.Clock
 
 class ExposedRatingRepositoryTest {
     private var module: ExposedModule? = null
@@ -37,6 +38,7 @@ class ExposedRatingRepositoryTest {
     private val repository: ExposedRatingRepository
         get() = ExposedRatingRepository(
             databaseFlow = requireModule.databaseFlow,
+            clock = Clock.System,
             isDebugProvider = { false }
         )
 
@@ -203,6 +205,7 @@ class ExposedRatingRepositoryTest {
     fun GIVEN_database_never_connects_WHEN_user_is_found_THEN_database_unavailable_is_returned() = runTest {
         val disconnectedRepository = ExposedRatingRepository(
             databaseFlow = flow<Database> { awaitCancellation() },
+            clock = Clock.System,
             isDebugProvider = { true }
         )
 
