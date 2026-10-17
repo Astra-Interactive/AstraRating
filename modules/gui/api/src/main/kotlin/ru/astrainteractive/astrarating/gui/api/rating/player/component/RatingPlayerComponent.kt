@@ -9,19 +9,22 @@ import java.util.UUID
 
 interface RatingPlayerComponent : CoroutineScope {
     val model: StateFlow<Model>
+
     fun onSortClicked(isRightClick: Boolean = false)
+
     fun onDeleteClicked(item: UserRating)
+
     data class Model(
         val playerName: String,
         val playerUUID: UUID,
-        val allRatings: List<UserRating> = emptyList(),
-        val sort: UserRatingsSort = UserRatingsSort.Rating(true),
-        val isLoading: Boolean = false
+        val allRatings: List<UserRating>,
+        val sort: UserRatingsSort,
+        val isLoading: Boolean
     ) {
         val userRatings: List<UserRating>
-            get() = allRatings.filter { it.userCreatedReport != null }
+            get() = allRatings.filter { rating -> rating.userCreatedReport != null }
 
         val killCounts: Int
-            get() = allRatings.count { it.ratingType == RatingType.PLAYER_KILL }
+            get() = allRatings.count { rating -> rating.ratingType == RatingType.PLAYER_KILL }
     }
 }

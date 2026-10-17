@@ -6,51 +6,48 @@ import kotlinx.coroutines.launch
 import ru.astrainteractive.astralibs.coroutines.withTimings
 import ru.astrainteractive.astrarating.core.util.sortedBy
 import ru.astrainteractive.astrarating.gui.api.rating.players.model.UsersRatingsSort
-import ru.astrainteractive.astrarating.gui.api.rating.players.util.RatingPlayersCachedRepository
+import ru.astrainteractive.astrarating.gui.api.rating.players.util.RatedUsersCache
+import ru.astrainteractive.astrarating.gui.api.util.nextAfter
 import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
-import kotlin.math.absoluteValue
 
 internal class DefaultRatingPlayersComponent(
-    private val repository: RatingPlayersCachedRepository,
+    private val ratedUsersCache: RatedUsersCache,
     dispatchers: KotlinDispatchers
 ) : RatingPlayersComponent,
     CoroutineFeature by CoroutineFeature.Default(dispatchers.Main).withTimings() {
-    override val model = MutableStateFlow(RatingPlayersComponent.Model())
+    override val model = MutableStateFlow(
+        RatingPlayersComponent.Model(
+            userRatings = emptyList(),
+            sort = UsersRatingsSort.TotalRating(true),
+            isLoading = false
+        )
+    )
 
     override fun onSortClicked(isRightClick: Boolean) {
-        val sorts = listOf(
-            UsersRatingsSort.TotalRating(true),
-            UsersRatingsSort.TotalRating(false),
-        )
-        val offset = if (isRightClick) -1 else 1
-        val i = sorts.indexOfFirst { sortType -> sortType == model.value.sort }
-
-        val newSortType = if (i == -1) {
-            sorts.first()
-        } else if (i + offset == -1) {
-            sorts[sorts.lastIndex]
-        } else {
-            sorts[(i + offset).absoluteValue % sorts.size]
-        }
-
-        val userRatings = model.value.userRatings
-        val sortedUserRatings = userRatings.sortedBy(newSortType.isAsc) { it.ratingTotal }
-        model.update {
-            it.copy(
-                userRatings = sortedUserRatings,
-                sort = newSortType
+        val newSort = SORTS.nextAfter(model.value.sort, backwards = isRightClick)
+        model.update { currentModel ->
+            currentModel.copy(
+                userRatings = currentModel.userRatings.sortedBy(newSort.isAsc) { ratedUser -> ratedUser.ratingTotal },
+                sort = newSort
             )
         }
     }
 
     init {
         launch(dispatchers.IO) {
-            model.update { it.copy(isLoading = true) }
-            val userRatings = repository.fetchUsersTotalRating()
-            model.update { it.copy(userRatings = userRatings) }
+            model.update { currentModel -> currentModel.copy(isLoading = true) }
+            val userRatings = ratedUsersCache.fetchUsersTotalRating()
+            model.update { currentModel -> currentModel.copy(userRatings = userRatings) }
             onSortClicked()
-            model.update { it.copy(isLoading = false) }
+            model.update { currentModel -> currentModel.copy(isLoading = false) }
         }
+    }
+
+    companion object {
+        private val SORTS = listOf(
+            UsersRatingsSort.TotalRating(true),
+            UsersRatingsSort.TotalRating(false),
+        )
     }
 }

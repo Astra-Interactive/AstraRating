@@ -7,11 +7,12 @@ import ru.astrainteractive.astrarating.gui.api.rating.players.model.UsersRatings
 
 interface RatingPlayersComponent : CoroutineScope {
     val model: StateFlow<Model>
+
     fun onSortClicked(isRightClick: Boolean = false)
 
     data class Model(
-        val userRatings: List<RatedUser> = emptyList(),
-        val sort: UsersRatingsSort = UsersRatingsSort.TotalRating(true),
-        val isLoading: Boolean = false
+        val userRatings: List<RatedUser>,
+        val sort: UsersRatingsSort,
+        val isLoading: Boolean
     )
 }

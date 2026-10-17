@@ -8,28 +8,26 @@ import ru.astrainteractive.astrarating.data.dao.rating.model.RatedUser
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 import kotlin.time.Duration.Companion.seconds
 
-internal class RatingPlayersCachedRepositoryImpl(
-    private val dbApi: RatingRepository,
-    private val coroutineScope: CoroutineScope,
-    private val dispatchers: KotlinDispatchers
-) : RatingPlayersCachedRepository {
-    private val jcache = Cache4kCache<Unit, List<RatedUser>>(
+internal class RatedUsersCache(
+    private val ratingRepository: RatingRepository,
+    private val dispatchers: KotlinDispatchers,
+    coroutineScope: CoroutineScope
+) {
+    private val cache = Cache4kCache<Unit, List<RatedUser>>(
         expiresAfterAccess = 30.seconds,
         updateAfterAccess = 10.seconds,
         maximumSize = 1L,
         coroutineScope = coroutineScope,
-        update = {
-            dbApi.fetchUsersTotalRating().getOrDefault(emptyList())
-        }
+        update = { _ -> ratingRepository.fetchUsersTotalRating().getOrNull() }
     )
 
-    override suspend fun fetchUsersTotalRating(): List<RatedUser> {
+    suspend fun fetchUsersTotalRating(): List<RatedUser> {
         return withContext(dispatchers.IO) {
-            jcache.get(Unit).orEmpty()
+            cache.get(Unit).orEmpty()
         }
     }
 
-    override fun clear() {
-        jcache.invalidateAll()
+    fun clear() {
+        cache.invalidateAll()
     }
 }

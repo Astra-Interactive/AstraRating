@@ -7,85 +7,78 @@ import ru.astrainteractive.astralibs.coroutines.withTimings
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
 import ru.astrainteractive.astrarating.data.dao.rating.model.UserRating
 import ru.astrainteractive.astrarating.gui.api.rating.player.model.UserRatingsSort
-import ru.astrainteractive.astrarating.gui.api.rating.player.util.RatingSortUseCase
+import ru.astrainteractive.astrarating.gui.api.rating.player.util.sortedBy
+import ru.astrainteractive.astrarating.gui.api.util.nextAfter
 import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
+import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
+import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import java.util.UUID
-import kotlin.math.absoluteValue
 
 internal class DefaultRatingPlayerComponent(
     playerName: String,
     playerUUID: UUID,
-    private val dbApi: RatingRepository,
-    private val dispatchers: KotlinDispatchers,
-    private val ratingSortUseCase: RatingSortUseCase
+    private val ratingRepository: RatingRepository,
+    private val dispatchers: KotlinDispatchers
 ) : RatingPlayerComponent,
-    CoroutineFeature by CoroutineFeature.Default(dispatchers.Main).withTimings() {
+    CoroutineFeature by CoroutineFeature.Default(dispatchers.Main).withTimings(),
+    Logger by JUtiltLogger("AstraRating-RatingPlayerComponent") {
     override val model = MutableStateFlow(
         RatingPlayerComponent.Model(
             playerName = playerName,
-            playerUUID = playerUUID
+            playerUUID = playerUUID,
+            allRatings = emptyList(),
+            sort = UserRatingsSort.Rating(true),
+            isLoading = false
         )
     )
 
     override fun onSortClicked(isRightClick: Boolean) {
         launch(dispatchers.IO) {
-            val sorts = listOf(
-                UserRatingsSort.Rating(true),
-                UserRatingsSort.Rating(false),
-                UserRatingsSort.Player(true),
-                UserRatingsSort.Player(false),
-                UserRatingsSort.Date(true),
-                UserRatingsSort.Date(false)
-            )
-            val offset = if (isRightClick) -1 else 1
-            val i = sorts.indexOfFirst { sortType -> sortType == model.value.sort }
-
-            val newSortType = if (i == -1) {
-                sorts.first()
-            } else if (i + offset == -1) {
-                sorts[sorts.lastIndex]
-            } else {
-                sorts[(i + offset).absoluteValue % sorts.size]
-            }
-            val input = RatingSortUseCase.Input(
-                ratings = model.value.allRatings,
-                sort = newSortType
-            )
-            val result = ratingSortUseCase.invoke(input)
-            model.update {
-                it.copy(
-                    sort = newSortType,
-                    allRatings = result.ratings
+            val newSort = SORTS.nextAfter(model.value.sort, backwards = isRightClick)
+            model.update { currentModel ->
+                currentModel.copy(
+                    sort = newSort,
+                    allRatings = currentModel.allRatings.sortedBy(newSort)
                 )
             }
         }
     }
 
-    override fun onDeleteClicked(item: UserRating) {
+    private fun reload() {
         launch(dispatchers.IO) {
-            model.update { it.copy(isLoading = true) }
-            dbApi.deleteUserRating(item)
-            model.update { it.copy(isLoading = false) }
-            reload()
+            model.update { currentModel -> currentModel.copy(isLoading = true) }
+            val userRatings = ratingRepository.fetchUserRatings(model.value.playerUUID)
+                .onFailure { throwable -> error(throwable) { "#reload ratings of ${model.value.playerName} failed" } }
+                .getOrDefault(emptyList())
+            model.update { currentModel -> currentModel.copy(allRatings = userRatings) }
+            onSortClicked()
+            model.update { currentModel -> currentModel.copy(isLoading = false) }
         }
     }
 
-    private fun reload() {
+    override fun onDeleteClicked(item: UserRating) {
         launch(dispatchers.IO) {
-            model.update { it.copy(isLoading = true) }
-            val userRatings = dbApi.fetchUserRatings(model.value.playerUUID)
-                .onFailure(Throwable::printStackTrace)
-                .getOrDefault(emptyList())
-            model.update {
-                it.copy(allRatings = userRatings)
-            }
-            onSortClicked()
-            model.update { it.copy(isLoading = false) }
+            model.update { currentModel -> currentModel.copy(isLoading = true) }
+            ratingRepository.deleteUserRating(item)
+                .onFailure { throwable -> error(throwable) { "#onDeleteClicked rating ${item.id} failed" } }
+            model.update { currentModel -> currentModel.copy(isLoading = false) }
+            reload()
         }
     }
 
     init {
         reload()
+    }
+
+    companion object {
+        private val SORTS = listOf(
+            UserRatingsSort.Rating(true),
+            UserRatingsSort.Rating(false),
+            UserRatingsSort.Player(true),
+            UserRatingsSort.Player(false),
+            UserRatingsSort.Date(true),
+            UserRatingsSort.Date(false)
+        )
     }
 }

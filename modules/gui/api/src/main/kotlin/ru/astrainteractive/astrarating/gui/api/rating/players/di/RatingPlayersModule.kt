@@ -5,7 +5,7 @@ import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
 import ru.astrainteractive.astrarating.gui.api.rating.players.component.DefaultRatingPlayersComponent
 import ru.astrainteractive.astrarating.gui.api.rating.players.component.RatingPlayersComponent
-import ru.astrainteractive.astrarating.gui.api.rating.players.util.RatingPlayersCachedRepositoryImpl
+import ru.astrainteractive.astrarating.gui.api.rating.players.util.RatedUsersCache
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 class RatingPlayersModule(
@@ -13,22 +13,22 @@ class RatingPlayersModule(
     private val dispatchers: KotlinDispatchers,
     private val coroutineScope: CoroutineScope,
 ) {
-    private val allRatingsRepository by lazy {
-        RatingPlayersCachedRepositoryImpl(
-            dbApi = ratingRepository,
-            coroutineScope = coroutineScope,
-            dispatchers = dispatchers
-        )
-    }
-
-    fun createAllRatingsComponent(): RatingPlayersComponent {
-        return DefaultRatingPlayersComponent(
-            repository = allRatingsRepository,
-            dispatchers = dispatchers
+    private val ratedUsersCache by lazy {
+        RatedUsersCache(
+            ratingRepository = ratingRepository,
+            dispatchers = dispatchers,
+            coroutineScope = coroutineScope
         )
     }
 
     val lifecycle: Lifecycle = Lifecycle.Lambda(
-        onDisable = { allRatingsRepository.clear() }
+        onDisable = { ratedUsersCache.clear() }
     )
+
+    fun createAllRatingsComponent(): RatingPlayersComponent {
+        return DefaultRatingPlayersComponent(
+            ratedUsersCache = ratedUsersCache,
+            dispatchers = dispatchers
+        )
+    }
 }
