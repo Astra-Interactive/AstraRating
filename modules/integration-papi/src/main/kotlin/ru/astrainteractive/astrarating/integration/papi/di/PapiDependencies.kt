@@ -1,7 +1,7 @@
 package ru.astrainteractive.astrarating.integration.papi.di
 
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingCache
-import ru.astrainteractive.astrarating.integration.papi.model.PapiConfig
+import ru.astrainteractive.astrarating.integration.papi.placeholder.model.PapiConfig
 
 internal interface PapiDependencies {
     val ratingCache: RatingCache

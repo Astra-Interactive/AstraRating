@@ -1,0 +1,36 @@
+@file:Suppress("FunctionNaming")
+
+package ru.astrainteractive.astrarating.integration.papi.placeholder.expansion
+
+import ru.astrainteractive.astrarating.data.dao.rating.memory.InMemoryRatingCache
+import ru.astrainteractive.astrarating.integration.papi.di.PapiDependencies
+import ru.astrainteractive.astrarating.integration.papi.placeholder.model.PapiConfig
+import kotlin.test.Test
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+
+internal class RatingPlaceholderExpansionTest {
+    @Test
+    fun GIVEN_plugin_registered_expansion_WHEN_placeholderapi_reloads_THEN_expansion_is_kept() {
+        val expansion = RatingPlaceholderExpansion(
+            dependencies = PapiDependencies.Default(
+                ratingCache = InMemoryRatingCache(ratings = emptyMap()),
+                getPapiConfiguration = { PapiConfig(colorings = emptyList()) }
+            )
+        )
+
+        assertTrue(expansion.persist())
+    }
+
+    @Test
+    fun GIVEN_no_player_WHEN_rating_is_requested_THEN_placeholder_is_left_unparsed() {
+        val expansion = RatingPlaceholderExpansion(
+            dependencies = PapiDependencies.Default(
+                ratingCache = InMemoryRatingCache(ratings = emptyMap()),
+                getPapiConfiguration = { PapiConfig(colorings = emptyList()) }
+            )
+        )
+
+        assertNull(expansion.onRequest(player = null, params = "rating"))
+    }
+}

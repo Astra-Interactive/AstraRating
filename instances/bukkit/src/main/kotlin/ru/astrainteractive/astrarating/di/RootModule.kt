@@ -13,11 +13,11 @@ import ru.astrainteractive.astrarating.core.di.CoreModule
 import ru.astrainteractive.astrarating.data.exposed.di.ExposedModule
 import ru.astrainteractive.astrarating.data.exposed.rating.di.RatingStorageModule
 import ru.astrainteractive.astrarating.event.di.EventModule
-import ru.astrainteractive.astrarating.feature.gui.di.GuiBukkitModule
-import ru.astrainteractive.astrarating.feature.gui.di.GuiModule
-import ru.astrainteractive.astrarating.feature.rating.players.di.RatingPlayersModule
-import ru.astrainteractive.astrarating.feature.ratings.player.di.RatingPlayerModule
+import ru.astrainteractive.astrarating.gui.api.di.GuiModule
 import ru.astrainteractive.astrarating.gui.api.rating.change.di.RatingChangeModule
+import ru.astrainteractive.astrarating.gui.api.rating.player.di.RatingPlayerModule
+import ru.astrainteractive.astrarating.gui.api.rating.players.di.RatingPlayersModule
+import ru.astrainteractive.astrarating.gui.bukkit.di.GuiBukkitModule
 import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
 
 class RootModule(plugin: LifecyclePlugin) {

@@ -4,11 +4,11 @@ import ru.astrainteractive.astralibs.command.api.registrar.CommandRegistrarConte
 import ru.astrainteractive.astralibs.command.api.registrar.registerWhenReady
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.server.bridge.PlatformServer
-import ru.astrainteractive.astrarating.command.rating.RatingCommandExecutor
-import ru.astrainteractive.astrarating.command.rating.RatingLiteralArgumentBuilder
-import ru.astrainteractive.astrarating.command.reload.ReloadLiteralArgumentBuilder
+import ru.astrainteractive.astrarating.command.rating.command.RatingCommandExecutor
+import ru.astrainteractive.astrarating.command.rating.command.RatingLiteralArgumentBuilder
+import ru.astrainteractive.astrarating.command.reload.command.ReloadLiteralArgumentBuilder
 import ru.astrainteractive.astrarating.core.di.CoreModule
-import ru.astrainteractive.astrarating.feature.gui.di.GuiModule
+import ru.astrainteractive.astrarating.gui.api.di.GuiModule
 import ru.astrainteractive.astrarating.gui.api.rating.change.di.RatingChangeModule
 
 @Suppress("LongParameterList")

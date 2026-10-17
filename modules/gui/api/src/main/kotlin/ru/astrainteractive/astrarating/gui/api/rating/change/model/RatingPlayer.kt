@@ -1,8 +1,8 @@
 package ru.astrainteractive.astrarating.gui.api.rating.change.model
 
 import ru.astrainteractive.astralibs.server.permission.KPermissible
-import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
-import ru.astrainteractive.astrarating.core.settings.AstraRatingPermission
+import ru.astrainteractive.astrarating.core.settings.model.AstraRatingConfig
+import ru.astrainteractive.astrarating.core.settings.model.AstraRatingPermission
 import ru.astrainteractive.astrarating.data.dao.rating.model.NewUser
 import java.util.UUID
 

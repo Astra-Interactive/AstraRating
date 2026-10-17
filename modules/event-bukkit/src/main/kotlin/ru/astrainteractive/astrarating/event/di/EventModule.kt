@@ -7,9 +7,9 @@ import ru.astrainteractive.astrarating.core.di.BukkitModule
 import ru.astrainteractive.astrarating.core.di.CoreModule
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingCache
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
-import ru.astrainteractive.astrarating.event.kill.KillEventListener
-import ru.astrainteractive.astrarating.event.login.LoginEvent
-import ru.astrainteractive.astrarating.event.login.RatingCacheWarmUp
+import ru.astrainteractive.astrarating.event.kill.event.KillEventListener
+import ru.astrainteractive.astrarating.event.login.event.LoginEvent
+import ru.astrainteractive.astrarating.event.login.event.RatingCacheWarmUp
 
 class EventModule(
     coreModule: CoreModule,

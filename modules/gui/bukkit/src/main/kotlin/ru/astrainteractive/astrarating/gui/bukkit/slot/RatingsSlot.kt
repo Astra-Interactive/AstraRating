@@ -1,0 +1,52 @@
+package ru.astrainteractive.astrarating.gui.bukkit.slot
+
+import ru.astrainteractive.astralibs.menu.clicker.Click
+import ru.astrainteractive.astralibs.menu.slot.InventorySlot
+import ru.astrainteractive.astralibs.menu.slot.editMeta
+import ru.astrainteractive.astralibs.menu.slot.setIndex
+import ru.astrainteractive.astralibs.menu.slot.setItemStack
+import ru.astrainteractive.astralibs.menu.slot.setOnClickListener
+import ru.astrainteractive.astrarating.gui.bukkit.context.SlotContext
+import ru.astrainteractive.astrarating.gui.bukkit.util.PlayerHeadUtil
+import ru.astrainteractive.astrarating.gui.bukkit.util.TimeUtility
+
+@Suppress("LongParameterList")
+internal fun SlotContext.ratingsSlot(
+    index: Int,
+    click: Click,
+    firstPlayed: Long,
+    lastPlayed: Long,
+    ratingTotal: Int,
+    ratingCounts: Long,
+    playerName: String
+): InventorySlot = InventorySlot.Builder()
+    .setIndex(index)
+    .setItemStack(PlayerHeadUtil.getHead(playerName))
+    .editMeta {
+        displayName(translation.menu.playerName(playerName).toComponent(locale))
+        buildList {
+            if (config.gui.showFirstConnection) {
+                val timeFormatted = TimeUtility.formatToString(
+                    time = firstPlayed,
+                    format = config.gui.format
+                ).orEmpty()
+                if (timeFormatted.isNotBlank() && firstPlayed != 0L) {
+                    add(translation.menu.firstConnection(timeFormatted).toComponent(locale))
+                }
+            }
+            if (config.gui.showLastConnection) {
+                val timeFormatted = TimeUtility.formatToString(
+                    time = lastPlayed,
+                    format = config.gui.format
+                ).orEmpty()
+                if (timeFormatted.isNotBlank() && lastPlayed != 0L) {
+                    add(translation.menu.lastConnection(timeFormatted).toComponent(locale))
+                }
+            }
+            val rating = translation.menu.ratingValue(isPositive = ratingTotal > 0, text = "$ratingTotal")
+            add(translation.ratingsMenu.total(rating).toComponent(locale))
+            add(translation.ratingsMenu.count(ratingCounts).toComponent(locale))
+        }.run(::lore)
+    }
+    .setOnClickListener(click)
+    .build()

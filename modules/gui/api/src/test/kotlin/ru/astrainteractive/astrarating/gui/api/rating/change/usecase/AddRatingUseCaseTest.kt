@@ -4,8 +4,8 @@ package ru.astrainteractive.astrarating.gui.api.rating.change.usecase
 
 import kotlinx.coroutines.test.runTest
 import ru.astrainteractive.astralibs.server.permission.Permission
-import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
-import ru.astrainteractive.astrarating.core.settings.AstraRatingPermission
+import ru.astrainteractive.astrarating.core.settings.model.AstraRatingConfig
+import ru.astrainteractive.astrarating.core.settings.model.AstraRatingPermission
 import ru.astrainteractive.astrarating.data.dao.rating.fake.FakeRatingRepository
 import ru.astrainteractive.astrarating.data.dao.rating.model.RatingType
 import ru.astrainteractive.astrarating.data.dao.rating.model.User
