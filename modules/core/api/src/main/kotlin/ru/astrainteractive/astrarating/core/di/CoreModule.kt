@@ -9,10 +9,9 @@ import ru.astrainteractive.astralibs.coroutines.withTimings
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.util.YamlStringFormat
 import ru.astrainteractive.astralibs.util.parseOrWriteIntoDefault
-import ru.astrainteractive.astrarating.core.command.CommandExceptionHandler
-import ru.astrainteractive.astrarating.core.migration.ConfigSnakeCaseMigration
-import ru.astrainteractive.astrarating.core.settings.AstraRatingConfig
-import ru.astrainteractive.astrarating.core.settings.AstraRatingTranslation
+import ru.astrainteractive.astrarating.core.settings.migration.migrateConfigToSnakeCase
+import ru.astrainteractive.astrarating.core.settings.model.AstraRatingConfig
+import ru.astrainteractive.astrarating.core.settings.model.AstraRatingTranslation
 import ru.astrainteractive.klibs.kstorage.api.asStateFlowMutableKrate
 import ru.astrainteractive.klibs.kstorage.api.impl.DefaultMutableKrate
 import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
@@ -47,16 +46,11 @@ class CoreModule(
         }
     ).asStateFlowMutableKrate()
 
-    val commandExceptionHandler = CommandExceptionHandler(
-        multiplatformCommand = multiplatformCommand,
-        translationKrate = translationKrate
-    )
-
     val configKrate = DefaultMutableKrate(
         factory = ::AstraRatingConfig,
         loader = {
             val configFile = dataFolder.resolve("config.yml")
-            ConfigSnakeCaseMigration.migrate(configFile)
+            migrateConfigToSnakeCase(configFile)
             yamlStringFormat.parseOrWriteIntoDefault(
                 file = configFile,
                 default = ::AstraRatingConfig,

@@ -4,12 +4,13 @@ import ru.astrainteractive.astralibs.command.api.registrar.CommandRegistrarConte
 import ru.astrainteractive.astralibs.command.api.registrar.registerWhenReady
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.server.bridge.PlatformServer
-import ru.astrainteractive.astrarating.command.rating.RatingCommandExecutor
-import ru.astrainteractive.astrarating.command.rating.RatingLiteralArgumentBuilder
-import ru.astrainteractive.astrarating.command.reload.ReloadLiteralArgumentBuilder
+import ru.astrainteractive.astrarating.command.error.CommandExceptionHandler
+import ru.astrainteractive.astrarating.command.rating.command.RatingCommandExecutor
+import ru.astrainteractive.astrarating.command.rating.command.RatingLiteralArgumentBuilder
+import ru.astrainteractive.astrarating.command.reload.command.ReloadLiteralArgumentBuilder
 import ru.astrainteractive.astrarating.core.di.CoreModule
-import ru.astrainteractive.astrarating.feature.gui.di.GuiModule
-import ru.astrainteractive.astrarating.feature.rating.change.di.RatingChangeModule
+import ru.astrainteractive.astrarating.gui.api.di.GuiModule
+import ru.astrainteractive.astrarating.gui.api.rating.change.di.RatingChangeModule
 
 @Suppress("LongParameterList")
 class CommandsModule(
@@ -20,15 +21,20 @@ class CommandsModule(
     platformServer: PlatformServer,
     ratingChangeModule: RatingChangeModule,
 ) {
+    private val commandExceptionHandler = CommandExceptionHandler(
+        multiplatformCommand = coreModule.multiplatformCommand,
+        translationKrate = coreModule.translationKrate
+    )
+
     private val nodes = listOf(
         ReloadLiteralArgumentBuilder(
             multiplatformCommand = coreModule.multiplatformCommand,
-            commandExceptionHandler = coreModule.commandExceptionHandler,
+            commandExceptionHandler = commandExceptionHandler,
             lifecyclePlugin = lifecyclePlugin,
             translationKrate = coreModule.translationKrate
         ).create(),
         RatingLiteralArgumentBuilder(
-            commandExceptionHandler = coreModule.commandExceptionHandler,
+            commandExceptionHandler = commandExceptionHandler,
             ratingCommandExecutor = RatingCommandExecutor(
                 addRatingUseCase = ratingChangeModule.addRatingUseCase,
                 translationKrate = coreModule.translationKrate,

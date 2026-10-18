@@ -1,6 +1,5 @@
 package ru.astrainteractive.astrarating.core.di
 
-import com.google.common.cache.CacheBuilder
 import org.bstats.bukkit.Metrics
 import ru.astrainteractive.astralibs.event.EventListener
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
@@ -12,7 +11,6 @@ class BukkitModule(
 ) {
 
     val inventoryClickEvent by lazy {
-        CacheBuilder.newBuilder()
         DefaultInventoryClickEvent()
     }
 

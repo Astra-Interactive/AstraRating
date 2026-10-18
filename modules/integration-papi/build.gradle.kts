@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
     alias(libs.plugins.klibs.gradle.java.version)
+    alias(libs.plugins.klibs.gradle.linter)
 }
 
 dependencies {
@@ -22,5 +23,4 @@ dependencies {
     testImplementation(libs.minecraft.paper.api)
     testImplementation(libs.minecraft.papi)
     testImplementation(libs.tests.kotlin.test)
-    testImplementation(testFixtures(projects.modules.data.dao))
 }

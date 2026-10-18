@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
     alias(libs.plugins.klibs.gradle.java.version)
+    alias(libs.plugins.klibs.gradle.linter)
 }
 
 dependencies {
@@ -13,5 +14,8 @@ dependencies {
 
     implementation(projects.modules.core.api)
     implementation(projects.modules.data.dao)
-    implementation(projects.modules.data.exposed)
+
+    testImplementation(libs.kotlin.coroutines.test)
+    testImplementation(libs.tests.kotlin.test)
+    testImplementation(testFixtures(projects.modules.data.dao))
 }

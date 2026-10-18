@@ -1,8 +1,9 @@
 package ru.astrainteractive.astrarating.integration.papi.placeholder.api
 
-import org.bukkit.OfflinePlayer
+import java.util.UUID
 
 internal interface RatingPlaceholder {
     val key: String
-    fun asPlaceholder(param: OfflinePlayer): String
+
+    fun asPlaceholder(playerUUID: UUID): String
 }
