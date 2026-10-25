@@ -6,7 +6,7 @@ import java.util.UUID
 internal class FakeRatingCache : RatingCache {
     val loadedPlayers = mutableListOf<UUID>()
 
-    override fun getPlayerRating(uuid: UUID): Int = 0
+    override fun resolvePlayerRating(uuid: UUID): Int = 0
 
     override suspend fun loadPlayerRating(uuid: UUID) {
         loadedPlayers += uuid

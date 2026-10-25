@@ -5,6 +5,7 @@ import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
 import ru.astrainteractive.astrarating.data.dao.rating.model.RatingType
 import ru.astrainteractive.astrarating.data.dao.rating.model.User
 import ru.astrainteractive.astrarating.data.dao.rating.model.UserRating
+import ru.astrainteractive.klibs.mikro.core.coroutines.propagateCancellationException
 import java.util.UUID
 
 internal class CacheRefreshingRatingRepository(
@@ -12,7 +13,9 @@ internal class CacheRefreshingRatingRepository(
     private val ratingCache: RatingCache
 ) : RatingRepository by ratingRepository {
     private suspend fun reloadRatingOf(user: User) {
-        val uuid = runCatching { UUID.fromString(user.minecraftUUID) }.getOrNull() ?: return
+        val uuid = runCatching { UUID.fromString(user.minecraftUUID) }
+            .propagateCancellationException()
+            .getOrNull() ?: return
         ratingCache.loadPlayerRating(uuid)
     }
 
@@ -23,7 +26,13 @@ internal class CacheRefreshingRatingRepository(
         type: RatingType,
         ratingValue: Int
     ): Result<Long> {
-        val result = ratingRepository.insertUserRating(reporter, reported, message, type, ratingValue)
+        val result = ratingRepository.insertUserRating(
+            reporter = reporter,
+            reported = reported,
+            message = message,
+            type = type,
+            ratingValue = ratingValue
+        )
         if (result.isSuccess) reloadRatingOf(reported)
         return result
     }

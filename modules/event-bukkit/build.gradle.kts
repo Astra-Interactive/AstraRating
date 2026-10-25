@@ -2,10 +2,17 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
     alias(libs.plugins.klibs.gradle.java.version)
-    alias(libs.plugins.klibs.gradle.linter)
+    alias(libs.plugins.klibs.rules.gradle.linter)
+}
+
+configurations.api {
+    dependencies.removeIf { dependency ->
+        dependency.group == "org.jetbrains.kotlin" && dependency.name == "kotlin-stdlib"
+    }
 }
 
 dependencies {
+    implementation(kotlin("stdlib"))
     compileOnly(libs.minecraft.paper.api)
 
     implementation(libs.klibs.kstorage)

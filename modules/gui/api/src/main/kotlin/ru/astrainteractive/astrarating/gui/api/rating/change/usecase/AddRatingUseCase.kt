@@ -65,6 +65,12 @@ class AddRatingUseCase(
         val voteLimitReached = findVoteLimitReached(creator, ratedPlayer)
         if (voteLimitReached != null) return voteLimitReached
         if (!config.isRatingMessageLengthAllowed(message)) return AddRatingResult.MessageNotCorrect
-        return insertRating(creator, ratedPlayer, message, rating, type)
+        return insertRating(
+            creator = creator,
+            ratedPlayer = ratedPlayer,
+            message = message,
+            rating = rating,
+            type = type
+        )
     }
 }

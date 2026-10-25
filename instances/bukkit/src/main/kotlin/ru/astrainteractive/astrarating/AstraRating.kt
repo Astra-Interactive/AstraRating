@@ -1,3 +1,5 @@
+@file:Suppress("FieldDependencyConstruction")
+
 package ru.astrainteractive.astrarating
 
 import ru.astrainteractive.astralibs.lifecycle.LifecyclePlugin

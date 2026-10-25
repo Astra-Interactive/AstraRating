@@ -1,12 +1,13 @@
 @file:Suppress("FunctionNaming")
 
-package ru.astrainteractive.astrarating.integration.papi.placeholder.model
+package ru.astrainteractive.astrarating.integration.papi.placeholder.util
 
+import ru.astrainteractive.astrarating.integration.papi.placeholder.model.Coloring
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-internal class ColoringTest {
+internal class CollectionExtTest {
     private val colorings = listOf(
         Coloring.Less(-10),
         Coloring.Less(-5),

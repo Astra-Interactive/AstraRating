@@ -1,3 +1,5 @@
+@file:Suppress("BareIdentifier")
+
 package ru.astrainteractive.astrarating.data.dao.rating.model
 
 import kotlin.time.Instant

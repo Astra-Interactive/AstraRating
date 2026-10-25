@@ -36,7 +36,7 @@ internal class KillEventListener(
         val killerPlayer = killedPlayer.killer ?: return
 
         scope.launch(dispatchers.IO) {
-            val result = lowerKillerRatingUseCase(
+            val result = lowerKillerRatingUseCase.invoke(
                 killer = NewUser(
                     minecraftUUID = killerPlayer.uniqueId,
                     minecraftName = killerPlayer.name

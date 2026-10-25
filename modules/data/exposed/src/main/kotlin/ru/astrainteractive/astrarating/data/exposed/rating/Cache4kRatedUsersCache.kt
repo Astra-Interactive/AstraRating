@@ -19,7 +19,7 @@ internal class Cache4kRatedUsersCache(
     )
 
     override suspend fun fetchUsersTotalRating(): List<RatedUser> {
-        return cache.get(Unit).orEmpty()
+        return cache.load(Unit).orEmpty()
     }
 
     override fun clear() {

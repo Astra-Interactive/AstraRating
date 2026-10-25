@@ -22,50 +22,58 @@ internal class Cache4kRatingCacheTest {
     }
 
     @Test
-    fun GIVEN_rating_not_loaded_WHEN_rating_is_read_THEN_returns_zero_until_it_is_loaded() = runTest {
-        ratingRepository.setTotalRating(tester, 3)
-        val dao = createDao()
+    fun GIVEN_rating_not_loaded_WHEN_rating_is_read_THEN_returns_zero_until_it_is_loaded() {
+        runTest {
+            ratingRepository.setTotalRating(tester, 3)
+            val dao = createDao()
 
-        val notLoadedRating = dao.getPlayerRating(tester)
-        runCurrent()
+            val notLoadedRating = dao.resolvePlayerRating(tester)
+            runCurrent()
 
-        assertEquals(0, notLoadedRating)
-        assertEquals(3, dao.getPlayerRating(tester))
+            assertEquals(0, notLoadedRating)
+            assertEquals(3, dao.resolvePlayerRating(tester))
+        }
     }
 
     @Test
-    fun GIVEN_rating_loaded_WHEN_rating_is_read_THEN_returns_total() = runTest {
-        ratingRepository.setTotalRating(tester, 3)
-        val dao = createDao()
+    fun GIVEN_rating_loaded_WHEN_rating_is_read_THEN_returns_total() {
+        runTest {
+            ratingRepository.setTotalRating(tester, 3)
+            val dao = createDao()
 
-        dao.loadPlayerRating(tester)
+            dao.loadPlayerRating(tester)
 
-        assertEquals(3, dao.getPlayerRating(tester))
+            assertEquals(3, dao.resolvePlayerRating(tester))
+        }
     }
 
     @Test
-    fun GIVEN_rating_changed_WHEN_rating_is_loaded_again_THEN_returns_new_total() = runTest {
-        ratingRepository.setTotalRating(tester, 3)
-        val dao = createDao()
-        dao.loadPlayerRating(tester)
-        ratingRepository.setTotalRating(tester, 7)
+    fun GIVEN_rating_changed_WHEN_rating_is_loaded_again_THEN_returns_new_total() {
+        runTest {
+            ratingRepository.setTotalRating(tester, 3)
+            val dao = createDao()
+            dao.loadPlayerRating(tester)
+            ratingRepository.setTotalRating(tester, 7)
 
-        dao.loadPlayerRating(tester)
+            dao.loadPlayerRating(tester)
 
-        assertEquals(7, dao.getPlayerRating(tester))
+            assertEquals(7, dao.resolvePlayerRating(tester))
+        }
     }
 
     @Test
-    fun GIVEN_database_was_unavailable_WHEN_rating_is_read_again_THEN_it_is_loaded() = runTest {
-        ratingRepository.setTotalRating(tester, 3)
-        ratingRepository.isAvailable = false
-        val dao = createDao()
-        dao.loadPlayerRating(tester)
-        ratingRepository.isAvailable = true
+    fun GIVEN_database_was_unavailable_WHEN_rating_is_read_again_THEN_it_is_loaded() {
+        runTest {
+            ratingRepository.setTotalRating(tester, 3)
+            ratingRepository.isAvailable = false
+            val dao = createDao()
+            dao.loadPlayerRating(tester)
+            ratingRepository.isAvailable = true
 
-        dao.getPlayerRating(tester)
-        runCurrent()
+            dao.resolvePlayerRating(tester)
+            runCurrent()
 
-        assertEquals(3, dao.getPlayerRating(tester))
+            assertEquals(3, dao.resolvePlayerRating(tester))
+        }
     }
 }

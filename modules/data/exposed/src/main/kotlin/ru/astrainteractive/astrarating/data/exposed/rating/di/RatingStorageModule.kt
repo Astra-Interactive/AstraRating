@@ -59,6 +59,7 @@ class RatingStorageModule(
         )
     }
 
+    @Suppress("TrivialLambdaReference")
     val lifecycle: Lifecycle = Lifecycle.Lambda(
         onEnable = {
             ratingCacheWarmUp.onEnable()

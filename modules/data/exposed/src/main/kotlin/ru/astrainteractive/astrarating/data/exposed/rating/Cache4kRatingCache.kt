@@ -17,8 +17,8 @@ internal class Cache4kRatingCache(
         update = { uuid -> ratingRepository.fetchUserTotalRating(uuid).getOrNull() }
     )
 
-    override fun getPlayerRating(uuid: UUID): Int {
-        return ratings.getIfPresent(uuid) ?: 0
+    override fun resolvePlayerRating(uuid: UUID): Int {
+        return ratings.findCached(uuid) ?: 0
     }
 
     override suspend fun loadPlayerRating(uuid: UUID) {

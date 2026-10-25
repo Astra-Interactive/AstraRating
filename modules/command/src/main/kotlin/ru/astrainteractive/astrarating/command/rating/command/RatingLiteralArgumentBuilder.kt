@@ -1,3 +1,5 @@
+@file:Suppress("TrivialLambdaReference")
+
 package ru.astrainteractive.astrarating.command.rating.command
 
 import com.mojang.brigadier.arguments.StringArgumentType
@@ -46,7 +48,7 @@ internal class RatingLiteralArgumentBuilder(
                 argument("player", StringArgumentType.string()) { playerArg ->
                     hints { onlinePlayerNames() }
 
-                    runs(commandExceptionHandler::handle) { ctx ->
+                    runs(commandExceptionHandler::onFailure) { ctx ->
                         val executor = ctx.requirePlayer()
                         val target = ctx.requireOnlinePlayer(playerArg)
 
@@ -98,10 +100,17 @@ internal class RatingLiteralArgumentBuilder(
     private fun LiteralArgumentBuilder<Any>.ratingCommand() {
         with(multiplatformCommand) {
             literal("rating") {
-                runs(commandExceptionHandler::handle) { ctx -> openRatingGui(ctx) }
+                runs(commandExceptionHandler::onFailure) { ctx -> openRatingGui(ctx) }
 
                 argument("like_dislike", StringArgumentType.string()) { ratingTypeArg ->
-                    hints { listOf("like", "dislike", "+", "-") }
+                    hints {
+                        listOf(
+                            "like",
+                            "dislike",
+                            "+",
+                            "-"
+                        )
+                    }
 
                     argument("player", StringArgumentType.string()) { playerArg ->
                         hints { onlinePlayerNames() }
@@ -109,7 +118,7 @@ internal class RatingLiteralArgumentBuilder(
                         argument("message", StringArgumentType.string()) { messageArg ->
                             hints { listOf("...") }
 
-                            runs(commandExceptionHandler::handle) { ctx ->
+                            runs(commandExceptionHandler::onFailure) { ctx ->
                                 val executor = ctx.requirePlayer()
                                 val value = ctx.parseRatingValue(ratingTypeArg)
                                 val ratedPlayer = ctx.requireOfflinePlayer(playerArg)
@@ -135,7 +144,7 @@ internal class RatingLiteralArgumentBuilder(
             command("arating") {
                 playerCommand()
                 ratingCommand()
-                runs(commandExceptionHandler::handle) { ctx -> openRatingGui(ctx) }
+                runs(commandExceptionHandler::onFailure) { ctx -> openRatingGui(ctx) }
             }
         }
     }

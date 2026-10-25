@@ -6,7 +6,7 @@ import ru.astrainteractive.astrarating.core.settings.model.AstraRatingPermission
 import ru.astrainteractive.astrarating.data.dao.rating.model.NewUser
 import java.util.UUID
 
-data class RatingPlayer(
+class RatingPlayer(
     val uuid: UUID,
     val name: String,
     val permissible: KPermissible?,

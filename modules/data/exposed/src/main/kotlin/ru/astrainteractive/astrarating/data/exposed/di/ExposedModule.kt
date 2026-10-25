@@ -1,11 +1,10 @@
 package ru.astrainteractive.astrarating.data.exposed.di
 
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.StringFormat
 import org.jetbrains.exposed.v1.core.Slf4jSqlDebugLogger
 import org.jetbrains.exposed.v1.jdbc.Database
@@ -49,7 +48,7 @@ class ExposedModule(
 
     val databaseFlow: Flow<Database> = dbConfigurationConfig
         .cachedStateFlow
-        .distinctUntilChangedBy { configuration -> configuration.databaseConfiguration }
+        .distinctUntilChangedBy(DbRatingConfiguration::databaseConfiguration)
         .mapCached(coroutineScope) { dbConfig, oldDatabase ->
             oldDatabase?.run(TransactionManager::closeAndUnregister)
             val database = dbConfig.databaseConfiguration.connect()
@@ -67,7 +66,7 @@ class ExposedModule(
     val lifecycle: Lifecycle by lazy {
         Lifecycle.Lambda(
             onDisable = {
-                GlobalScope.launch {
+                runBlocking {
                     databaseFlow.first().run(TransactionManager::closeAndUnregister)
                 }
                 coroutineScope.cancel()

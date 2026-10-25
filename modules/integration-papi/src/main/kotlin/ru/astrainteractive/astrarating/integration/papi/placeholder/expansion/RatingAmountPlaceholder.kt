@@ -10,7 +10,7 @@ internal class RatingAmountPlaceholder(
     override val key: String = "rating"
 
     override fun asPlaceholder(playerUUID: UUID): String {
-        val rating = ratingCache.getPlayerRating(playerUUID)
+        val rating = ratingCache.resolvePlayerRating(playerUUID)
         return "$rating"
     }
 }
