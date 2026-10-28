@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm")
     alias(libs.plugins.klibs.gradle.java.version)
-    alias(libs.plugins.klibs.gradle.linter)
+    alias(libs.plugins.klibs.rules.gradle.linter)
     `java-test-fixtures`
 }
 

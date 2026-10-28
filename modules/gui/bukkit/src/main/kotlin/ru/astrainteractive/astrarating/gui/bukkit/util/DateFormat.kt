@@ -1,3 +1,5 @@
+@file:Suppress("ForbiddenImport")
+
 package ru.astrainteractive.astrarating.gui.bukkit.util
 
 import java.text.SimpleDateFormat

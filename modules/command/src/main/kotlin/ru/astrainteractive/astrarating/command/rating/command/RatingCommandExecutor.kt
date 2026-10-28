@@ -41,15 +41,17 @@ internal class RatingCommandExecutor(
         }
     }
 
-    private fun changeRating(input: RatingCommand.ChangeRating) = coroutineScope.launch(dispatchers.IO) {
-        val result = addRatingUseCase(
-            creator = input.executor.toRatingPlayer(),
-            ratedPlayer = input.ratedPlayer.toRatingPlayer(),
-            message = input.message,
-            rating = input.value,
-            type = RatingType.USER_RATING
-        )
-        input.executor.sendMessage(messageOf(result, input))
+    private fun changeRating(input: RatingCommand.ChangeRating) {
+        coroutineScope.launch(dispatchers.IO) {
+            val result = addRatingUseCase.invoke(
+                creator = input.executor.toRatingPlayer(),
+                ratedPlayer = input.ratedPlayer.toRatingPlayer(),
+                message = input.message,
+                rating = input.value,
+                type = RatingType.USER_RATING
+            )
+            input.executor.sendMessage(messageOf(result, input))
+        }
     }
 
     fun execute(input: RatingCommand) {

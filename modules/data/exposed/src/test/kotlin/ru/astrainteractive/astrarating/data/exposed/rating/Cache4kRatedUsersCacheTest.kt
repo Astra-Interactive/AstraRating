@@ -33,60 +33,70 @@ internal class Cache4kRatedUsersCacheTest {
     }
 
     @Test
-    fun GIVEN_rated_users_stored_WHEN_totals_are_fetched_THEN_returns_them() = runTest {
-        ratingRepository.setRatedUsers(listOf(tester))
-        val cache = createCache()
+    fun GIVEN_rated_users_stored_WHEN_totals_are_fetched_THEN_returns_them() {
+        runTest {
+            ratingRepository.setRatedUsers(listOf(tester))
+            val cache = createCache()
 
-        val ratedUsers = cache.fetchUsersTotalRating()
+            val ratedUsers = cache.fetchUsersTotalRating()
 
-        assertEquals(listOf(tester), ratedUsers)
+            assertEquals(listOf(tester), ratedUsers)
+        }
     }
 
     @Test
-    fun GIVEN_totals_fetched_recently_WHEN_storage_changes_THEN_cached_totals_are_returned() = runTest {
-        ratingRepository.setRatedUsers(listOf(tester))
-        val cache = createCache()
-        cache.fetchUsersTotalRating()
-        ratingRepository.setRatedUsers(listOf(changedTester))
+    fun GIVEN_totals_fetched_recently_WHEN_storage_changes_THEN_cached_totals_are_returned() {
+        runTest {
+            ratingRepository.setRatedUsers(listOf(tester))
+            val cache = createCache()
+            cache.fetchUsersTotalRating()
+            ratingRepository.setRatedUsers(listOf(changedTester))
 
-        val ratedUsers = cache.fetchUsersTotalRating()
+            val ratedUsers = cache.fetchUsersTotalRating()
 
-        assertEquals(listOf(tester), ratedUsers)
+            assertEquals(listOf(tester), ratedUsers)
+        }
     }
 
     @Test
-    fun GIVEN_cache_cleared_WHEN_totals_are_fetched_THEN_returns_stored_totals() = runTest {
-        ratingRepository.setRatedUsers(listOf(tester))
-        val cache = createCache()
-        cache.fetchUsersTotalRating()
-        ratingRepository.setRatedUsers(listOf(changedTester))
+    fun GIVEN_cache_cleared_WHEN_totals_are_fetched_THEN_returns_stored_totals() {
+        runTest {
+            ratingRepository.setRatedUsers(listOf(tester))
+            val cache = createCache()
+            cache.fetchUsersTotalRating()
+            ratingRepository.setRatedUsers(listOf(changedTester))
 
-        cache.clear()
+            cache.clear()
 
-        assertEquals(listOf(changedTester), cache.fetchUsersTotalRating())
+            assertEquals(listOf(changedTester), cache.fetchUsersTotalRating())
+        }
     }
 
     @Test
-    fun GIVEN_database_unavailable_WHEN_totals_are_fetched_THEN_returns_no_users() = runTest {
-        ratingRepository.setRatedUsers(listOf(tester))
-        ratingRepository.isAvailable = false
-        val cache = createCache()
+    fun GIVEN_database_unavailable_WHEN_totals_are_fetched_THEN_returns_no_users() {
+        runTest {
+            ratingRepository.setRatedUsers(listOf(tester))
+            ratingRepository.isAvailable = false
+            val cache = createCache()
 
-        val ratedUsers = cache.fetchUsersTotalRating()
+            val ratedUsers = cache.fetchUsersTotalRating()
 
-        assertEquals(emptyList(), ratedUsers)
+            assertEquals(emptyList(), ratedUsers)
+        }
     }
 
     @Test
-    fun GIVEN_database_was_unavailable_WHEN_totals_are_fetched_again_THEN_they_are_loaded() = runTest {
-        ratingRepository.setRatedUsers(listOf(tester))
-        ratingRepository.isAvailable = false
-        val cache = createCache()
-        cache.fetchUsersTotalRating()
-        ratingRepository.isAvailable = true
+    fun GIVEN_database_was_unavailable_WHEN_totals_are_fetched_again_THEN_they_are_loaded() {
+        runTest {
+            ratingRepository.setRatedUsers(listOf(tester))
+            ratingRepository.isAvailable = false
+            val cache = createCache()
+            cache.fetchUsersTotalRating()
+            ratingRepository.isAvailable = true
 
-        val ratedUsers = cache.fetchUsersTotalRating()
+            val ratedUsers = cache.fetchUsersTotalRating()
 
-        assertEquals(listOf(tester), ratedUsers)
+            assertEquals(listOf(tester), ratedUsers)
+        }
     }
 }

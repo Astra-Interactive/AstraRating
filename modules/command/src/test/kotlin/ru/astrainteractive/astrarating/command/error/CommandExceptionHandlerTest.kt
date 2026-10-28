@@ -1,4 +1,4 @@
-@file:Suppress("FunctionNaming")
+@file:Suppress("FunctionNaming", "TrivialLambdaReference")
 
 package ru.astrainteractive.astrarating.command.error
 
@@ -50,7 +50,7 @@ class CommandExceptionHandlerTest {
     private fun executeFailing(failure: Throwable) {
         val command = with(multiplatformCommand) {
             command("arating") {
-                runs(handler::handle) { _ -> throw failure }
+                runs(handler::onFailure) { _ -> throw failure }
             }
         }
         execute(command, "arating")
@@ -60,7 +60,7 @@ class CommandExceptionHandlerTest {
     fun GIVEN_sender_without_permission_WHEN_command_requires_it_THEN_sender_reads_no_permission() {
         val command = with(multiplatformCommand) {
             command("aratingreload") {
-                runs(handler::handle) { ctx -> ctx.requirePermission(AstraRatingPermission.Reload) }
+                runs(handler::onFailure) { ctx -> ctx.requirePermission(AstraRatingPermission.Reload) }
             }
         }
 
@@ -73,7 +73,7 @@ class CommandExceptionHandlerTest {
     fun GIVEN_console_WHEN_command_requires_player_THEN_console_reads_players_only() {
         val command = with(multiplatformCommand) {
             command("arating") {
-                runs(handler::handle) { ctx -> ctx.requirePlayer() }
+                runs(handler::onFailure) { ctx -> ctx.requirePlayer() }
             }
         }
 
@@ -94,7 +94,7 @@ class CommandExceptionHandlerTest {
         val command = with(multiplatformCommand) {
             command("arating") {
                 argument("page", StringArgumentType.string()) { pageArg ->
-                    runs(handler::handle) { ctx -> ctx.requireArgument(pageArg, IntArgumentConverter) }
+                    runs(handler::onFailure) { ctx -> ctx.requireArgument(pageArg, IntArgumentConverter) }
                 }
             }
         }
@@ -143,7 +143,7 @@ class CommandExceptionHandlerTest {
         )
         val command = with(multiplatformCommand) {
             command("arating") {
-                runs(handler::handle) { ctx -> ctx.requireArgument(missingArgument) }
+                runs(handler::onFailure) { ctx -> ctx.requireArgument(missingArgument) }
             }
         }
 
@@ -173,7 +173,7 @@ class CommandExceptionHandlerTest {
         )
         val command = with(unresolvedMultiplatformCommand) {
             command("arating") {
-                runs(unresolvedHandler::handle) { _ -> throw NoPlayerException("Notch") }
+                runs(unresolvedHandler::onFailure) { _ -> throw NoPlayerException("Notch") }
             }
         }
 

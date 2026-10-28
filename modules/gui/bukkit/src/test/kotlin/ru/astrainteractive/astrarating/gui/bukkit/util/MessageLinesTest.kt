@@ -1,4 +1,4 @@
-@file:Suppress("FunctionNaming")
+@file:Suppress("ArgumentPerLine", "FunctionNaming")
 
 package ru.astrainteractive.astrarating.gui.bukkit.util
 

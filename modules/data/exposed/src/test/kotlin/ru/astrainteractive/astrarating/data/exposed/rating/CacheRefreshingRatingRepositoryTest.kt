@@ -31,48 +31,52 @@ internal class CacheRefreshingRatingRepositoryTest {
     }
 
     @Test
-    fun GIVEN_loaded_rating_WHEN_rating_is_inserted_THEN_cached_rating_includes_it() = runTest {
-        exposedRatingRepository.setTotalRating(testerUuid, 3)
-        val ratingCache = createCachedDao()
-        val ratingRepository = CacheRefreshingRatingRepository(
-            ratingRepository = exposedRatingRepository,
-            ratingCache = ratingCache
-        )
-        ratingCache.loadPlayerRating(testerUuid)
+    fun GIVEN_loaded_rating_WHEN_rating_is_inserted_THEN_cached_rating_includes_it() {
+        runTest {
+            exposedRatingRepository.setTotalRating(testerUuid, 3)
+            val ratingCache = createCachedDao()
+            val ratingRepository = CacheRefreshingRatingRepository(
+                ratingRepository = exposedRatingRepository,
+                ratingCache = ratingCache
+            )
+            ratingCache.loadPlayerRating(testerUuid)
 
-        ratingRepository.insertUserRating(
-            reporter = null,
-            reported = tester,
-            message = "kill",
-            type = RatingType.PLAYER_KILL,
-            ratingValue = -1
-        )
+            ratingRepository.insertUserRating(
+                reporter = null,
+                reported = tester,
+                message = "kill",
+                type = RatingType.PLAYER_KILL,
+                ratingValue = -1
+            )
 
-        assertEquals(2, ratingCache.getPlayerRating(testerUuid))
+            assertEquals(2, ratingCache.resolvePlayerRating(testerUuid))
+        }
     }
 
     @Test
-    fun GIVEN_loaded_rating_WHEN_rating_is_deleted_THEN_cached_rating_excludes_it() = runTest {
-        exposedRatingRepository.setTotalRating(testerUuid, 3)
-        val ratingCache = createCachedDao()
-        val ratingRepository = CacheRefreshingRatingRepository(
-            ratingRepository = exposedRatingRepository,
-            ratingCache = ratingCache
-        )
-        ratingCache.loadPlayerRating(testerUuid)
-
-        ratingRepository.deleteUserRating(
-            UserRating(
-                id = 1L,
-                userCreatedReport = null,
-                reportedUser = tester,
-                rating = 1,
-                message = "like",
-                ratingType = RatingType.USER_RATING,
-                time = Instant.fromEpochMilliseconds(0L)
+    fun GIVEN_loaded_rating_WHEN_rating_is_deleted_THEN_cached_rating_excludes_it() {
+        runTest {
+            exposedRatingRepository.setTotalRating(testerUuid, 3)
+            val ratingCache = createCachedDao()
+            val ratingRepository = CacheRefreshingRatingRepository(
+                ratingRepository = exposedRatingRepository,
+                ratingCache = ratingCache
             )
-        )
+            ratingCache.loadPlayerRating(testerUuid)
 
-        assertEquals(2, ratingCache.getPlayerRating(testerUuid))
+            ratingRepository.deleteUserRating(
+                UserRating(
+                    id = 1L,
+                    userCreatedReport = null,
+                    reportedUser = tester,
+                    rating = 1,
+                    message = "like",
+                    ratingType = RatingType.USER_RATING,
+                    time = Instant.fromEpochMilliseconds(0L)
+                )
+            )
+
+            assertEquals(2, ratingCache.resolvePlayerRating(testerUuid))
+        }
     }
 }

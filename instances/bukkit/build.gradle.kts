@@ -6,7 +6,7 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
     alias(libs.plugins.klibs.gradle.java.version)
-    alias(libs.plugins.klibs.gradle.linter)
+    alias(libs.plugins.klibs.rules.gradle.linter)
     alias(libs.plugins.klibs.minecraft.resource.processor)
     alias(libs.plugins.gradle.shadow)
 }
@@ -47,7 +47,11 @@ minecraftProcessResource {
                 libs.driver.jdbc.get(),
                 libs.driver.mysql.get(),
                 libs.driver.mariadb.get()
-            ).joinToString("\",\"", "[\"", "\"]")
+            ).joinToString(
+                separator = "\",\"",
+                prefix = "[\"",
+                postfix = "\"]"
+            )
         )
     )
 }

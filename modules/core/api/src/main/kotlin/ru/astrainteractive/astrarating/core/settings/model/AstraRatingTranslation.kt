@@ -1,4 +1,4 @@
-@file:Suppress("MaximumLineLength", "MaxLineLength", "LongParameterList")
+@file:Suppress("MaximumLineLength", "MaxLineLength", "LongParameterList", "DataClassContainsFunctions")
 
 package ru.astrainteractive.astrarating.core.settings.model
 

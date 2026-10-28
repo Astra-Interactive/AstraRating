@@ -23,21 +23,33 @@ class AstraRatingTranslationTest {
 
     @Test
     fun GIVEN_sort_that_is_not_selected_WHEN_option_THEN_no_direction_is_shown() {
-        val option = translation.sort.option(sort = translation.sort.date, isSelected = false, isAscending = true)
+        val option = translation.sort.option(
+            sort = translation.sort.date,
+            isSelected = false,
+            isAscending = true
+        )
 
         assertEquals("Date", plainText(option))
     }
 
     @Test
     fun GIVEN_selected_ascending_sort_WHEN_option_THEN_down_arrow_is_shown() {
-        val option = translation.sort.option(sort = translation.sort.date, isSelected = true, isAscending = true)
+        val option = translation.sort.option(
+            sort = translation.sort.date,
+            isSelected = true,
+            isAscending = true
+        )
 
         assertEquals("Date ↓", plainText(option))
     }
 
     @Test
     fun GIVEN_selected_descending_sort_WHEN_option_THEN_up_arrow_is_shown() {
-        val option = translation.sort.option(sort = translation.sort.date, isSelected = true, isAscending = false)
+        val option = translation.sort.option(
+            sort = translation.sort.date,
+            isSelected = true,
+            isAscending = false
+        )
 
         assertEquals("Date ↑", plainText(option))
     }

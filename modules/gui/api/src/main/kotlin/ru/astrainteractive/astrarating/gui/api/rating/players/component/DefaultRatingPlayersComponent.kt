@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.astrainteractive.astralibs.coroutines.withTimings
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatedUsersCache
+import ru.astrainteractive.astrarating.data.dao.rating.model.RatedUser
 import ru.astrainteractive.astrarating.gui.api.rating.players.model.UsersRatingsSort
 import ru.astrainteractive.astrarating.gui.api.util.nextAfter
 import ru.astrainteractive.astrarating.gui.api.util.sortedBy
@@ -28,7 +29,7 @@ internal class DefaultRatingPlayersComponent(
         val newSort = SORTS.nextAfter(model.value.sort, backwards = isRightClick)
         model.update { currentModel ->
             currentModel.copy(
-                userRatings = currentModel.userRatings.sortedBy(newSort.isAsc) { ratedUser -> ratedUser.ratingTotal },
+                userRatings = currentModel.userRatings.sortedBy(newSort.isAsc, RatedUser::ratingTotal),
                 sort = newSort
             )
         }

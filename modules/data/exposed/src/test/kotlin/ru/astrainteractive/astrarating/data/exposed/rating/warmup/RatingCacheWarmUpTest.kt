@@ -27,22 +27,26 @@ internal class RatingCacheWarmUpTest {
     }
 
     @Test
-    fun GIVEN_players_online_WHEN_plugin_is_enabled_THEN_rating_of_every_player_is_loaded() = runTest {
-        val warmUp = createWarmUp(listOf(tester, builder))
+    fun GIVEN_players_online_WHEN_plugin_is_enabled_THEN_rating_of_every_player_is_loaded() {
+        runTest {
+            val warmUp = createWarmUp(listOf(tester, builder))
 
-        warmUp.onEnable()
-        runCurrent()
+            warmUp.onEnable()
+            runCurrent()
 
-        assertEquals(setOf(tester.uuid, builder.uuid), ratingCache.loadedPlayers.toSet())
+            assertEquals(setOf(tester.uuid, builder.uuid), ratingCache.loadedPlayers.toSet())
+        }
     }
 
     @Test
-    fun GIVEN_nobody_online_WHEN_plugin_is_enabled_THEN_no_rating_is_loaded() = runTest {
-        val warmUp = createWarmUp(emptyList())
+    fun GIVEN_nobody_online_WHEN_plugin_is_enabled_THEN_no_rating_is_loaded() {
+        runTest {
+            val warmUp = createWarmUp(emptyList())
 
-        warmUp.onEnable()
-        runCurrent()
+            warmUp.onEnable()
+            runCurrent()
 
-        assertEquals(emptyList(), ratingCache.loadedPlayers)
+            assertEquals(emptyList(), ratingCache.loadedPlayers)
+        }
     }
 }

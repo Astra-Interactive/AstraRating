@@ -3,7 +3,7 @@
 package ru.astrainteractive.astrarating.integration.papi.placeholder.expansion
 
 import org.bukkit.OfflinePlayer
-import ru.astrainteractive.astrarating.data.dao.rating.memory.InMemoryRatingCache
+import ru.astrainteractive.astrarating.data.dao.rating.api.RatingCache
 import ru.astrainteractive.astrarating.integration.papi.placeholder.model.Coloring
 import ru.astrainteractive.astrarating.integration.papi.placeholder.model.PapiConfig
 import ru.astrainteractive.klibs.kstorage.api.asCachedMutableKrate
@@ -17,7 +17,13 @@ import kotlin.test.assertTrue
 
 internal class RatingPlaceholderExpansionTest {
     private val playerUUID = UUID.fromString("f3d28cb0-7225-3cb1-baeb-2dadd2be89ae")
-    private val ratingCache = InMemoryRatingCache(ratings = mapOf(playerUUID to 7))
+    private val ratingCache = object : RatingCache {
+        override fun resolvePlayerRating(uuid: UUID): Int = if (uuid == playerUUID) 7 else 0
+
+        override suspend fun loadPlayerRating(uuid: UUID) = Unit
+
+        override fun clear() = Unit
+    }
     private val papiConfig = PapiConfig(
         colorings = listOf(
             Coloring.Less(value = 0, color = "#FF0000"),

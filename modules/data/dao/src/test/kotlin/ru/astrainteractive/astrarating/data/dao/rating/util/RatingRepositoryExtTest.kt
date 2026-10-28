@@ -24,38 +24,51 @@ class RatingRepositoryExtTest {
     )
 
     @Test
-    fun GIVEN_unknown_player_WHEN_user_is_upserted_THEN_user_is_inserted() = runTest {
-        val user = repository.upsertUser(NewUser(minecraftUUID = playerUUID, minecraftName = "Tester")).getOrThrow()
+    fun GIVEN_unknown_player_WHEN_user_is_upserted_THEN_user_is_inserted() {
+        runTest {
+            val user = repository.upsertUser(NewUser(minecraftUUID = playerUUID, minecraftName = "Tester")).getOrThrow()
 
-        assertEquals("Tester", user.minecraftName)
-        assertEquals(user, repository.findUser(playerUUID).getOrThrow())
+            assertEquals("Tester", user.minecraftName)
+            assertEquals(user, repository.findUser(playerUUID).getOrThrow())
+        }
     }
 
     @Test
-    fun GIVEN_stored_player_WHEN_user_is_upserted_with_same_name_THEN_stored_user_is_returned() = runTest {
-        repository.storeUser(storedUser)
+    fun GIVEN_stored_player_WHEN_user_is_upserted_with_same_name_THEN_stored_user_is_returned() {
+        runTest {
+            repository.storeUser(storedUser)
 
-        val user = repository.upsertUser(NewUser(minecraftUUID = playerUUID, minecraftName = "Tester")).getOrThrow()
+            val user = repository.upsertUser(NewUser(minecraftUUID = playerUUID, minecraftName = "Tester")).getOrThrow()
 
-        assertEquals(storedUser, user)
+            assertEquals(storedUser, user)
+        }
     }
 
     @Test
-    fun GIVEN_stored_player_WHEN_user_is_upserted_with_new_name_THEN_name_is_updated() = runTest {
-        repository.storeUser(storedUser)
+    fun GIVEN_stored_player_WHEN_user_is_upserted_with_new_name_THEN_name_is_updated() {
+        runTest {
+            repository.storeUser(storedUser)
 
-        val user = repository.upsertUser(NewUser(minecraftUUID = playerUUID, minecraftName = "Renamed")).getOrThrow()
+            val user = repository.upsertUser(
+                NewUser(
+                    minecraftUUID = playerUUID,
+                    minecraftName = "Renamed"
+                )
+            ).getOrThrow()
 
-        assertEquals(storedUser.copy(minecraftName = "Renamed"), user)
-        assertEquals("Renamed", repository.findUser(playerUUID).getOrThrow()?.minecraftName)
+            assertEquals(storedUser.copy(minecraftName = "Renamed"), user)
+            assertEquals("Renamed", repository.findUser(playerUUID).getOrThrow()?.minecraftName)
+        }
     }
 
     @Test
-    fun GIVEN_unavailable_storage_WHEN_user_is_upserted_THEN_failure_is_returned() = runTest {
-        repository.isAvailable = false
+    fun GIVEN_unavailable_storage_WHEN_user_is_upserted_THEN_failure_is_returned() {
+        runTest {
+            repository.isAvailable = false
 
-        val result = repository.upsertUser(NewUser(minecraftUUID = playerUUID, minecraftName = "Tester"))
+            val result = repository.upsertUser(NewUser(minecraftUUID = playerUUID, minecraftName = "Tester"))
 
-        assertIs<RatingStorageError.DatabaseUnavailable>(result.exceptionOrNull())
+            assertIs<RatingStorageError.DatabaseUnavailable>(result.exceptionOrNull())
+        }
     }
 }

@@ -1,3 +1,5 @@
+@file:Suppress("RootModuleConstruction")
+
 package ru.astrainteractive.astrarating.di
 
 import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand

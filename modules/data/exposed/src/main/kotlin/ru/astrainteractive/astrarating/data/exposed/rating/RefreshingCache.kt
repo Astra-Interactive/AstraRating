@@ -29,18 +29,20 @@ internal class RefreshingCache<K : Any, V : Any>(
         }
     }
 
-    fun refresh(key: K): Job = coroutineScope.launch {
-        refreshAndGet(key)
+    fun refresh(key: K): Job {
+        return coroutineScope.launch {
+            refreshAndGet(key)
+        }
     }
 
-    fun getIfPresent(key: K): V? {
+    fun findCached(key: K): V? {
         val entry = cache.get(key)
         if (entry == null || entry.isOlderThan(updateAfterAccess)) refresh(key)
         return entry?.value
     }
 
-    suspend fun get(key: K): V? {
-        return getIfPresent(key) ?: refreshAndGet(key)
+    suspend fun load(key: K): V? {
+        return findCached(key) ?: refreshAndGet(key)
     }
 
     fun invalidateAll() {

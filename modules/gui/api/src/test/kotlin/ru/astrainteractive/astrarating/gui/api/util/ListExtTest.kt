@@ -5,8 +5,12 @@ package ru.astrainteractive.astrarating.gui.api.util
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class SortCycleExtTest {
-    private val sorts = listOf("rating", "player", "date")
+class ListExtTest {
+    private val sorts = listOf(
+        "rating",
+        "player",
+        "date"
+    )
 
     @Test
     fun GIVEN_current_sort_WHEN_next_is_chosen_THEN_following_sort_is_returned() {

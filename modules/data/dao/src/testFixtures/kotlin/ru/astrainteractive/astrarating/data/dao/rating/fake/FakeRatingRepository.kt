@@ -28,11 +28,15 @@ class FakeRatingRepository : RatingRepository {
 
     private fun <T> whenAvailable(call: Call, value: () -> T): Result<T> {
         if (!isAvailable || call in failingCalls) return Result.failure(RatingStorageError.DatabaseUnavailable())
-        return Result.success(value())
+        return Result.success(value.invoke())
     }
 
     private fun addRating(user: User, ratingValue: Int) {
-        totalsByPlayer.merge(UUID.fromString(user.minecraftUUID), ratingValue, Int::plus)
+        totalsByPlayer.merge(
+            UUID.fromString(user.minecraftUUID),
+            ratingValue,
+            Int::plus
+        )
     }
 
     fun setTotalRating(playerUUID: UUID, total: Int) {
@@ -55,21 +59,25 @@ class FakeRatingRepository : RatingRepository {
         usersByPlayer[UUID.fromString(user.minecraftUUID)] = user
     }
 
-    override suspend fun findUser(playerUUID: UUID): Result<User?> = whenAvailable(Call.FIND_USER) {
-        usersByPlayer[playerUUID]
+    override suspend fun findUser(playerUUID: UUID): Result<User?> {
+        return whenAvailable(Call.FIND_USER) {
+            usersByPlayer[playerUUID]
+        }
     }
 
     override suspend fun updateUser(user: User): Result<Unit> = whenAvailable(Call.UPDATE_USER) { storeUser(user) }
 
-    override suspend fun insertUser(user: NewUser): Result<User> = whenAvailable(Call.INSERT_USER) {
-        val insertedUser = User(
-            id = usersByPlayer.size + 1L,
-            minecraftUUID = user.minecraftUUID.toString(),
-            minecraftName = user.minecraftName,
-            lastUpdated = Instant.fromEpochMilliseconds(0L)
-        )
-        storeUser(insertedUser)
-        insertedUser
+    override suspend fun insertUser(user: NewUser): Result<User> {
+        return whenAvailable(Call.INSERT_USER) {
+            val insertedUser = User(
+                id = usersByPlayer.size + 1L,
+                minecraftUUID = user.minecraftUUID.toString(),
+                minecraftName = user.minecraftName,
+                lastUpdated = Instant.fromEpochMilliseconds(0L)
+            )
+            storeUser(insertedUser)
+            insertedUser
+        }
     }
 
     override suspend fun insertUserRating(
@@ -78,35 +86,49 @@ class FakeRatingRepository : RatingRepository {
         message: String,
         type: RatingType,
         ratingValue: Int
-    ): Result<Long> = whenAvailable(Call.INSERT_RATING) {
-        addRating(reported, ratingValue)
-        insertedRatings += InsertedRating(reporter, reported, message, type, ratingValue)
-        insertedRatings.size.toLong()
+    ): Result<Long> {
+        return whenAvailable(Call.INSERT_RATING) {
+            addRating(reported, ratingValue)
+            insertedRatings += InsertedRating(
+                reporter = reporter,
+                reported = reported,
+                message = message,
+                type = type,
+                ratingValue = ratingValue
+            )
+            insertedRatings.size.toLong()
+        }
     }
 
-    override suspend fun deleteUserRating(rating: UserRating): Result<Unit> = whenAvailable(Call.DELETE_RATING) {
-        addRating(rating.reportedUser, -rating.rating)
+    override suspend fun deleteUserRating(rating: UserRating): Result<Unit> {
+        return whenAvailable(Call.DELETE_RATING) {
+            addRating(rating.reportedUser, -rating.rating)
+        }
     }
 
     override suspend fun fetchUserRatings(playerUUID: UUID): Result<List<UserRating>> = notUsed()
 
-    override suspend fun fetchUserTotalRating(playerUUID: UUID): Result<Int> =
-        whenAvailable(Call.FETCH_TOTAL_RATING) {
+    override suspend fun fetchUserTotalRating(playerUUID: UUID): Result<Int> {
+        return whenAvailable(Call.FETCH_TOTAL_RATING) {
             totalsByPlayer[playerUUID] ?: 0
         }
+    }
 
-    override suspend fun fetchUsersTotalRating(): Result<List<RatedUser>> =
-        whenAvailable(Call.FETCH_USERS_TOTAL_RATING) { ratedUsers }
+    override suspend fun fetchUsersTotalRating(): Result<List<RatedUser>> {
+        return whenAvailable(Call.FETCH_USERS_TOTAL_RATING) { ratedUsers }
+    }
 
-    override suspend fun countPlayerTotalDayRated(playerUUID: UUID): Result<Long> =
-        whenAvailable(Call.COUNT_DAY_VOTES) {
+    override suspend fun countPlayerTotalDayRated(playerUUID: UUID): Result<Long> {
+        return whenAvailable(Call.COUNT_DAY_VOTES) {
             dayVotesByPlayer[playerUUID] ?: 0L
         }
+    }
 
-    override suspend fun countPlayerOnPlayerDayRated(playerUUID: UUID, ratedPlayerUUID: UUID): Result<Long> =
-        whenAvailable(Call.COUNT_DAY_VOTES_ON_PLAYER) {
+    override suspend fun countPlayerOnPlayerDayRated(playerUUID: UUID, ratedPlayerUUID: UUID): Result<Long> {
+        return whenAvailable(Call.COUNT_DAY_VOTES_ON_PLAYER) {
             dayVotesOnPlayer[Vote(playerUUID, ratedPlayerUUID)] ?: 0L
         }
+    }
 
     enum class Call {
         FIND_USER,

@@ -23,27 +23,29 @@ internal class CommandExceptionHandler(
 ) : Logger by JUtiltLogger("AstraRating-CommandExceptionHandler") {
     private val translation by translationKrate
 
-    private fun messageOf(throwable: Throwable, commandName: String): LocalizableComponent = when (throwable) {
-        is LocalizableComponentCommandException -> throwable.localizableComponent
-        is NoPermissionException -> translation.commandError.noPermission
-        is NotPlayerExecutorException -> translation.commandError.playersOnly
-        is NoPlayerException -> translation.commandError.playerNotFound
-        is ArgumentConverterException,
-        is BadArgumentException,
-        is NoPotionEffectTypeException -> translation.commandError.invalidArgument
-        is CommandException -> translation.commandError.wrongUsage
-        else -> {
-            error(throwable) { "#messageOf /$commandName failed with an unexpected exception" }
-            translation.commandError.unknownError
+    private fun messageOf(throwable: Throwable, commandName: String): LocalizableComponent {
+        return when (throwable) {
+            is LocalizableComponentCommandException -> throwable.localizableComponent
+            is NoPermissionException -> translation.commandError.noPermission
+            is NotPlayerExecutorException -> translation.commandError.playersOnly
+            is NoPlayerException -> translation.commandError.playerNotFound
+            is ArgumentConverterException,
+            is BadArgumentException,
+            is NoPotionEffectTypeException -> translation.commandError.invalidArgument
+            is CommandException -> translation.commandError.wrongUsage
+            else -> {
+                error(throwable) { "#messageOf /$commandName failed with an unexpected exception" }
+                translation.commandError.unknownError
+            }
         }
     }
 
-    fun handle(ctx: CommandContext<Any>, throwable: Throwable) {
+    fun onFailure(ctx: CommandContext<Any>, throwable: Throwable) {
         val commandName = ctx.input.substringBefore(' ')
         val sender = runCatching { with(multiplatformCommand) { ctx.getSender() } }
             .getOrElse { senderError ->
                 error(throwable) {
-                    "#handle /$commandName failed and its sender could not be resolved: ${senderError.message}"
+                    "#onFailure /$commandName failed and its sender could not be resolved: ${senderError.message}"
                 }
                 return
             }
