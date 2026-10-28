@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>FunctionExpressionBody:EventExt.kt:{ return changesRating &amp;&amp; killedPlayerRating > 0 }</ID>
+    <ID>FunctionExpressionBody:LowerKillerRatingUseCaseTest.kt:LowerKillerRatingUseCaseTest${ return AstraRatingConfig( events = AstraRatingConfig.Events( killPlayer = AstraRatingConfig.Events.Event(changeBy = changeBy, enabled = enabled) ) ) }</ID>
+    <ID>FunctionExpressionBody:LowerKillerRatingUseCaseTest.kt:LowerKillerRatingUseCaseTest${ return useCase.invoke( killer = killer, killedPlayerUUID = killedPlayerUUID, reason = REASON ) }</ID>
+    <ID>ReturnCount:LowerKillerRatingUseCase.kt:LowerKillerRatingUseCase$suspend operator fun invoke: LowerKillerRatingResult</ID>
+    <ID>TrailingCommaOnCallSite:EventModule.kt:EventModule$( onEnable = { events.forEach { event -> event.onEnable(bukkitModule.plugin) } }, onDisable = { events.forEach(EventListener::onDisable) HandlerList.unregisterAll(bukkitModule.plugin) } )</ID>
+    <ID>TrailingCommaOnCallSite:EventModule.kt:EventModule$( plugin = bukkitModule.plugin, ratingCache = ratingCache, mainScope = coreModule.mainScope, ioScope = coreModule.ioScope )</ID>
+    <ID>TrailingCommaOnCallSite:EventModule.kt:EventModule$( ratingRepository = ratingRepository, configKrate = coreModule.configKrate )</ID>
+    <ID>TrailingCommaOnCallSite:EventModule.kt:EventModule$( translationKrate = coreModule.translationKrate, lowerKillerRatingUseCase = lowerKillerRatingUseCase, scope = coreModule.ioScope, dispatchers = coreModule.dispatchers )</ID>
+    <ID>TrailingCommaOnCallSite:KillEventListener.kt:KillEventListener$( killer = NewUser( minecraftUUID = killerPlayer.uniqueId, minecraftName = killerPlayer.name ), killedPlayerUUID = killedPlayer.uniqueId, reason = killReason(killedPlayer.name) )</ID>
+    <ID>TrailingCommaOnCallSite:KillEventListener.kt:KillEventListener$( minecraftUUID = killerPlayer.uniqueId, minecraftName = killerPlayer.name )</ID>
+    <ID>TrailingCommaOnCallSite:LoginEvent.kt:LoginEvent$( plugin = plugin, eventPriority = EventPriority.MONITOR )</ID>
+    <ID>TrailingCommaOnCallSite:LowerKillerRatingUseCase.kt:LowerKillerRatingUseCase$( onSuccess = { _ -> LowerKillerRatingResult.Lowered }, onFailure = { _ -> LowerKillerRatingResult.StorageFailed } )</ID>
+    <ID>TrailingCommaOnCallSite:LowerKillerRatingUseCase.kt:LowerKillerRatingUseCase$( reporter = null, reported = storedKiller, message = reason, type = RatingType.PLAYER_KILL, ratingValue = killEvent.changeBy )</ID>
+    <ID>TrailingCommaOnCallSite:LowerKillerRatingUseCaseTest.kt:LowerKillerRatingUseCaseTest$( events = AstraRatingConfig.Events( killPlayer = AstraRatingConfig.Events.Event(changeBy = changeBy, enabled = enabled) ) )</ID>
+    <ID>TrailingCommaOnCallSite:LowerKillerRatingUseCaseTest.kt:LowerKillerRatingUseCaseTest$( factory = { killEventConfig(enabled = true, changeBy = -2) }, loader = { null } )</ID>
+    <ID>TrailingCommaOnCallSite:LowerKillerRatingUseCaseTest.kt:LowerKillerRatingUseCaseTest$( killPlayer = AstraRatingConfig.Events.Event(changeBy = changeBy, enabled = enabled) )</ID>
+    <ID>TrailingCommaOnCallSite:LowerKillerRatingUseCaseTest.kt:LowerKillerRatingUseCaseTest$( killer = killer, killedPlayerUUID = killedPlayerUUID, reason = REASON )</ID>
+    <ID>TrailingCommaOnCallSite:LowerKillerRatingUseCaseTest.kt:LowerKillerRatingUseCaseTest$( minecraftUUID = UUID.fromString("f3d28cb0-7225-3cb1-baeb-2dadd2be89ae"), minecraftName = "Killer" )</ID>
+    <ID>TrailingCommaOnCallSite:LowerKillerRatingUseCaseTest.kt:LowerKillerRatingUseCaseTest$( ratingRepository = repository, configKrate = configKrate )</ID>
+    <ID>TrailingCommaOnDeclarationSite:EventModule.kt:EventModule$( coreModule: CoreModule, ratingRepository: RatingRepository, ratingCache: RatingCache, bukkitModule: BukkitModule )</ID>
+    <ID>TrailingCommaOnDeclarationSite:KillEventListener.kt:KillEventListener$( translationKrate: CachedKrate&lt;AstraRatingTranslation>, private val lowerKillerRatingUseCase: LowerKillerRatingUseCase, private val scope: CoroutineScope, private val dispatchers: KotlinDispatchers )</ID>
+    <ID>TrailingCommaOnDeclarationSite:LoginEvent.kt:LoginEvent$( plugin: Plugin, ratingCache: RatingCache, mainScope: CoroutineScope, ioScope: CoroutineScope )</ID>
+    <ID>TrailingCommaOnDeclarationSite:LowerKillerRatingUseCase.kt:LowerKillerRatingUseCase$( private val ratingRepository: RatingRepository, configKrate: CachedKrate&lt;AstraRatingConfig> )</ID>
+  </CurrentIssues>
+</SmellBaseline>

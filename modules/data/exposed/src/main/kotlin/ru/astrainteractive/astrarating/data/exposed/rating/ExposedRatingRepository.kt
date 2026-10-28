@@ -53,7 +53,12 @@ internal class ExposedRatingRepository(
     private suspend fun <T> query(statement: JdbcTransaction.() -> T): Result<T> {
         val database = withTimeoutOrNull(MAX_TIMEOUT) { databaseFlow.first() }
             ?: return Result.failure<T>(RatingStorageError.DatabaseUnavailable()).logFailure()
-        return runCatching { transaction(database, maxAttempts = 1) { statement.invoke(this) } }
+        return runCatching {
+            transaction(database) {
+                maxAttempts = 1
+                statement.invoke(this)
+            }
+        }
             .propagateCancellationException()
             .fold(
                 onSuccess = { value -> Result.success(value) },

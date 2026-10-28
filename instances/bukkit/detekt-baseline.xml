@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>TrailingCommaOnCallSite:RootModule.kt:RootModule$( coreModule = coreModule, guiModule = guiModule, ratingChangeModule = ratingChangeModule, commandRegistrarContext = PaperCommandRegistrarContext( mainScope = coreModule.unconfinedScope, plugin = plugin ), lifecyclePlugin = plugin, platformServer = platformServer )</ID>
+    <ID>TrailingCommaOnCallSite:RootModule.kt:RootModule$( coreModule = coreModule, ratingPlayerModule = ratingPlayerModule, ratingPlayersModule = ratingPlayersModule )</ID>
+    <ID>TrailingCommaOnCallSite:RootModule.kt:RootModule$( coreModule = coreModule, ratingRepository = ratingStorageModule.ratingRepository, ratingCache = ratingStorageModule.ratingCache, bukkitModule = bukkitModule )</ID>
+    <ID>TrailingCommaOnCallSite:RootModule.kt:RootModule$( databaseFlow = exposedModule.databaseFlow, coroutineScope = coreModule.ioScope, platformServer = platformServer, isDebugProvider = { coreModule.configKrate.cachedValue.debug } )</ID>
+    <ID>TrailingCommaOnCallSite:RootModule.kt:RootModule$( mainScope = coreModule.unconfinedScope, plugin = plugin )</ID>
+    <ID>TrailingCommaOnCallSite:RootModule.kt:RootModule$( ratedUsersCache = ratingStorageModule.ratedUsersCache, dispatchers = coreModule.dispatchers )</ID>
+    <ID>TrailingCommaOnCallSite:RootModule.kt:RootModule$( ratingCache = ratingStorageModule.ratingCache, dataFolder = bukkitModule.plugin.dataFolder, yamlStringFormat = coreModule.yamlStringFormat )</ID>
+    <ID>TrailingCommaOnCallSite:RootModule.kt:RootModule$( ratingRepository = ratingStorageModule.ratingRepository, astraRatingConfigKrate = coreModule.configKrate )</ID>
+    <ID>TrailingCommaOnCallSite:RootModule.kt:RootModule$( stringFormat = coreModule.yamlStringFormat, dataFolder = bukkitModule.plugin.dataFolder, defaultConfig = ::DbRatingConfiguration )</ID>
+  </CurrentIssues>
+</SmellBaseline>

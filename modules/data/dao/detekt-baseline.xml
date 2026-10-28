@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ClassSignature:NewUser.kt:NewUser</ID>
+    <ID>ClassSignature:RatedUser.kt:RatedUser</ID>
+    <ID>ClassSignature:User.kt:User</ID>
+    <ID>FunctionSignature:RatingRepository.kt:RatingRepository$suspend fun countPlayerOnPlayerDayRated: Result&lt;Long></ID>
+    <ID>ReturnCount:RatingRepositoryExt.kt:suspend fun RatingRepository.upsertUser: Result&lt;User></ID>
+    <ID>TrailingCommaOnCallSite:RatingRepositoryExtTest.kt:RatingRepositoryExtTest$( NewUser( minecraftUUID = playerUUID, minecraftName = "Renamed" ) )</ID>
+    <ID>TrailingCommaOnCallSite:RatingRepositoryExtTest.kt:RatingRepositoryExtTest$( id = 7L, minecraftUUID = playerUUID.toString(), minecraftName = "Tester", lastUpdated = Instant.fromEpochMilliseconds(0L) )</ID>
+    <ID>TrailingCommaOnCallSite:RatingRepositoryExtTest.kt:RatingRepositoryExtTest$( minecraftUUID = playerUUID, minecraftName = "Renamed" )</ID>
+    <ID>TrailingCommaOnDeclarationSite:RatedUser.kt:RatedUser$( val user: User, val ratingTotal: Int, val ratingCounts: Long )</ID>
+    <ID>TrailingCommaOnDeclarationSite:RatingRepository.kt:RatingRepository$( playerUUID: UUID, ratedPlayerUUID: UUID )</ID>
+    <ID>TrailingCommaOnDeclarationSite:RatingRepository.kt:RatingRepository$( reporter: User?, reported: User, message: String, type: RatingType, ratingValue: Int )</ID>
+    <ID>TrailingCommaOnDeclarationSite:RatingType.kt:RatingType</ID>
+  </CurrentIssues>
+</SmellBaseline>

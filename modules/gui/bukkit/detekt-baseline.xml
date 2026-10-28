@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>FunctionExpressionBody:DateFormat.kt:{ return SimpleDateFormat(format).format(Date(instant.toEpochMilliseconds())) }</ID>
+    <ID>FunctionSignature:SortSlot.kt:internal fun SlotContext.playerRatingsSortSlot</ID>
+    <ID>FunctionSignature:SortSlot.kt:internal fun SlotContext.ratingsSortSlot: InventorySlot</ID>
+    <ID>TrailingCommaOnCallSite:BukkitGuiRouter.kt:BukkitGuiRouter$( player = player, ratingPlayersComponent = ratingPlayersModule.createAllRatingsComponent(), router = this@BukkitGuiRouter, configKrate = coreModule.configKrate, translationKrate = coreModule.translationKrate, dispatchers = coreModule.dispatchers )</ID>
+    <ID>TrailingCommaOnCallSite:BukkitGuiRouter.kt:BukkitGuiRouter$( playerName = route.selectedPlayerName, playerUUID = route.selectedPlayerUUID )</ID>
+    <ID>TrailingCommaOnCallSite:BukkitGuiRouter.kt:BukkitGuiRouter$( selectedPlayerName = route.selectedPlayerName, player = player, ratingPlayerComponent = ratingPlayerModule.createPlayerRatingsComponent( playerName = route.selectedPlayerName, playerUUID = route.selectedPlayerUUID ), router = this@BukkitGuiRouter, configKrate = coreModule.configKrate, translationKrate = coreModule.translationKrate, dispatchers = coreModule.dispatchers )</ID>
+    <ID>TrailingCommaOnCallSite:GuiBukkitModule.kt:GuiBukkitModule$( coreModule = coreModule, ratingPlayerModule = ratingPlayerModule, ratingPlayersModule = ratingPlayersModule )</ID>
+    <ID>TrailingCommaOnCallSite:GuiLoadingIndicator.kt:GuiLoadingIndicator$( SlotKey.LOADING, SlotKey.EMPTY, SlotKey.EMPTY, SlotKey.EMPTY, SlotKey.EMPTY, SlotKey.EMPTY, SlotKey.EMPTY, SlotKey.EMPTY, SlotKey.LOADING )</ID>
+    <ID>TrailingCommaOnCallSite:PlayerRatingsGUI.kt:PlayerRatingsGUI$( index = inventoryMap.firstIndexOf(RatingSlotKey.BACK), click = { val route = GuiRouter.Route.AllRatings(player.asOnlineMinecraftPlayer()) router.navigate(route) } )</ID>
+    <ID>TrailingCommaOnCallSite:PlayerRatingsGUI.kt:PlayerRatingsGUI$( index = inventoryMap.firstIndexOf(RatingSlotKey.EVENT), killCounts = ratingPlayerComponent.model.value.killCounts )</ID>
+    <ID>TrailingCommaOnCallSite:PlayerRatingsGUI.kt:PlayerRatingsGUI$( index = inventoryMap.firstIndexOf(RatingSlotKey.NEXT_PAGE), click = { paginator.openNextPage() } )</ID>
+    <ID>TrailingCommaOnCallSite:PlayerRatingsGUI.kt:PlayerRatingsGUI$( index = inventoryMap.firstIndexOf(RatingSlotKey.PREV_PAGE), click = { paginator.openPrevPage() } )</ID>
+    <ID>TrailingCommaOnCallSite:PlayerRatingsGUI.kt:PlayerRatingsGUI$( index = inventoryMap.firstIndexOf(RatingSlotKey.SORT), sortType = ratingPlayerComponent.model.value.sort, onClick = { ratingPlayerComponent.onSortClicked() } )</ID>
+    <ID>TrailingCommaOnCallSite:PlayerRatingsGUI.kt:PlayerRatingsGUI$( index = slotIndex, userCreatedReportName = userAndRating.userCreatedReport?.normalName ?: "-", isPositive = userAndRating.rating > 0, message = userAndRating.message, ratedPlayer = userAndRating.reportedUser.offlinePlayer, canDelete = canDelete, click = Click { clickEvent -> if (!canDelete) return@Click if (clickEvent.click != ClickType.LEFT) return@Click val item = ratings .getOrNull(paginator.context.maxItemsPerPage * paginator.context.page + clickEvent.slot) ?: return@Click ratingPlayerComponent.onDeleteClicked(item) } )</ID>
+    <ID>TrailingCommaOnCallSite:PlayerRatingsGUI.kt:PlayerRatingsGUI$( maxItemsPerPage = inventoryMap.count(RatingSlotKey.RATING_ITEM) )</ID>
+    <ID>TrailingCommaOnCallSite:PlayerRatingsGUI.kt:PlayerRatingsGUI$( menu = this, translation = translationKrate.getValue(), locale = locale )</ID>
+    <ID>TrailingCommaOnCallSite:PlayerRatingsGUI.kt:PlayerRatingsGUI$( translationKrate = translationKrate, configKrate = configKrate, menu = this, locale = locale )</ID>
+    <ID>TrailingCommaOnCallSite:PlayerRatingsSlot.kt:( text = message, threshold = config.trimMessageAfter, cutWords = config.cutWords )</ID>
+    <ID>TrailingCommaOnCallSite:RatingInventoryLayout.kt:( RatingSlotKey.PREV_PAGE, RatingSlotKey.EVENT, RatingSlotKey.EMPTY, RatingSlotKey.EMPTY, RatingSlotKey.BACK, RatingSlotKey.SORT, RatingSlotKey.EMPTY, RatingSlotKey.EMPTY, RatingSlotKey.NEXT_PAGE )</ID>
+    <ID>TrailingCommaOnCallSite:RatingsGUI.kt:RatingsGUI$( index = inventoryMap.firstIndexOf(RatingSlotKey.BACK), click = { playerHolder.player.closeInventory() } )</ID>
+    <ID>TrailingCommaOnCallSite:RatingsGUI.kt:RatingsGUI$( index = inventoryMap.firstIndexOf(RatingSlotKey.NEXT_PAGE), click = { paginator.openNextPage() } )</ID>
+    <ID>TrailingCommaOnCallSite:RatingsGUI.kt:RatingsGUI$( index = inventoryMap.firstIndexOf(RatingSlotKey.PREV_PAGE), click = { paginator.openPrevPage() } )</ID>
+    <ID>TrailingCommaOnCallSite:RatingsGUI.kt:RatingsGUI$( index = inventoryMap.firstIndexOf(RatingSlotKey.SORT), sortType = ratingPlayersComponent.model.value.sort, click = { ratingPlayersComponent.onSortClicked() } )</ID>
+    <ID>TrailingCommaOnCallSite:RatingsGUI.kt:RatingsGUI$( index = slotIndex, player = userAndRating.user.offlinePlayer, ratingTotal = userAndRating.ratingTotal, ratingCounts = userAndRating.ratingCounts, playerName = userAndRating.user.normalName, click = Click { val route = GuiRouter.Route.PlayerRating( inventoryOwner = playerHolder.player.asOnlineMinecraftPlayer(), selectedPlayerName = userAndRating.user.minecraftName, selectedPlayerUUID = userAndRating.user.minecraftUUID.let(UUID::fromString) ) router.navigate(route) } )</ID>
+    <ID>TrailingCommaOnCallSite:RatingsGUI.kt:RatingsGUI$( inventoryOwner = playerHolder.player.asOnlineMinecraftPlayer(), selectedPlayerName = userAndRating.user.minecraftName, selectedPlayerUUID = userAndRating.user.minecraftUUID.let(UUID::fromString) )</ID>
+    <ID>TrailingCommaOnCallSite:RatingsGUI.kt:RatingsGUI$( maxItemsPerPage = inventoryMap.count(RatingSlotKey.RATING_ITEM) )</ID>
+    <ID>TrailingCommaOnCallSite:RatingsGUI.kt:RatingsGUI$( menu = this, translation = translationKrate.getValue(), locale = locale )</ID>
+    <ID>TrailingCommaOnCallSite:RatingsGUI.kt:RatingsGUI$( translationKrate = translationKrate, configKrate = configKrate, menu = this, locale = locale )</ID>
+    <ID>TrailingCommaOnCallSite:SortSlot.kt:( sort = entry.toText(translation), isSelected = sortType::class == entry::class, isAscending = sortType.isAsc )</ID>
+    <ID>TrailingCommaOnDeclarationSite:BukkitGuiRouter.kt:BukkitGuiRouter$( private val coreModule: CoreModule, private val ratingPlayerModule: RatingPlayerModule, private val ratingPlayersModule: RatingPlayersModule )</ID>
+    <ID>TrailingCommaOnDeclarationSite:GuiBukkitModule.kt:GuiBukkitModule$( coreModule: CoreModule, ratingPlayerModule: RatingPlayerModule, ratingPlayersModule: RatingPlayersModule )</ID>
+    <ID>TrailingCommaOnDeclarationSite:GuiLoadingIndicator.kt:GuiLoadingIndicator$( private val menu: Menu, private val translation: AstraRatingTranslation, private val locale: Locale )</ID>
+    <ID>TrailingCommaOnDeclarationSite:PlayerRatingsGUI.kt:PlayerRatingsGUI$( selectedPlayerName: String, private val player: Player, private val ratingPlayerComponent: RatingPlayerComponent, private val router: GuiRouter, private val translationKrate: CachedKrate&lt;AstraRatingTranslation>, private val configKrate: CachedKrate&lt;AstraRatingConfig>, private val dispatchers: KotlinDispatchers )</ID>
+    <ID>TrailingCommaOnDeclarationSite:PlayerRatingsSlot.kt:( index: Int, userCreatedReportName: String, isPositive: Boolean, message: String, ratedPlayer: OfflinePlayer, canDelete: Boolean, click: Click )</ID>
+    <ID>TrailingCommaOnDeclarationSite:RatingSlotKey.kt:RatingSlotKey</ID>
+    <ID>TrailingCommaOnDeclarationSite:RatingsGUI.kt:RatingsGUI$( player: Player, private val dispatchers: KotlinDispatchers, private val translationKrate: CachedKrate&lt;AstraRatingTranslation>, private val configKrate: CachedKrate&lt;AstraRatingConfig>, private val ratingPlayersComponent: RatingPlayersComponent, private val router: GuiRouter )</ID>
+    <ID>TrailingCommaOnDeclarationSite:RatingsSlot.kt:( index: Int, click: Click, player: OfflinePlayer, ratingTotal: Int, ratingCounts: Long, playerName: String )</ID>
+    <ID>TrailingCommaOnDeclarationSite:SlotContext.kt:SlotContext$( translationKrate: CachedKrate&lt;AstraRatingTranslation>, configKrate: CachedKrate&lt;AstraRatingConfig>, val menu: Menu, /** Language of the player who opened the menu. */ val locale: Locale )</ID>
+    <ID>TrailingCommaOnDeclarationSite:SortSlot.kt:( index: Int, sortType: UserRatingsSort, onClick: () -> Unit )</ID>
+    <ID>TrailingCommaOnDeclarationSite:SortSlot.kt:( index: Int, sortType: UsersRatingsSort, click: Click )</ID>
+  </CurrentIssues>
+</SmellBaseline>

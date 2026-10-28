@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>ClassSignature:AddRatingUseCase.kt:AddRatingUseCase</ID>
+    <ID>ClassSignature:RatingChangeModule.kt:RatingChangeModule</ID>
+    <ID>ClassSignature:RatingPlayer.kt:RatingPlayer</ID>
+    <ID>ClassSignature:RatingPlayerModule.kt:RatingPlayerModule</ID>
+    <ID>ClassSignature:RatingPlayersComponent.kt:RatingPlayersComponent$Model</ID>
+    <ID>ClassSignature:RatingPlayersModule.kt:RatingPlayersModule</ID>
+    <ID>FunctionExpressionBody:AddRatingUseCaseTest.kt:AddRatingUseCaseTest${ return RatingPlayer( uuid = UUID.fromString(uuid), name = name, permissible = permissible, hasPlayedBefore = hasPlayedBefore ) }</ID>
+    <ID>FunctionExpressionBody:AddRatingUseCaseTest.kt:AddRatingUseCaseTest${ return useCase.invoke( creator = creator, ratedPlayer = ratedPlayer, message = message, rating = 1, type = RatingType.USER_RATING ) }</ID>
+    <ID>FunctionExpressionBody:AstraRatingConfigExt.kt:{ return message.length in minMessageLength..maxMessageLength }</ID>
+    <ID>FunctionExpressionBody:IterableExt.kt:{ return if (isAsc) { sortedBy(selector) } else { sortedByDescending(selector) } }</ID>
+    <ID>FunctionExpressionBody:ListExt.kt:{ return when (sort) { is UserRatingsSort.Date -> sortedBy(sort.isAsc, UserRating::time) is UserRatingsSort.Player -> sortedBy(sort.isAsc) { rating -> rating.userCreatedReport?.minecraftName } is UserRatingsSort.Rating -> sortedBy(sort.isAsc, UserRating::rating) } }</ID>
+    <ID>FunctionExpressionBody:ListExtTest.kt:ListExtTest${ return UserRating( id = id, userCreatedReport = User( id = id + 1, minecraftUUID = reporterName, minecraftName = reporterName, lastUpdated = Instant.fromEpochMilliseconds(0L) ), reportedUser = reported, rating = value, message = "message", ratingType = RatingType.USER_RATING, time = time ) }</ID>
+    <ID>FunctionExpressionBody:RatingPlayerModule.kt:RatingPlayerModule${ return DefaultRatingPlayerComponent( playerName = playerName, playerUUID = playerUUID, ratingRepository = ratingRepository, dispatchers = dispatchers ) }</ID>
+    <ID>FunctionExpressionBody:RatingPlayersModule.kt:RatingPlayersModule${ return DefaultRatingPlayersComponent( ratedUsersCache = ratedUsersCache, dispatchers = dispatchers ) }</ID>
+    <ID>ReturnCount:AddRatingUseCase.kt:AddRatingUseCase$private suspend fun findVoteLimitReached: AddRatingResult?</ID>
+    <ID>ReturnCount:AddRatingUseCase.kt:AddRatingUseCase$private suspend fun insertRating: AddRatingResult</ID>
+    <ID>ReturnCount:AddRatingUseCase.kt:AddRatingUseCase$suspend operator fun invoke: AddRatingResult</ID>
+    <ID>TrailingCommaOnCallSite:AddRatingUseCase.kt:AddRatingUseCase$( creator = creator, ratedPlayer = ratedPlayer, message = message, rating = rating, type = type )</ID>
+    <ID>TrailingCommaOnCallSite:AddRatingUseCase.kt:AddRatingUseCase$( onSuccess = { _ -> AddRatingResult.Success }, onFailure = { _ -> AddRatingResult.StorageFailed } )</ID>
+    <ID>TrailingCommaOnCallSite:AddRatingUseCase.kt:AddRatingUseCase$( reporter = reporter, reported = reported, message = message, type = type, ratingValue = rating )</ID>
+    <ID>TrailingCommaOnCallSite:AddRatingUseCaseTest.kt:AddRatingUseCaseTest$( creator = creator, ratedPlayer = ratedPlayer, message = message, rating = 1, type = RatingType.USER_RATING )</ID>
+    <ID>TrailingCommaOnCallSite:AddRatingUseCaseTest.kt:AddRatingUseCaseTest$( grantedPermissions = setOf(AstraRatingPermission.Vote), permissionSizes = mapOf(AstraRatingPermission.MaxRatePerDay to 5) )</ID>
+    <ID>TrailingCommaOnCallSite:AddRatingUseCaseTest.kt:AddRatingUseCaseTest$( grantedPermissions = setOf(AstraRatingPermission.Vote), permissionSizes = mapOf(AstraRatingPermission.SinglePlayerPerDay to 3) )</ID>
+    <ID>TrailingCommaOnCallSite:AddRatingUseCaseTest.kt:AddRatingUseCaseTest$( id = 10L, minecraftUUID = player.uuid.toString(), minecraftName = player.name, lastUpdated = Instant.fromEpochMilliseconds(0L) )</ID>
+    <ID>TrailingCommaOnCallSite:AddRatingUseCaseTest.kt:AddRatingUseCaseTest$( maxRatingPerDay = 2, maxRatingPerPlayer = 1, minMessageLength = 3, maxMessageLength = 10 )</ID>
+    <ID>TrailingCommaOnCallSite:AddRatingUseCaseTest.kt:AddRatingUseCaseTest$( name = "Voter", uuid = "f3d28cb0-7225-3cb1-baeb-2dadd2be89ae", grantedPermissions = setOf(AstraRatingPermission.Vote) )</ID>
+    <ID>TrailingCommaOnCallSite:AddRatingUseCaseTest.kt:AddRatingUseCaseTest$( name = creator.name, uuid = creator.uuid.toString(), permissible = FakeKPermissible( grantedPermissions = setOf(AstraRatingPermission.Vote), permissionSizes = mapOf(AstraRatingPermission.MaxRatePerDay to 5) ) )</ID>
+    <ID>TrailingCommaOnCallSite:AddRatingUseCaseTest.kt:AddRatingUseCaseTest$( name = creator.name, uuid = creator.uuid.toString(), permissible = FakeKPermissible( grantedPermissions = setOf(AstraRatingPermission.Vote), permissionSizes = mapOf(AstraRatingPermission.SinglePlayerPerDay to 3) ) )</ID>
+    <ID>TrailingCommaOnCallSite:AddRatingUseCaseTest.kt:AddRatingUseCaseTest$( name = creator.name, uuid = creator.uuid.toString(), permissible = null )</ID>
+    <ID>TrailingCommaOnCallSite:AddRatingUseCaseTest.kt:AddRatingUseCaseTest$( name = ratedPlayer.name, uuid = ratedPlayer.uuid.toString(), hasPlayedBefore = false )</ID>
+    <ID>TrailingCommaOnCallSite:AddRatingUseCaseTest.kt:AddRatingUseCaseTest$( playerUUID = creator.uuid, ratedPlayerUUID = ratedPlayer.uuid, count = 1 )</ID>
+    <ID>TrailingCommaOnCallSite:AddRatingUseCaseTest.kt:AddRatingUseCaseTest$( playerUUID = creator.uuid, ratedPlayerUUID = ratedPlayer.uuid, count = 2 )</ID>
+    <ID>TrailingCommaOnCallSite:AddRatingUseCaseTest.kt:AddRatingUseCaseTest$( ratingRepository = repository, configKrate = DefaultMutableKrate(factory = { config }, loader = { null }).asCachedMutableKrate() )</ID>
+    <ID>TrailingCommaOnCallSite:AddRatingUseCaseTest.kt:AddRatingUseCaseTest$( uuid = UUID.fromString(uuid), name = name, permissible = permissible, hasPlayedBefore = hasPlayedBefore )</ID>
+    <ID>TrailingCommaOnCallSite:DefaultRatingPlayerComponent.kt:DefaultRatingPlayerComponent$( RatingPlayerComponent.Model( playerName = playerName, playerUUID = playerUUID, allRatings = emptyList(), sort = UserRatingsSort.Rating(true), isLoading = false ) )</ID>
+    <ID>TrailingCommaOnCallSite:DefaultRatingPlayerComponent.kt:DefaultRatingPlayerComponent$( playerName = playerName, playerUUID = playerUUID, allRatings = emptyList(), sort = UserRatingsSort.Rating(true), isLoading = false )</ID>
+    <ID>TrailingCommaOnCallSite:DefaultRatingPlayerComponent.kt:DefaultRatingPlayerComponent$( sort = newSort, allRatings = currentModel.allRatings.sortedBy(newSort) )</ID>
+    <ID>TrailingCommaOnCallSite:DefaultRatingPlayerComponent.kt:DefaultRatingPlayerComponent.Companion$( UserRatingsSort.Rating(true), UserRatingsSort.Rating(false), UserRatingsSort.Player(true), UserRatingsSort.Player(false), UserRatingsSort.Date(true), UserRatingsSort.Date(false) )</ID>
+    <ID>TrailingCommaOnCallSite:DefaultRatingPlayersComponent.kt:DefaultRatingPlayersComponent$( RatingPlayersComponent.Model( userRatings = emptyList(), sort = UsersRatingsSort.TotalRating(true), isLoading = false ) )</ID>
+    <ID>TrailingCommaOnCallSite:DefaultRatingPlayersComponent.kt:DefaultRatingPlayersComponent$( userRatings = currentModel.userRatings.sortedBy(newSort.isAsc, RatedUser::ratingTotal), sort = newSort )</ID>
+    <ID>TrailingCommaOnCallSite:DefaultRatingPlayersComponent.kt:DefaultRatingPlayersComponent$( userRatings = emptyList(), sort = UsersRatingsSort.TotalRating(true), isLoading = false )</ID>
+    <ID>TrailingCommaOnCallSite:ListExtTest.kt:ListExtTest$( "rating", "player", "date" )</ID>
+    <ID>TrailingCommaOnCallSite:ListExtTest.kt:ListExtTest$( 2L, 1L, 3L )</ID>
+    <ID>TrailingCommaOnCallSite:ListExtTest.kt:ListExtTest$( 2L, 3L, 1L )</ID>
+    <ID>TrailingCommaOnCallSite:ListExtTest.kt:ListExtTest$( 3L, 1L, 2L )</ID>
+    <ID>TrailingCommaOnCallSite:ListExtTest.kt:ListExtTest$( id = 1L, minecraftUUID = "reported", minecraftName = "Reported", lastUpdated = Instant.fromEpochMilliseconds(0L) )</ID>
+    <ID>TrailingCommaOnCallSite:ListExtTest.kt:ListExtTest$( id = 1L, reporterName = "Bob", value = 1, time = Instant.fromEpochMilliseconds(30L) )</ID>
+    <ID>TrailingCommaOnCallSite:ListExtTest.kt:ListExtTest$( id = 2L, reporterName = "Alice", value = -1, time = Instant.fromEpochMilliseconds(10L) )</ID>
+    <ID>TrailingCommaOnCallSite:ListExtTest.kt:ListExtTest$( id = 3L, reporterName = "Carol", value = 3, time = Instant.fromEpochMilliseconds(20L) )</ID>
+    <ID>TrailingCommaOnCallSite:ListExtTest.kt:ListExtTest$( id = id + 1, minecraftUUID = reporterName, minecraftName = reporterName, lastUpdated = Instant.fromEpochMilliseconds(0L) )</ID>
+    <ID>TrailingCommaOnCallSite:ListExtTest.kt:ListExtTest$( id = id, userCreatedReport = User( id = id + 1, minecraftUUID = reporterName, minecraftName = reporterName, lastUpdated = Instant.fromEpochMilliseconds(0L) ), reportedUser = reported, rating = value, message = "message", ratingType = RatingType.USER_RATING, time = time )</ID>
+    <ID>TrailingCommaOnCallSite:ListExtTest.kt:ListExtTest$( listOf( 2L, 1L, 3L ), ratings.sortedBy(UserRatingsSort.Rating(isAsc = true)).ids() )</ID>
+    <ID>TrailingCommaOnCallSite:ListExtTest.kt:ListExtTest$( listOf( 2L, 3L, 1L ), ratings.sortedBy(UserRatingsSort.Date(isAsc = true)).ids() )</ID>
+    <ID>TrailingCommaOnCallSite:ListExtTest.kt:ListExtTest$( listOf( 3L, 1L, 2L ), ratings.sortedBy(UserRatingsSort.Player(isAsc = false)).ids() )</ID>
+    <ID>TrailingCommaOnCallSite:ListExtTest.kt:ListExtTest$( rating( id = 1L, reporterName = "Bob", value = 1, time = Instant.fromEpochMilliseconds(30L) ), rating( id = 2L, reporterName = "Alice", value = -1, time = Instant.fromEpochMilliseconds(10L) ), rating( id = 3L, reporterName = "Carol", value = 3, time = Instant.fromEpochMilliseconds(20L) ) )</ID>
+    <ID>TrailingCommaOnCallSite:RatingChangeModule.kt:RatingChangeModule$( ratingRepository = ratingRepository, configKrate = astraRatingConfigKrate )</ID>
+    <ID>TrailingCommaOnCallSite:RatingPlayerModule.kt:RatingPlayerModule$( playerName = playerName, playerUUID = playerUUID, ratingRepository = ratingRepository, dispatchers = dispatchers )</ID>
+    <ID>TrailingCommaOnCallSite:RatingPlayersModule.kt:RatingPlayersModule$( ratedUsersCache = ratedUsersCache, dispatchers = dispatchers )</ID>
+    <ID>TrailingCommaOnDeclarationSite:AddRatingUseCase.kt:AddRatingUseCase$( creator: RatingPlayer, ratedPlayer: RatingPlayer, message: String, rating: Int, type: RatingType )</ID>
+    <ID>TrailingCommaOnDeclarationSite:AddRatingUseCase.kt:AddRatingUseCase$( creator: RatingPlayer, ratedPlayer: RatingPlayer?, message: String, rating: Int, type: RatingType )</ID>
+    <ID>TrailingCommaOnDeclarationSite:AddRatingUseCase.kt:AddRatingUseCase$( private val ratingRepository: RatingRepository, configKrate: CachedKrate&lt;AstraRatingConfig> )</ID>
+    <ID>TrailingCommaOnDeclarationSite:AddRatingUseCaseTest.kt:AddRatingUseCaseTest$( creator: RatingPlayer = this.creator, ratedPlayer: RatingPlayer? = this.ratedPlayer, message: String = "good game" )</ID>
+    <ID>TrailingCommaOnDeclarationSite:AddRatingUseCaseTest.kt:AddRatingUseCaseTest$( name: String, uuid: String, grantedPermissions: Set&lt;Permission> = emptySet(), permissionSizes: Map&lt;Permission, Int> = emptyMap(), hasPlayedBefore: Boolean = true, permissible: KPermissible? = FakeKPermissible(grantedPermissions, permissionSizes) )</ID>
+    <ID>TrailingCommaOnDeclarationSite:DefaultRatingPlayerComponent.kt:DefaultRatingPlayerComponent$( playerName: String, playerUUID: UUID, private val ratingRepository: RatingRepository, private val dispatchers: KotlinDispatchers )</ID>
+    <ID>TrailingCommaOnDeclarationSite:DefaultRatingPlayersComponent.kt:DefaultRatingPlayersComponent$( private val ratedUsersCache: RatedUsersCache, dispatchers: KotlinDispatchers )</ID>
+    <ID>TrailingCommaOnDeclarationSite:FakeKPermissible.kt:FakeKPermissible$( private val grantedPermissions: Set&lt;Permission>, private val permissionSizes: Map&lt;Permission, Int> )</ID>
+    <ID>TrailingCommaOnDeclarationSite:GuiRouter.kt:GuiRouter.Route.PlayerRating$( override val inventoryOwner: OnlineKPlayer, val selectedPlayerName: String, val selectedPlayerUUID: UUID )</ID>
+    <ID>TrailingCommaOnDeclarationSite:IterableExt.kt:( isAsc: Boolean, crossinline selector: (T) -> R? )</ID>
+    <ID>TrailingCommaOnDeclarationSite:RatingPlayer.kt:RatingPlayer$( val uuid: UUID, val name: String, val permissible: KPermissible?, val hasPlayedBefore: Boolean )</ID>
+    <ID>TrailingCommaOnDeclarationSite:RatingPlayerComponent.kt:RatingPlayerComponent.Model$( val playerName: String, val playerUUID: UUID, val allRatings: List&lt;UserRating>, val sort: UserRatingsSort, val isLoading: Boolean )</ID>
+    <ID>TrailingCommaOnDeclarationSite:RatingPlayersComponent.kt:RatingPlayersComponent.Model$( val userRatings: List&lt;RatedUser>, val sort: UsersRatingsSort, val isLoading: Boolean )</ID>
+    <ID>TrailingCommaOnDeclarationSite:RatingPlayersModule.kt:RatingPlayersModule$( private val ratedUsersCache: RatedUsersCache, private val dispatchers: KotlinDispatchers )</ID>
+  </CurrentIssues>
+</SmellBaseline>
