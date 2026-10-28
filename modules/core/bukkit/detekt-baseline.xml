@@ -1,8 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<SmellBaseline>
-  <ManuallySuppressedIssues/>
-  <CurrentIssues>
-    <ID>ClassSignature:BukkitModule.kt:BukkitModule</ID>
-    <ID>TrailingCommaOnCallSite:BukkitModule.kt:BukkitModule$( onEnable = { eventListener.onEnable(plugin) inventoryClickEvent.onEnable(plugin) bstats.invoke() }, onDisable = { eventListener.onDisable() inventoryClickEvent.onDisable() } )</ID>
-  </CurrentIssues>
-</SmellBaseline>
