@@ -1,3 +1,5 @@
+@file:Suppress("ExpressionBodyOnOneLine")
+
 package ru.astrainteractive.astrarating.gui.bukkit.util
 
 import ru.astrainteractive.astralibs.menu.layout.slotInventoryLayout

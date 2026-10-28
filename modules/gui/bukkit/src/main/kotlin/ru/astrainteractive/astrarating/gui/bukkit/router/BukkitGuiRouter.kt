@@ -1,3 +1,5 @@
+@file:Suppress("FieldDependencyConstruction")
+
 package ru.astrainteractive.astrarating.gui.bukkit.router
 
 import kotlinx.coroutines.launch

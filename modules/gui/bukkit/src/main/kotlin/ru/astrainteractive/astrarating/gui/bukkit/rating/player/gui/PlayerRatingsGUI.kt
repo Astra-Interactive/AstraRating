@@ -1,3 +1,5 @@
+@file:Suppress("FieldDependencyConstruction", "TrivialLambdaReference")
+
 package ru.astrainteractive.astrarating.gui.bukkit.rating.player.gui
 
 import kotlinx.coroutines.CoroutineScope

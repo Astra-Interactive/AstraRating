@@ -1,3 +1,5 @@
+@file:Suppress("ExpressionBodyOnOneLine")
+
 package ru.astrainteractive.astrarating.gui.bukkit.slot
 
 import org.bukkit.Material
