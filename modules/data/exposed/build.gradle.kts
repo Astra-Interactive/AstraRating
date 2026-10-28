@@ -5,14 +5,7 @@ plugins {
     alias(libs.plugins.klibs.rules.gradle.linter)
 }
 
-configurations.api {
-    dependencies.removeIf { dependency ->
-        dependency.group == "org.jetbrains.kotlin" && dependency.name == "kotlin-stdlib"
-    }
-}
-
 dependencies {
-    implementation(kotlin("stdlib"))
     implementation(libs.cache4k)
     implementation(libs.driver.mysql)
     implementation(libs.exposed.core)

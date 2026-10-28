@@ -1,11 +1,10 @@
-@file:Suppress("FunctionNaming")
+@file:Suppress("FunctionNaming", "RunBlockingInTest")
 
 package ru.astrainteractive.astrarating.data.exposed.rating
 
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.test.runTest
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
@@ -73,7 +72,7 @@ class ExposedRatingRepositoryTest {
 
     @BeforeTest
     fun setup() {
-        runTest {
+        kotlinx.coroutines.runBlocking {
             val folder = Files.createTempDirectory("dir").toFile()
             module = ExposedModule(
                 stringFormat = YamlStringFormat(),
@@ -91,7 +90,7 @@ class ExposedRatingRepositoryTest {
 
     @Test
     fun GIVEN_inserted_user_WHEN_user_is_found_THEN_stored_user_is_returned() {
-        runTest {
+        kotlinx.coroutines.runBlocking {
             val inserted = insertRandomUser()
 
             val found = repository.findUser(inserted.uuid()).getOrThrow()
@@ -102,7 +101,7 @@ class ExposedRatingRepositoryTest {
 
     @Test
     fun GIVEN_unknown_player_WHEN_user_is_found_THEN_returns_null() {
-        runTest {
+        kotlinx.coroutines.runBlocking {
             val found = repository.findUser(UUID.randomUUID()).getOrThrow()
 
             assertNull(found)
@@ -111,7 +110,7 @@ class ExposedRatingRepositoryTest {
 
     @Test
     fun GIVEN_renamed_user_WHEN_user_is_updated_THEN_new_name_is_stored() {
-        runTest {
+        kotlinx.coroutines.runBlocking {
             val inserted = insertRandomUser()
 
             repository.updateUser(inserted.copy(minecraftName = "Renamed")).getOrThrow()
@@ -122,7 +121,7 @@ class ExposedRatingRepositoryTest {
 
     @Test
     fun GIVEN_two_ratings_on_player_WHEN_ratings_are_fetched_THEN_both_are_listed_and_counted() {
-        runTest {
+        kotlinx.coroutines.runBlocking {
             val reported = insertRandomUser()
             val reporter = insertRandomUser()
 
@@ -148,7 +147,7 @@ class ExposedRatingRepositoryTest {
 
     @Test
     fun GIVEN_unknown_player_WHEN_ratings_are_fetched_or_counted_THEN_nothing_is_found() {
-        runTest {
+        kotlinx.coroutines.runBlocking {
             val known = insertRandomUser()
             val unknown = UUID.randomUUID()
 
@@ -161,7 +160,7 @@ class ExposedRatingRepositoryTest {
 
     @Test
     fun GIVEN_ratings_from_two_reporters_WHEN_one_fetched_rating_is_deleted_THEN_only_it_is_removed() {
-        runTest {
+        kotlinx.coroutines.runBlocking {
             val reported = insertRandomUser()
             rate(
                 reporter = insertRandomUser(),
@@ -188,7 +187,7 @@ class ExposedRatingRepositoryTest {
 
     @Test
     fun GIVEN_kill_rating_WHEN_player_ratings_are_fetched_THEN_it_is_listed_without_reporter() {
-        runTest {
+        kotlinx.coroutines.runBlocking {
             val killer = insertRandomUser()
             val reporter = insertRandomUser()
             rate(
@@ -214,7 +213,7 @@ class ExposedRatingRepositoryTest {
 
     @Test
     fun GIVEN_user_and_kill_ratings_WHEN_total_is_fetched_THEN_both_are_summed() {
-        runTest {
+        kotlinx.coroutines.runBlocking {
             val killer = insertRandomUser()
             rate(
                 reporter = insertRandomUser(),
@@ -236,7 +235,7 @@ class ExposedRatingRepositoryTest {
 
     @Test
     fun GIVEN_empty_database_WHEN_total_is_fetched_THEN_returns_zero() {
-        runTest {
+        kotlinx.coroutines.runBlocking {
             val total = repository.fetchUserTotalRating(UUID.randomUUID()).getOrThrow()
 
             assertEquals(0, total)
@@ -245,7 +244,7 @@ class ExposedRatingRepositoryTest {
 
     @Test
     fun GIVEN_broken_table_WHEN_total_is_fetched_THEN_query_failure_is_returned() {
-        runTest {
+        kotlinx.coroutines.runBlocking {
             val database = requireModule.databaseFlow.first()
             transaction(database) { SchemaUtils.drop(UserRatingTable) }
 
@@ -257,7 +256,7 @@ class ExposedRatingRepositoryTest {
 
     @Test
     fun GIVEN_database_never_connects_WHEN_user_is_found_THEN_database_unavailable_is_returned() {
-        runTest {
+        kotlinx.coroutines.runBlocking {
             val disconnectedRepository = ExposedRatingRepository(
                 databaseFlow = flow<Database> { awaitCancellation() },
                 clock = Clock.System,

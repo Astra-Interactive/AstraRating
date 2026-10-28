@@ -2,9 +2,11 @@ package ru.astrainteractive.astrarating.data.exposed.di
 
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChangedBy
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.serialization.StringFormat
 import org.jetbrains.exposed.v1.core.Slf4jSqlDebugLogger
 import org.jetbrains.exposed.v1.jdbc.Database
@@ -21,10 +23,9 @@ import ru.astrainteractive.klibs.kstorage.api.asStateFlowMutableKrate
 import ru.astrainteractive.klibs.kstorage.api.impl.DefaultMutableKrate
 import ru.astrainteractive.klibs.kstorage.api.value.ValueFactory
 import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
-import ru.astrainteractive.klibs.mikro.core.coroutines.mapCached
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
-import ru.astrainteractive.klibs.mikro.exposed.util.connect
+import ru.astrainteractive.klibs.mikro.exposed.util.connectAsFlow
 import java.io.File
 import java.sql.Connection
 
@@ -46,12 +47,12 @@ class ExposedModule(
         }
     ).asStateFlowMutableKrate()
 
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val databaseFlow: Flow<Database> = dbConfigurationConfig
         .cachedStateFlow
         .distinctUntilChangedBy(DbRatingConfiguration::databaseConfiguration)
-        .mapCached(coroutineScope) { dbConfig, oldDatabase ->
-            oldDatabase?.run(TransactionManager::closeAndUnregister)
-            val database = dbConfig.databaseConfiguration.connect()
+        .flatMapLatest { dbConfig -> dbConfig.databaseConfiguration.connectAsFlow() }
+        .onEach { database ->
             TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE
             transaction(database) {
                 addLogger(Slf4jSqlDebugLogger)
@@ -60,15 +61,17 @@ class ExposedModule(
                     UserRatingTable
                 )
             }
-            database
         }
+        .shareIn(
+            scope = coroutineScope,
+            started = SharingStarted.Eagerly,
+            replay = 1
+        )
 
+    @Suppress("TrivialLambdaReference")
     val lifecycle: Lifecycle by lazy {
         Lifecycle.Lambda(
             onDisable = {
-                runBlocking {
-                    databaseFlow.first().run(TransactionManager::closeAndUnregister)
-                }
                 coroutineScope.cancel()
             }
         )
