@@ -15,7 +15,7 @@ import ru.astrainteractive.astrarating.gui.api.rating.change.di.RatingChangeModu
 @Suppress("LongParameterList")
 class CommandsModule(
     private val commandRegistrarContext: CommandRegistrarContext,
-    private val lifecyclePlugin: Lifecycle,
+    lifecyclePlugin: Lifecycle,
     private val coreModule: CoreModule,
     guiModule: GuiModule,
     platformServer: PlatformServer,

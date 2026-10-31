@@ -62,7 +62,7 @@ internal class PlayerRatingsGUI(
     private val ratingPlayerComponent: RatingPlayerComponent,
     private val router: GuiRouter,
     private val translationKrate: CachedKrate<AstraRatingTranslation>,
-    private val configKrate: CachedKrate<AstraRatingConfig>,
+    configKrate: CachedKrate<AstraRatingConfig>,
     private val dispatchers: KotlinDispatchers
 ) : InventoryMenu() {
     override val childComponents: List<CoroutineScope>

@@ -31,7 +31,7 @@ import java.sql.Connection
 
 class ExposedModule(
     stringFormat: StringFormat,
-    private val dataFolder: File,
+    dataFolder: File,
     defaultConfig: ValueFactory<DbRatingConfiguration>
 ) : Logger by JUtiltLogger("AstraRating-ExposedModule") {
     private val coroutineScope = CoroutineFeature.IO.withTimings()

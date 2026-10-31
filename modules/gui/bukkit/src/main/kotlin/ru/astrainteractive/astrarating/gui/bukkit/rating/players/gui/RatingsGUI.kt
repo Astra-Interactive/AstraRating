@@ -54,8 +54,8 @@ import java.util.UUID
 internal class RatingsGUI(
     player: Player,
     private val dispatchers: KotlinDispatchers,
-    private val translationKrate: CachedKrate<AstraRatingTranslation>,
-    private val configKrate: CachedKrate<AstraRatingConfig>,
+    translationKrate: CachedKrate<AstraRatingTranslation>,
+    configKrate: CachedKrate<AstraRatingConfig>,
     private val ratingPlayersComponent: RatingPlayersComponent,
     private val router: GuiRouter
 ) : InventoryMenu() {
