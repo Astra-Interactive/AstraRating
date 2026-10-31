@@ -175,7 +175,7 @@ class AddRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_creator_already_voted_on_player_today_WHEN_rating_is_added_THEN_already_max_votes_on_player(): TestResult {
+    fun GIVEN_creator_voted_on_player_today_WHEN_rating_is_added_THEN_already_max_votes_on_player(): TestResult {
         return runTest {
             repository.setDayVotesOnPlayer(
                 playerUUID = creator.uuid,
@@ -259,7 +259,7 @@ class AddRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_only_creator_can_not_be_stored_WHEN_rating_is_added_THEN_storage_failed_and_nothing_is_rated(): TestResult {
+    fun GIVEN_creator_can_not_be_stored_WHEN_rating_is_added_THEN_storage_failed_and_nothing_is_rated(): TestResult {
         return runTest {
             storedUser(ratedPlayer)
             repository.failingCalls += FakeRatingRepository.Call.INSERT_USER
