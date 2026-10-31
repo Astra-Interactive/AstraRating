@@ -24,7 +24,7 @@ import ru.astrainteractive.astrarating.gui.api.rating.players.di.RatingPlayersMo
 import ru.astrainteractive.astrarating.gui.bukkit.di.GuiBukkitModule
 import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
 
-class RootModule(plugin: LifecyclePlugin) {
+internal class RootModule(plugin: LifecyclePlugin) {
     private val platformServer: PlatformServer by lazy { BukkitPlatformServer() }
 
     private val coreModule: CoreModule by lazy {
@@ -115,7 +115,7 @@ class RootModule(plugin: LifecyclePlugin) {
         )
     }
     private val lifecycles: List<Lifecycle>
-        get() = listOfNotNull(
+        get() = listOf(
             coreModule.lifecycle,
             bukkitModule.lifecycle,
             exposedModule.lifecycle,
