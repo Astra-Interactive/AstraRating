@@ -2,8 +2,8 @@
 
 package ru.astrainteractive.astrarating.data.exposed.rating
 
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.TestResult
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import ru.astrainteractive.astrarating.data.dao.rating.fake.FakeRatingRepository
 import ru.astrainteractive.astrarating.data.dao.rating.model.RatingType
