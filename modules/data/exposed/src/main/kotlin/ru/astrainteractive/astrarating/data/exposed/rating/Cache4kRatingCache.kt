@@ -7,7 +7,7 @@ import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 
 internal class Cache4kRatingCache(
-    private val ratingRepository: RatingRepository,
+    ratingRepository: RatingRepository,
     scope: CoroutineScope
 ) : RatingCache {
     private val ratings = RefreshingCache<UUID, Int>(

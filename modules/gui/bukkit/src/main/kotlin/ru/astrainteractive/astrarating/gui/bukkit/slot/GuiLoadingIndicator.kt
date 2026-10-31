@@ -22,7 +22,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 internal class GuiLoadingIndicator(
     private val menu: Menu,
-    private val translation: AstraRatingTranslation,
+    translation: AstraRatingTranslation,
     private val locale: Locale
 ) {
 

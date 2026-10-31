@@ -7,7 +7,7 @@ import ru.astrainteractive.astrarating.data.dao.rating.model.RatedUser
 import kotlin.time.Duration.Companion.seconds
 
 internal class Cache4kRatedUsersCache(
-    private val ratingRepository: RatingRepository,
+    ratingRepository: RatingRepository,
     coroutineScope: CoroutineScope
 ) : RatedUsersCache {
     private val cache = RefreshingCache<Unit, List<RatedUser>>(

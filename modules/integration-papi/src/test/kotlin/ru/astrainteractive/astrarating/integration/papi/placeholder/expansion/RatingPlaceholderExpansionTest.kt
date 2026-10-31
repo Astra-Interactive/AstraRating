@@ -42,8 +42,10 @@ internal class RatingPlaceholderExpansionTest {
     )
 
     private fun offlinePlayer(uuid: UUID): OfflinePlayer {
-        val proxy = Proxy.newProxyInstance(OfflinePlayer::class.java.classLoader, arrayOf(OfflinePlayer::class.java)) {
-                _, method, _ ->
+        val proxy = Proxy.newProxyInstance(
+            OfflinePlayer::class.java.classLoader,
+            arrayOf(OfflinePlayer::class.java)
+        ) { _, method, _ ->
             if (method.name == "getUniqueId") uuid else error("The tests do not call ${method.name}")
         }
         return proxy as OfflinePlayer

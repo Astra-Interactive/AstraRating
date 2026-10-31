@@ -24,7 +24,6 @@ internal class KillEventListener(
 ) : EventListener {
     private val translation by translationKrate
 
-    /** The reason is stored once and read by everyone, so it keeps the default language and no markup. */
     private fun killReason(killedPlayerName: String): String {
         val component = translation.playerKill.reason(killedPlayerName).toComponent(Locale.ROOT)
         return PlainTextComponentSerializer.plainText().serialize(component)

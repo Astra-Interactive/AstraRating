@@ -13,7 +13,7 @@ import ru.astrainteractive.astralibs.command.api.exception.NoPlayerException
 import ru.astrainteractive.astralibs.server.bridge.PlatformServer
 import ru.astrainteractive.astralibs.server.player.KPlayer
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
-import ru.astrainteractive.astrarating.command.error.CommandExceptionHandler
+import ru.astrainteractive.astrarating.command.api.CommandExceptionHandler
 import ru.astrainteractive.astrarating.command.model.UsageCommandException
 import ru.astrainteractive.astrarating.command.rating.model.RatingCommand
 
@@ -45,7 +45,10 @@ internal class RatingLiteralArgumentBuilder(
     private fun LiteralArgumentBuilder<Any>.playerCommand() {
         with(multiplatformCommand) {
             literal("player") {
-                argument("player", StringArgumentType.string()) { playerArg ->
+                argument(
+                    "player",
+                    StringArgumentType.string()
+                ) { playerArg ->
                     hints { onlinePlayerNames() }
 
                     runs(commandExceptionHandler::onFailure) { ctx ->
@@ -102,7 +105,10 @@ internal class RatingLiteralArgumentBuilder(
             literal("rating") {
                 runs(commandExceptionHandler::onFailure) { ctx -> openRatingGui(ctx) }
 
-                argument("like_dislike", StringArgumentType.string()) { ratingTypeArg ->
+                argument(
+                    "like_dislike",
+                    StringArgumentType.string()
+                ) { ratingTypeArg ->
                     hints {
                         listOf(
                             "like",
@@ -112,10 +118,16 @@ internal class RatingLiteralArgumentBuilder(
                         )
                     }
 
-                    argument("player", StringArgumentType.string()) { playerArg ->
+                    argument(
+                        "player",
+                        StringArgumentType.string()
+                    ) { playerArg ->
                         hints { onlinePlayerNames() }
 
-                        argument("message", StringArgumentType.string()) { messageArg ->
+                        argument(
+                            "message",
+                            StringArgumentType.string()
+                        ) { messageArg ->
                             hints { listOf("...") }
 
                             runs(commandExceptionHandler::onFailure) { ctx ->

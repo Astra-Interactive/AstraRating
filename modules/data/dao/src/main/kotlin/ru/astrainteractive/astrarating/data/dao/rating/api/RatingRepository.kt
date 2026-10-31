@@ -30,14 +30,8 @@ interface RatingRepository {
 
     suspend fun fetchUsersTotalRating(): Result<List<RatedUser>>
 
-    /**
-     * Count how much player rated during past 24h
-     */
     suspend fun countPlayerTotalDayRated(playerUUID: UUID): Result<Long>
 
-    /**
-     * Count how much player [playerUUID] rated on [ratedPlayerUUID] during 24h
-     */
     suspend fun countPlayerOnPlayerDayRated(
         playerUUID: UUID,
         ratedPlayerUUID: UUID

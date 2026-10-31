@@ -1,9 +1,9 @@
-package ru.astrainteractive.astrarating.gui.api.rating.players.component
+package ru.astrainteractive.astrarating.gui.api.rating.ranking.component
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import ru.astrainteractive.astrarating.data.dao.rating.model.RatedUser
-import ru.astrainteractive.astrarating.gui.api.rating.players.model.UsersRatingsSort
+import ru.astrainteractive.astrarating.gui.api.rating.ranking.model.UsersRatingsSort
 
 interface RatingPlayersComponent : CoroutineScope {
     val model: StateFlow<Model>
