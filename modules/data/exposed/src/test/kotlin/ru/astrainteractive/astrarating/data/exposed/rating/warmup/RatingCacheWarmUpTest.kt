@@ -2,12 +2,12 @@
 
 package ru.astrainteractive.astrarating.data.exposed.rating.warmup
 
+import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
-import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
-import ru.astrainteractive.astrarating.data.exposed.rating.fake.FakeRatingCache
+import ru.astrainteractive.astrarating.data.dao.rating.fake.FakeRatingCache
 import ru.astrainteractive.astrarating.data.exposed.rating.warmup.fake.FakeOnlineKPlayer
 import ru.astrainteractive.astrarating.data.exposed.rating.warmup.fake.FakePlatformServer
 import java.util.UUID
