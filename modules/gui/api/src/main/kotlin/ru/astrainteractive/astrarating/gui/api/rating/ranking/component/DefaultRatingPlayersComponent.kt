@@ -1,4 +1,4 @@
-package ru.astrainteractive.astrarating.gui.api.rating.players.component
+package ru.astrainteractive.astrarating.gui.api.rating.ranking.component
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -6,7 +6,7 @@ import kotlinx.coroutines.launch
 import ru.astrainteractive.astralibs.coroutines.withTimings
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatedUsersCache
 import ru.astrainteractive.astrarating.data.dao.rating.model.RatedUser
-import ru.astrainteractive.astrarating.gui.api.rating.players.model.UsersRatingsSort
+import ru.astrainteractive.astrarating.gui.api.rating.ranking.model.UsersRatingsSort
 import ru.astrainteractive.astrarating.gui.api.util.nextAfter
 import ru.astrainteractive.astrarating.gui.api.util.sortedBy
 import ru.astrainteractive.klibs.mikro.core.coroutines.CoroutineFeature
