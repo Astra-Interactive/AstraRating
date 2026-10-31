@@ -1,4 +1,4 @@
-package ru.astrainteractive.astrarating.command.error
+package ru.astrainteractive.astrarating.command.api
 
 import com.mojang.brigadier.context.CommandContext
 import ru.astrainteractive.astralibs.command.api.brigadier.command.MultiplatformCommand

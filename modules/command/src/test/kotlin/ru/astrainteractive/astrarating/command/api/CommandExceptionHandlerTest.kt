@@ -1,6 +1,6 @@
 @file:Suppress("FunctionNaming", "TrivialLambdaReference")
 
-package ru.astrainteractive.astrarating.command.error
+package ru.astrainteractive.astrarating.command.api
 
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.CommandDispatcher
