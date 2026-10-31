@@ -4,6 +4,7 @@ package ru.astrainteractive.astrarating.data.exposed.rating
 
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import ru.astrainteractive.astrarating.data.dao.rating.fake.FakeRatingRepository
 import java.util.UUID
@@ -22,8 +23,8 @@ internal class Cache4kRatingCacheTest {
     }
 
     @Test
-    fun GIVEN_rating_not_loaded_WHEN_rating_is_read_THEN_returns_zero_until_it_is_loaded() {
-        runTest {
+    fun GIVEN_rating_not_loaded_WHEN_rating_is_read_THEN_returns_zero_until_it_is_loaded(): TestResult {
+        return runTest {
             ratingRepository.setTotalRating(tester, 3)
             val dao = createDao()
 
@@ -36,8 +37,8 @@ internal class Cache4kRatingCacheTest {
     }
 
     @Test
-    fun GIVEN_rating_loaded_WHEN_rating_is_read_THEN_returns_total() {
-        runTest {
+    fun GIVEN_rating_loaded_WHEN_rating_is_read_THEN_returns_total(): TestResult {
+        return runTest {
             ratingRepository.setTotalRating(tester, 3)
             val dao = createDao()
 
@@ -48,8 +49,8 @@ internal class Cache4kRatingCacheTest {
     }
 
     @Test
-    fun GIVEN_rating_changed_WHEN_rating_is_loaded_again_THEN_returns_new_total() {
-        runTest {
+    fun GIVEN_rating_changed_WHEN_rating_is_loaded_again_THEN_returns_new_total(): TestResult {
+        return runTest {
             ratingRepository.setTotalRating(tester, 3)
             val dao = createDao()
             dao.loadPlayerRating(tester)
@@ -62,8 +63,8 @@ internal class Cache4kRatingCacheTest {
     }
 
     @Test
-    fun GIVEN_database_was_unavailable_WHEN_rating_is_read_again_THEN_it_is_loaded() {
-        runTest {
+    fun GIVEN_database_was_unavailable_WHEN_rating_is_read_again_THEN_it_is_loaded(): TestResult {
+        return runTest {
             ratingRepository.setTotalRating(tester, 3)
             ratingRepository.isAvailable = false
             val dao = createDao()

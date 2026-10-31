@@ -2,6 +2,7 @@
 
 package ru.astrainteractive.astrarating.event.kill.usecase
 
+import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import ru.astrainteractive.astrarating.core.settings.model.AstraRatingConfig
 import ru.astrainteractive.astrarating.data.dao.rating.fake.FakeRatingRepository
@@ -47,8 +48,8 @@ class LowerKillerRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_rated_victim_WHEN_killed_THEN_killer_gets_the_configured_change() {
-        runTest {
+    fun GIVEN_rated_victim_WHEN_killed_THEN_killer_gets_the_configured_change(): TestResult {
+        return runTest {
             repository.setTotalRating(killedPlayerUUID, 3)
 
             val result = lowerKillerRating()
@@ -65,8 +66,8 @@ class LowerKillerRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_kill_event_disabled_WHEN_rated_victim_is_killed_THEN_nothing_is_stored() {
-        runTest {
+    fun GIVEN_kill_event_disabled_WHEN_rated_victim_is_killed_THEN_nothing_is_stored(): TestResult {
+        return runTest {
             repository.setTotalRating(killedPlayerUUID, 3)
             configKrate.save(killEventConfig(enabled = false, changeBy = -2))
 
@@ -78,8 +79,8 @@ class LowerKillerRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_kill_event_changes_nothing_WHEN_rated_victim_is_killed_THEN_nothing_is_stored() {
-        runTest {
+    fun GIVEN_kill_event_changes_nothing_WHEN_rated_victim_is_killed_THEN_nothing_is_stored(): TestResult {
+        return runTest {
             repository.setTotalRating(killedPlayerUUID, 3)
             configKrate.save(killEventConfig(enabled = true, changeBy = 0))
 
@@ -91,8 +92,8 @@ class LowerKillerRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_victim_with_zero_rating_WHEN_killed_THEN_killer_keeps_rating() {
-        runTest {
+    fun GIVEN_victim_with_zero_rating_WHEN_killed_THEN_killer_keeps_rating(): TestResult {
+        return runTest {
             repository.setTotalRating(killedPlayerUUID, 0)
 
             val result = lowerKillerRating()
@@ -103,8 +104,8 @@ class LowerKillerRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_victim_with_negative_rating_WHEN_killed_THEN_killer_keeps_rating() {
-        runTest {
+    fun GIVEN_victim_with_negative_rating_WHEN_killed_THEN_killer_keeps_rating(): TestResult {
+        return runTest {
             repository.setTotalRating(killedPlayerUUID, -4)
 
             val result = lowerKillerRating()
@@ -115,8 +116,8 @@ class LowerKillerRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_config_reloaded_WHEN_rated_victim_is_killed_THEN_new_change_is_used() {
-        runTest {
+    fun GIVEN_config_reloaded_WHEN_rated_victim_is_killed_THEN_new_change_is_used(): TestResult {
+        return runTest {
             repository.setTotalRating(killedPlayerUUID, 3)
             configKrate.save(killEventConfig(enabled = true, changeBy = -5))
 
@@ -127,8 +128,8 @@ class LowerKillerRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_victim_rating_can_not_be_read_WHEN_killed_THEN_storage_failed() {
-        runTest {
+    fun GIVEN_victim_rating_can_not_be_read_WHEN_killed_THEN_storage_failed(): TestResult {
+        return runTest {
             repository.setTotalRating(killedPlayerUUID, 3)
             repository.failingCalls += FakeRatingRepository.Call.FETCH_TOTAL_RATING
 
@@ -140,8 +141,8 @@ class LowerKillerRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_killer_can_not_be_stored_WHEN_rated_victim_is_killed_THEN_storage_failed() {
-        runTest {
+    fun GIVEN_killer_can_not_be_stored_WHEN_rated_victim_is_killed_THEN_storage_failed(): TestResult {
+        return runTest {
             repository.setTotalRating(killedPlayerUUID, 3)
             repository.failingCalls += FakeRatingRepository.Call.INSERT_USER
 
@@ -153,8 +154,8 @@ class LowerKillerRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_rating_can_not_be_stored_WHEN_rated_victim_is_killed_THEN_storage_failed() {
-        runTest {
+    fun GIVEN_rating_can_not_be_stored_WHEN_rated_victim_is_killed_THEN_storage_failed(): TestResult {
+        return runTest {
             repository.setTotalRating(killedPlayerUUID, 3)
             repository.failingCalls += FakeRatingRepository.Call.INSERT_RATING
 

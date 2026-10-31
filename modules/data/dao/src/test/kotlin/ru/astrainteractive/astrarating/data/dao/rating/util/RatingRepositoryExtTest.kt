@@ -2,6 +2,7 @@
 
 package ru.astrainteractive.astrarating.data.dao.rating.util
 
+import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import ru.astrainteractive.astrarating.data.dao.rating.fake.FakeRatingRepository
 import ru.astrainteractive.astrarating.data.dao.rating.model.NewUser
@@ -24,8 +25,8 @@ class RatingRepositoryExtTest {
     )
 
     @Test
-    fun GIVEN_unknown_player_WHEN_user_is_upserted_THEN_user_is_inserted() {
-        runTest {
+    fun GIVEN_unknown_player_WHEN_user_is_upserted_THEN_user_is_inserted(): TestResult {
+        return runTest {
             val user = repository.upsertUser(NewUser(minecraftUUID = playerUUID, minecraftName = "Tester")).getOrThrow()
 
             assertEquals("Tester", user.minecraftName)
@@ -34,8 +35,8 @@ class RatingRepositoryExtTest {
     }
 
     @Test
-    fun GIVEN_stored_player_WHEN_user_is_upserted_with_same_name_THEN_stored_user_is_returned() {
-        runTest {
+    fun GIVEN_stored_player_WHEN_user_is_upserted_with_same_name_THEN_stored_user_is_returned(): TestResult {
+        return runTest {
             repository.storeUser(storedUser)
 
             val user = repository.upsertUser(NewUser(minecraftUUID = playerUUID, minecraftName = "Tester")).getOrThrow()
@@ -45,8 +46,8 @@ class RatingRepositoryExtTest {
     }
 
     @Test
-    fun GIVEN_stored_player_WHEN_user_is_upserted_with_new_name_THEN_name_is_updated() {
-        runTest {
+    fun GIVEN_stored_player_WHEN_user_is_upserted_with_new_name_THEN_name_is_updated(): TestResult {
+        return runTest {
             repository.storeUser(storedUser)
 
             val user = repository.upsertUser(
@@ -62,8 +63,8 @@ class RatingRepositoryExtTest {
     }
 
     @Test
-    fun GIVEN_unavailable_storage_WHEN_user_is_upserted_THEN_failure_is_returned() {
-        runTest {
+    fun GIVEN_unavailable_storage_WHEN_user_is_upserted_THEN_failure_is_returned(): TestResult {
+        return runTest {
             repository.isAvailable = false
 
             val result = repository.upsertUser(NewUser(minecraftUUID = playerUUID, minecraftName = "Tester"))

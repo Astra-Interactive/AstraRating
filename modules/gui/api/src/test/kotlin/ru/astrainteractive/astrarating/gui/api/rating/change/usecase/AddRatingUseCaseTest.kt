@@ -2,6 +2,7 @@
 
 package ru.astrainteractive.astrarating.gui.api.rating.change.usecase
 
+import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import ru.astrainteractive.astralibs.server.permission.KPermissible
 import ru.astrainteractive.astralibs.server.permission.Permission
@@ -81,8 +82,8 @@ class AddRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_allowed_vote_WHEN_rating_is_added_THEN_rating_from_creator_to_rated_player_is_stored() {
-        runTest {
+    fun GIVEN_allowed_vote_WHEN_rating_is_added_THEN_rating_from_creator_to_rated_player_is_stored(): TestResult {
+        return runTest {
             val result = rate()
 
             assertEquals(AddRatingResult.Success, result)
@@ -96,15 +97,15 @@ class AddRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_unknown_rated_player_WHEN_rating_is_added_THEN_player_not_exists() {
-        runTest {
+    fun GIVEN_unknown_rated_player_WHEN_rating_is_added_THEN_player_not_exists(): TestResult {
+        return runTest {
             assertEquals(AddRatingResult.PlayerNotExists, rate(ratedPlayer = null))
         }
     }
 
     @Test
-    fun GIVEN_creator_without_vote_permission_WHEN_rating_is_added_THEN_nothing_is_stored() {
-        runTest {
+    fun GIVEN_creator_without_vote_permission_WHEN_rating_is_added_THEN_nothing_is_stored(): TestResult {
+        return runTest {
             val result = rate(creator = player(name = "Voter", uuid = creator.uuid.toString()))
 
             assertEquals(AddRatingResult.NoPermission, result)
@@ -113,8 +114,8 @@ class AddRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_creator_without_permissions_object_WHEN_rating_is_added_THEN_no_permission() {
-        runTest {
+    fun GIVEN_creator_without_permissions_object_WHEN_rating_is_added_THEN_no_permission(): TestResult {
+        return runTest {
             val creator = player(
                 name = creator.name,
                 uuid = creator.uuid.toString(),
@@ -127,8 +128,8 @@ class AddRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_rated_player_never_joined_WHEN_rating_is_added_THEN_player_not_exists() {
-        runTest {
+    fun GIVEN_rated_player_never_joined_WHEN_rating_is_added_THEN_player_not_exists(): TestResult {
+        return runTest {
             val ratedPlayer = player(
                 name = ratedPlayer.name,
                 uuid = ratedPlayer.uuid.toString(),
@@ -141,15 +142,15 @@ class AddRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_creator_rates_themselves_WHEN_rating_is_added_THEN_same_player() {
-        runTest {
+    fun GIVEN_creator_rates_themselves_WHEN_rating_is_added_THEN_same_player(): TestResult {
+        return runTest {
             assertEquals(AddRatingResult.SamePlayer, rate(ratedPlayer = creator))
         }
     }
 
     @Test
-    fun GIVEN_creator_used_daily_votes_from_config_WHEN_rating_is_added_THEN_already_max_day_votes() {
-        runTest {
+    fun GIVEN_creator_used_daily_votes_from_config_WHEN_rating_is_added_THEN_already_max_day_votes(): TestResult {
+        return runTest {
             repository.setDayVotes(creator.uuid, count = 2)
 
             assertEquals(AddRatingResult.AlreadyMaxDayVotes, rate())
@@ -157,8 +158,8 @@ class AddRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_permission_raises_daily_votes_WHEN_rating_is_added_over_config_limit_THEN_success() {
-        runTest {
+    fun GIVEN_permission_raises_daily_votes_WHEN_rating_is_added_over_config_limit_THEN_success(): TestResult {
+        return runTest {
             val creator = player(
                 name = creator.name,
                 uuid = creator.uuid.toString(),
@@ -174,8 +175,8 @@ class AddRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_creator_already_voted_on_player_today_WHEN_rating_is_added_THEN_already_max_votes_on_player() {
-        runTest {
+    fun GIVEN_creator_already_voted_on_player_today_WHEN_rating_is_added_THEN_already_max_votes_on_player(): TestResult {
+        return runTest {
             repository.setDayVotesOnPlayer(
                 playerUUID = creator.uuid,
                 ratedPlayerUUID = ratedPlayer.uuid,
@@ -187,8 +188,8 @@ class AddRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_permission_raises_votes_on_player_WHEN_rating_is_added_again_THEN_success() {
-        runTest {
+    fun GIVEN_permission_raises_votes_on_player_WHEN_rating_is_added_again_THEN_success(): TestResult {
+        return runTest {
             val creator = player(
                 name = creator.name,
                 uuid = creator.uuid.toString(),
@@ -208,22 +209,22 @@ class AddRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_message_shorter_than_minimum_WHEN_rating_is_added_THEN_message_not_correct() {
-        runTest {
+    fun GIVEN_message_shorter_than_minimum_WHEN_rating_is_added_THEN_message_not_correct(): TestResult {
+        return runTest {
             assertEquals(AddRatingResult.MessageNotCorrect, rate(message = "gg"))
         }
     }
 
     @Test
-    fun GIVEN_message_longer_than_maximum_WHEN_rating_is_added_THEN_message_not_correct() {
-        runTest {
+    fun GIVEN_message_longer_than_maximum_WHEN_rating_is_added_THEN_message_not_correct(): TestResult {
+        return runTest {
             assertEquals(AddRatingResult.MessageNotCorrect, rate(message = "a".repeat(11)))
         }
     }
 
     @Test
-    fun GIVEN_message_at_length_limits_WHEN_rating_is_added_THEN_success() {
-        runTest {
+    fun GIVEN_message_at_length_limits_WHEN_rating_is_added_THEN_success(): TestResult {
+        return runTest {
             assertEquals(AddRatingResult.Success, rate(message = "abc"))
             val otherPlayer = player(name = "Other", uuid = "0b3c6c1e-2f9b-3d17-9a5b-1d2a6f2b7c22")
             assertEquals(AddRatingResult.Success, rate(ratedPlayer = otherPlayer, message = "a".repeat(10)))
@@ -231,8 +232,8 @@ class AddRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_daily_votes_can_not_be_counted_WHEN_rating_is_added_THEN_storage_failed() {
-        runTest {
+    fun GIVEN_daily_votes_can_not_be_counted_WHEN_rating_is_added_THEN_storage_failed(): TestResult {
+        return runTest {
             repository.failingCalls += FakeRatingRepository.Call.COUNT_DAY_VOTES
 
             assertEquals(AddRatingResult.StorageFailed, rate())
@@ -240,8 +241,8 @@ class AddRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_votes_on_player_can_not_be_counted_WHEN_rating_is_added_THEN_storage_failed() {
-        runTest {
+    fun GIVEN_votes_on_player_can_not_be_counted_WHEN_rating_is_added_THEN_storage_failed(): TestResult {
+        return runTest {
             repository.failingCalls += FakeRatingRepository.Call.COUNT_DAY_VOTES_ON_PLAYER
 
             assertEquals(AddRatingResult.StorageFailed, rate())
@@ -249,8 +250,8 @@ class AddRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_rated_player_can_not_be_stored_WHEN_rating_is_added_THEN_storage_failed() {
-        runTest {
+    fun GIVEN_rated_player_can_not_be_stored_WHEN_rating_is_added_THEN_storage_failed(): TestResult {
+        return runTest {
             repository.failingCalls += FakeRatingRepository.Call.INSERT_USER
 
             assertEquals(AddRatingResult.StorageFailed, rate())
@@ -258,8 +259,8 @@ class AddRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_only_creator_can_not_be_stored_WHEN_rating_is_added_THEN_storage_failed_and_nothing_is_rated() {
-        runTest {
+    fun GIVEN_only_creator_can_not_be_stored_WHEN_rating_is_added_THEN_storage_failed_and_nothing_is_rated(): TestResult {
+        return runTest {
             storedUser(ratedPlayer)
             repository.failingCalls += FakeRatingRepository.Call.INSERT_USER
 
@@ -269,8 +270,8 @@ class AddRatingUseCaseTest {
     }
 
     @Test
-    fun GIVEN_rating_can_not_be_stored_WHEN_rating_is_added_THEN_storage_failed() {
-        runTest {
+    fun GIVEN_rating_can_not_be_stored_WHEN_rating_is_added_THEN_storage_failed(): TestResult {
+        return runTest {
             repository.failingCalls += FakeRatingRepository.Call.INSERT_RATING
 
             assertEquals(AddRatingResult.StorageFailed, rate())

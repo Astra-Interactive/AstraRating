@@ -4,6 +4,7 @@ package ru.astrainteractive.astrarating.data.exposed.rating.warmup
 
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
+import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import ru.astrainteractive.astralibs.server.player.OnlineKPlayer
 import ru.astrainteractive.astrarating.data.exposed.rating.fake.FakeRatingCache
@@ -27,8 +28,8 @@ internal class RatingCacheWarmUpTest {
     }
 
     @Test
-    fun GIVEN_players_online_WHEN_plugin_is_enabled_THEN_rating_of_every_player_is_loaded() {
-        runTest {
+    fun GIVEN_players_online_WHEN_plugin_is_enabled_THEN_rating_of_every_player_is_loaded(): TestResult {
+        return runTest {
             val warmUp = createWarmUp(listOf(tester, builder))
 
             warmUp.onEnable()
@@ -39,8 +40,8 @@ internal class RatingCacheWarmUpTest {
     }
 
     @Test
-    fun GIVEN_nobody_online_WHEN_plugin_is_enabled_THEN_no_rating_is_loaded() {
-        runTest {
+    fun GIVEN_nobody_online_WHEN_plugin_is_enabled_THEN_no_rating_is_loaded(): TestResult {
+        return runTest {
             val warmUp = createWarmUp(emptyList())
 
             warmUp.onEnable()

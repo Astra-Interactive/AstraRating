@@ -3,6 +3,7 @@
 package ru.astrainteractive.astrarating.data.exposed.rating
 
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import ru.astrainteractive.astrarating.data.dao.rating.fake.FakeRatingRepository
 import ru.astrainteractive.astrarating.data.dao.rating.model.RatingType
@@ -31,8 +32,8 @@ internal class CacheRefreshingRatingRepositoryTest {
     }
 
     @Test
-    fun GIVEN_loaded_rating_WHEN_rating_is_inserted_THEN_cached_rating_includes_it() {
-        runTest {
+    fun GIVEN_loaded_rating_WHEN_rating_is_inserted_THEN_cached_rating_includes_it(): TestResult {
+        return runTest {
             exposedRatingRepository.setTotalRating(testerUuid, 3)
             val ratingCache = createCachedDao()
             val ratingRepository = CacheRefreshingRatingRepository(
@@ -54,8 +55,8 @@ internal class CacheRefreshingRatingRepositoryTest {
     }
 
     @Test
-    fun GIVEN_loaded_rating_WHEN_rating_is_deleted_THEN_cached_rating_excludes_it() {
-        runTest {
+    fun GIVEN_loaded_rating_WHEN_rating_is_deleted_THEN_cached_rating_excludes_it(): TestResult {
+        return runTest {
             exposedRatingRepository.setTotalRating(testerUuid, 3)
             val ratingCache = createCachedDao()
             val ratingRepository = CacheRefreshingRatingRepository(
