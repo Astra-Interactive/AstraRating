@@ -22,9 +22,7 @@ class AddRatingUseCase(
         if (!creator.hasVotesLeftToday(todayVotes, config)) return AddRatingResult.AlreadyMaxDayVotes
         val votesOnPlayer = ratingRepository.countPlayerOnPlayerDayRated(creator.uuid, ratedPlayer.uuid)
             .getOrElse { return AddRatingResult.StorageFailed }
-        if (!creator.hasVotesLeftOnPlayerToday(votesOnPlayer, config)) {
-            return AddRatingResult.AlreadyMaxVotesOnPlayer
-        }
+        if (!creator.hasVotesLeftOnPlayerToday(votesOnPlayer, config)) return AddRatingResult.AlreadyMaxVotesOnPlayer
         return null
     }
 
