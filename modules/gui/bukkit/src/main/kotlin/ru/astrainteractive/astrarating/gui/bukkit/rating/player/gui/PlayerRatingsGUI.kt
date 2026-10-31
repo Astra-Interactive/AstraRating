@@ -126,7 +126,7 @@ internal class PlayerRatingsGUI(
         get() = slotContext.ratingsSortSlot(
             index = inventoryMap.firstIndexOf(RatingSlotKey.SORT),
             sortType = ratingPlayerComponent.model.value.sort,
-            onClick = { ratingPlayerComponent.onSortClicked() }
+            click = { ratingPlayerComponent.onSortClicked() }
         )
 
     private val killEventSlot: InventorySlot?
