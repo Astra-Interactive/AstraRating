@@ -9,7 +9,6 @@ import ru.astrainteractive.astralibs.localization.component.replace
 import ru.astrainteractive.astralibs.localization.locale.MinecraftLocales
 import ru.astrainteractive.astralibs.localization.text.LocalizedText
 
-/** Texts of the plugin, grouped by the feature that sends them. Every text has a default. */
 @Serializable
 data class AstraRatingTranslation(
     @SerialName("command_error")
@@ -29,7 +28,6 @@ data class AstraRatingTranslation(
     @SerialName("sort")
     val sort: Sort = Sort()
 ) {
-    /** Failures any command can report. */
     @Serializable
     data class CommandError(
         @SerialName("unknown_error")
@@ -92,7 +90,6 @@ data class AstraRatingTranslation(
         )
     )
 
-    /** Outcomes of a player rating another one. */
     @Serializable
     data class RatingChange(
         @SerialName("liked")
@@ -168,11 +165,9 @@ data class AstraRatingTranslation(
             return ratingLowered.replace("%killed_player%", playerName)
         }
 
-        /** The reason of the rating change the killer gets. */
         fun reason(playerName: String): LocalizableComponent = reason.replace("%killed_player%", playerName)
     }
 
-    /** Parts shared by every menu. */
     @Serializable
     data class Menu(
         @SerialName("loading")
@@ -218,14 +213,12 @@ data class AstraRatingTranslation(
 
         fun lastConnection(time: String): LocalizableComponent = lastConnection.replace("%time%", time)
 
-        /** Colors [text] by the sign of the rating it belongs to. */
         fun ratingValue(isPositive: Boolean, text: String): LocalizableComponent {
             val template = if (isPositive) positiveValue else negativeValue
             return template.replace("%value%", text)
         }
     }
 
-    /** The menu with the total rating of every player. */
     @Serializable
     data class RatingsMenu(
         @SerialName("title")
@@ -249,7 +242,6 @@ data class AstraRatingTranslation(
         fun count(ratingCount: Long): LocalizableComponent = count.replace("%count%", ratingCount.toString())
     }
 
-    /** The menu with every rating one player got. */
     @Serializable
     data class PlayerRatingsMenu(
         @SerialName("title")
@@ -314,7 +306,6 @@ data class AstraRatingTranslation(
         @SerialName("selected_descending")
         private val selectedDescending: LocalizedText = LocalizedText.shared("&6%sort% &6&l↑")
     ) {
-        /** A line of the sort button: only the selected [sort] shows its direction. */
         fun option(sort: LocalizableComponent, isSelected: Boolean, isAscending: Boolean): LocalizableComponent {
             val template = when {
                 !isSelected -> option
