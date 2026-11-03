@@ -20,11 +20,11 @@ import ru.astrainteractive.astrarating.event.di.EventModule
 import ru.astrainteractive.astrarating.gui.api.di.GuiModule
 import ru.astrainteractive.astrarating.gui.api.rating.change.di.RatingChangeModule
 import ru.astrainteractive.astrarating.gui.api.rating.player.di.RatingPlayerModule
-import ru.astrainteractive.astrarating.gui.api.rating.players.di.RatingPlayersModule
+import ru.astrainteractive.astrarating.gui.api.rating.ranking.di.RatingPlayersModule
 import ru.astrainteractive.astrarating.gui.bukkit.di.GuiBukkitModule
 import ru.astrainteractive.astrarating.integration.papi.di.PapiModule
 
-class RootModule(plugin: LifecyclePlugin) {
+internal class RootModule(plugin: LifecyclePlugin) {
     private val platformServer: PlatformServer by lazy { BukkitPlatformServer() }
 
     private val coreModule: CoreModule by lazy {
@@ -115,7 +115,7 @@ class RootModule(plugin: LifecyclePlugin) {
         )
     }
     private val lifecycles: List<Lifecycle>
-        get() = listOfNotNull(
+        get() = listOf(
             coreModule.lifecycle,
             bukkitModule.lifecycle,
             exposedModule.lifecycle,

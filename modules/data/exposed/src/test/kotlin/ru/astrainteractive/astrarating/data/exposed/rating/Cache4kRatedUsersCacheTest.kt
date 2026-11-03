@@ -2,6 +2,7 @@
 
 package ru.astrainteractive.astrarating.data.exposed.rating
 
+import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import ru.astrainteractive.astrarating.data.dao.rating.fake.FakeRatingRepository
@@ -33,8 +34,8 @@ internal class Cache4kRatedUsersCacheTest {
     }
 
     @Test
-    fun GIVEN_rated_users_stored_WHEN_totals_are_fetched_THEN_returns_them() {
-        runTest {
+    fun GIVEN_rated_users_stored_WHEN_totals_are_fetched_THEN_returns_them(): TestResult {
+        return runTest {
             ratingRepository.setRatedUsers(listOf(tester))
             val cache = createCache()
 
@@ -45,8 +46,8 @@ internal class Cache4kRatedUsersCacheTest {
     }
 
     @Test
-    fun GIVEN_totals_fetched_recently_WHEN_storage_changes_THEN_cached_totals_are_returned() {
-        runTest {
+    fun GIVEN_totals_fetched_recently_WHEN_storage_changes_THEN_cached_totals_are_returned(): TestResult {
+        return runTest {
             ratingRepository.setRatedUsers(listOf(tester))
             val cache = createCache()
             cache.fetchUsersTotalRating()
@@ -59,8 +60,8 @@ internal class Cache4kRatedUsersCacheTest {
     }
 
     @Test
-    fun GIVEN_cache_cleared_WHEN_totals_are_fetched_THEN_returns_stored_totals() {
-        runTest {
+    fun GIVEN_cache_cleared_WHEN_totals_are_fetched_THEN_returns_stored_totals(): TestResult {
+        return runTest {
             ratingRepository.setRatedUsers(listOf(tester))
             val cache = createCache()
             cache.fetchUsersTotalRating()
@@ -73,8 +74,8 @@ internal class Cache4kRatedUsersCacheTest {
     }
 
     @Test
-    fun GIVEN_database_unavailable_WHEN_totals_are_fetched_THEN_returns_no_users() {
-        runTest {
+    fun GIVEN_database_unavailable_WHEN_totals_are_fetched_THEN_returns_no_users(): TestResult {
+        return runTest {
             ratingRepository.setRatedUsers(listOf(tester))
             ratingRepository.isAvailable = false
             val cache = createCache()
@@ -86,8 +87,8 @@ internal class Cache4kRatedUsersCacheTest {
     }
 
     @Test
-    fun GIVEN_database_was_unavailable_WHEN_totals_are_fetched_again_THEN_they_are_loaded() {
-        runTest {
+    fun GIVEN_database_was_unavailable_WHEN_totals_are_fetched_again_THEN_they_are_loaded(): TestResult {
+        return runTest {
             ratingRepository.setRatedUsers(listOf(tester))
             ratingRepository.isAvailable = false
             val cache = createCache()

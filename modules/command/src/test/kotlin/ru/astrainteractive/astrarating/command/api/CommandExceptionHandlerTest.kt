@@ -1,6 +1,6 @@
 @file:Suppress("FunctionNaming", "TrivialLambdaReference")
 
-package ru.astrainteractive.astrarating.command.error
+package ru.astrainteractive.astrarating.command.api
 
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.CommandDispatcher
@@ -93,7 +93,10 @@ class CommandExceptionHandlerTest {
     fun GIVEN_argument_that_is_not_a_number_WHEN_command_converts_it_THEN_sender_reads_invalid_argument() {
         val command = with(multiplatformCommand) {
             command("arating") {
-                argument("page", StringArgumentType.string()) { pageArg ->
+                argument(
+                    "page",
+                    StringArgumentType.string()
+                ) { pageArg ->
                     runs(handler::onFailure) { ctx -> ctx.requireArgument(pageArg, IntArgumentConverter) }
                 }
             }

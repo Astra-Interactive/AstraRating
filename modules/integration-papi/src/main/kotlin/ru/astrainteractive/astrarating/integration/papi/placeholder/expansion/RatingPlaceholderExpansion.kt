@@ -13,9 +13,8 @@ internal class RatingPlaceholderExpansion(
     "1.0.0"
 ) {
     /**
-     * The plugin registers this expansion itself, so `/papi reload` must keep it:
-     * PlaceholderAPI unregisters every expansion that does not persist and only loads
-     * the ones from its expansions folder again.
+     * PlaceholderAPI quirk: `/papi reload` unregisters every expansion that does not persist and only loads
+     * the ones from its expansions folder again, but the plugin registers this one itself.
      */
     override fun persist(): Boolean = true
 

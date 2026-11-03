@@ -1,6 +1,6 @@
 @file:Suppress("FieldDependencyConstruction", "TrivialLambdaReference")
 
-package ru.astrainteractive.astrarating.gui.bukkit.rating.players.gui
+package ru.astrainteractive.astrarating.gui.bukkit.rating.ranking.gui
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.drop
@@ -32,7 +32,7 @@ import ru.astrainteractive.astralibs.menu.slot.InventorySlot
 import ru.astrainteractive.astralibs.server.util.asOnlineMinecraftPlayer
 import ru.astrainteractive.astrarating.core.settings.model.AstraRatingConfig
 import ru.astrainteractive.astrarating.core.settings.model.AstraRatingTranslation
-import ru.astrainteractive.astrarating.gui.api.rating.players.component.RatingPlayersComponent
+import ru.astrainteractive.astrarating.gui.api.rating.ranking.component.RatingPlayersComponent
 import ru.astrainteractive.astrarating.gui.api.router.api.GuiRouter
 import ru.astrainteractive.astrarating.gui.bukkit.context.SlotContext
 import ru.astrainteractive.astrarating.gui.bukkit.model.RatingSlotKey
@@ -54,8 +54,8 @@ import java.util.UUID
 internal class RatingsGUI(
     player: Player,
     private val dispatchers: KotlinDispatchers,
-    private val translationKrate: CachedKrate<AstraRatingTranslation>,
-    private val configKrate: CachedKrate<AstraRatingConfig>,
+    translationKrate: CachedKrate<AstraRatingTranslation>,
+    configKrate: CachedKrate<AstraRatingConfig>,
     private val ratingPlayersComponent: RatingPlayersComponent,
     private val router: GuiRouter
 ) : InventoryMenu() {

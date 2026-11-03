@@ -7,7 +7,7 @@ import ru.astrainteractive.astralibs.command.api.brigadier.command.Multiplatform
 import ru.astrainteractive.astralibs.lifecycle.Lifecycle
 import ru.astrainteractive.astralibs.localization.component.LocalizableComponent
 import ru.astrainteractive.astralibs.server.permission.Permission
-import ru.astrainteractive.astrarating.command.error.CommandExceptionHandler
+import ru.astrainteractive.astrarating.command.api.CommandExceptionHandler
 import ru.astrainteractive.astrarating.command.fake.FakeMultiplatformCommands
 import ru.astrainteractive.astrarating.command.fake.RecordingConsoleKCommandSender
 import ru.astrainteractive.astrarating.core.settings.model.AstraRatingPermission

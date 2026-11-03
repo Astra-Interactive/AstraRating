@@ -10,7 +10,7 @@ import ru.astrainteractive.astralibs.menu.slot.setIndex
 import ru.astrainteractive.astralibs.menu.slot.setItemStack
 import ru.astrainteractive.astralibs.menu.slot.setOnClickListener
 import ru.astrainteractive.astrarating.gui.api.rating.player.model.UserRatingsSort
-import ru.astrainteractive.astrarating.gui.api.rating.players.model.UsersRatingsSort
+import ru.astrainteractive.astrarating.gui.api.rating.ranking.model.UsersRatingsSort
 import ru.astrainteractive.astrarating.gui.bukkit.context.SlotContext
 import ru.astrainteractive.astrarating.gui.bukkit.util.toItemStack
 import ru.astrainteractive.astrarating.gui.bukkit.util.toText
@@ -18,7 +18,7 @@ import ru.astrainteractive.astrarating.gui.bukkit.util.toText
 internal fun SlotContext.ratingsSortSlot(
     index: Int,
     sortType: UserRatingsSort,
-    onClick: () -> Unit
+    click: Click
 ): InventorySlot =
     InventorySlot.Builder()
         .setIndex(index = index)
@@ -38,7 +38,7 @@ internal fun SlotContext.ratingsSortSlot(
                 addLore(option.toComponent(locale))
             }
         }
-        .setOnClickListener { onClick.invoke() }
+        .setOnClickListener(click)
         .build()
 
 internal fun SlotContext.playerRatingsSortSlot(

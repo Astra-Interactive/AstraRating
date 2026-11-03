@@ -45,9 +45,7 @@ class PapiModule(
 
     val lifecycle: Lifecycle = Lifecycle.Lambda(
         onEnable = {
-            if (!isPapiEnabled) {
-                return@Lambda
-            }
+            if (!isPapiEnabled) return@Lambda
             placeholderFacade.register()
         },
         onReload = {
@@ -60,9 +58,7 @@ class PapiModule(
             papiConfiguration.getValue()
         },
         onDisable = {
-            if (!isPapiEnabled) {
-                return@Lambda
-            }
+            if (!isPapiEnabled) return@Lambda
             if (placeholderFacade.isRegistered()) placeholderFacade.unregister()
         }
     )

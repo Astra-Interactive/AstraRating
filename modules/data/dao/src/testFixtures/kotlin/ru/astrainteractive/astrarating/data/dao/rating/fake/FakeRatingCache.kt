@@ -1,9 +1,9 @@
-package ru.astrainteractive.astrarating.data.exposed.rating.fake
+package ru.astrainteractive.astrarating.data.dao.rating.fake
 
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingCache
 import java.util.UUID
 
-internal class FakeRatingCache : RatingCache {
+class FakeRatingCache : RatingCache {
     val loadedPlayers = mutableListOf<UUID>()
 
     override fun resolvePlayerRating(uuid: UUID): Int = 0

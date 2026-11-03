@@ -1,8 +1,8 @@
-package ru.astrainteractive.astrarating.gui.api.rating.players.di
+package ru.astrainteractive.astrarating.gui.api.rating.ranking.di
 
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatedUsersCache
-import ru.astrainteractive.astrarating.gui.api.rating.players.component.DefaultRatingPlayersComponent
-import ru.astrainteractive.astrarating.gui.api.rating.players.component.RatingPlayersComponent
+import ru.astrainteractive.astrarating.gui.api.rating.ranking.component.DefaultRatingPlayersComponent
+import ru.astrainteractive.astrarating.gui.api.rating.ranking.component.RatingPlayersComponent
 import ru.astrainteractive.klibs.mikro.core.dispatchers.KotlinDispatchers
 
 class RatingPlayersModule(

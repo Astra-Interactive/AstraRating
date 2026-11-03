@@ -1,4 +1,4 @@
-package ru.astrainteractive.astrarating.gui.api.rating.players.model
+package ru.astrainteractive.astrarating.gui.api.rating.ranking.model
 
 sealed interface UsersRatingsSort {
     val isAsc: Boolean

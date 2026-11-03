@@ -33,6 +33,7 @@ import ru.astrainteractive.klibs.mikro.core.coroutines.propagateCancellationExce
 import ru.astrainteractive.klibs.mikro.core.logging.JUtiltLogger
 import ru.astrainteractive.klibs.mikro.core.logging.Logger
 import java.util.UUID
+import kotlin.Result.Companion.success
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
@@ -61,7 +62,7 @@ internal class ExposedRatingRepository(
         }
             .propagateCancellationException()
             .fold(
-                onSuccess = { value -> Result.success(value) },
+                onSuccess = ::success,
                 onFailure = { error -> Result.failure<T>(RatingStorageError.QueryFailed(error)) }
             )
             .logFailure()
@@ -102,7 +103,7 @@ internal class ExposedRatingRepository(
             UserTable.selectAll()
                 .where { UserTable.minecraftUUID.eq(playerUUID.toString()) }
                 .limit(1)
-                .map { row -> userOf(row) }
+                .map(::userOf)
                 .firstOrNull()
         }
     }
