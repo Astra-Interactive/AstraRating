@@ -5,6 +5,11 @@ plugins {
     alias(libs.plugins.klibs.rules.gradle.linter)
 }
 
+linter {
+    unit(ru.astrainteractive.klibs.rules.core.unit.model.UnitRole.Technology())
+    rootPackage.set("ru.astrainteractive.astrarating.data.exposed")
+}
+
 dependencies {
     implementation(libs.cache4k)
     implementation(libs.driver.mysql)

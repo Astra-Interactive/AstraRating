@@ -5,6 +5,11 @@ plugins {
     `java-test-fixtures`
 }
 
+linter {
+    unit(ru.astrainteractive.klibs.rules.core.unit.model.UnitRole.StorageContract())
+    rootPackage.set("ru.astrainteractive.astrarating.data.dao")
+}
+
 dependencies {
     testImplementation(libs.kotlin.coroutines.test)
     testImplementation(libs.tests.kotlin.test)

@@ -5,6 +5,11 @@ plugins {
     alias(libs.plugins.klibs.rules.gradle.linter)
 }
 
+linter {
+    unit(ru.astrainteractive.klibs.rules.core.unit.model.UnitRole.Technology())
+    rootPackage.set("ru.astrainteractive.astrarating.integration.papi")
+}
+
 dependencies {
     compileOnly(libs.minecraft.paper.api)
     compileOnly(libs.minecraft.papi)

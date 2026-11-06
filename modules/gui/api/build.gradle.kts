@@ -5,6 +5,11 @@ plugins {
     alias(libs.plugins.klibs.rules.gradle.linter)
 }
 
+linter {
+    unit(ru.astrainteractive.klibs.rules.core.unit.model.UnitRole.Api())
+    rootPackage.set("ru.astrainteractive.astrarating.gui.api")
+}
+
 dependencies {
     implementation(libs.klibs.kstorage)
     implementation(libs.klibs.mikro.core)
