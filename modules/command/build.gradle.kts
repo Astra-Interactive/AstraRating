@@ -5,6 +5,11 @@ plugins {
     alias(libs.plugins.klibs.rules.gradle.linter)
 }
 
+linter {
+    unit(ru.astrainteractive.klibs.rules.core.unit.model.UnitRole.Context())
+    rootPackage.set("ru.astrainteractive.astrarating.command")
+}
+
 dependencies {
     compileOnly(libs.minecraft.brigadier)
     compileOnly(libs.minecraft.kyori.api)

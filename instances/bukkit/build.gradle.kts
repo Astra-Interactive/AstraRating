@@ -11,6 +11,11 @@ plugins {
     alias(libs.plugins.gradle.shadow)
 }
 
+linter {
+    unit(ru.astrainteractive.klibs.rules.core.unit.model.UnitRole.EntryPoint())
+    rootPackage.set("ru.astrainteractive.astrarating")
+}
+
 dependencies {
     compileOnly(libs.minecraft.paper.api)
     compileOnly(libs.minecraft.papi)
