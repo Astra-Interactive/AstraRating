@@ -8,12 +8,14 @@ import ru.astrainteractive.astrarating.core.settings.model.AstraRatingConfig
 import ru.astrainteractive.astrarating.data.dao.rating.fake.FakeRatingRepository
 import ru.astrainteractive.astrarating.data.dao.rating.model.NewUser
 import ru.astrainteractive.astrarating.data.dao.rating.model.RatingType
+import ru.astrainteractive.astrarating.data.dao.rating.model.User
 import ru.astrainteractive.astrarating.event.kill.model.LowerKillerRatingResult
 import ru.astrainteractive.klibs.kstorage.api.asCachedMutableKrate
 import ru.astrainteractive.klibs.kstorage.api.impl.DefaultMutableKrate
 import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Instant
 
 class LowerKillerRatingUseCaseTest {
     private val repository = FakeRatingRepository()
@@ -37,6 +39,17 @@ class LowerKillerRatingUseCaseTest {
                 killPlayer = AstraRatingConfig.Events.Event(changeBy = changeBy, enabled = enabled)
             )
         )
+    }
+
+    private fun storedKiller(name: String): User {
+        val user = User(
+            id = 10L,
+            minecraftUUID = killer.minecraftUUID.toString(),
+            minecraftName = name,
+            lastUpdated = Instant.fromEpochMilliseconds(0L)
+        )
+        repository.storeUser(user)
+        return user
     }
 
     private suspend fun lowerKillerRating(): LowerKillerRatingResult {
@@ -132,6 +145,58 @@ class LowerKillerRatingUseCaseTest {
         return runTest {
             repository.setTotalRating(killedPlayerUUID, 3)
             repository.failingCalls += FakeRatingRepository.Call.FETCH_TOTAL_RATING
+
+            val result = lowerKillerRating()
+
+            assertEquals(LowerKillerRatingResult.StorageFailed, result)
+            assertEquals(emptyList(), repository.insertedRatings)
+        }
+    }
+
+    @Test
+    fun GIVEN_unknown_killer_WHEN_rated_victim_is_killed_THEN_killer_is_stored(): TestResult {
+        return runTest {
+            repository.setTotalRating(killedPlayerUUID, 3)
+
+            lowerKillerRating()
+
+            val reported = repository.insertedRatings.single().reported
+            assertEquals(killer.minecraftName, reported.minecraftName)
+            assertEquals(reported, repository.findUser(killer.minecraftUUID).getOrThrow())
+        }
+    }
+
+    @Test
+    fun GIVEN_stored_killer_WHEN_rated_victim_is_killed_with_same_name_THEN_stored_user_is_rated(): TestResult {
+        return runTest {
+            repository.setTotalRating(killedPlayerUUID, 3)
+            val stored = storedKiller(name = killer.minecraftName)
+
+            lowerKillerRating()
+
+            assertEquals(stored, repository.insertedRatings.single().reported)
+        }
+    }
+
+    @Test
+    fun GIVEN_stored_killer_WHEN_rated_victim_is_killed_with_new_name_THEN_name_is_updated(): TestResult {
+        return runTest {
+            repository.setTotalRating(killedPlayerUUID, 3)
+            val stored = storedKiller(name = "Old")
+
+            lowerKillerRating()
+
+            val renamed = stored.copy(minecraftName = killer.minecraftName)
+            assertEquals(renamed, repository.insertedRatings.single().reported)
+            assertEquals(renamed, repository.findUser(killer.minecraftUUID).getOrThrow())
+        }
+    }
+
+    @Test
+    fun GIVEN_killer_can_not_be_read_WHEN_rated_victim_is_killed_THEN_storage_failed(): TestResult {
+        return runTest {
+            repository.setTotalRating(killedPlayerUUID, 3)
+            repository.failingCalls += FakeRatingRepository.Call.FIND_USER
 
             val result = lowerKillerRating()
 

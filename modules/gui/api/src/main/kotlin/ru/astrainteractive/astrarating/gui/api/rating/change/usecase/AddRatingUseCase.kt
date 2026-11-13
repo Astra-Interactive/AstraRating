@@ -2,8 +2,10 @@ package ru.astrainteractive.astrarating.gui.api.rating.change.usecase
 
 import ru.astrainteractive.astrarating.core.settings.model.AstraRatingConfig
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
+import ru.astrainteractive.astrarating.data.dao.rating.model.NewUser
 import ru.astrainteractive.astrarating.data.dao.rating.model.RatingType
-import ru.astrainteractive.astrarating.data.dao.rating.util.upsertUser
+import ru.astrainteractive.astrarating.data.dao.rating.model.User
+import ru.astrainteractive.astrarating.data.dao.rating.util.isUserRenamed
 import ru.astrainteractive.astrarating.gui.api.rating.change.model.AddRatingResult
 import ru.astrainteractive.astrarating.gui.api.rating.change.model.RatingPlayer
 import ru.astrainteractive.astrarating.gui.api.rating.change.util.isRatingMessageLengthAllowed
@@ -26,6 +28,15 @@ class AddRatingUseCase(
         return null
     }
 
+    private suspend fun upsertUser(newUser: NewUser): Result<User> {
+        val storedUser = ratingRepository.findUser(newUser.minecraftUUID)
+            .getOrElse { error -> return Result.failure(error) }
+            ?: return ratingRepository.insertUser(newUser)
+        if (!isUserRenamed(storedUser, newUser)) return Result.success(storedUser)
+        val renamedUser = storedUser.copy(minecraftName = newUser.minecraftName)
+        return ratingRepository.updateUser(renamedUser).map { _ -> renamedUser }
+    }
+
     private suspend fun insertRating(
         creator: RatingPlayer,
         ratedPlayer: RatingPlayer,
@@ -33,9 +44,9 @@ class AddRatingUseCase(
         rating: Int,
         type: RatingType
     ): AddRatingResult {
-        val reported = ratingRepository.upsertUser(ratedPlayer.toNewUser())
+        val reported = upsertUser(ratedPlayer.toNewUser())
             .getOrElse { return AddRatingResult.StorageFailed }
-        val reporter = ratingRepository.upsertUser(creator.toNewUser())
+        val reporter = upsertUser(creator.toNewUser())
             .getOrElse { return AddRatingResult.StorageFailed }
         return ratingRepository.insertUserRating(
             reporter = reporter,
