@@ -6,6 +6,7 @@ import ru.astrainteractive.astrarating.data.dao.rating.model.NewUser
 import ru.astrainteractive.astrarating.data.dao.rating.model.RatingType
 import ru.astrainteractive.astrarating.data.dao.rating.model.User
 import ru.astrainteractive.astrarating.data.dao.rating.util.isUserRenamed
+import ru.astrainteractive.astrarating.data.dao.rating.util.rename
 import ru.astrainteractive.astrarating.event.kill.model.LowerKillerRatingResult
 import ru.astrainteractive.astrarating.event.kill.util.changesRating
 import ru.astrainteractive.astrarating.event.kill.util.isKillPenalized
@@ -24,7 +25,7 @@ internal class LowerKillerRatingUseCase(
             .getOrElse { error -> return Result.failure(error) }
             ?: return ratingRepository.insertUser(newUser)
         if (!isUserRenamed(storedUser, newUser)) return Result.success(storedUser)
-        val renamedUser = storedUser.copy(minecraftName = newUser.minecraftName)
+        val renamedUser = storedUser.rename(newUser)
         return ratingRepository.updateUser(renamedUser).map { _ -> renamedUser }
     }
 
