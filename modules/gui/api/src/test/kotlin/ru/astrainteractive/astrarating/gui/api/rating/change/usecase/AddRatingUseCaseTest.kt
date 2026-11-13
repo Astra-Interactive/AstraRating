@@ -250,6 +250,51 @@ class AddRatingUseCaseTest {
     }
 
     @Test
+    fun GIVEN_unknown_rated_player_WHEN_rating_is_added_THEN_player_is_stored(): TestResult {
+        return runTest {
+            rate()
+
+            val reported = repository.insertedRatings.single().reported
+            assertEquals(ratedPlayer.name, reported.minecraftName)
+            assertEquals(reported, repository.findUser(ratedPlayer.uuid).getOrThrow())
+        }
+    }
+
+    @Test
+    fun GIVEN_stored_rated_player_WHEN_rating_is_added_with_same_name_THEN_stored_user_is_rated(): TestResult {
+        return runTest {
+            val stored = storedUser(ratedPlayer)
+
+            rate()
+
+            assertEquals(stored, repository.insertedRatings.single().reported)
+        }
+    }
+
+    @Test
+    fun GIVEN_stored_rated_player_WHEN_rating_is_added_with_new_name_THEN_name_is_updated(): TestResult {
+        return runTest {
+            val stored = storedUser(player(name = "Old", uuid = ratedPlayer.uuid.toString()))
+
+            rate()
+
+            val renamed = stored.copy(minecraftName = ratedPlayer.name)
+            assertEquals(renamed, repository.insertedRatings.single().reported)
+            assertEquals(renamed, repository.findUser(ratedPlayer.uuid).getOrThrow())
+        }
+    }
+
+    @Test
+    fun GIVEN_rated_player_can_not_be_read_WHEN_rating_is_added_THEN_storage_failed(): TestResult {
+        return runTest {
+            repository.failingCalls += FakeRatingRepository.Call.FIND_USER
+
+            assertEquals(AddRatingResult.StorageFailed, rate())
+            assertEquals(emptyList(), repository.insertedRatings)
+        }
+    }
+
+    @Test
     fun GIVEN_rated_player_can_not_be_stored_WHEN_rating_is_added_THEN_storage_failed(): TestResult {
         return runTest {
             repository.failingCalls += FakeRatingRepository.Call.INSERT_USER

@@ -4,7 +4,9 @@ import ru.astrainteractive.astrarating.core.settings.model.AstraRatingConfig
 import ru.astrainteractive.astrarating.data.dao.rating.api.RatingRepository
 import ru.astrainteractive.astrarating.data.dao.rating.model.NewUser
 import ru.astrainteractive.astrarating.data.dao.rating.model.RatingType
-import ru.astrainteractive.astrarating.data.dao.rating.util.upsertUser
+import ru.astrainteractive.astrarating.data.dao.rating.model.User
+import ru.astrainteractive.astrarating.data.dao.rating.util.isUserRenamed
+import ru.astrainteractive.astrarating.data.dao.rating.util.rename
 import ru.astrainteractive.astrarating.event.kill.model.LowerKillerRatingResult
 import ru.astrainteractive.astrarating.event.kill.util.changesRating
 import ru.astrainteractive.astrarating.event.kill.util.isKillPenalized
@@ -18,13 +20,22 @@ internal class LowerKillerRatingUseCase(
 ) {
     private val config by configKrate
 
+    private suspend fun upsertUser(newUser: NewUser): Result<User> {
+        val storedUser = ratingRepository.findUser(newUser.minecraftUUID)
+            .getOrElse { error -> return Result.failure(error) }
+            ?: return ratingRepository.insertUser(newUser)
+        if (!isUserRenamed(storedUser, newUser)) return Result.success(storedUser)
+        val renamedUser = storedUser.rename(newUser)
+        return ratingRepository.updateUser(renamedUser).map { _ -> renamedUser }
+    }
+
     suspend operator fun invoke(killer: NewUser, killedPlayerUUID: UUID, reason: String): LowerKillerRatingResult {
         val killEvent = config.events.killPlayer
         if (!killEvent.changesRating) return LowerKillerRatingResult.Disabled
         val killedPlayerRating = ratingRepository.fetchUserTotalRating(killedPlayerUUID)
             .getOrElse { return LowerKillerRatingResult.StorageFailed }
         if (!killEvent.isKillPenalized(killedPlayerRating)) return LowerKillerRatingResult.KilledPlayerNotRated
-        val storedKiller = ratingRepository.upsertUser(killer)
+        val storedKiller = upsertUser(killer)
             .getOrElse { return LowerKillerRatingResult.StorageFailed }
         return ratingRepository.insertUserRating(
             reporter = null,
