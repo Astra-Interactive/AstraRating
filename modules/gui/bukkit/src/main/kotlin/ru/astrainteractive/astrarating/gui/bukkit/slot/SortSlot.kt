@@ -12,8 +12,9 @@ import ru.astrainteractive.astralibs.menu.slot.setOnClickListener
 import ru.astrainteractive.astrarating.gui.api.rating.player.model.UserRatingsSort
 import ru.astrainteractive.astrarating.gui.api.rating.ranking.model.UsersRatingsSort
 import ru.astrainteractive.astrarating.gui.bukkit.context.SlotContext
+import ru.astrainteractive.astrarating.gui.bukkit.util.selectUserRatingsSortText
+import ru.astrainteractive.astrarating.gui.bukkit.util.selectUsersRatingsSortText
 import ru.astrainteractive.astrarating.gui.bukkit.util.toItemStack
-import ru.astrainteractive.astrarating.gui.bukkit.util.toText
 
 internal fun SlotContext.ratingsSortSlot(
     index: Int,
@@ -31,7 +32,7 @@ internal fun SlotContext.ratingsSortSlot(
                 UserRatingsSort.Date(false),
             ).forEach { entry ->
                 val option = translation.sort.option(
-                    sort = entry.toText(translation),
+                    sort = selectUserRatingsSortText(entry, translation),
                     isSelected = sortType::class == entry::class,
                     isAscending = sortType.isAsc
                 )
@@ -54,7 +55,7 @@ internal fun SlotContext.playerRatingsSortSlot(
             UsersRatingsSort.TotalRating(false),
         ).forEach { entry ->
             val option = translation.sort.option(
-                sort = entry.toText(translation),
+                sort = selectUsersRatingsSortText(entry, translation),
                 isSelected = sortType::class == entry::class,
                 isAscending = sortType.isAsc
             )
